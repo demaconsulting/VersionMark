@@ -54,7 +54,7 @@ public sealed record ToolConfig
     /// </summary>
     /// <param name="node">The YAML mapping node containing tool configuration.</param>
     /// <returns>A new ToolConfig instance.</returns>
-    /// <exception cref="ArgumentException">Thrown when required fields are missing.</exception>
+    /// <exception cref="ArgumentException">Thrown when required fields are missing or node types are invalid.</exception>
     internal static ToolConfig FromYamlNode(YamlMappingNode node)
     {
         var commands = new Dictionary<string, string>();
@@ -62,8 +62,13 @@ public sealed record ToolConfig
 
         foreach (var entry in node.Children)
         {
-            var key = ((YamlScalarNode)entry.Key).Value ?? string.Empty;
-            var value = ((YamlScalarNode)entry.Value).Value ?? string.Empty;
+            if (entry.Key is not YamlScalarNode keyNode || entry.Value is not YamlScalarNode valueNode)
+            {
+                throw new ArgumentException("Tool configuration entries must be scalar key-value pairs");
+            }
+
+            var key = keyNode.Value ?? string.Empty;
+            var value = valueNode.Value ?? string.Empty;
 
             switch (key)
             {
@@ -90,6 +95,9 @@ public sealed record ToolConfig
                     break;
                 case "regex-macos":
                     regexes["macos"] = value;
+                    break;
+                default:
+                    // Ignore unknown keys to allow for future extensibility
                     break;
             }
         }
@@ -219,8 +227,17 @@ public sealed record VersionMarkConfig
             var yaml = new YamlStream();
             yaml.Load(reader);
 
-            // Get root document
-            var rootNode = (YamlMappingNode)yaml.Documents[0].RootNode;
+            // Validate document exists
+            if (yaml.Documents.Count == 0)
+            {
+                throw new ArgumentException("YAML file contains no documents");
+            }
+
+            // Get root document and validate it's a mapping
+            if (yaml.Documents[0].RootNode is not YamlMappingNode rootNode)
+            {
+                throw new ArgumentException("YAML root node must be a mapping");
+            }
 
             // Get tools mapping
             if (!rootNode.Children.TryGetValue(new YamlScalarNode("tools"), out var toolsNode))
@@ -228,14 +245,28 @@ public sealed record VersionMarkConfig
                 throw new ArgumentException("Configuration file must contain a 'tools' section");
             }
 
-            var toolsMapping = (YamlMappingNode)toolsNode;
+            // Validate tools node is a mapping
+            if (toolsNode is not YamlMappingNode toolsMapping)
+            {
+                throw new ArgumentException("The 'tools' section must be a mapping");
+            }
+
             var tools = new Dictionary<string, ToolConfig>();
 
             // Parse each tool
             foreach (var toolEntry in toolsMapping.Children)
             {
-                var toolName = ((YamlScalarNode)toolEntry.Key).Value ?? string.Empty;
-                var toolNode = (YamlMappingNode)toolEntry.Value;
+                if (toolEntry.Key is not YamlScalarNode keyNode)
+                {
+                    throw new ArgumentException("Tool names must be scalar values");
+                }
+
+                if (toolEntry.Value is not YamlMappingNode toolNode)
+                {
+                    throw new ArgumentException($"Tool '{keyNode.Value}' configuration must be a mapping");
+                }
+
+                var toolName = keyNode.Value ?? string.Empty;
                 tools[toolName] = ToolConfig.FromYamlNode(toolNode);
             }
 
