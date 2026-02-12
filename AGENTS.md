@@ -1,7 +1,7 @@
 # Agent Quick Reference
 
-Project-specific guidance for agents working on Template DotNet Tool - a reference
-implementation demonstrating best practices for DEMA Consulting .NET CLI tools.
+Project-specific guidance for agents working on VersionMark - a tool for capturing and
+publishing tool version information across CI/CD environments.
 
 ## Available Specialized Agents
 
@@ -15,23 +15,37 @@ implementation demonstrating best practices for DEMA Consulting .NET CLI tools.
 ## Tech Stack
 
 - C# 12, .NET 8.0/9.0/10.0, dotnet CLI, NuGet
+- YAML configuration files (.versionmark.yaml)
+- JSON for version capture data
+- Markdown for published documentation
+
+## VersionMark Overview
+
+VersionMark is a tool that:
+
+- **Captures** tool versions from CI/CD environments (with `--job-id`)
+- **Publishes** consolidated version information to markdown
+- Uses `.versionmark.yaml` config to define tools and capture methods
+- Supports OS-specific command overrides (windows, linux, macos)
+- Consolidates common versions; reports conflicting versions by job-id
 
 ## Key Files
 
+- **`.versionmark.yaml`** - Configuration defining tools to capture and how to extract versions
 - **`requirements.yaml`** - All requirements with test linkage (enforced via `dotnet reqstream --enforce`)
 - **`.editorconfig`** - Code style (file-scoped namespaces, 4-space indent, UTF-8+BOM, LF endings)
 - **`.cspell.json`, `.markdownlint-cli2.jsonc`, `.yamllint.yaml`** - Linting configs
 
 ## Requirements
 
-- All requirements MUST be linked to tests (prefer `TemplateTool_*` self-validation tests)
+- All requirements MUST be linked to tests (prefer `VersionMark_*` self-validation tests)
 - Not all tests need to be linked to requirements (tests may exist for corner cases, design testing, failure-testing, etc.)
 - Enforced in CI: `dotnet reqstream --requirements requirements.yaml --tests "test-results/**/*.trx" --enforce`
 - When adding features: add requirement + link to test
 
 ## Testing
 
-- **Test Naming**: `TemplateTool_MethodUnderTest_Scenario` for self-validation tests
+- **Test Naming**: `VersionMark_MethodUnderTest_Scenario` for self-validation tests
 - **Self-Validation**: All tests run via `--validate` flag and can output TRX/JUnit format
 - **Test Framework**: Uses DemaConsulting.TestResults library for test result generation
 
@@ -46,7 +60,7 @@ implementation demonstrating best practices for DEMA Consulting .NET CLI tools.
 ## Project Structure
 
 - **Context.cs**: Handles command-line argument parsing, logging, and output
-- **Program.cs**: Main entry point with version/help/validation routing
+- **Program.cs**: Main entry point with capture/publish mode routing
 - **Validation.cs**: Self-validation tests with TRX/JUnit output support
 
 ## Build and Test
