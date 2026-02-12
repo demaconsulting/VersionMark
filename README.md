@@ -1,4 +1,4 @@
-# Template DotNet Tool
+# VersionMark
 
 [![GitHub forks][badge-forks]][link-forks]
 [![GitHub stars][badge-stars]][link-stars]
@@ -9,59 +9,174 @@
 [![Security][badge-security]][link-security]
 [![NuGet][badge-nuget]][link-nuget]
 
-DEMA Consulting template project for DotNet Tools, demonstrating best practices for building command-line tools with .NET.
+VersionMark is a tool for capturing and publishing tool version information across CI/CD
+environments. It helps track which versions of build tools, compilers, and dependencies are
+used in different jobs and environments.
 
 ## Features
 
-This template demonstrates:
-
-- **Standardized Command-Line Interface**: Context class handling common arguments
-  (`--version`, `--help`, `--silent`, `--validate`, `--results`, `--log`)
-- **Self-Validation**: Built-in validation tests with TRX/JUnit output
-- **Multi-Platform Support**: Builds and runs on Windows and Linux
+- **Version Capture**: Captures tool versions from CI/CD jobs and saves them to JSON files
+- **Version Publishing**: Publishes captured versions to markdown documentation
+- **Job-ID Tracking**: Associates captured versions with specific CI/CD job identifiers
+- **Version Consolidation**: Collapses common versions across jobs while highlighting conflicts
+- **OS-Specific Overrides**: Supports platform-specific version capture commands
+- **Configurable**: Uses `.versionmark.yaml` config file to define tools and capture methods
+- **Multi-Platform Support**: Runs on Windows and Linux
 - **Multi-Runtime Support**: Targets .NET 8, 9, and 10
-- **Comprehensive CI/CD**: GitHub Actions workflows with quality checks, builds, and
-  integration tests
-- **Documentation Generation**: Automated build notes, user guide, code quality reports,
-  requirements, justifications, and trace matrix
 
 ## Installation
 
 Install the tool globally using the .NET CLI:
 
 ```bash
-dotnet tool install -g DemaConsulting.TemplateDotNetTool
+dotnet tool install -g DemaConsulting.VersionMark
 ```
 
-## Usage
+## Quick Start
+
+### 1. Create Configuration File
+
+Create a `.versionmark.yaml` file in your repository:
+
+```yaml
+tools:
+  - name: dotnet
+    command: dotnet --version
+    regex: '(\d+\.\d+\.\d+)'
+  
+  - name: node
+    command: node --version
+    regex: 'v(\d+\.\d+\.\d+)'
+```
+
+### 2. Capture Tool Versions
+
+In your CI/CD job, capture tool versions with a job identifier:
 
 ```bash
-# Display version
-templatetool --version
-
-# Display help
-templatetool --help
-
-# Run self-validation
-templatetool --validate
-
-# Save validation results
-templatetool --validate --results results.trx
-
-# Silent mode with logging
-templatetool --silent --log output.log
+versionmark capture --job-id "windows-net8"
 ```
 
+This creates a JSON file with captured versions (e.g., `versionmark-windows-net8.json`).
+
+### 3. Publish to Documentation
+
+After all jobs complete, publish the captured versions to markdown:
+
+```bash
+versionmark publish --output versions.md
+```
+
+This consolidates versions from all jobs and generates a markdown table.
+
 ## Command-Line Options
+
+### Global Options
 
 | Option               | Description                                                  |
 | -------------------- | ------------------------------------------------------------ |
 | `-v`, `--version`    | Display version information                                  |
 | `-?`, `-h`, `--help` | Display help message                                         |
 | `--silent`           | Suppress console output                                      |
-| `--validate`         | Run self-validation                                          |
-| `--results <file>`   | Write validation results to file (TRX or JUnit format)       |
 | `--log <file>`       | Write output to log file                                     |
+
+### Capture Mode
+
+Capture tool versions from the current environment:
+
+```bash
+versionmark capture --job-id <job-identifier> [options]
+```
+
+| Option                    | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job          |
+| `--config <file>`         | Configuration file path (default: `.versionmark.yaml`)       |
+| `--output <file>`         | Output JSON file (default: `versionmark-<job-id>.json`)      |
+
+### Publish Mode
+
+Publish captured versions to markdown documentation:
+
+```bash
+versionmark publish [options]
+```
+
+| Option                    | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `--input <pattern>`       | Input JSON file pattern (default: `versionmark-*.json`)      |
+| `--output <file>`         | Output markdown file (default: `versions.md`)                |
+| `--config <file>`         | Configuration file path (default: `.versionmark.yaml`)       |
+
+## Configuration File
+
+The `.versionmark.yaml` file defines which tools to capture and how to extract their versions:
+
+```yaml
+tools:
+  # Basic tool definition
+  - name: dotnet
+    command: dotnet --version
+    regex: '(\d+\.\d+\.\d+)'
+  
+  # Tool with OS-specific overrides
+  - name: gcc
+    command: gcc --version
+    regex: 'gcc \(.*\) (\d+\.\d+\.\d+)'
+    overrides:
+      windows:
+        command: gcc.exe --version
+      linux:
+        command: gcc --version
+  
+  # Tool with custom output parsing
+  - name: cmake
+    command: cmake --version
+    regex: 'cmake version (\d+\.\d+\.\d+)'
+```
+
+### Configuration Options
+
+- **name**: Display name for the tool
+- **command**: Shell command to execute to get version information
+- **regex**: Regular expression to extract version number (first capture group is used)
+- **overrides**: Platform-specific command overrides (optional)
+  - **windows**: Command to use on Windows
+  - **linux**: Command to use on Linux
+
+## Output Format
+
+### Capture Output (JSON)
+
+Capture mode creates a JSON file with the following structure:
+
+```json
+{
+  "job-id": "windows-net8",
+  "timestamp": "2024-03-15T10:30:00Z",
+  "versions": {
+    "dotnet": "8.0.100",
+    "node": "20.11.0",
+    "gcc": "13.2.0"
+  }
+}
+```
+
+### Publish Output (Markdown)
+
+Publish mode generates a markdown table consolidating versions from all jobs:
+
+```markdown
+| Tool   | Version | Jobs                    |
+| ------ | ------- | ----------------------- |
+| dotnet | 8.0.100 | All jobs                |
+| node   | 20.11.0 | windows-net8, linux-net8|
+| gcc    | 13.2.0  | linux-net8              |
+| gcc    | 11.4.0  | windows-net8            |
+```
+
+When a tool has the same version across all jobs, it's shown as "All jobs". When versions
+differ, each version is listed with the jobs that use it.
 
 ## Documentation
 
@@ -79,21 +194,21 @@ Generated documentation includes:
 Copyright (c) DEMA Consulting. Licensed under the MIT License. See [LICENSE][link-license] for details.
 
 <!-- Badge References -->
-[badge-forks]: https://img.shields.io/github/forks/demaconsulting/TemplateDotNetTool?style=plastic
-[badge-stars]: https://img.shields.io/github/stars/demaconsulting/TemplateDotNetTool?style=plastic
-[badge-contributors]: https://img.shields.io/github/contributors/demaconsulting/TemplateDotNetTool?style=plastic
-[badge-license]: https://img.shields.io/github/license/demaconsulting/TemplateDotNetTool?style=plastic
-[badge-build]: https://img.shields.io/github/actions/workflow/status/demaconsulting/TemplateDotNetTool/build_on_push.yaml?style=plastic
-[badge-quality]: https://sonarcloud.io/api/project_badges/measure?project=demaconsulting_TemplateDotNetTool&metric=alert_status
-[badge-security]: https://sonarcloud.io/api/project_badges/measure?project=demaconsulting_TemplateDotNetTool&metric=security_rating
-[badge-nuget]: https://img.shields.io/nuget/v/DemaConsulting.TemplateDotNetTool?style=plastic
+[badge-forks]: https://img.shields.io/github/forks/demaconsulting/VersionMark?style=plastic
+[badge-stars]: https://img.shields.io/github/stars/demaconsulting/VersionMark?style=plastic
+[badge-contributors]: https://img.shields.io/github/contributors/demaconsulting/VersionMark?style=plastic
+[badge-license]: https://img.shields.io/github/license/demaconsulting/VersionMark?style=plastic
+[badge-build]: https://img.shields.io/github/actions/workflow/status/demaconsulting/VersionMark/build_on_push.yaml?style=plastic
+[badge-quality]: https://sonarcloud.io/api/project_badges/measure?project=demaconsulting_VersionMark&metric=alert_status
+[badge-security]: https://sonarcloud.io/api/project_badges/measure?project=demaconsulting_VersionMark&metric=security_rating
+[badge-nuget]: https://img.shields.io/nuget/v/DemaConsulting.VersionMark?style=plastic
 
 <!-- Link References -->
-[link-forks]: https://github.com/demaconsulting/TemplateDotNetTool/network/members
-[link-stars]: https://github.com/demaconsulting/TemplateDotNetTool/stargazers
-[link-contributors]: https://github.com/demaconsulting/TemplateDotNetTool/graphs/contributors
-[link-license]: https://github.com/demaconsulting/TemplateDotNetTool/blob/main/LICENSE
-[link-build]: https://github.com/demaconsulting/TemplateDotNetTool/actions/workflows/build_on_push.yaml
-[link-quality]: https://sonarcloud.io/dashboard?id=demaconsulting_TemplateDotNetTool
-[link-security]: https://sonarcloud.io/dashboard?id=demaconsulting_TemplateDotNetTool
-[link-nuget]: https://www.nuget.org/packages/DemaConsulting.TemplateDotNetTool
+[link-forks]: https://github.com/demaconsulting/VersionMark/network/members
+[link-stars]: https://github.com/demaconsulting/VersionMark/stargazers
+[link-contributors]: https://github.com/demaconsulting/VersionMark/graphs/contributors
+[link-license]: https://github.com/demaconsulting/VersionMark/blob/main/LICENSE
+[link-build]: https://github.com/demaconsulting/VersionMark/actions/workflows/build_on_push.yaml
+[link-quality]: https://sonarcloud.io/dashboard?id=demaconsulting_VersionMark
+[link-security]: https://sonarcloud.io/dashboard?id=demaconsulting_VersionMark
+[link-nuget]: https://www.nuget.org/packages/DemaConsulting.VersionMark

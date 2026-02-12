@@ -32,6 +32,7 @@
     "maintainer",
     "markdownlint",
     "mermaid",
+    "msbuild",
     "mstest",
     "myterm",
     "ncipollo",
@@ -65,6 +66,8 @@
     "trx",
     "vbproj",
     "vcxproj",
+    "versionmark",
+    "VersionMark",
     "Weasyprint",
     "yamllint"
   ],
