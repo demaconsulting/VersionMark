@@ -1,0 +1,34 @@
+# VersionMark Configuration File
+# This file defines which tools to capture and how to extract their version information.
+
+tools:
+  # .NET SDK
+  dotnet:
+    command: dotnet --version
+    regex: '(\d+\.\d+\.\d+)'
+  
+  # Node.js
+  node:
+    command: node --version
+    regex: 'v(\d+\.\d+\.\d+)'
+  
+  # npm
+  npm:
+    command: npm --version
+    regex: '(\d+\.\d+\.\d+)'
+  
+  # Git
+  git:
+    command: git --version
+    regex: 'git version (\d+\.\d+\.\d+)'
+  
+  # GCC with OS-specific commands
+  gcc:
+    command: gcc --version
+    command-win: gcc.exe --version
+    regex: 'gcc.*?(\d+\.\d+\.\d+)'
+  
+  # Python
+  python:
+    command: python --version
+    regex: 'Python (\d+\.\d+\.\d+)'
