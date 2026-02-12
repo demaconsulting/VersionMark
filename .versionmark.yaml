@@ -22,3 +22,38 @@ tools:
   npm:
     command: npm --version
     regex: '(?P<version>\d+\.\d+\.\d+)'
+
+  # SonarScanner for .NET (from dotnet tool list)
+  dotnet-sonarscanner:
+    command: dotnet tool list
+    regex: 'dotnet-sonarscanner\s+(?P<version>\d+\.\d+\.\d+)'
+
+  # Pandoc (DemaConsulting.PandocTool from dotnet tool list)
+  pandoc:
+    command: dotnet tool list
+    regex: 'demaconsulting\.pandoctool\s+(?P<version>\d+\.\d+\.\d+)'
+
+  # WeasyPrint (DemaConsulting.WeasyPrintTool from dotnet tool list)
+  weasyprint:
+    command: dotnet tool list
+    regex: 'demaconsulting\.weasyprinttool\s+(?P<version>\d+\.\d+\.\d+)'
+
+  # SarifMark (DemaConsulting.SarifMark from dotnet tool list)
+  sarifmark:
+    command: dotnet tool list
+    regex: 'demaconsulting\.sarifmark\s+(?P<version>\d+\.\d+\.\d+)'
+
+  # SonarMark (DemaConsulting.SonarMark from dotnet tool list)
+  sonarmark:
+    command: dotnet tool list
+    regex: 'demaconsulting\.sonarmark\s+(?P<version>\d+\.\d+\.\d+)'
+
+  # ReqStream (DemaConsulting.ReqStream from dotnet tool list)
+  reqstream:
+    command: dotnet tool list
+    regex: 'demaconsulting\.reqstream\s+(?P<version>\d+\.\d+\.\d+)'
+
+  # BuildMark (DemaConsulting.BuildMark from dotnet tool list)
+  buildmark:
+    command: dotnet tool list
+    regex: 'demaconsulting\.buildmark\s+(?P<version>\d+\.\d+\.\d+)'

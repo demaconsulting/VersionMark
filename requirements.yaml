@@ -193,11 +193,3 @@ sections:
             tests:
               - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
               - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
-
-          - id: TMPL-REQ-019
-            title: The tool shall provide an internal constructor for creating test configurations.
-            justification: |
-              Enables comprehensive unit testing of configuration-dependent functionality
-              without requiring file system access.
-            tests:
-              - VersionMarkConfig_InternalConstructor_CreatesConfig
