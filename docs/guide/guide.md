@@ -166,7 +166,8 @@ Each tool entry in the `tools` dictionary supports the following properties:
 
 ### OS-Specific Overrides
 
-You can provide platform-specific commands and regex patterns for tools that have different behavior on different operating systems:
+You can provide platform-specific commands and regex patterns for tools that have different
+behavior on different operating systems:
 
 ```yaml
 tools:
@@ -187,7 +188,9 @@ tools:
     regex-win: '(\d+\.\d+\.\d+)'
 ```
 
-The tool uses OS-specific overrides when running on the corresponding platform. If no override is specified for the current platform, it falls back to the default `command` and `regex` values.
+The tool uses OS-specific overrides when running on the corresponding platform. If no override
+is specified for the current platform, it falls back to the default `command` and `regex`
+values.
 
 ### Regular Expression Tips
 
