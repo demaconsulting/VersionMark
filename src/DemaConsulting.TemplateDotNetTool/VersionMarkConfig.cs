@@ -53,9 +53,11 @@ public sealed record ToolConfig
     ///     Creates a ToolConfig from a YAML mapping node.
     /// </summary>
     /// <param name="node">The YAML mapping node containing tool configuration.</param>
+    /// <param name="toolName">The name of the tool (for error messages).</param>
     /// <returns>A new ToolConfig instance.</returns>
     /// <exception cref="ArgumentException">Thrown when required fields are missing or node types are invalid.</exception>
-    internal static ToolConfig FromYamlNode(YamlMappingNode node)
+    /// <remarks>Unknown keys in the configuration are silently ignored to allow for future extensibility.</remarks>
+    internal static ToolConfig FromYamlNode(YamlMappingNode node, string toolName = "")
     {
         var commands = new Dictionary<string, string>();
         var regexes = new Dictionary<string, string>();
@@ -64,7 +66,8 @@ public sealed record ToolConfig
         {
             if (entry.Key is not YamlScalarNode keyNode || entry.Value is not YamlScalarNode valueNode)
             {
-                throw new ArgumentException("Tool configuration entries must be scalar key-value pairs");
+                var toolContext = string.IsNullOrEmpty(toolName) ? "Tool" : $"Tool '{toolName}'";
+                throw new ArgumentException($"{toolContext} configuration entries must be scalar key-value pairs");
             }
 
             var key = keyNode.Value ?? string.Empty;
@@ -102,14 +105,16 @@ public sealed record ToolConfig
             }
         }
 
+        var toolContext2 = string.IsNullOrEmpty(toolName) ? "Tool" : $"Tool '{toolName}'";
+
         if (!commands.ContainsKey(string.Empty))
         {
-            throw new ArgumentException("Tool configuration must contain a default 'command' field");
+            throw new ArgumentException($"{toolContext2} configuration must contain a default 'command' field");
         }
 
         if (!regexes.ContainsKey(string.Empty))
         {
-            throw new ArgumentException("Tool configuration must contain a default 'regex' field");
+            throw new ArgumentException($"{toolContext2} configuration must contain a default 'regex' field");
         }
 
         return new ToolConfig(commands, regexes);
@@ -223,7 +228,7 @@ public sealed record VersionMarkConfig
         try
         {
             // Read the YAML file and parse as document
-            using var reader = new StreamReader(filePath);
+            using var reader = new StreamReader(filePath, System.Text.Encoding.UTF8);
             var yaml = new YamlStream();
             yaml.Load(reader);
 
@@ -267,7 +272,7 @@ public sealed record VersionMarkConfig
                 }
 
                 var toolName = keyNode.Value ?? string.Empty;
-                tools[toolName] = ToolConfig.FromYamlNode(toolNode);
+                tools[toolName] = ToolConfig.FromYamlNode(toolNode, toolName);
             }
 
             // Validate configuration
