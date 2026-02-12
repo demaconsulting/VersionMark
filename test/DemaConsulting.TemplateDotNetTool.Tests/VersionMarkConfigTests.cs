@@ -35,11 +35,10 @@ public class VersionMarkConfigTests
         // Arrange
         var tools = new Dictionary<string, ToolConfig>
         {
-            ["dotnet"] = new ToolConfig
-            {
-                Command = "dotnet --version",
-                Regex = @"(\d+\.\d+\.\d+)"
-            }
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            )
         };
 
         // Act
@@ -83,14 +82,14 @@ public class VersionMarkConfigTests
             Assert.IsTrue(config.Tools.ContainsKey("tool2"));
 
             // Check tool1
-            Assert.AreEqual("tool1 --version", config.Tools["tool1"].Command);
-            Assert.AreEqual(@"Tool1\s+(?P<version>[\d\.]+)", config.Tools["tool1"].Regex);
+            Assert.AreEqual("tool1 --version", config.Tools["tool1"].Command[string.Empty]);
+            Assert.AreEqual(@"Tool1\s+(?P<version>[\d\.]+)", config.Tools["tool1"].Regex[string.Empty]);
 
             // Check tool2
-            Assert.AreEqual("tool2 version --client", config.Tools["tool2"].Command);
-            Assert.AreEqual("tool2.cmd version --client", config.Tools["tool2"].CommandWin);
-            Assert.AreEqual(@"Tool2:""v(?P<version>[\d\.]+)""", config.Tools["tool2"].Regex);
-            Assert.AreEqual(@"Tool2 Version: v(?P<version>[\d\.]+)", config.Tools["tool2"].RegexLinux);
+            Assert.AreEqual("tool2 version --client", config.Tools["tool2"].Command[string.Empty]);
+            Assert.AreEqual("tool2.cmd version --client", config.Tools["tool2"].Command["win"]);
+            Assert.AreEqual(@"Tool2:""v(?P<version>[\d\.]+)""", config.Tools["tool2"].Regex[string.Empty]);
+            Assert.AreEqual(@"Tool2 Version: v(?P<version>[\d\.]+)", config.Tools["tool2"].Regex["linux"]);
         }
         finally
         {
@@ -117,10 +116,10 @@ public class VersionMarkConfigTests
     command-win: gcc.exe --version
     command-linux: gcc-13 --version
     command-macos: gcc-14 --version
-    regex: 'gcc.*?(\d+\.\d+\.\d+)'
-    regex-win: 'gcc\.exe.*?(\d+\.\d+\.\d+)'
-    regex-linux: 'gcc-13.*?(\d+\.\d+\.\d+)'
-    regex-macos: 'gcc-14.*?(\d+\.\d+\.\d+)'
+    regex: 'gcc.*?(?P<version>\d+\.\d+\.\d+)'
+    regex-win: 'gcc\.exe.*?(?P<version>\d+\.\d+\.\d+)'
+    regex-linux: 'gcc-13.*?(?P<version>\d+\.\d+\.\d+)'
+    regex-macos: 'gcc-14.*?(?P<version>\d+\.\d+\.\d+)'
 ";
             File.WriteAllText(tempFile, yaml);
 
@@ -133,14 +132,14 @@ public class VersionMarkConfigTests
             Assert.IsTrue(config.Tools.ContainsKey("gcc"));
 
             var gcc = config.Tools["gcc"];
-            Assert.AreEqual("gcc --version", gcc.Command);
-            Assert.AreEqual("gcc.exe --version", gcc.CommandWin);
-            Assert.AreEqual("gcc-13 --version", gcc.CommandLinux);
-            Assert.AreEqual("gcc-14 --version", gcc.CommandMacOs);
-            Assert.AreEqual(@"gcc.*?(\d+\.\d+\.\d+)", gcc.Regex);
-            Assert.AreEqual(@"gcc\.exe.*?(\d+\.\d+\.\d+)", gcc.RegexWin);
-            Assert.AreEqual(@"gcc-13.*?(\d+\.\d+\.\d+)", gcc.RegexLinux);
-            Assert.AreEqual(@"gcc-14.*?(\d+\.\d+\.\d+)", gcc.RegexMacOs);
+            Assert.AreEqual("gcc --version", gcc.Command[string.Empty]);
+            Assert.AreEqual("gcc.exe --version", gcc.Command["win"]);
+            Assert.AreEqual("gcc-13 --version", gcc.Command["linux"]);
+            Assert.AreEqual("gcc-14 --version", gcc.Command["macos"]);
+            Assert.AreEqual(@"gcc.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex[string.Empty]);
+            Assert.AreEqual(@"gcc\.exe.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex["win"]);
+            Assert.AreEqual(@"gcc-13.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex["linux"]);
+            Assert.AreEqual(@"gcc-14.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex["macos"]);
         }
         finally
         {
@@ -228,11 +227,10 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            Regex = @"(\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+        );
 
         // Act
         var command = tool.GetEffectiveCommand();
@@ -248,17 +246,66 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            Regex = @"(\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+        );
 
         // Act
         var regex = tool.GetEffectiveRegex();
 
         // Assert
-        Assert.AreEqual(@"(\d+\.\d+\.\d+)", regex);
+        Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
+    }
+
+    /// <summary>
+    ///     Test GetEffectiveCommand with explicit OS parameter.
+    /// </summary>
+    [TestMethod]
+    public void ToolConfig_GetEffectiveCommand_WithExplicitOs_ReturnsCorrectCommand()
+    {
+        // Arrange
+        var tool = new ToolConfig(
+            new Dictionary<string, string>
+            {
+                [string.Empty] = "tool --version",
+                ["win"] = "tool.exe --version",
+                ["linux"] = "tool-linux --version",
+                ["macos"] = "tool-macos --version"
+            },
+            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+        );
+
+        // Act & Assert
+        Assert.AreEqual("tool.exe --version", tool.GetEffectiveCommand("win"));
+        Assert.AreEqual("tool-linux --version", tool.GetEffectiveCommand("linux"));
+        Assert.AreEqual("tool-macos --version", tool.GetEffectiveCommand("macos"));
+        Assert.AreEqual("tool --version", tool.GetEffectiveCommand("unknown"));
+    }
+
+    /// <summary>
+    ///     Test GetEffectiveRegex with explicit OS parameter.
+    /// </summary>
+    [TestMethod]
+    public void ToolConfig_GetEffectiveRegex_WithExplicitOs_ReturnsCorrectRegex()
+    {
+        // Arrange
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string>
+            {
+                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
+                ["win"] = @"Windows: (?P<version>\d+\.\d+\.\d+)",
+                ["linux"] = @"Linux: (?P<version>\d+\.\d+\.\d+)",
+                ["macos"] = @"macOS: (?P<version>\d+\.\d+\.\d+)"
+            }
+        );
+
+        // Act & Assert
+        Assert.AreEqual(@"Windows: (?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
+        Assert.AreEqual(@"Linux: (?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
+        Assert.AreEqual(@"macOS: (?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
+        Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("unknown"));
     }
 
     /// <summary>
@@ -268,12 +315,14 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            CommandWin = "tool.exe --version",
-            Regex = @"(\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string>
+            {
+                [string.Empty] = "tool --version",
+                ["win"] = "tool.exe --version"
+            },
+            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+        );
 
         // Act
         var command = tool.GetEffectiveCommand();
@@ -297,12 +346,14 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            CommandLinux = "tool-linux --version",
-            Regex = @"(\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string>
+            {
+                [string.Empty] = "tool --version",
+                ["linux"] = "tool-linux --version"
+            },
+            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+        );
 
         // Act
         var command = tool.GetEffectiveCommand();
@@ -326,12 +377,14 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            CommandMacOs = "tool-macos --version",
-            Regex = @"(\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string>
+            {
+                [string.Empty] = "tool --version",
+                ["macos"] = "tool-macos --version"
+            },
+            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+        );
 
         // Act
         var command = tool.GetEffectiveCommand();
@@ -355,12 +408,14 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            Regex = @"(\d+\.\d+\.\d+)",
-            RegexWin = @"Windows: (\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string>
+            {
+                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
+                ["win"] = @"Windows: (?P<version>\d+\.\d+\.\d+)"
+            }
+        );
 
         // Act
         var regex = tool.GetEffectiveRegex();
@@ -369,11 +424,11 @@ public class VersionMarkConfigTests
         // On Windows, should return Windows override; otherwise default
         if (OperatingSystem.IsWindows())
         {
-            Assert.AreEqual(@"Windows: (\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"Windows: (?P<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
@@ -384,12 +439,14 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            Regex = @"(\d+\.\d+\.\d+)",
-            RegexLinux = @"Linux: (\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string>
+            {
+                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
+                ["linux"] = @"Linux: (?P<version>\d+\.\d+\.\d+)"
+            }
+        );
 
         // Act
         var regex = tool.GetEffectiveRegex();
@@ -398,11 +455,11 @@ public class VersionMarkConfigTests
         // On Linux, should return Linux override; otherwise default
         if (OperatingSystem.IsLinux())
         {
-            Assert.AreEqual(@"Linux: (\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"Linux: (?P<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
@@ -413,12 +470,14 @@ public class VersionMarkConfigTests
     public void ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex()
     {
         // Arrange
-        var tool = new ToolConfig
-        {
-            Command = "tool --version",
-            Regex = @"(\d+\.\d+\.\d+)",
-            RegexMacOs = @"macOS: (\d+\.\d+\.\d+)"
-        };
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string>
+            {
+                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
+                ["macos"] = @"macOS: (?P<version>\d+\.\d+\.\d+)"
+            }
+        );
 
         // Act
         var regex = tool.GetEffectiveRegex();
@@ -427,11 +486,11 @@ public class VersionMarkConfigTests
         // On macOS, should return macOS override; otherwise default
         if (OperatingSystem.IsMacOS())
         {
-            Assert.AreEqual(@"macOS: (\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"macOS: (?P<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
         }
     }
 }

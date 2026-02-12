@@ -19,10 +19,96 @@
 // SOFTWARE.
 
 using System.Runtime.InteropServices;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace DemaConsulting.TemplateDotNetTool;
+
+/// <summary>
+///     Custom YAML type converter for ToolConfig that handles OS-suffixed keys.
+/// </summary>
+internal sealed class ToolConfigConverter : IYamlTypeConverter
+{
+    /// <summary>
+    ///     Determines if this converter can handle the specified type.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <returns>True if this converter can handle the type.</returns>
+    public bool Accepts(Type type)
+    {
+        return type == typeof(ToolConfig);
+    }
+
+    /// <summary>
+    ///     Reads a ToolConfig from YAML.
+    /// </summary>
+    /// <param name="parser">The YAML parser.</param>
+    /// <param name="type">The type to deserialize.</param>
+    /// <param name="rootDeserializer">The root deserializer.</param>
+    /// <returns>The deserialized ToolConfig.</returns>
+    public object ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
+    {
+        var commands = new Dictionary<string, string>();
+        var regexes = new Dictionary<string, string>();
+
+        parser.Consume<MappingStart>();
+
+        while (!parser.TryConsume<MappingEnd>(out _))
+        {
+            var key = parser.Consume<Scalar>().Value;
+            var value = parser.Consume<Scalar>().Value;
+
+            if (key == "command")
+            {
+                commands[string.Empty] = value;
+            }
+            else if (key == "command-win")
+            {
+                commands["win"] = value;
+            }
+            else if (key == "command-linux")
+            {
+                commands["linux"] = value;
+            }
+            else if (key == "command-macos")
+            {
+                commands["macos"] = value;
+            }
+            else if (key == "regex")
+            {
+                regexes[string.Empty] = value;
+            }
+            else if (key == "regex-win")
+            {
+                regexes["win"] = value;
+            }
+            else if (key == "regex-linux")
+            {
+                regexes["linux"] = value;
+            }
+            else if (key == "regex-macos")
+            {
+                regexes["macos"] = value;
+            }
+        }
+
+        return new ToolConfig(commands, regexes);
+    }
+
+    /// <summary>
+    ///     Writes a ToolConfig to YAML.
+    /// </summary>
+    /// <param name="emitter">The YAML emitter.</param>
+    /// <param name="value">The value to serialize.</param>
+    /// <param name="type">The type to serialize.</param>
+    /// <param name="serializer">The object serializer.</param>
+    public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
+    {
+        throw new NotImplementedException("Serialization of ToolConfig is not supported");
+    }
+}
 
 /// <summary>
 ///     Configuration for a single tool in .versionmark.yaml file.
@@ -30,99 +116,86 @@ namespace DemaConsulting.TemplateDotNetTool;
 public sealed record ToolConfig
 {
     /// <summary>
-    ///     Gets the default command to execute to get the tool version.
+    ///     Gets the dictionary of commands keyed by OS name (empty string for default, "win", "linux", "macos" for OS-specific).
     /// </summary>
-    [YamlMember(Alias = "command")]
-    public required string Command { get; init; }
+    public Dictionary<string, string> Command { get; init; }
 
     /// <summary>
-    ///     Gets the Windows-specific command override.
+    ///     Gets the dictionary of regular expressions keyed by OS name (empty string for default, "win", "linux", "macos" for OS-specific).
     /// </summary>
-    [YamlMember(Alias = "command-win")]
-    public string? CommandWin { get; init; }
+    public Dictionary<string, string> Regex { get; init; }
 
     /// <summary>
-    ///     Gets the Linux-specific command override.
+    ///     Internal constructor for creating configurations.
     /// </summary>
-    [YamlMember(Alias = "command-linux")]
-    public string? CommandLinux { get; init; }
-
-    /// <summary>
-    ///     Gets the macOS-specific command override.
-    /// </summary>
-    [YamlMember(Alias = "command-macos")]
-    public string? CommandMacOs { get; init; }
-
-    /// <summary>
-    ///     Gets the default regular expression to extract the version from command output.
-    /// </summary>
-    [YamlMember(Alias = "regex")]
-    public required string Regex { get; init; }
-
-    /// <summary>
-    ///     Gets the Windows-specific regex override.
-    /// </summary>
-    [YamlMember(Alias = "regex-win")]
-    public string? RegexWin { get; init; }
-
-    /// <summary>
-    ///     Gets the Linux-specific regex override.
-    /// </summary>
-    [YamlMember(Alias = "regex-linux")]
-    public string? RegexLinux { get; init; }
-
-    /// <summary>
-    ///     Gets the macOS-specific regex override.
-    /// </summary>
-    [YamlMember(Alias = "regex-macos")]
-    public string? RegexMacOs { get; init; }
-
-    /// <summary>
-    ///     Gets the effective command for the current operating system.
-    /// </summary>
-    /// <returns>The command to execute based on the current OS.</returns>
-    public string GetEffectiveCommand()
+    /// <param name="command">Dictionary of commands.</param>
+    /// <param name="regex">Dictionary of regular expressions.</param>
+    internal ToolConfig(Dictionary<string, string> command, Dictionary<string, string> regex)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && CommandWin != null)
-        {
-            return CommandWin;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && CommandLinux != null)
-        {
-            return CommandLinux;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && CommandMacOs != null)
-        {
-            return CommandMacOs;
-        }
-
-        return Command;
+        Command = command;
+        Regex = regex;
     }
 
     /// <summary>
-    ///     Gets the effective regex for the current operating system.
+    ///     Gets the current operating system name.
     /// </summary>
-    /// <returns>The regex to use based on the current OS.</returns>
-    public string GetEffectiveRegex()
+    /// <returns>The OS name: "win", "linux", "macos", or empty string if unknown.</returns>
+    private static string GetCurrentOs()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && RegexWin != null)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return RegexWin;
+            return "win";
         }
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RegexLinux != null)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            return RegexLinux;
+            return "linux";
         }
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && RegexMacOs != null)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            return RegexMacOs;
+            return "macos";
         }
 
-        return Regex;
+        return string.Empty;
+    }
+
+    /// <summary>
+    ///     Gets the effective command for the specified operating system.
+    /// </summary>
+    /// <param name="os">The operating system name, or null to use current OS.</param>
+    /// <returns>The command to execute based on the specified OS.</returns>
+    public string GetEffectiveCommand(string? os = null)
+    {
+        os ??= GetCurrentOs();
+
+        if (Command.TryGetValue(os, out var osCommand))
+        {
+            return osCommand;
+        }
+
+        return Command.TryGetValue(string.Empty, out var defaultCommand)
+            ? defaultCommand
+            : throw new InvalidOperationException("No default command specified");
+    }
+
+    /// <summary>
+    ///     Gets the effective regex for the specified operating system.
+    /// </summary>
+    /// <param name="os">The operating system name, or null to use current OS.</param>
+    /// <returns>The regex to use based on the specified OS.</returns>
+    public string GetEffectiveRegex(string? os = null)
+    {
+        os ??= GetCurrentOs();
+
+        if (Regex.TryGetValue(os, out var osRegex))
+        {
+            return osRegex;
+        }
+
+        return Regex.TryGetValue(string.Empty, out var defaultRegex)
+            ? defaultRegex
+            : throw new InvalidOperationException("No default regex specified");
     }
 }
 
@@ -174,9 +247,10 @@ public sealed record VersionMarkConfig
             // Read the YAML file
             var yaml = File.ReadAllText(filePath);
 
-            // Create deserializer
+            // Create deserializer with custom converter
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(HyphenatedNamingConvention.Instance)
+                .WithTypeConverter(new ToolConfigConverter())
                 .Build();
 
             // Deserialize the YAML
