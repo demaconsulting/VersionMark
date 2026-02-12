@@ -19,97 +19,9 @@
 // SOFTWARE.
 
 using System.Runtime.InteropServices;
-using YamlDotNet.Core;
-using YamlDotNet.Core.Events;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.RepresentationModel;
 
 namespace DemaConsulting.TemplateDotNetTool;
-
-/// <summary>
-///     Custom YAML type converter for ToolConfig that handles OS-suffixed keys.
-/// </summary>
-internal sealed class ToolConfigConverter : IYamlTypeConverter
-{
-    /// <summary>
-    ///     Determines if this converter can handle the specified type.
-    /// </summary>
-    /// <param name="type">The type to check.</param>
-    /// <returns>True if this converter can handle the type.</returns>
-    public bool Accepts(Type type)
-    {
-        return type == typeof(ToolConfig);
-    }
-
-    /// <summary>
-    ///     Reads a ToolConfig from YAML.
-    /// </summary>
-    /// <param name="parser">The YAML parser.</param>
-    /// <param name="type">The type to deserialize.</param>
-    /// <param name="rootDeserializer">The root deserializer.</param>
-    /// <returns>The deserialized ToolConfig.</returns>
-    public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
-    {
-        var commands = new Dictionary<string, string>();
-        var regexes = new Dictionary<string, string>();
-
-        parser.Consume<MappingStart>();
-
-        while (!parser.TryConsume<MappingEnd>(out _))
-        {
-            var key = parser.Consume<Scalar>().Value;
-            var value = parser.Consume<Scalar>().Value;
-
-            if (key == "command")
-            {
-                commands[string.Empty] = value;
-            }
-            else if (key == "command-win")
-            {
-                commands["win"] = value;
-            }
-            else if (key == "command-linux")
-            {
-                commands["linux"] = value;
-            }
-            else if (key == "command-macos")
-            {
-                commands["macos"] = value;
-            }
-            else if (key == "regex")
-            {
-                regexes[string.Empty] = value;
-            }
-            else if (key == "regex-win")
-            {
-                regexes["win"] = value;
-            }
-            else if (key == "regex-linux")
-            {
-                regexes["linux"] = value;
-            }
-            else if (key == "regex-macos")
-            {
-                regexes["macos"] = value;
-            }
-        }
-
-        return new ToolConfig(commands, regexes);
-    }
-
-    /// <summary>
-    ///     Writes a ToolConfig to YAML.
-    /// </summary>
-    /// <param name="emitter">The YAML emitter.</param>
-    /// <param name="value">The value to serialize.</param>
-    /// <param name="type">The type to serialize.</param>
-    /// <param name="serializer">The object serializer.</param>
-    /// <exception cref="NotImplementedException">Serialization is not supported.</exception>
-    public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
-    {
-        throw new NotImplementedException("Serialization of ToolConfig is not supported. This converter is designed for deserialization only.");
-    }
-}
 
 /// <summary>
 ///     Configuration for a single tool in .versionmark.yaml file.
@@ -135,6 +47,64 @@ public sealed record ToolConfig
     {
         Command = command;
         Regex = regex;
+    }
+
+    /// <summary>
+    ///     Creates a ToolConfig from a YAML mapping node.
+    /// </summary>
+    /// <param name="node">The YAML mapping node containing tool configuration.</param>
+    /// <returns>A new ToolConfig instance.</returns>
+    /// <exception cref="ArgumentException">Thrown when required fields are missing.</exception>
+    internal static ToolConfig FromYamlNode(YamlMappingNode node)
+    {
+        var commands = new Dictionary<string, string>();
+        var regexes = new Dictionary<string, string>();
+
+        foreach (var entry in node.Children)
+        {
+            var key = ((YamlScalarNode)entry.Key).Value ?? string.Empty;
+            var value = ((YamlScalarNode)entry.Value).Value ?? string.Empty;
+
+            switch (key)
+            {
+                case "command":
+                    commands[string.Empty] = value;
+                    break;
+                case "command-win":
+                    commands["win"] = value;
+                    break;
+                case "command-linux":
+                    commands["linux"] = value;
+                    break;
+                case "command-macos":
+                    commands["macos"] = value;
+                    break;
+                case "regex":
+                    regexes[string.Empty] = value;
+                    break;
+                case "regex-win":
+                    regexes["win"] = value;
+                    break;
+                case "regex-linux":
+                    regexes["linux"] = value;
+                    break;
+                case "regex-macos":
+                    regexes["macos"] = value;
+                    break;
+            }
+        }
+
+        if (!commands.ContainsKey(string.Empty))
+        {
+            throw new ArgumentException("Tool configuration must contain a default 'command' field");
+        }
+
+        if (!regexes.ContainsKey(string.Empty))
+        {
+            throw new ArgumentException("Tool configuration must contain a default 'regex' field");
+        }
+
+        return new ToolConfig(commands, regexes);
     }
 
     /// <summary>
@@ -208,11 +178,10 @@ public sealed record VersionMarkConfig
     /// <summary>
     ///     Gets the dictionary of tool configurations keyed by tool name.
     /// </summary>
-    [YamlMember(Alias = "tools")]
     public required Dictionary<string, ToolConfig> Tools { get; init; }
 
     /// <summary>
-    ///     Parameterless constructor required for YAML deserialization.
+    ///     Parameterless constructor required for object initializer.
     /// </summary>
     public VersionMarkConfig()
     {
@@ -245,25 +214,38 @@ public sealed record VersionMarkConfig
 
         try
         {
-            // Read the YAML file
-            var yaml = File.ReadAllText(filePath);
+            // Read the YAML file and parse as document
+            using var reader = new StreamReader(filePath);
+            var yaml = new YamlStream();
+            yaml.Load(reader);
 
-            // Create deserializer with custom converter
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(HyphenatedNamingConvention.Instance)
-                .WithTypeConverter(new ToolConfigConverter())
-                .Build();
+            // Get root document
+            var rootNode = (YamlMappingNode)yaml.Documents[0].RootNode;
 
-            // Deserialize the YAML
-            var config = deserializer.Deserialize<VersionMarkConfig>(yaml);
+            // Get tools mapping
+            if (!rootNode.Children.TryGetValue(new YamlScalarNode("tools"), out var toolsNode))
+            {
+                throw new ArgumentException("Configuration file must contain a 'tools' section");
+            }
+
+            var toolsMapping = (YamlMappingNode)toolsNode;
+            var tools = new Dictionary<string, ToolConfig>();
+
+            // Parse each tool
+            foreach (var toolEntry in toolsMapping.Children)
+            {
+                var toolName = ((YamlScalarNode)toolEntry.Key).Value ?? string.Empty;
+                var toolNode = (YamlMappingNode)toolEntry.Value;
+                tools[toolName] = ToolConfig.FromYamlNode(toolNode);
+            }
 
             // Validate configuration
-            if (config.Tools.Count == 0)
+            if (tools.Count == 0)
             {
                 throw new ArgumentException("Configuration must contain at least one tool");
             }
 
-            return config;
+            return new VersionMarkConfig(tools);
         }
         catch (YamlDotNet.Core.YamlException ex)
         {
