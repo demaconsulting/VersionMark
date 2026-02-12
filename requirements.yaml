@@ -133,3 +133,71 @@ sections:
             tests:
               - "dotnet10.x@TemplateTool_VersionDisplay"
               - "dotnet10.x@TemplateTool_HelpDisplay"
+
+      - title: Configuration File
+        requirements:
+          - id: TMPL-REQ-013
+            title: The tool shall read configuration from a .versionmark.yaml file.
+            justification: |
+              Provides a standardized configuration format for defining tools and their
+              version capture commands.
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+
+          - id: TMPL-REQ-014
+            title: The tool shall support tool definitions with command and regex properties.
+            justification: |
+              Enables users to specify how to execute and parse version information for
+              each tool.
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
+              - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
+
+          - id: TMPL-REQ-015
+            title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may require different commands or command
+              variations to capture tool versions.
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
+              - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
+              - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+
+          - id: TMPL-REQ-016
+            title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may produce different output formats requiring
+              different regular expressions for version extraction.
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
+              - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
+              - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
+
+          - id: TMPL-REQ-017
+            title: The tool shall validate that configuration files contain at least one tool definition.
+            justification: |
+              Prevents misconfiguration by ensuring the configuration file has actionable
+              content.
+            tests:
+              - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+
+          - id: TMPL-REQ-018
+            title: The tool shall report errors when configuration files cannot be read or parsed.
+            justification: |
+              Provides clear feedback to users when configuration files are missing,
+              inaccessible, or malformed.
+            tests:
+              - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
+              - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
+
+          - id: TMPL-REQ-019
+            title: The tool shall provide an internal constructor for creating test configurations.
+            justification: |
+              Enables comprehensive unit testing of configuration-dependent functionality
+              without requiring file system access.
+            tests:
+              - VersionMarkConfig_InternalConstructor_CreatesConfig

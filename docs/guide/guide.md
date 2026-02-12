@@ -20,15 +20,15 @@ Create a `.versionmark.yaml` file in your repository root:
 
 ```yaml
 tools:
-  - name: dotnet
+  dotnet:
     command: dotnet --version
     regex: '(\d+\.\d+\.\d+)'
   
-  - name: node
+  node:
     command: node --version
     regex: 'v(\d+\.\d+\.\d+)'
   
-  - name: gcc
+  gcc:
     command: gcc --version
     regex: 'gcc \(.*\) (\d+\.\d+\.\d+)'
 ```
@@ -136,61 +136,58 @@ The `.versionmark.yaml` file defines which tools to capture and how to extract v
 
 ```yaml
 tools:
-  - name: dotnet
+  dotnet:
     command: dotnet --version
     regex: '(\d+\.\d+\.\d+)'
   
-  - name: node
+  node:
     command: node --version
     regex: 'v(\d+\.\d+\.\d+)'
   
-  - name: python
+  python:
     command: python --version
     regex: 'Python (\d+\.\d+\.\d+)'
 ```
 
 ### Configuration Properties
 
-Each tool definition supports the following properties:
+Each tool entry in the `tools` dictionary supports the following properties:
 
-| Property    | Required | Description                                                               |
-| ----------- | -------- | ------------------------------------------------------------------------- |
-| `name`      | Yes      | Display name for the tool (used in output)                                |
-| `command`   | Yes      | Shell command to execute to get version information                       |
-| `regex`     | Yes      | Regular expression to extract version. First capture group is the version |
-| `overrides` | No       | Platform-specific command overrides (see below)                           |
+| Property         | Required | Description                                                               |
+| ---------------- | -------- | ------------------------------------------------------------------------- |
+| `command`        | Yes      | Shell command to execute to get version information                       |
+| `regex`          | Yes      | Regular expression to extract version. First capture group is the version |
+| `command-win`    | No       | Command override for Windows                                              |
+| `command-linux`  | No       | Command override for Linux                                                |
+| `command-macos`  | No       | Command override for macOS                                                |
+| `regex-win`      | No       | Regex override for Windows                                                |
+| `regex-linux`    | No       | Regex override for Linux                                                  |
+| `regex-macos`    | No       | Regex override for macOS                                                  |
 
 ### OS-Specific Overrides
 
-You can provide platform-specific commands for tools that have different behavior on different operating systems:
+You can provide platform-specific commands and regex patterns for tools that have different behavior on different operating systems:
 
 ```yaml
 tools:
-  - name: gcc
+  gcc:
     command: gcc --version
+    command-win: gcc.exe --version
+    command-linux: gcc-13 --version
+    command-macos: gcc-14 --version
     regex: 'gcc \(.*\) (\d+\.\d+\.\d+)'
-    overrides:
-      windows:
-        command: gcc.exe --version
-      linux:
-        command: gcc --version
-      macos:
-        command: gcc --version
+    regex-win: 'gcc\.exe \(.*\) (\d+\.\d+\.\d+)'
+    regex-linux: 'gcc-13 \(.*\) (\d+\.\d+\.\d+)'
+    regex-macos: 'gcc-14 \(.*\) (\d+\.\d+\.\d+)'
   
-  - name: powershell
+  powershell:
     command: pwsh --version
+    command-win: powershell -Command "$PSVersionTable.PSVersion.ToString()"
     regex: 'PowerShell (\d+\.\d+\.\d+)'
-    overrides:
-      windows:
-        command: powershell -Command "$PSVersionTable.PSVersion.ToString()"
-        regex: '(\d+\.\d+\.\d+)'
+    regex-win: '(\d+\.\d+\.\d+)'
 ```
 
-The `overrides` section can contain `windows`, `linux`, or `macos` subsections. Each override
-can specify:
-
-- `command`: Alternative command for that platform
-- `regex`: Alternative regex for that platform (optional, uses parent regex if not specified)
+The tool uses OS-specific overrides when running on the corresponding platform. If no override is specified for the current platform, it falls back to the default `command` and `regex` values.
 
 ### Regular Expression Tips
 
@@ -355,11 +352,11 @@ Use VersionMark to document which tool versions are used in your build environme
 ```yaml
 # .versionmark.yaml
 tools:
-  - name: dotnet
+  dotnet:
     command: dotnet --version
     regex: '(\d+\.\d+\.\d+)'
   
-  - name: msbuild
+  msbuild:
     command: msbuild -version
     regex: '(\d+\.\d+\.\d+\.\d+)'
 ```
@@ -371,11 +368,11 @@ Track how tool versions differ between Windows, Linux, and macOS:
 ```yaml
 # .versionmark.yaml
 tools:
-  - name: gcc
+  gcc:
     command: gcc --version
     regex: 'gcc.*?(\d+\.\d+\.\d+)'
   
-  - name: clang
+  clang:
     command: clang --version
     regex: 'clang version (\d+\.\d+\.\d+)'
 ```
@@ -387,15 +384,15 @@ Track versions of runtime dependencies and tools:
 ```yaml
 # .versionmark.yaml
 tools:
-  - name: docker
+  docker:
     command: docker --version
     regex: 'Docker version (\d+\.\d+\.\d+)'
   
-  - name: kubectl
+  kubectl:
     command: kubectl version --client --short
     regex: 'v(\d+\.\d+\.\d+)'
   
-  - name: terraform
+  terraform:
     command: terraform version
     regex: 'Terraform v(\d+\.\d+\.\d+)'
 ```
