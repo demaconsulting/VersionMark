@@ -48,7 +48,7 @@ internal sealed class ToolConfigConverter : IYamlTypeConverter
     /// <param name="type">The type to deserialize.</param>
     /// <param name="rootDeserializer">The root deserializer.</param>
     /// <returns>The deserialized ToolConfig.</returns>
-    public object ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
+    public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
         var commands = new Dictionary<string, string>();
         var regexes = new Dictionary<string, string>();
@@ -104,9 +104,10 @@ internal sealed class ToolConfigConverter : IYamlTypeConverter
     /// <param name="value">The value to serialize.</param>
     /// <param name="type">The type to serialize.</param>
     /// <param name="serializer">The object serializer.</param>
+    /// <exception cref="NotImplementedException">Serialization is not supported.</exception>
     public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
-        throw new NotImplementedException("Serialization of ToolConfig is not supported");
+        throw new NotImplementedException("Serialization of ToolConfig is not supported. This converter is designed for deserialization only.");
     }
 }
 
@@ -118,12 +119,12 @@ public sealed record ToolConfig
     /// <summary>
     ///     Gets the dictionary of commands keyed by OS name (empty string for default, "win", "linux", "macos" for OS-specific).
     /// </summary>
-    public Dictionary<string, string> Command { get; init; }
+    public IReadOnlyDictionary<string, string> Command { get; init; }
 
     /// <summary>
     ///     Gets the dictionary of regular expressions keyed by OS name (empty string for default, "win", "linux", "macos" for OS-specific).
     /// </summary>
-    public Dictionary<string, string> Regex { get; init; }
+    public IReadOnlyDictionary<string, string> Regex { get; init; }
 
     /// <summary>
     ///     Internal constructor for creating configurations.
