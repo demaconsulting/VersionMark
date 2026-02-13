@@ -186,13 +186,6 @@ public sealed record ToolConfig
 }
 
 /// <summary>
-///     Version information record containing Job ID and tool versions.
-/// </summary>
-/// <param name="JobId">The Job ID for this version capture.</param>
-/// <param name="Versions">The dictionary of tool names to version strings.</param>
-public sealed record VersionInfo(string JobId, Dictionary<string, string> Versions);
-
-/// <summary>
 ///     Configuration loaded from .versionmark.yaml file.
 /// </summary>
 public sealed record VersionMarkConfig
