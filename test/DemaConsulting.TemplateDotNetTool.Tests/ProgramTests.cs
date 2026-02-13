@@ -136,4 +136,124 @@ public class ProgramTests
         var version = Program.Version;
         Assert.IsFalse(string.IsNullOrWhiteSpace(version));
     }
+
+    /// <summary>
+    ///     Test that Run with capture command captures tool versions.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithCaptureCommand_CapturesToolVersions()
+    {
+        var configFile = Path.GetTempFileName();
+        var outputFile = Path.GetTempFileName();
+
+        try
+        {
+            // Create a temporary config file
+            File.WriteAllText(configFile, @"
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+");
+
+            var originalOut = Console.Out;
+            try
+            {
+                using var outWriter = new StringWriter();
+                Console.SetOut(outWriter);
+                using var context = Context.Create([
+                    "capture",
+                    "--job-id", "test-job",
+                    "--config", configFile,
+                    "--output", outputFile,
+                    "--", "dotnet"
+                ]);
+
+                Program.Run(context);
+
+                var output = outWriter.ToString();
+                Assert.Contains("Capturing tool versions", output);
+                Assert.Contains("test-job", output);
+                Assert.Contains("dotnet", output);
+                Assert.AreEqual(0, context.ExitCode);
+
+                // Verify output file was created
+                Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
+
+                // Verify output file contains expected data
+                var versionInfo = VersionInfo.LoadFromFile(outputFile);
+                Assert.AreEqual("test-job", versionInfo.JobId);
+                Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+        }
+        finally
+        {
+            if (File.Exists(configFile))
+            {
+                File.Delete(configFile);
+            }
+            if (File.Exists(outputFile))
+            {
+                File.Delete(outputFile);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that Run with capture command without job ID fails.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithCaptureCommandWithoutJobId_ReturnsError()
+    {
+        var originalOut = Console.Out;
+        try
+        {
+            using var outWriter = new StringWriter();
+            Console.SetOut(outWriter);
+            using var context = Context.Create(["capture"]);
+
+            Program.Run(context);
+
+            var output = outWriter.ToString();
+            Assert.Contains("--job-id is required", output);
+            Assert.AreEqual(1, context.ExitCode);
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+        }
+    }
+
+    /// <summary>
+    ///     Test that Run with capture command with missing config file fails.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError()
+    {
+        var originalOut = Console.Out;
+        try
+        {
+            using var outWriter = new StringWriter();
+            Console.SetOut(outWriter);
+            using var context = Context.Create([
+                "capture",
+                "--job-id", "test-job",
+                "--config", "nonexistent.yaml"
+            ]);
+
+            Program.Run(context);
+
+            var output = outWriter.ToString();
+            Assert.Contains("Error:", output);
+            Assert.AreEqual(1, context.ExitCode);
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+        }
+    }
 }

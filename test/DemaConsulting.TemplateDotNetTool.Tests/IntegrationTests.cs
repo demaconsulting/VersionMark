@@ -220,4 +220,164 @@ public class IntegrationTests
         Assert.AreNotEqual(0, exitCode);
         Assert.Contains("Error", output);
     }
+
+    /// <summary>
+    ///     Test that capture command captures tool versions.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_CaptureCommand_CapturesToolVersions()
+    {
+        var configFile = Path.GetTempFileName();
+        var outputFile = Path.GetTempFileName();
+
+        try
+        {
+            // Create a temporary config file
+            File.WriteAllText(configFile, @"
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+  git:
+    command: git --version
+    regex: 'git version (?<version>\d+\.\d+\.\d+)'
+");
+
+            // Run the application with capture command
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "capture",
+                "--job-id", "test-job",
+                "--config", configFile,
+                "--output", outputFile,
+                "--", "dotnet", "git");
+
+            // Verify success
+            Assert.AreEqual(0, exitCode);
+
+            // Verify output contains expected information
+            Assert.Contains("Capturing tool versions", output);
+            Assert.Contains("test-job", output);
+            Assert.Contains("dotnet", output);
+            Assert.Contains("git", output);
+
+            // Verify output file was created
+            Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
+
+            // Verify output file contains expected data
+            var versionInfo = VersionInfo.LoadFromFile(outputFile);
+            Assert.AreEqual("test-job", versionInfo.JobId);
+            Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+            Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
+        }
+        finally
+        {
+            if (File.Exists(configFile))
+            {
+                File.Delete(configFile);
+            }
+            if (File.Exists(outputFile))
+            {
+                File.Delete(outputFile);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that capture command without job ID returns error.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_CaptureCommandWithoutJobId_ReturnsError()
+    {
+        // Run the application with capture command but no job ID
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "capture");
+
+        // Verify error
+        Assert.AreNotEqual(0, exitCode);
+        Assert.Contains("--job-id is required", output);
+    }
+
+    /// <summary>
+    ///     Test that capture command with missing config file returns error.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError()
+    {
+        // Run the application with capture command and missing config
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "capture",
+            "--job-id", "test-job",
+            "--config", "nonexistent.yaml");
+
+        // Verify error
+        Assert.AreNotEqual(0, exitCode);
+        Assert.Contains("Error:", output);
+    }
+
+    /// <summary>
+    ///     Test that capture command with default output filename works.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename()
+    {
+        var configFile = Path.GetTempFileName();
+        var outputFile = "versionmark-integration-test-job.json";
+
+        try
+        {
+            // Delete output file if it exists
+            if (File.Exists(outputFile))
+            {
+                File.Delete(outputFile);
+            }
+
+            // Create a temporary config file
+            File.WriteAllText(configFile, @"
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+");
+
+            // Run the application with capture command (no output file specified)
+            var exitCode = Runner.Run(
+                out var _,
+                "dotnet",
+                _dllPath,
+                "capture",
+                "--job-id", "integration-test-job",
+                "--config", configFile,
+                "--", "dotnet");
+
+            // Verify success
+            Assert.AreEqual(0, exitCode);
+
+            // Verify output file was created with default name
+            Assert.IsTrue(File.Exists(outputFile), $"Output file '{outputFile}' was not created");
+
+            // Verify output file contains expected data
+            var versionInfo = VersionInfo.LoadFromFile(outputFile);
+            Assert.AreEqual("integration-test-job", versionInfo.JobId);
+        }
+        finally
+        {
+            if (File.Exists(configFile))
+            {
+                File.Delete(configFile);
+            }
+            if (File.Exists(outputFile))
+            {
+                File.Delete(outputFile);
+            }
+        }
+    }
 }
