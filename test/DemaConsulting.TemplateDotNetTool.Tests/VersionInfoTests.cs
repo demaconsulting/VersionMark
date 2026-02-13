@@ -74,12 +74,13 @@ public class VersionInfoTests
 
             // Assert
             Assert.IsTrue(File.Exists(tempFile));
-            var json = File.ReadAllText(tempFile);
-            Assert.Contains("job-456", json);
-            Assert.Contains("node", json);
-            Assert.Contains("18.0.0", json);
-            Assert.Contains("npm", json);
-            Assert.Contains("9.0.0", json);
+            
+            // Verify by loading and comparing
+            var loaded = VersionInfo.LoadFromFile(tempFile);
+            Assert.AreEqual("job-456", loaded.JobId);
+            Assert.AreEqual(2, loaded.Versions.Count);
+            Assert.AreEqual("18.0.0", loaded.Versions["node"]);
+            Assert.AreEqual("9.0.0", loaded.Versions["npm"]);
         }
         finally
         {
@@ -180,7 +181,7 @@ public class VersionInfoTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentFile));
-        Assert.Contains("not found", exception.Message);
+        Assert.Contains("not found", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -197,7 +198,7 @@ public class VersionInfoTests
 
             // Act & Assert
             var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
-            Assert.Contains("parse", exception.Message.ToLowerInvariant());
+            Assert.Contains("parse", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
