@@ -18,7 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using YamlDotNet.RepresentationModel;
 
 namespace DemaConsulting.TemplateDotNetTool;
@@ -184,6 +186,22 @@ public sealed record ToolConfig
 }
 
 /// <summary>
+///     Version information record containing Job ID and tool versions.
+/// </summary>
+public sealed record VersionInfo
+{
+    /// <summary>
+    ///     Gets the Job ID for this version capture.
+    /// </summary>
+    public required string JobId { get; init; }
+
+    /// <summary>
+    ///     Gets the dictionary of tool names to version strings.
+    /// </summary>
+    public required Dictionary<string, string> Versions { get; init; }
+}
+
+/// <summary>
 ///     Configuration loaded from .versionmark.yaml file.
 /// </summary>
 public sealed record VersionMarkConfig
@@ -291,5 +309,117 @@ public sealed record VersionMarkConfig
         {
             throw new ArgumentException($"Failed to read configuration file '{filePath}': {ex.Message}", ex);
         }
+    }
+
+    /// <summary>
+    ///     Finds versions for the specified tools.
+    /// </summary>
+    /// <param name="toolNames">List of tool names to query.</param>
+    /// <param name="jobId">Job ID for this version capture.</param>
+    /// <returns>VersionInfo record containing the job ID and tool versions.</returns>
+    public VersionInfo FindVersions(IEnumerable<string> toolNames, string jobId)
+    {
+        var versions = new Dictionary<string, string>();
+
+        foreach (var toolName in toolNames)
+        {
+            if (!Tools.TryGetValue(toolName, out var toolConfig))
+            {
+                throw new ArgumentException($"Tool '{toolName}' not found in configuration");
+            }
+
+            var command = toolConfig.GetEffectiveCommand();
+            var regex = toolConfig.GetEffectiveRegex();
+
+            var output = RunCommand(command);
+            var version = ExtractVersion(output, regex, toolName);
+
+            versions[toolName] = version;
+        }
+
+        return new VersionInfo
+        {
+            JobId = jobId,
+            Versions = versions
+        };
+    }
+
+    /// <summary>
+    ///     Runs a command and captures its output.
+    /// </summary>
+    /// <param name="command">The command to run.</param>
+    /// <returns>The combined stdout and stderr output.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the command fails to execute.</exception>
+    private static string RunCommand(string command)
+    {
+        // Split command into executable and arguments
+        var parts = command.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            throw new InvalidOperationException("Command is empty");
+        }
+
+        var fileName = parts[0];
+        var arguments = parts.Length > 1 ? parts[1] : string.Empty;
+
+        try
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = fileName,
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(processStartInfo);
+            if (process == null)
+            {
+                throw new InvalidOperationException($"Failed to start process for command: {command}");
+            }
+
+            var output = process.StandardOutput.ReadToEnd();
+            var error = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            // Combine stdout and stderr
+            return output + error;
+        }
+        catch (Exception ex) when (ex is not InvalidOperationException)
+        {
+            throw new InvalidOperationException($"Failed to run command '{command}': {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    ///     Extracts version from command output using regex.
+    /// </summary>
+    /// <param name="output">The command output.</param>
+    /// <param name="regexPattern">The regex pattern with a named 'version' capture group.</param>
+    /// <param name="toolName">The tool name (for error messages).</param>
+    /// <returns>The extracted version string.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when version cannot be extracted.</exception>
+    private static string ExtractVersion(string output, string regexPattern, string toolName)
+    {
+        // Convert Python-style named groups (?P<name>) to .NET style (?<name>)
+        var dotNetPattern = regexPattern.Replace("(?P<", "(?<");
+
+        var regex = new Regex(dotNetPattern, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        var match = regex.Match(output);
+
+        if (!match.Success)
+        {
+            throw new InvalidOperationException($"Failed to extract version for tool '{toolName}' using regex: {regexPattern}");
+        }
+
+        var versionGroup = match.Groups["version"];
+        if (!versionGroup.Success)
+        {
+            throw new InvalidOperationException($"Regex for tool '{toolName}' must contain a named 'version' capture group");
+        }
+
+        return versionGroup.Value;
     }
 }

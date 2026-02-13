@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Text.RegularExpressions;
+
 namespace DemaConsulting.TemplateDotNetTool.Tests;
 
 /// <summary>
@@ -492,5 +494,186 @@ public class VersionMarkConfigTests
         {
             Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
         }
+    }
+
+    /// <summary>
+    ///     Test VersionInfo record creation.
+    /// </summary>
+    [TestMethod]
+    public void VersionInfo_Constructor_CreatesRecord()
+    {
+        // Arrange
+        var jobId = "job-123";
+        var versions = new Dictionary<string, string>
+        {
+            ["dotnet"] = "8.0.100",
+            ["git"] = "2.43.0"
+        };
+
+        // Act
+        var versionInfo = new VersionInfo
+        {
+            JobId = jobId,
+            Versions = versions
+        };
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("job-123", versionInfo.JobId);
+        Assert.AreEqual(2, versionInfo.Versions.Count);
+        Assert.AreEqual("8.0.100", versionInfo.Versions["dotnet"]);
+        Assert.AreEqual("2.43.0", versionInfo.Versions["git"]);
+    }
+
+    /// <summary>
+    ///     Test FindVersions with dotnet command.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act
+        var versionInfo = config.FindVersions(new[] { "dotnet" }, "test-job");
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("test-job", versionInfo.JobId);
+        Assert.AreEqual(1, versionInfo.Versions.Count);
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["dotnet"], @"\d+\.\d+\.\d+"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with multiple tools.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            ),
+            ["git"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "git --version" },
+                new Dictionary<string, string> { [string.Empty] = @"git version (?P<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act
+        var versionInfo = config.FindVersions(new[] { "dotnet", "git" }, "test-job");
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("test-job", versionInfo.JobId);
+        Assert.AreEqual(2, versionInfo.Versions.Count);
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
+        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["dotnet"], @"\d+\.\d+\.\d+"));
+        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["git"], @"\d+\.\d+\.\d+"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with non-existent tool throws ArgumentException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentException>(() =>
+            config.FindVersions(new[] { "nonexistent" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("Tool 'nonexistent' not found in configuration"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with invalid command throws InvalidOperationException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["invalid"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "nonexistent-command-xyz" },
+                new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(new[] { "invalid" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("Failed to run command"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with regex that doesn't match throws InvalidOperationException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?P<version>NOMATCH\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(new[] { "dotnet" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("Failed to extract version for tool 'dotnet'"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with regex without version group throws InvalidOperationException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(new[] { "dotnet" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("must contain a named 'version' capture group"));
     }
 }
