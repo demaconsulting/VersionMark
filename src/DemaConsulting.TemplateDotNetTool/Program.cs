@@ -112,7 +112,14 @@ internal static class Program
             return;
         }
 
-        // Priority 4: Main tool functionality
+        // Priority 4: Capture command
+        if (context.Capture)
+        {
+            RunCapture(context);
+            return;
+        }
+
+        // Priority 5: Main tool functionality
         RunToolLogic(context);
     }
 
@@ -134,6 +141,7 @@ internal static class Program
     private static void PrintHelp(Context context)
     {
         context.WriteLine("Usage: templatetool [options]");
+        context.WriteLine("       templatetool capture --job-id <id> [options] [-- tool1 tool2 ...]");
         context.WriteLine("");
         context.WriteLine("Options:");
         context.WriteLine("  -v, --version              Display version information");
@@ -142,6 +150,67 @@ internal static class Program
         context.WriteLine("  --validate                 Run self-validation");
         context.WriteLine("  --results <file>           Write validation results to file (.trx or .xml)");
         context.WriteLine("  --log <file>               Write output to log file");
+        context.WriteLine("");
+        context.WriteLine("Capture Mode:");
+        context.WriteLine("  capture                    Capture tool versions");
+        context.WriteLine("  --job-id <id>              Job ID for this capture (required)");
+        context.WriteLine("  --config <file>            Configuration file path (default: .versionmark.yaml)");
+        context.WriteLine("  --output <file>            Output JSON file (default: versionmark-<job-id>.json)");
+        context.WriteLine("  -- <tools...>              List of tool names to capture (default: all tools)");
+    }
+
+    /// <summary>
+    ///     Runs the capture command logic.
+    /// </summary>
+    /// <param name="context">The context containing command line arguments and program state.</param>
+    private static void RunCapture(Context context)
+    {
+        // Validate required arguments
+        if (string.IsNullOrEmpty(context.JobId))
+        {
+            context.WriteError("Error: --job-id is required for capture mode");
+            return;
+        }
+
+        // Determine output file path
+        var outputFile = context.OutputFile ?? $"versionmark-{context.JobId}.json";
+
+        context.WriteLine($"Capturing tool versions for job '{context.JobId}'...");
+        context.WriteLine($"Configuration file: {context.ConfigFile}");
+        context.WriteLine($"Output file: {outputFile}");
+
+        try
+        {
+            // Load configuration
+            var config = VersionMarkConfig.ReadFromFile(context.ConfigFile);
+
+            // Determine which tools to capture
+            var toolNames = context.ToolNames.Length > 0
+                ? context.ToolNames
+                : config.Tools.Keys.ToArray();
+
+            context.WriteLine($"Capturing {toolNames.Length} tool(s)...");
+
+            // Capture versions
+            var versionInfo = config.FindVersions(toolNames, context.JobId);
+
+            // Save to file
+            versionInfo.SaveToFile(outputFile);
+
+            context.WriteLine("");
+            context.WriteLine("Captured versions:");
+            foreach (var (tool, version) in versionInfo.Versions)
+            {
+                context.WriteLine($"  {tool}: {version}");
+            }
+
+            context.WriteLine("");
+            context.WriteLine($"Version information saved to {outputFile}");
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            context.WriteError($"Error: {ex.Message}");
+        }
     }
 
     /// <summary>
