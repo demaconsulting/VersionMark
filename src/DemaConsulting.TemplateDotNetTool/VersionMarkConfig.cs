@@ -403,10 +403,7 @@ public sealed record VersionMarkConfig
     /// <exception cref="InvalidOperationException">Thrown when version cannot be extracted.</exception>
     private static string ExtractVersion(string output, string regexPattern, string toolName)
     {
-        // Convert Python-style named groups (?P<name>) to .NET style (?<name>)
-        var dotNetPattern = regexPattern.Replace("(?P<", "(?<");
-
-        var regex = new Regex(dotNetPattern, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        var regex = new Regex(regexPattern, RegexOptions.Multiline | RegexOptions.IgnoreCase);
         var match = regex.Match(output);
 
         if (!match.Success)
