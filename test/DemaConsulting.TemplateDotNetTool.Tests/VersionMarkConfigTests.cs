@@ -511,11 +511,7 @@ public class VersionMarkConfigTests
         };
 
         // Act
-        var versionInfo = new VersionInfo
-        {
-            JobId = jobId,
-            Versions = versions
-        };
+        var versionInfo = new VersionInfo(jobId, versions);
 
         // Assert
         Assert.IsNotNull(versionInfo);

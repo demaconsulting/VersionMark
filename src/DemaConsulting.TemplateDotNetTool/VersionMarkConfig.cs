@@ -188,18 +188,9 @@ public sealed record ToolConfig
 /// <summary>
 ///     Version information record containing Job ID and tool versions.
 /// </summary>
-public sealed record VersionInfo
-{
-    /// <summary>
-    ///     Gets the Job ID for this version capture.
-    /// </summary>
-    public required string JobId { get; init; }
-
-    /// <summary>
-    ///     Gets the dictionary of tool names to version strings.
-    /// </summary>
-    public required Dictionary<string, string> Versions { get; init; }
-}
+/// <param name="JobId">The Job ID for this version capture.</param>
+/// <param name="Versions">The dictionary of tool names to version strings.</param>
+public sealed record VersionInfo(string JobId, Dictionary<string, string> Versions);
 
 /// <summary>
 ///     Configuration loaded from .versionmark.yaml file.
@@ -337,11 +328,7 @@ public sealed record VersionMarkConfig
             versions[toolName] = version;
         }
 
-        return new VersionInfo
-        {
-            JobId = jobId,
-            Versions = versions
-        };
+        return new VersionInfo(jobId, versions);
     }
 
     /// <summary>
@@ -384,9 +371,12 @@ public sealed record VersionMarkConfig
                 throw new InvalidOperationException($"Failed to start process for command: {command}");
             }
 
-            var output = process.StandardOutput.ReadToEnd();
-            var error = process.StandardError.ReadToEnd();
+            // Read output asynchronously to prevent deadlock if pipes fill up
+            var outputTask = process.StandardOutput.ReadToEndAsync();
+            var errorTask = process.StandardError.ReadToEndAsync();
             process.WaitForExit();
+            var output = outputTask.Result;
+            var error = errorTask.Result;
 
             // Combine stdout and stderr with newline separator for better debuggability
             if (string.IsNullOrEmpty(error))
