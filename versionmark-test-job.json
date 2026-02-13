@@ -1,7 +1,0 @@
-﻿{
-  "JobId": "test-job",
-  "Versions": {
-    "dotnet": "10.0.102",
-    "git": "2.52.0"
-  }
-}
