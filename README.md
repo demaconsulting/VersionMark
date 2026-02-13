@@ -40,13 +40,13 @@ Create a `.versionmark.yaml` file in your repository:
 
 ```yaml
 tools:
-  - name: dotnet
+  dotnet:
     command: dotnet --version
-    regex: '(\d+\.\d+\.\d+)'
+    regex: '(?P<version>\d+\.\d+\.\d+)'
   
-  - name: node
+  node:
     command: node --version
-    regex: 'v(\d+\.\d+\.\d+)'
+    regex: 'v(?P<version>\d+\.\d+\.\d+)'
 ```
 
 ### 2. Capture Tool Versions
@@ -115,34 +115,38 @@ The `.versionmark.yaml` file defines which tools to capture and how to extract t
 ```yaml
 tools:
   # Basic tool definition
-  - name: dotnet
+  dotnet:
     command: dotnet --version
-    regex: '(\d+\.\d+\.\d+)'
+    regex: '(?P<version>\d+\.\d+\.\d+)'
   
   # Tool with OS-specific overrides
-  - name: gcc
+  gcc:
     command: gcc --version
-    regex: 'gcc \(.*\) (\d+\.\d+\.\d+)'
-    overrides:
-      windows:
-        command: gcc.exe --version
-      linux:
-        command: gcc --version
+    command-win: gcc.exe --version
+    command-linux: gcc-13 --version
+    command-macos: gcc-14 --version
+    regex: 'gcc \(.*\) (?P<version>\d+\.\d+\.\d+)'
+    regex-win: 'gcc\.exe \(.*\) (?P<version>\d+\.\d+\.\d+)'
+    regex-linux: 'gcc-13 \(.*\) (?P<version>\d+\.\d+\.\d+)'
   
   # Tool with custom output parsing
-  - name: cmake
+  cmake:
     command: cmake --version
-    regex: 'cmake version (\d+\.\d+\.\d+)'
+    regex: 'cmake version (?P<version>\d+\.\d+\.\d+)'
 ```
 
 ### Configuration Options
 
-- **name**: Display name for the tool
+Each tool in the `tools` dictionary has the following properties:
+
 - **command**: Shell command to execute to get version information
 - **regex**: Regular expression to extract version number (first capture group is used)
-- **overrides**: Platform-specific command overrides (optional)
-  - **windows**: Command to use on Windows
-  - **linux**: Command to use on Linux
+- **command-win**: (Optional) Command override for Windows
+- **command-linux**: (Optional) Command override for Linux
+- **command-macos**: (Optional) Command override for macOS
+- **regex-win**: (Optional) Regex override for Windows
+- **regex-linux**: (Optional) Regex override for Linux
+- **regex-macos**: (Optional) Regex override for macOS
 
 ## Output Format
 

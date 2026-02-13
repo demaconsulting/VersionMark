@@ -17,11 +17,13 @@ sections:
     sections:
       - title: Command-Line Interface
         requirements:
-          - id: TMPL-REQ-001
+          - id: CMD-001
             title: The tool shall implement a Context class for command-line argument handling.
             justification: |
               Provides a standardized approach to command-line argument parsing and output
               handling across all DEMA Consulting DotNet Tools.
+            tags:
+              - cli
             tests:
               - Context_Create_NoArguments_ReturnsDefaultContext
               - Context_Create_VersionFlag_SetsVersionTrue
@@ -31,22 +33,26 @@ sections:
               - Context_Create_ResultsFlag_SetsResultsFile
               - Context_Create_LogFlag_OpensLogFile
 
-          - id: TMPL-REQ-002
+          - id: CMD-002
             title: The tool shall support -v and --version flags to display version information.
             justification: |
               Users need to quickly identify the version of the tool they are using for
               troubleshooting and compatibility verification.
+            tags:
+              - cli
             tests:
               - Context_Create_VersionFlag_SetsVersionTrue
               - Context_Create_ShortVersionFlag_SetsVersionTrue
               - Program_Run_WithVersionFlag_DisplaysVersionOnly
               - IntegrationTest_VersionFlag_OutputsVersion
 
-          - id: TMPL-REQ-003
+          - id: CMD-003
             title: The tool shall support -?, -h, and --help flags to display usage information.
             justification: |
               Users need access to command-line usage documentation without requiring
               external resources.
+            tags:
+              - cli
             tests:
               - Context_Create_HelpFlag_SetsHelpTrue
               - Context_Create_ShortHelpFlag_H_SetsHelpTrue
@@ -54,82 +60,172 @@ sections:
               - Program_Run_WithHelpFlag_DisplaysUsageInformation
               - IntegrationTest_HelpFlag_OutputsUsageInformation
 
-          - id: TMPL-REQ-004
+          - id: CMD-004
             title: The tool shall support --silent flag to suppress console output.
             justification: |
               Enables automated scripts and CI/CD pipelines to run the tool without
               cluttering output logs.
+            tags:
+              - cli
             tests:
               - Context_Create_SilentFlag_SetsSilentTrue
               - Context_WriteLine_Silent_DoesNotWriteToConsole
               - IntegrationTest_SilentFlag_SuppressesOutput
 
-          - id: TMPL-REQ-005
+          - id: CMD-005
             title: The tool shall support --validate flag to run self-validation tests.
             justification: |
               Provides a built-in mechanism to verify the tool is functioning correctly
               in the deployment environment.
+            tags:
+              - cli
             tests:
               - Context_Create_ValidateFlag_SetsValidateTrue
               - Program_Run_WithValidateFlag_RunsValidation
               - IntegrationTest_ValidateFlag_RunsValidation
 
-          - id: TMPL-REQ-006
+          - id: CMD-006
             title: The tool shall support --results flag to write validation results in TRX or JUnit format.
             justification: |
               Enables integration with CI/CD systems that expect standard test result formats.
+            tags:
+              - cli
             tests:
               - Context_Create_ResultsFlag_SetsResultsFile
               - IntegrationTest_ValidateWithResults_GeneratesTrxFile
 
-          - id: TMPL-REQ-007
+          - id: CMD-007
             title: The tool shall support --log flag to write output to a log file.
             justification: |
               Provides persistent logging for debugging and audit trails.
+            tags:
+              - cli
             tests:
               - Context_Create_LogFlag_OpensLogFile
               - IntegrationTest_LogFlag_WritesOutputToFile
 
       - title: Platform Support
         requirements:
-          - id: TMPL-REQ-008
+          - id: PLT-001
             title: The tool shall build and run on Windows platforms.
             justification: |
               DEMA Consulting tools must support Windows as a major development platform.
+            tags:
+              - platform
             tests:
               # Tests link to "windows" to ensure results come from Windows platform
               - "windows@TemplateTool_VersionDisplay"
               - "windows@TemplateTool_HelpDisplay"
 
-          - id: TMPL-REQ-009
+          - id: PLT-002
             title: The tool shall build and run on Linux platforms.
             justification: |
               DEMA Consulting tools must support Linux for CI/CD and containerized environments.
+            tags:
+              - platform
             tests:
               # Tests link to "ubuntu" to ensure results come from Linux platform
               - "ubuntu@TemplateTool_VersionDisplay"
               - "ubuntu@TemplateTool_HelpDisplay"
 
-          - id: TMPL-REQ-010
+          - id: PLT-003
             title: The tool shall support .NET 8 runtime.
             justification: |
               .NET 8 is an LTS release providing long-term stability for enterprise users.
+            tags:
+              - platform
             tests:
               - "dotnet8.x@TemplateTool_VersionDisplay"
               - "dotnet8.x@TemplateTool_HelpDisplay"
 
-          - id: TMPL-REQ-011
+          - id: PLT-004
             title: The tool shall support .NET 9 runtime.
             justification: |
               .NET 9 support enables users to leverage the latest .NET features.
+            tags:
+              - platform
             tests:
               - "dotnet9.x@TemplateTool_VersionDisplay"
               - "dotnet9.x@TemplateTool_HelpDisplay"
 
-          - id: TMPL-REQ-012
+          - id: PLT-005
             title: The tool shall support .NET 10 runtime.
             justification: |
               .NET 10 support ensures the tool remains compatible with the latest .NET ecosystem.
+            tags:
+              - platform
             tests:
               - "dotnet10.x@TemplateTool_VersionDisplay"
               - "dotnet10.x@TemplateTool_HelpDisplay"
+
+      - title: Configuration File
+        requirements:
+          - id: CFG-001
+            title: The tool shall read configuration from a .versionmark.yaml file.
+            justification: |
+              Provides a standardized configuration format for defining tools and their
+              version capture commands.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+
+          - id: CFG-002
+            title: The tool shall support tool definitions with command and regex properties.
+            justification: |
+              Enables users to specify how to execute and parse version information for
+              each tool.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
+              - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
+
+          - id: CFG-003
+            title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may require different commands or command
+              variations to capture tool versions.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
+              - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
+              - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+
+          - id: CFG-004
+            title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may produce different output formats requiring
+              different regular expressions for version extraction.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
+              - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
+              - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
+
+          - id: CFG-005
+            title: The tool shall validate that configuration files contain at least one tool definition.
+            justification: |
+              Prevents misconfiguration by ensuring the configuration file has actionable
+              content.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+
+          - id: CFG-006
+            title: The tool shall report errors when configuration files cannot be read or parsed.
+            justification: |
+              Provides clear feedback to users when configuration files are missing,
+              inaccessible, or malformed.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
+              - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
