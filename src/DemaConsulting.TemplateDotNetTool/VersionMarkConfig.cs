@@ -350,6 +350,10 @@ public sealed record VersionMarkConfig
     /// <param name="command">The command to run.</param>
     /// <returns>The combined stdout and stderr output.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the command fails to execute.</exception>
+    /// <remarks>
+    ///     Commands are split on the first space character to separate executable from arguments.
+    ///     This does not handle quoted arguments containing spaces.
+    /// </remarks>
     private static string RunCommand(string command)
     {
         // Split command into executable and arguments
@@ -384,8 +388,8 @@ public sealed record VersionMarkConfig
             var error = process.StandardError.ReadToEnd();
             process.WaitForExit();
 
-            // Combine stdout and stderr
-            return output + error;
+            // Combine stdout and stderr with newline separator for better debuggability
+            return string.IsNullOrEmpty(error) ? output : output + Environment.NewLine + error;
         }
         catch (Exception ex) when (ex is not InvalidOperationException)
         {

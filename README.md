@@ -42,11 +42,11 @@ Create a `.versionmark.yaml` file in your repository:
 tools:
   dotnet:
     command: dotnet --version
-    regex: '(?P<version>\d+\.\d+\.\d+)'
+    regex: '(?<version>\d+\.\d+\.\d+)'
   
   node:
     command: node --version
-    regex: 'v(?P<version>\d+\.\d+\.\d+)'
+    regex: 'v(?<version>\d+\.\d+\.\d+)'
 ```
 
 ### 2. Capture Tool Versions
@@ -117,7 +117,7 @@ tools:
   # Basic tool definition
   dotnet:
     command: dotnet --version
-    regex: '(?P<version>\d+\.\d+\.\d+)'
+    regex: '(?<version>\d+\.\d+\.\d+)'
   
   # Tool with OS-specific overrides
   gcc:
@@ -125,14 +125,14 @@ tools:
     command-win: gcc.exe --version
     command-linux: gcc-13 --version
     command-macos: gcc-14 --version
-    regex: 'gcc \(.*\) (?P<version>\d+\.\d+\.\d+)'
-    regex-win: 'gcc\.exe \(.*\) (?P<version>\d+\.\d+\.\d+)'
-    regex-linux: 'gcc-13 \(.*\) (?P<version>\d+\.\d+\.\d+)'
+    regex: 'gcc \(.*\) (?<version>\d+\.\d+\.\d+)'
+    regex-win: 'gcc\.exe \(.*\) (?<version>\d+\.\d+\.\d+)'
+    regex-linux: 'gcc-13 \(.*\) (?<version>\d+\.\d+\.\d+)'
   
   # Tool with custom output parsing
   cmake:
     command: cmake --version
-    regex: 'cmake version (?P<version>\d+\.\d+\.\d+)'
+    regex: 'cmake version (?<version>\d+\.\d+\.\d+)'
 ```
 
 ### Configuration Options
@@ -140,7 +140,7 @@ tools:
 Each tool in the `tools` dictionary has the following properties:
 
 - **command**: Shell command to execute to get version information
-- **regex**: Regular expression to extract version number (first capture group is used)
+- **regex**: Regular expression with a named 'version' capture group using .NET syntax `(?<version>...)`
 - **command-win**: (Optional) Command override for Windows
 - **command-linux**: (Optional) Command override for Linux
 - **command-macos**: (Optional) Command override for macOS
