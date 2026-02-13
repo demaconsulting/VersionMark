@@ -71,7 +71,7 @@ These options are available for all commands:
 Capture tool versions from the current environment:
 
 ```bash
-versionmark capture --job-id <job-identifier> [options]
+versionmark capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 ```
 
 #### Options
@@ -82,12 +82,17 @@ versionmark capture --job-id <job-identifier> [options]
 |                           | versions captured in different environments or configurations.                      |
 | `--config <file>`         | Path to configuration file (default: `.versionmark.yaml`)                           |
 | `--output <file>`         | Path to output JSON file (default: `versionmark-<job-id>.json`)                     |
+| `-- <tools...>`           | List of tool names to capture. If not specified, all tools defined in the           |
+|                           | configuration file will be captured.                                                |
 
 #### Example
 
 ```bash
-# Capture versions with a descriptive job-id
+# Capture all tools defined in config
 versionmark capture --job-id "windows-dotnet8-release"
+
+# Capture specific tools only
+versionmark capture --job-id "linux-gcc" -- gcc make cmake
 
 # Use a custom config file
 versionmark capture --job-id "linux-gcc" --config custom-config.yaml
