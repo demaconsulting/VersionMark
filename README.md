@@ -54,7 +54,7 @@ tools:
 In your CI/CD job, capture tool versions with a job identifier:
 
 ```bash
-versionmark capture --job-id "windows-net8"
+versionmark --capture --job-id "windows-net8"
 ```
 
 This creates a JSON file with captured versions (e.g., `versionmark-windows-net8.json`).
@@ -85,20 +85,20 @@ This consolidates versions from all jobs and generates a markdown table.
 Capture tool versions from the current environment:
 
 ```bash
-versionmark capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
+versionmark --capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 ```
 
 | Option                    | Description                                                  |
 | ------------------------- | ------------------------------------------------------------ |
+| `--capture`               | Enable capture mode                                          |
 | `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job          |
-| `--config <file>`         | Configuration file path (default: `.versionmark.yaml`)       |
 | `--output <file>`         | Output JSON file (default: `versionmark-<job-id>.json`)      |
 | `-- <tools...>`           | List of tool names to capture (default: all tools in config) |
 
 **Example:** Capture specific tools only:
 
 ```bash
-versionmark capture --job-id "windows-build" -- dotnet node npm
+versionmark --capture --job-id "windows-build" -- dotnet node npm
 ```
 
 ### Publish Mode

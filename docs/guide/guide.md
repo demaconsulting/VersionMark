@@ -38,7 +38,7 @@ tools:
 In each CI/CD job, capture tool versions with a unique job identifier:
 
 ```bash
-versionmark capture --job-id "windows-net8"
+versionmark --capture --job-id "windows-net8"
 ```
 
 This creates a JSON file (e.g., `versionmark-windows-net8.json`) containing the captured versions.
@@ -71,16 +71,16 @@ These options are available for all commands:
 Capture tool versions from the current environment:
 
 ```bash
-versionmark capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
+versionmark --capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 ```
 
 #### Options
 
 | Option                    | Description                                                                         |
 | ------------------------- | ----------------------------------------------------------------------------------- |
+| `--capture`               | Enable capture mode                                                                 |
 | `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job. This is used to differentiate  |
 |                           | versions captured in different environments or configurations.                      |
-| `--config <file>`         | Path to configuration file (default: `.versionmark.yaml`)                           |
 | `--output <file>`         | Path to output JSON file (default: `versionmark-<job-id>.json`)                     |
 | `-- <tools...>`           | List of tool names to capture. If not specified, all tools defined in the           |
 |                           | configuration file will be captured.                                                |
@@ -89,16 +89,13 @@ versionmark capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 
 ```bash
 # Capture all tools defined in config
-versionmark capture --job-id "windows-dotnet8-release"
+versionmark --capture --job-id "windows-dotnet8-release"
 
 # Capture specific tools only
-versionmark capture --job-id "linux-gcc" -- gcc make cmake
-
-# Use a custom config file
-versionmark capture --job-id "linux-gcc" --config custom-config.yaml
+versionmark --capture --job-id "linux-gcc" -- gcc make cmake
 
 # Specify output file
-versionmark capture --job-id "macos" --output versions/macos.json
+versionmark --capture --job-id "macos" --output versions/macos.json
 ```
 
 ### Publish Command

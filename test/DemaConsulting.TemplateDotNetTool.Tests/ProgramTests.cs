@@ -143,18 +143,23 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_WithCaptureCommand_CapturesToolVersions()
     {
-        var configFile = Path.GetTempFileName();
         var outputFile = Path.GetTempFileName();
+        var tempConfigFile = Path.Combine(Path.GetTempPath(), ".versionmark.yaml");
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = Path.GetTempPath();
 
         try
         {
-            // Create a temporary config file
-            File.WriteAllText(configFile, @"
+            // Create a temporary config file in temp directory
+            File.WriteAllText(tempConfigFile, @"
 tools:
   dotnet:
     command: dotnet --version
     regex: '(?<version>\d+\.\d+\.\d+)'
 ");
+
+            // Change to temp directory so it finds the config
+            Directory.SetCurrentDirectory(tempDir);
 
             var originalOut = Console.Out;
             try
@@ -162,9 +167,8 @@ tools:
                 using var outWriter = new StringWriter();
                 Console.SetOut(outWriter);
                 using var context = Context.Create([
-                    "capture",
+                    "--capture",
                     "--job-id", "test-job",
-                    "--config", configFile,
                     "--output", outputFile,
                     "--", "dotnet"
                 ]);
@@ -192,9 +196,12 @@ tools:
         }
         finally
         {
-            if (File.Exists(configFile))
+            // Restore original directory
+            Directory.SetCurrentDirectory(currentDir);
+
+            if (File.Exists(tempConfigFile))
             {
-                File.Delete(configFile);
+                File.Delete(tempConfigFile);
             }
             if (File.Exists(outputFile))
             {
@@ -214,7 +221,7 @@ tools:
         {
             using var outWriter = new StringWriter();
             Console.SetOut(outWriter);
-            using var context = Context.Create(["capture"]);
+            using var context = Context.Create(["--capture"]);
 
             Program.Run(context);
 
@@ -240,9 +247,8 @@ tools:
             using var outWriter = new StringWriter();
             Console.SetOut(outWriter);
             using var context = Context.Create([
-                "capture",
-                "--job-id", "test-job",
-                "--config", "nonexistent.yaml"
+                "--capture",
+                "--job-id", "test-job"
             ]);
 
             Program.Run(context);

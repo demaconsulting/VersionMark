@@ -141,7 +141,7 @@ internal static class Program
     private static void PrintHelp(Context context)
     {
         context.WriteLine("Usage: templatetool [options]");
-        context.WriteLine("       templatetool capture --job-id <id> [options] [-- tool1 tool2 ...]");
+        context.WriteLine("       templatetool --capture --job-id <id> [options] [-- tool1 tool2 ...]");
         context.WriteLine("");
         context.WriteLine("Options:");
         context.WriteLine("  -v, --version              Display version information");
@@ -152,9 +152,8 @@ internal static class Program
         context.WriteLine("  --log <file>               Write output to log file");
         context.WriteLine("");
         context.WriteLine("Capture Mode:");
-        context.WriteLine("  capture                    Capture tool versions");
+        context.WriteLine("  --capture                  Capture tool versions");
         context.WriteLine("  --job-id <id>              Job ID for this capture (required)");
-        context.WriteLine("  --config <file>            Configuration file path (default: .versionmark.yaml)");
         context.WriteLine("  --output <file>            Output JSON file (default: versionmark-<job-id>.json)");
         context.WriteLine("  -- <tools...>              List of tool names to capture (default: all tools)");
     }
@@ -176,13 +175,12 @@ internal static class Program
         var outputFile = context.OutputFile ?? $"versionmark-{context.JobId}.json";
 
         context.WriteLine($"Capturing tool versions for job '{context.JobId}'...");
-        context.WriteLine($"Configuration file: {context.ConfigFile}");
         context.WriteLine($"Output file: {outputFile}");
 
         try
         {
-            // Load configuration
-            var config = VersionMarkConfig.ReadFromFile(context.ConfigFile);
+            // Load configuration from default location
+            var config = VersionMarkConfig.ReadFromFile(".versionmark.yaml");
 
             // Determine which tools to capture
             var toolNames = context.ToolNames.Length > 0

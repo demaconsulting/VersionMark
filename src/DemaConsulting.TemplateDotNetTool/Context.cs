@@ -71,11 +71,6 @@ internal sealed class Context : IDisposable
     public string? JobId { get; private init; }
 
     /// <summary>
-    ///     Gets the configuration file path for capture mode.
-    /// </summary>
-    public string ConfigFile { get; private init; } = ".versionmark.yaml";
-
-    /// <summary>
     ///     Gets the output file path for capture mode.
     /// </summary>
     public string? OutputFile { get; private init; }
@@ -117,7 +112,6 @@ internal sealed class Context : IDisposable
             ResultsFile = parser.ResultsFile,
             Capture = parser.Capture,
             JobId = parser.JobId,
-            ConfigFile = parser.ConfigFile,
             OutputFile = parser.OutputFile,
             ToolNames = parser.ToolNames
         };
@@ -196,11 +190,6 @@ internal sealed class Context : IDisposable
         public string? JobId { get; private set; }
 
         /// <summary>
-        ///     Gets the configuration file path for capture mode.
-        /// </summary>
-        public string ConfigFile { get; private set; } = ".versionmark.yaml";
-
-        /// <summary>
         ///     Gets the output file path for capture mode.
         /// </summary>
         public string? OutputFile { get; private set; }
@@ -276,16 +265,12 @@ internal sealed class Context : IDisposable
                     ResultsFile = GetRequiredStringArgument(arg, args, index, "a results filename argument");
                     return index + 1;
 
-                case "capture":
+                case "--capture":
                     Capture = true;
                     return index;
 
                 case "--job-id":
                     JobId = GetRequiredStringArgument(arg, args, index, "a job ID argument");
-                    return index + 1;
-
-                case "--config":
-                    ConfigFile = GetRequiredStringArgument(arg, args, index, "a config filename argument");
                     return index + 1;
 
                 case "--output":

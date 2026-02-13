@@ -227,30 +227,29 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommand_CapturesToolVersions()
     {
-        var configFile = Path.GetTempFileName();
         var outputFile = Path.GetTempFileName();
+        var currentDir = Directory.GetCurrentDirectory();
+
+        // Find the repository root by looking for .versionmark.yaml
+        var repoRoot = FindRepositoryRoot(currentDir);
+        if (string.IsNullOrEmpty(repoRoot))
+        {
+            Assert.Inconclusive("Could not find repository root with .versionmark.yaml");
+            return;
+        }
 
         try
         {
-            // Create a temporary config file
-            File.WriteAllText(configFile, @"
-tools:
-  dotnet:
-    command: dotnet --version
-    regex: '(?<version>\d+\.\d+\.\d+)'
-  git:
-    command: git --version
-    regex: 'git version (?<version>\d+\.\d+\.\d+)'
-");
+            // Change to repository root where .versionmark.yaml exists
+            Directory.SetCurrentDirectory(repoRoot);
 
             // Run the application with capture command
             var exitCode = Runner.Run(
                 out var output,
                 "dotnet",
                 _dllPath,
-                "capture",
+                "--capture",
                 "--job-id", "test-job",
-                "--config", configFile,
                 "--output", outputFile,
                 "--", "dotnet", "git");
 
@@ -274,15 +273,33 @@ tools:
         }
         finally
         {
-            if (File.Exists(configFile))
-            {
-                File.Delete(configFile);
-            }
+            // Restore original directory
+            Directory.SetCurrentDirectory(currentDir);
+
             if (File.Exists(outputFile))
             {
                 File.Delete(outputFile);
             }
         }
+    }
+
+    /// <summary>
+    ///     Helper method to find the repository root.
+    /// </summary>
+    /// <param name="startPath">Starting directory.</param>
+    /// <returns>Repository root path or empty string if not found.</returns>
+    private static string FindRepositoryRoot(string startPath)
+    {
+        var dir = new DirectoryInfo(startPath);
+        while (dir != null)
+        {
+            if (File.Exists(Path.Combine(dir.FullName, ".versionmark.yaml")))
+            {
+                return dir.FullName;
+            }
+            dir = dir.Parent;
+        }
+        return string.Empty;
     }
 
     /// <summary>
@@ -296,7 +313,7 @@ tools:
             out var output,
             "dotnet",
             _dllPath,
-            "capture");
+            "--capture");
 
         // Verify error
         Assert.AreNotEqual(0, exitCode);
@@ -309,18 +326,37 @@ tools:
     [TestMethod]
     public void IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError()
     {
-        // Run the application with capture command and missing config
-        var exitCode = Runner.Run(
-            out var output,
-            "dotnet",
-            _dllPath,
-            "capture",
-            "--job-id", "test-job",
-            "--config", "nonexistent.yaml");
+        // Save current directory
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-        // Verify error
-        Assert.AreNotEqual(0, exitCode);
-        Assert.Contains("Error:", output);
+        try
+        {
+            // Create and change to temp directory without .versionmark.yaml
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Run the application with capture command (will look for .versionmark.yaml in current dir)
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--capture",
+                "--job-id", "test-job");
+
+            // Verify error
+            Assert.AreNotEqual(0, exitCode);
+            Assert.Contains("Error:", output);
+        }
+        finally
+        {
+            // Restore original directory and cleanup
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
     }
 
     /// <summary>
@@ -329,33 +365,35 @@ tools:
     [TestMethod]
     public void IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename()
     {
-        var configFile = Path.GetTempFileName();
         var outputFile = "versionmark-integration-test-job.json";
+        var currentDir = Directory.GetCurrentDirectory();
+
+        // Find the repository root by looking for .versionmark.yaml
+        var repoRoot = FindRepositoryRoot(currentDir);
+        if (string.IsNullOrEmpty(repoRoot))
+        {
+            Assert.Inconclusive("Could not find repository root with .versionmark.yaml");
+            return;
+        }
 
         try
         {
+            // Change to repository root where .versionmark.yaml exists
+            Directory.SetCurrentDirectory(repoRoot);
+
             // Delete output file if it exists
             if (File.Exists(outputFile))
             {
                 File.Delete(outputFile);
             }
 
-            // Create a temporary config file
-            File.WriteAllText(configFile, @"
-tools:
-  dotnet:
-    command: dotnet --version
-    regex: '(?<version>\d+\.\d+\.\d+)'
-");
-
             // Run the application with capture command (no output file specified)
             var exitCode = Runner.Run(
                 out var _,
                 "dotnet",
                 _dllPath,
-                "capture",
+                "--capture",
                 "--job-id", "integration-test-job",
-                "--config", configFile,
                 "--", "dotnet");
 
             // Verify success
@@ -370,10 +408,9 @@ tools:
         }
         finally
         {
-            if (File.Exists(configFile))
-            {
-                File.Delete(configFile);
-            }
+            // Restore original directory
+            Directory.SetCurrentDirectory(currentDir);
+
             if (File.Exists(outputFile))
             {
                 File.Delete(outputFile);
