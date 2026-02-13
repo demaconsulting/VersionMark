@@ -389,7 +389,12 @@ public sealed record VersionMarkConfig
             process.WaitForExit();
 
             // Combine stdout and stderr with newline separator for better debuggability
-            return string.IsNullOrEmpty(error) ? output : output + Environment.NewLine + error;
+            if (string.IsNullOrEmpty(error))
+            {
+                return output;
+            }
+
+            return string.IsNullOrEmpty(output) ? error : output + Environment.NewLine + error;
         }
         catch (Exception ex) when (ex is not InvalidOperationException)
         {
