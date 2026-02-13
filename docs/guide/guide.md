@@ -22,15 +22,15 @@ Create a `.versionmark.yaml` file in your repository root:
 tools:
   dotnet:
     command: dotnet --version
-    regex: '(?P<version>\d+\.\d+\.\d+)'
+    regex: '(?<version>\d+\.\d+\.\d+)'
   
   node:
     command: node --version
-    regex: 'v(?P<version>\d+\.\d+\.\d+)'
+    regex: 'v(?<version>\d+\.\d+\.\d+)'
   
   gcc:
     command: gcc --version
-    regex: 'gcc \(.*\) (?P<version>\d+\.\d+\.\d+)'
+    regex: 'gcc \(.*\) (?<version>\d+\.\d+\.\d+)'
 ```
 
 ### Step 2: Capture Tool Versions in CI/CD
@@ -138,31 +138,31 @@ The `.versionmark.yaml` file defines which tools to capture and how to extract v
 tools:
   dotnet:
     command: dotnet --version
-    regex: '(?P<version>\d+\.\d+\.\d+)'
+    regex: '(?<version>\d+\.\d+\.\d+)'
   
   node:
     command: node --version
-    regex: 'v(?P<version>\d+\.\d+\.\d+)'
+    regex: 'v(?<version>\d+\.\d+\.\d+)'
   
   python:
     command: python --version
-    regex: 'Python (?P<version>\d+\.\d+\.\d+)'
+    regex: 'Python (?<version>\d+\.\d+\.\d+)'
 ```
 
 ### Configuration Properties
 
 Each tool entry in the `tools` dictionary supports the following properties:
 
-| Property         | Required | Description                                                               |
-| ---------------- | -------- | ------------------------------------------------------------------------- |
-| `command`        | Yes      | Shell command to execute to get version information                       |
-| `regex`          | Yes      | Regular expression to extract version. First capture group is the version |
-| `command-win`    | No       | Command override for Windows                                              |
-| `command-linux`  | No       | Command override for Linux                                                |
-| `command-macos`  | No       | Command override for macOS                                                |
-| `regex-win`      | No       | Regex override for Windows                                                |
-| `regex-linux`    | No       | Regex override for Linux                                                  |
-| `regex-macos`    | No       | Regex override for macOS                                                  |
+| Property         | Required | Description                                                         |
+| ---------------- | -------- | ------------------------------------------------------------------- |
+| `command`        | Yes      | Shell command to execute to get version information                 |
+| `regex`          | Yes      | Regular expression with named 'version' group: `(?<version>...)`    |
+| `command-win`    | No       | Command override for Windows                                        |
+| `command-linux`  | No       | Command override for Linux                                          |
+| `command-macos`  | No       | Command override for macOS                                          |
+| `regex-win`      | No       | Regex override for Windows                                          |
+| `regex-linux`    | No       | Regex override for Linux                                            |
+| `regex-macos`    | No       | Regex override for macOS                                            |
 
 ### OS-Specific Overrides
 
@@ -176,16 +176,16 @@ tools:
     command-win: gcc.exe --version
     command-linux: gcc-13 --version
     command-macos: gcc-14 --version
-    regex: 'gcc \(.*\) (?P<version>\d+\.\d+\.\d+)'
-    regex-win: 'gcc\.exe \(.*\) (?P<version>\d+\.\d+\.\d+)'
-    regex-linux: 'gcc-13 \(.*\) (?P<version>\d+\.\d+\.\d+)'
-    regex-macos: 'gcc-14 \(.*\) (?P<version>\d+\.\d+\.\d+)'
+    regex: 'gcc \(.*\) (?<version>\d+\.\d+\.\d+)'
+    regex-win: 'gcc\.exe \(.*\) (?<version>\d+\.\d+\.\d+)'
+    regex-linux: 'gcc-13 \(.*\) (?<version>\d+\.\d+\.\d+)'
+    regex-macos: 'gcc-14 \(.*\) (?<version>\d+\.\d+\.\d+)'
   
   powershell:
     command: pwsh --version
     command-win: powershell -Command "$PSVersionTable.PSVersion.ToString()"
-    regex: 'PowerShell (?P<version>\d+\.\d+\.\d+)'
-    regex-win: '(?P<version>\d+\.\d+\.\d+)'
+    regex: 'PowerShell (?<version>\d+\.\d+\.\d+)'
+    regex-win: '(?<version>\d+\.\d+\.\d+)'
 ```
 
 The tool uses OS-specific overrides when running on the corresponding platform. If no override
@@ -194,12 +194,13 @@ values.
 
 ### Regular Expression Tips
 
-The regex should contain at least one capture group `(...)` that captures the version number. Examples:
+The regex must contain a named 'version' capture group using .NET syntax `(?<version>...)` that
+captures the version number. Examples:
 
-- **Simple version**: `(?P<version>\d+\.\d+\.\d+)` - Captures `1.2.3`
-- **Prefixed version**: `Version (?P<version>\d+\.\d+\.\d+)` - Captures `1.2.3` from `Version 1.2.3`
-- **Multiline output**: `(?m)version (?P<version>\d+\.\d+\.\d+)` - Uses multiline mode
-- **Build metadata**: `(?P<version>\d+\.\d+\.\d+[-+][a-zA-Z0-9.]+)` - Captures `1.2.3-beta.1`
+- **Simple version**: `(?<version>\d+\.\d+\.\d+)` - Captures `1.2.3`
+- **Prefixed version**: `Version (?<version>\d+\.\d+\.\d+)` - Captures `1.2.3` from `Version 1.2.3`
+- **Multiline output**: `(?m)version (?<version>\d+\.\d+\.\d+)` - Uses multiline mode
+- **Build metadata**: `(?<version>\d+\.\d+\.\d+[-+][a-zA-Z0-9.]+)` - Captures `1.2.3-beta.1`
 
 ## Output Formats
 
@@ -357,11 +358,11 @@ Use VersionMark to document which tool versions are used in your build environme
 tools:
   dotnet:
     command: dotnet --version
-    regex: '(?P<version>\d+\.\d+\.\d+)'
+    regex: '(?<version>\d+\.\d+\.\d+)'
   
   msbuild:
     command: msbuild -version
-    regex: '(?P<version>\d+\.\d+\.\d+\.\d+)'
+    regex: '(?<version>\d+\.\d+\.\d+\.\d+)'
 ```
 
 ### Workflow 2: Compare Versions Across Platforms
@@ -373,11 +374,11 @@ Track how tool versions differ between Windows, Linux, and macOS:
 tools:
   gcc:
     command: gcc --version
-    regex: 'gcc.*?(?P<version>\d+\.\d+\.\d+)'
+    regex: 'gcc.*?(?<version>\d+\.\d+\.\d+)'
   
   clang:
     command: clang --version
-    regex: 'clang version (?P<version>\d+\.\d+\.\d+)'
+    regex: 'clang version (?<version>\d+\.\d+\.\d+)'
 ```
 
 ### Workflow 3: Monitor Dependency Versions
@@ -389,15 +390,15 @@ Track versions of runtime dependencies and tools:
 tools:
   docker:
     command: docker --version
-    regex: 'Docker version (?P<version>\d+\.\d+\.\d+)'
+    regex: 'Docker version (?<version>\d+\.\d+\.\d+)'
   
   kubectl:
     command: kubectl version --client --short
-    regex: 'v(?P<version>\d+\.\d+\.\d+)'
+    regex: 'v(?<version>\d+\.\d+\.\d+)'
   
   terraform:
     command: terraform version
-    regex: 'Terraform v(?P<version>\d+\.\d+\.\d+)'
+    regex: 'Terraform v(?<version>\d+\.\d+\.\d+)'
 ```
 
 ## Troubleshooting

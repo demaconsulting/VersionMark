@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Text.RegularExpressions;
+
 namespace DemaConsulting.TemplateDotNetTool.Tests;
 
 /// <summary>
@@ -37,7 +39,7 @@ public class VersionMarkConfigTests
         {
             ["dotnet"] = new ToolConfig(
                 new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
-                new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
             )
         };
 
@@ -63,12 +65,12 @@ public class VersionMarkConfigTests
             var yaml = @"tools:
   tool1:
     command: tool1 --version
-    regex: 'Tool1\s+(?P<version>[\d\.]+)'
+    regex: 'Tool1\s+(?<version>[\d\.]+)'
   tool2:
     command: tool2 version --client
     command-win: tool2.cmd version --client
-    regex: 'Tool2:""v(?P<version>[\d\.]+)""'
-    regex-linux: 'Tool2 Version: v(?P<version>[\d\.]+)'
+    regex: 'Tool2:""v(?<version>[\d\.]+)""'
+    regex-linux: 'Tool2 Version: v(?<version>[\d\.]+)'
 ";
             File.WriteAllText(tempFile, yaml);
 
@@ -83,13 +85,13 @@ public class VersionMarkConfigTests
 
             // Check tool1
             Assert.AreEqual("tool1 --version", config.Tools["tool1"].Command[string.Empty]);
-            Assert.AreEqual(@"Tool1\s+(?P<version>[\d\.]+)", config.Tools["tool1"].Regex[string.Empty]);
+            Assert.AreEqual(@"Tool1\s+(?<version>[\d\.]+)", config.Tools["tool1"].Regex[string.Empty]);
 
             // Check tool2
             Assert.AreEqual("tool2 version --client", config.Tools["tool2"].Command[string.Empty]);
             Assert.AreEqual("tool2.cmd version --client", config.Tools["tool2"].Command["win"]);
-            Assert.AreEqual(@"Tool2:""v(?P<version>[\d\.]+)""", config.Tools["tool2"].Regex[string.Empty]);
-            Assert.AreEqual(@"Tool2 Version: v(?P<version>[\d\.]+)", config.Tools["tool2"].Regex["linux"]);
+            Assert.AreEqual(@"Tool2:""v(?<version>[\d\.]+)""", config.Tools["tool2"].Regex[string.Empty]);
+            Assert.AreEqual(@"Tool2 Version: v(?<version>[\d\.]+)", config.Tools["tool2"].Regex["linux"]);
         }
         finally
         {
@@ -116,10 +118,10 @@ public class VersionMarkConfigTests
     command-win: gcc.exe --version
     command-linux: gcc-13 --version
     command-macos: gcc-14 --version
-    regex: 'gcc.*?(?P<version>\d+\.\d+\.\d+)'
-    regex-win: 'gcc\.exe.*?(?P<version>\d+\.\d+\.\d+)'
-    regex-linux: 'gcc-13.*?(?P<version>\d+\.\d+\.\d+)'
-    regex-macos: 'gcc-14.*?(?P<version>\d+\.\d+\.\d+)'
+    regex: 'gcc.*?(?<version>\d+\.\d+\.\d+)'
+    regex-win: 'gcc\.exe.*?(?<version>\d+\.\d+\.\d+)'
+    regex-linux: 'gcc-13.*?(?<version>\d+\.\d+\.\d+)'
+    regex-macos: 'gcc-14.*?(?<version>\d+\.\d+\.\d+)'
 ";
             File.WriteAllText(tempFile, yaml);
 
@@ -136,10 +138,10 @@ public class VersionMarkConfigTests
             Assert.AreEqual("gcc.exe --version", gcc.Command["win"]);
             Assert.AreEqual("gcc-13 --version", gcc.Command["linux"]);
             Assert.AreEqual("gcc-14 --version", gcc.Command["macos"]);
-            Assert.AreEqual(@"gcc.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex[string.Empty]);
-            Assert.AreEqual(@"gcc\.exe.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex["win"]);
-            Assert.AreEqual(@"gcc-13.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex["linux"]);
-            Assert.AreEqual(@"gcc-14.*?(?P<version>\d+\.\d+\.\d+)", gcc.Regex["macos"]);
+            Assert.AreEqual(@"gcc.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex[string.Empty]);
+            Assert.AreEqual(@"gcc\.exe.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["win"]);
+            Assert.AreEqual(@"gcc-13.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["linux"]);
+            Assert.AreEqual(@"gcc-14.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["macos"]);
         }
         finally
         {
@@ -229,7 +231,7 @@ public class VersionMarkConfigTests
         // Arrange
         var tool = new ToolConfig(
             new Dictionary<string, string> { [string.Empty] = "tool --version" },
-            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
         // Act
@@ -248,14 +250,14 @@ public class VersionMarkConfigTests
         // Arrange
         var tool = new ToolConfig(
             new Dictionary<string, string> { [string.Empty] = "tool --version" },
-            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
         // Act
         var regex = tool.GetEffectiveRegex();
 
         // Assert
-        Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
+        Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
     }
 
     /// <summary>
@@ -273,7 +275,7 @@ public class VersionMarkConfigTests
                 ["linux"] = "tool-linux --version",
                 ["macos"] = "tool-macos --version"
             },
-            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
         // Act & Assert
@@ -294,18 +296,18 @@ public class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = "tool --version" },
             new Dictionary<string, string>
             {
-                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
-                ["win"] = @"Windows: (?P<version>\d+\.\d+\.\d+)",
-                ["linux"] = @"Linux: (?P<version>\d+\.\d+\.\d+)",
-                ["macos"] = @"macOS: (?P<version>\d+\.\d+\.\d+)"
+                [string.Empty] = @"(?<version>\d+\.\d+\.\d+)",
+                ["win"] = @"Windows: (?<version>\d+\.\d+\.\d+)",
+                ["linux"] = @"Linux: (?<version>\d+\.\d+\.\d+)",
+                ["macos"] = @"macOS: (?<version>\d+\.\d+\.\d+)"
             }
         );
 
         // Act & Assert
-        Assert.AreEqual(@"Windows: (?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
-        Assert.AreEqual(@"Linux: (?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
-        Assert.AreEqual(@"macOS: (?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
-        Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("unknown"));
+        Assert.AreEqual(@"Windows: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
+        Assert.AreEqual(@"Linux: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
+        Assert.AreEqual(@"macOS: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
+        Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("unknown"));
     }
 
     /// <summary>
@@ -321,7 +323,7 @@ public class VersionMarkConfigTests
                 [string.Empty] = "tool --version",
                 ["win"] = "tool.exe --version"
             },
-            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
         // Act
@@ -352,7 +354,7 @@ public class VersionMarkConfigTests
                 [string.Empty] = "tool --version",
                 ["linux"] = "tool-linux --version"
             },
-            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
         // Act
@@ -383,7 +385,7 @@ public class VersionMarkConfigTests
                 [string.Empty] = "tool --version",
                 ["macos"] = "tool-macos --version"
             },
-            new Dictionary<string, string> { [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)" }
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
         // Act
@@ -412,8 +414,8 @@ public class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = "tool --version" },
             new Dictionary<string, string>
             {
-                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
-                ["win"] = @"Windows: (?P<version>\d+\.\d+\.\d+)"
+                [string.Empty] = @"(?<version>\d+\.\d+\.\d+)",
+                ["win"] = @"Windows: (?<version>\d+\.\d+\.\d+)"
             }
         );
 
@@ -424,11 +426,11 @@ public class VersionMarkConfigTests
         // On Windows, should return Windows override; otherwise default
         if (OperatingSystem.IsWindows())
         {
-            Assert.AreEqual(@"Windows: (?P<version>\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"Windows: (?<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
@@ -443,8 +445,8 @@ public class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = "tool --version" },
             new Dictionary<string, string>
             {
-                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
-                ["linux"] = @"Linux: (?P<version>\d+\.\d+\.\d+)"
+                [string.Empty] = @"(?<version>\d+\.\d+\.\d+)",
+                ["linux"] = @"Linux: (?<version>\d+\.\d+\.\d+)"
             }
         );
 
@@ -455,11 +457,11 @@ public class VersionMarkConfigTests
         // On Linux, should return Linux override; otherwise default
         if (OperatingSystem.IsLinux())
         {
-            Assert.AreEqual(@"Linux: (?P<version>\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"Linux: (?<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
@@ -474,8 +476,8 @@ public class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = "tool --version" },
             new Dictionary<string, string>
             {
-                [string.Empty] = @"(?P<version>\d+\.\d+\.\d+)",
-                ["macos"] = @"macOS: (?P<version>\d+\.\d+\.\d+)"
+                [string.Empty] = @"(?<version>\d+\.\d+\.\d+)",
+                ["macos"] = @"macOS: (?<version>\d+\.\d+\.\d+)"
             }
         );
 
@@ -486,11 +488,188 @@ public class VersionMarkConfigTests
         // On macOS, should return macOS override; otherwise default
         if (OperatingSystem.IsMacOS())
         {
-            Assert.AreEqual(@"macOS: (?P<version>\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"macOS: (?<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(?P<version>\d+\.\d+\.\d+)", regex);
+            Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
         }
+    }
+
+    /// <summary>
+    ///     Test VersionInfo record creation.
+    /// </summary>
+    [TestMethod]
+    public void VersionInfo_Constructor_CreatesRecord()
+    {
+        // Arrange
+        var jobId = "job-123";
+        var versions = new Dictionary<string, string>
+        {
+            ["dotnet"] = "8.0.100",
+            ["git"] = "2.43.0"
+        };
+
+        // Act
+        var versionInfo = new VersionInfo(jobId, versions);
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("job-123", versionInfo.JobId);
+        Assert.AreEqual(2, versionInfo.Versions.Count);
+        Assert.AreEqual("8.0.100", versionInfo.Versions["dotnet"]);
+        Assert.AreEqual("2.43.0", versionInfo.Versions["git"]);
+    }
+
+    /// <summary>
+    ///     Test FindVersions with dotnet command.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act
+        var versionInfo = config.FindVersions(new[] { "dotnet" }, "test-job");
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("test-job", versionInfo.JobId);
+        Assert.AreEqual(1, versionInfo.Versions.Count);
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["dotnet"], @"\d+\.\d+\.\d+"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with multiple tools.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
+            ),
+            ["git"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "git --version" },
+                new Dictionary<string, string> { [string.Empty] = @"git version (?<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act
+        var versionInfo = config.FindVersions(new[] { "dotnet", "git" }, "test-job");
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("test-job", versionInfo.JobId);
+        Assert.AreEqual(2, versionInfo.Versions.Count);
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
+        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["dotnet"], @"\d+\.\d+\.\d+"));
+        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["git"], @"\d+\.\d+\.\d+"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with non-existent tool throws ArgumentException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentException>(() =>
+            config.FindVersions(new[] { "nonexistent" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("Tool 'nonexistent' not found in configuration"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with invalid command throws InvalidOperationException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["invalid"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "nonexistent-command-xyz" },
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(new[] { "invalid" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("Failed to run command"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with regex that doesn't match throws InvalidOperationException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>NOMATCH\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(new[] { "dotnet" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("Failed to extract version for tool 'dotnet'"));
+    }
+
+    /// <summary>
+    ///     Test FindVersions with regex without version group throws InvalidOperationException.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { [string.Empty] = "dotnet --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(new[] { "dotnet" }, "test-job"));
+
+        Assert.IsTrue(ex.Message.Contains("must contain a named 'version' capture group"));
     }
 }
