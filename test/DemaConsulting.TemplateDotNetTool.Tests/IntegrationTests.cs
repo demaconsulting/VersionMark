@@ -295,7 +295,7 @@ public class IntegrationTests
         var dir = new DirectoryInfo(startPath);
         while (dir != null)
         {
-            if (File.Exists(Path.Combine(dir.FullName, ".versionmark.yaml")))
+            if (File.Exists(PathHelpers.SafePathCombine(dir.FullName, ".versionmark.yaml")))
             {
                 return dir.FullName;
             }
@@ -332,7 +332,7 @@ public class IntegrationTests
     {
         // Arrange - Create temp directory without .versionmark.yaml config file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
 
         try
         {

@@ -143,14 +143,17 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_WithCaptureCommand_CapturesToolVersions()
     {
-        // Arrange - Set up temp config file and redirect console output
-        var outputFile = Path.GetTempFileName();
-        var tempConfigFile = Path.Combine(Path.GetTempPath(), ".versionmark.yaml");
+        // Arrange - Set up unique temp directory with config file and redirect console output
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = Path.GetTempPath();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempConfigFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+        var outputFile = PathHelpers.SafePathCombine(tempDir, "output.json");
 
         try
         {
+            // Create unique temp directory for this test
+            Directory.CreateDirectory(tempDir);
+
             // Create a temporary config file in temp directory
             File.WriteAllText(tempConfigFile, @"
 tools:
@@ -202,13 +205,10 @@ tools:
             // Restore original directory
             Directory.SetCurrentDirectory(currentDir);
 
-            if (File.Exists(tempConfigFile))
+            // Clean up temp directory and all its contents
+            if (Directory.Exists(tempDir))
             {
-                File.Delete(tempConfigFile);
-            }
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
+                Directory.Delete(tempDir, recursive: true);
             }
         }
     }
