@@ -74,7 +74,7 @@ public class VersionInfoTests
 
             // Assert
             Assert.IsTrue(File.Exists(tempFile));
-            
+
             // Verify by loading and comparing
             var loaded = VersionInfo.LoadFromFile(tempFile);
             Assert.AreEqual("job-456", loaded.JobId);

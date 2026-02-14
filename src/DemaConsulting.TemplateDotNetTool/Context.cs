@@ -61,6 +61,26 @@ internal sealed class Context : IDisposable
     public string? ResultsFile { get; private init; }
 
     /// <summary>
+    ///     Gets a value indicating whether the capture command was specified.
+    /// </summary>
+    public bool Capture { get; private init; }
+
+    /// <summary>
+    ///     Gets the job ID for capture mode.
+    /// </summary>
+    public string? JobId { get; private init; }
+
+    /// <summary>
+    ///     Gets the output file path for capture mode.
+    /// </summary>
+    public string? OutputFile { get; private init; }
+
+    /// <summary>
+    ///     Gets the list of tool names to capture.
+    /// </summary>
+    public string[] ToolNames { get; private init; } = [];
+
+    /// <summary>
     ///     Gets the proposed exit code for the application (0 for success, 1 for errors).
     /// </summary>
     public int ExitCode => _hasErrors ? 1 : 0;
@@ -89,7 +109,11 @@ internal sealed class Context : IDisposable
             Help = parser.Help,
             Silent = parser.Silent,
             Validate = parser.Validate,
-            ResultsFile = parser.ResultsFile
+            ResultsFile = parser.ResultsFile,
+            Capture = parser.Capture,
+            JobId = parser.JobId,
+            OutputFile = parser.OutputFile,
+            ToolNames = parser.ToolNames
         };
 
         // Open log file if specified
@@ -156,6 +180,26 @@ internal sealed class Context : IDisposable
         public string? ResultsFile { get; private set; }
 
         /// <summary>
+        ///     Gets a value indicating whether the capture flag was specified.
+        /// </summary>
+        public bool Capture { get; private set; }
+
+        /// <summary>
+        ///     Gets the job ID for capture mode.
+        /// </summary>
+        public string? JobId { get; private set; }
+
+        /// <summary>
+        ///     Gets the output file path for capture mode.
+        /// </summary>
+        public string? OutputFile { get; private set; }
+
+        /// <summary>
+        ///     Gets the list of tool names to capture.
+        /// </summary>
+        public string[] ToolNames { get; private set; } = [];
+
+        /// <summary>
         ///     Parses command-line arguments
         /// </summary>
         /// <param name="args">Command-line arguments.</param>
@@ -165,6 +209,20 @@ internal sealed class Context : IDisposable
             while (i < args.Length)
             {
                 var arg = args[i++];
+
+                // Check for -- separator (tool names follow)
+                if (arg == "--")
+                {
+                    // Remaining arguments are tool names
+                    var toolNamesList = new List<string>();
+                    while (i < args.Length)
+                    {
+                        toolNamesList.Add(args[i++]);
+                    }
+                    ToolNames = [.. toolNamesList];
+                    break;
+                }
+
                 i = ParseArgument(arg, args, i);
             }
         }
@@ -205,6 +263,18 @@ internal sealed class Context : IDisposable
 
                 case "--results":
                     ResultsFile = GetRequiredStringArgument(arg, args, index, "a results filename argument");
+                    return index + 1;
+
+                case "--capture":
+                    Capture = true;
+                    return index;
+
+                case "--job-id":
+                    JobId = GetRequiredStringArgument(arg, args, index, "a job ID argument");
+                    return index + 1;
+
+                case "--output":
+                    OutputFile = GetRequiredStringArgument(arg, args, index, "an output filename argument");
                     return index + 1;
 
                 default:
