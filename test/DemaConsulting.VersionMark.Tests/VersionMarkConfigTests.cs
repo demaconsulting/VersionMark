@@ -20,7 +20,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace DemaConsulting.TemplateDotNetTool.Tests;
+namespace DemaConsulting.VersionMark.Tests;
 
 /// <summary>
 ///     Unit tests for the VersionMarkConfig class.

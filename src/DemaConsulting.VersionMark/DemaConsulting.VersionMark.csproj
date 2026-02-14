@@ -9,21 +9,21 @@
 
     <!-- NuGet Tool Package Configuration -->
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>templatetool</ToolCommandName>
-    <PackageId>DemaConsulting.TemplateDotNetTool</PackageId>
+    <ToolCommandName>versionmark</ToolCommandName>
+    <PackageId>DemaConsulting.VersionMark</PackageId>
     <Version>0.0.0</Version>
     <Authors>DEMA Consulting</Authors>
     <Company>DEMA Consulting</Company>
-    <Description>Template project for DEMA Consulting DotNet Tools</Description>
+    <Description>Tool for capturing and publishing tool version information across CI/CD environments</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/demaconsulting/TemplateDotNetTool</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/demaconsulting/TemplateDotNetTool</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/demaconsulting/VersionMark</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/demaconsulting/VersionMark</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Icon.png</PackageIcon>
-    <PackageTags>template;dotnet-tool</PackageTags>
+    <PackageTags>version;dotnet-tool;ci-cd</PackageTags>
     <Copyright>Copyright DEMA Consulting</Copyright>
-    <Title>Template DotNet Tool</Title>
-    <Product>DemaConsulting.TemplateDotNetTool</Product>
+    <Title>VersionMark</Title>
+    <Product>DemaConsulting.VersionMark</Product>
 
     <!-- Symbol Package Configuration -->
     <IncludeSymbols>true</IncludeSymbols>
@@ -62,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="DemaConsulting.TemplateDotNetTool.Tests" />
+    <InternalsVisibleTo Include="DemaConsulting.VersionMark.Tests" />
   </ItemGroup>
 
   <ItemGroup>

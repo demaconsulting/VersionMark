@@ -20,5 +20,5 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DemaConsulting.TemplateDotNetTool.Tests")]
+[assembly: InternalsVisibleTo("DemaConsulting.VersionMark.Tests")]
 [assembly: DoNotParallelize]

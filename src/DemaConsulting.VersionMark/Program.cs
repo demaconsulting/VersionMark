@@ -20,10 +20,10 @@
 
 using System.Reflection;
 
-namespace DemaConsulting.TemplateDotNetTool;
+namespace DemaConsulting.VersionMark;
 
 /// <summary>
-///     Main program entry point for the Template DotNet Tool.
+///     Main program entry point for the VersionMark.
 /// </summary>
 internal static class Program
 {
@@ -45,7 +45,7 @@ internal static class Program
     }
 
     /// <summary>
-    ///     Main entry point for the Template DotNet Tool.
+    ///     Main entry point for the VersionMark.
     /// </summary>
     /// <param name="args">Command-line arguments.</param>
     /// <returns>Exit code: 0 for success, non-zero for failure.</returns>
@@ -129,7 +129,7 @@ internal static class Program
     /// <param name="context">The context for output.</param>
     private static void PrintBanner(Context context)
     {
-        context.WriteLine($"Template DotNet Tool version {Version}");
+        context.WriteLine($"VersionMark version {Version}");
         context.WriteLine("Copyright (c) DEMA Consulting");
         context.WriteLine("");
     }
@@ -140,8 +140,8 @@ internal static class Program
     /// <param name="context">The context for output.</param>
     private static void PrintHelp(Context context)
     {
-        context.WriteLine("Usage: templatetool [options]");
-        context.WriteLine("       templatetool --capture --job-id <id> [options] [-- tool1 tool2 ...]");
+        context.WriteLine("Usage: versionmark [options]");
+        context.WriteLine("       versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]");
         context.WriteLine("");
         context.WriteLine("Options:");
         context.WriteLine("  -v, --version              Display version information");
@@ -219,7 +219,7 @@ internal static class Program
     /// <param name="context">The context containing command line arguments and program state.</param>
     private static void RunToolLogic(Context context)
     {
-        context.WriteLine("Template DotNet Tool - Demo Functionality");
+        context.WriteLine("VersionMark - Demo Functionality");
         context.WriteLine("This is a template project demonstrating best practices.");
         context.WriteLine("");
         context.WriteLine("Replace this with your actual tool implementation.");

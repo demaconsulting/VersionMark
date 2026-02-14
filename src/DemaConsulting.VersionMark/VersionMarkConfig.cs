@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using YamlDotNet.RepresentationModel;
 
-namespace DemaConsulting.TemplateDotNetTool;
+namespace DemaConsulting.VersionMark;
 
 /// <summary>
 ///     Configuration for a single tool in .versionmark.yaml file.
