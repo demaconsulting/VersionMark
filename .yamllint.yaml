@@ -1,5 +1,5 @@
 ---
-# yamllint configuration for Template DotNet Tool
+# yamllint configuration for VersionMark
 # This configuration defines the rules for YAML file linting
 
 extends: default

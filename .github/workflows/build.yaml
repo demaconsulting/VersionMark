@@ -285,7 +285,7 @@ jobs:
           pattern: '*test-results*'
         continue-on-error: true
 
-      - name: Download TemplateTool package
+      - name: Download VersionMark package
         uses: actions/download-artifact@v7
         with:
           name: artifacts-windows-latest

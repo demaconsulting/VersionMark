@@ -13,7 +13,7 @@
 #
 ---
 sections:
-  - title: Template DotNet Tool Requirements
+  - title: VersionMark Requirements
     sections:
       - title: Command-Line Interface
         requirements:
@@ -114,8 +114,8 @@ sections:
               - platform
             tests:
               # Tests link to "windows" to ensure results come from Windows platform
-              - "windows@TemplateTool_VersionDisplay"
-              - "windows@TemplateTool_HelpDisplay"
+              - "windows@VersionMark_VersionDisplay"
+              - "windows@VersionMark_HelpDisplay"
 
           - id: PLT-002
             title: The tool shall build and run on Linux platforms.
@@ -125,8 +125,8 @@ sections:
               - platform
             tests:
               # Tests link to "ubuntu" to ensure results come from Linux platform
-              - "ubuntu@TemplateTool_VersionDisplay"
-              - "ubuntu@TemplateTool_HelpDisplay"
+              - "ubuntu@VersionMark_VersionDisplay"
+              - "ubuntu@VersionMark_HelpDisplay"
 
           - id: PLT-003
             title: The tool shall support .NET 8 runtime.
@@ -135,8 +135,8 @@ sections:
             tags:
               - platform
             tests:
-              - "dotnet8.x@TemplateTool_VersionDisplay"
-              - "dotnet8.x@TemplateTool_HelpDisplay"
+              - "dotnet8.x@VersionMark_VersionDisplay"
+              - "dotnet8.x@VersionMark_HelpDisplay"
 
           - id: PLT-004
             title: The tool shall support .NET 9 runtime.
@@ -145,8 +145,8 @@ sections:
             tags:
               - platform
             tests:
-              - "dotnet9.x@TemplateTool_VersionDisplay"
-              - "dotnet9.x@TemplateTool_HelpDisplay"
+              - "dotnet9.x@VersionMark_VersionDisplay"
+              - "dotnet9.x@VersionMark_HelpDisplay"
 
           - id: PLT-005
             title: The tool shall support .NET 10 runtime.
@@ -155,8 +155,8 @@ sections:
             tags:
               - platform
             tests:
-              - "dotnet10.x@TemplateTool_VersionDisplay"
-              - "dotnet10.x@TemplateTool_HelpDisplay"
+              - "dotnet10.x@VersionMark_VersionDisplay"
+              - "dotnet10.x@VersionMark_HelpDisplay"
 
       - title: Configuration File
         requirements:

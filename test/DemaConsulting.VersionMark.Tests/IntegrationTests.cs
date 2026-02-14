@@ -39,7 +39,7 @@ public class IntegrationTests
         var baseDir = AppContext.BaseDirectory;
         _dllPath = PathHelpers.SafePathCombine(baseDir, "DemaConsulting.VersionMark.dll");
 
-        Assert.IsTrue(File.Exists(_dllPath), $"Could not find Template DotNet Tool DLL at {_dllPath}");
+        Assert.IsTrue(File.Exists(_dllPath), $"Could not find VersionMark DLL at {_dllPath}");
     }
 
     /// <summary>

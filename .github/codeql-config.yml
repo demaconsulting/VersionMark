@@ -1,8 +1,8 @@
 ---
-# CodeQL configuration for Template DotNet Tool
+# CodeQL configuration for VersionMark
 # Suppresses intentional generic catch clauses
 
-name: "Template DotNet Tool CodeQL Config"
+name: "VersionMark CodeQL Config"
 
 # Query filters to disable specific queries for certain paths
 query-filters:

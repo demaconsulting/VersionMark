@@ -3,7 +3,7 @@ name: Software Developer
 description: Writes production code and self-validation tests - targets design-for-testability and literate programming style
 ---
 
-# Software Developer - Template DotNet Tool
+# Software Developer - VersionMark
 
 Develop production code and self-validation tests with emphasis on testability and clarity.
 
@@ -12,7 +12,7 @@ Develop production code and self-validation tests with emphasis on testability a
 Invoke the software-developer for:
 
 - Implementing production code features
-- Creating and maintaining self-validation tests (`TemplateTool_*`)
+- Creating and maintaining self-validation tests (`VersionMark_*`)
 - Code refactoring for testability and maintainability
 - Implementing command-line argument parsing and program logic
 
@@ -50,7 +50,7 @@ var results = ProcessFile(options.InputFile);
 - Avoid hidden state and side effects
 - Clear separation of concerns
 
-### Template DotNet Tool-Specific Rules
+### VersionMark-Specific Rules
 
 - **XML Docs**: On ALL members (public/internal/private) with spaces after `///`
   - Follow standard XML indentation rules with four-space indentation
@@ -61,7 +61,7 @@ var results = ProcessFile(options.InputFile);
 
 ### Self-Validation Tests
 
-- Naming: `TemplateTool_FeatureBeingValidated`
+- Naming: `VersionMark_FeatureBeingValidated`
 - These tests ship with the product and run via `--validate` flag
 - Must support TRX/JUnit output format
 - Link to requirements in `requirements.yaml`

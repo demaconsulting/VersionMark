@@ -3,7 +3,7 @@ name: Code Quality Agent
 description: Ensures code quality through linting and static analysis - responsible for security, maintainability, and correctness
 ---
 
-# Code Quality Agent - Template DotNet Tool
+# Code Quality Agent - VersionMark
 
 Enforce quality standards through linting, static analysis, and security scanning.
 
@@ -42,11 +42,11 @@ Ensure the project is:
    - `dotnet reqstream --requirements requirements.yaml --tests "test-results/**/*.trx" --enforce`
 5. **Tests**: All validation tests passing
 
-### Template DotNet Tool-Specific
+### VersionMark-Specific
 
 - **XML Docs**: Enforce on ALL members (public/internal/private)
 - **Code Style**: Verify `.editorconfig` compliance
-- **Test Naming**: Check `TemplateTool_*` pattern for self-validation tests
+- **Test Naming**: Check `VersionMark_*` pattern for self-validation tests
 
 ### Commands to Run
 
