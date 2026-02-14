@@ -19,6 +19,8 @@
 // SOFTWARE.
 
 using System.Reflection;
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace DemaConsulting.VersionMark;
 
@@ -119,6 +121,13 @@ internal static class Program
             return;
         }
 
+        // Priority 4.5: Publish command
+        if (context.Publish)
+        {
+            RunPublish(context);
+            return;
+        }
+
         // Priority 5: Main tool functionality
         RunToolLogic(context);
     }
@@ -142,6 +151,7 @@ internal static class Program
     {
         context.WriteLine("Usage: versionmark [options]");
         context.WriteLine("       versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]");
+        context.WriteLine("       versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]");
         context.WriteLine("");
         context.WriteLine("Options:");
         context.WriteLine("  -v, --version              Display version information");
@@ -156,6 +166,12 @@ internal static class Program
         context.WriteLine("  --job-id <id>              Job ID for this capture (required)");
         context.WriteLine("  --output <file>            Output JSON file (default: versionmark-<job-id>.json)");
         context.WriteLine("  -- <tools...>              List of tool names to capture (default: all tools)");
+        context.WriteLine("");
+        context.WriteLine("Publish Mode:");
+        context.WriteLine("  --publish                  Generate markdown report from JSON files");
+        context.WriteLine("  --report <file>            Output markdown file (required)");
+        context.WriteLine("  --report-depth <depth>     Heading depth for markdown (default: 2)");
+        context.WriteLine("  -- <patterns...>           Glob patterns for JSON files (default: versionmark-*.json)");
     }
 
     /// <summary>
@@ -211,6 +227,99 @@ internal static class Program
         {
             context.WriteError($"Error: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    ///     Runs the publish command logic.
+    /// </summary>
+    /// <param name="context">The context containing command line arguments and program state.</param>
+    private static void RunPublish(Context context)
+    {
+        // Validate required arguments
+        if (string.IsNullOrEmpty(context.ReportFile))
+        {
+            context.WriteError("Error: --report is required for publish mode");
+            return;
+        }
+
+        context.WriteLine($"Publishing version report to '{context.ReportFile}'...");
+
+        try
+        {
+            // Get glob patterns (default to versionmark-*.json if none specified)
+            var globPatterns = context.GlobPatterns.Length > 0
+                ? context.GlobPatterns
+                : new[] { "versionmark-*.json" };
+
+            context.WriteLine($"Searching for JSON files with patterns: {string.Join(", ", globPatterns)}");
+
+            // Find matching JSON files using glob patterns
+            var jsonFiles = FindMatchingFiles(globPatterns);
+
+            // Check if any files were found
+            if (jsonFiles.Count == 0)
+            {
+                context.WriteError($"Error: No JSON files found matching patterns: {string.Join(", ", globPatterns)}");
+                return;
+            }
+
+            context.WriteLine($"Found {jsonFiles.Count} JSON file(s)");
+
+            // Load all version info files
+            var versionInfos = LoadVersionInfoFiles(jsonFiles);
+
+            context.WriteLine($"Loaded version information from {versionInfos.Count} file(s)");
+
+            // Generate markdown report
+            var markdown = MarkdownFormatter.Format(versionInfos, context.ReportDepth);
+
+            // Write markdown to report file
+            File.WriteAllText(context.ReportFile, markdown, System.Text.Encoding.UTF8);
+
+            context.WriteLine("");
+            context.WriteLine($"Report successfully written to {context.ReportFile}");
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            context.WriteError($"Error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    ///     Finds files matching the specified glob patterns.
+    /// </summary>
+    /// <param name="globPatterns">Array of glob patterns to match.</param>
+    /// <returns>List of matching file paths.</returns>
+    private static List<string> FindMatchingFiles(string[] globPatterns)
+    {
+        var matcher = new Matcher();
+
+        // Add all glob patterns to the matcher
+        foreach (var pattern in globPatterns)
+        {
+            matcher.AddInclude(pattern);
+        }
+
+        // Execute the match against the current directory
+        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Directory.GetCurrentDirectory())));
+
+        // Return the full paths of matched files
+        return result.Files
+            .Select(f => Path.GetFullPath(f.Path))
+            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    /// <summary>
+    ///     Loads VersionInfo instances from the specified JSON files.
+    /// </summary>
+    /// <param name="jsonFiles">List of JSON file paths to load.</param>
+    /// <returns>List of loaded VersionInfo instances.</returns>
+    /// <exception cref="ArgumentException">Thrown when a file cannot be read or parsed.</exception>
+    private static List<VersionInfo> LoadVersionInfoFiles(List<string> jsonFiles)
+    {
+        // Load each JSON file using Select to map file paths to VersionInfo instances
+        return jsonFiles.Select(VersionInfo.LoadFromFile).ToList();
     }
 
     /// <summary>

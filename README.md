@@ -64,10 +64,10 @@ This creates a JSON file with captured versions (e.g., `versionmark-windows-net8
 After all jobs complete, publish the captured versions to markdown:
 
 ```bash
-versionmark publish --output versions.md
+versionmark --publish --report versions.md
 ```
 
-This consolidates versions from all jobs and generates a markdown table.
+This consolidates versions from all jobs and generates a markdown report.
 
 ## Command-Line Options
 
@@ -106,14 +106,15 @@ versionmark --capture --job-id "windows-build" -- dotnet node npm
 Publish captured versions to markdown documentation:
 
 ```bash
-versionmark publish [options]
+versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
 ```
 
 | Option                    | Description                                                  |
 | ------------------------- | ------------------------------------------------------------ |
-| `--input <pattern>`       | Input JSON file pattern (default: `versionmark-*.json`)      |
-| `--output <file>`         | Output markdown file (default: `versions.md`)                |
-| `--config <file>`         | Configuration file path (default: `.versionmark.yaml`)       |
+| `--publish`               | Enable publish mode                                          |
+| `--report <file>`         | **(Required)** Output markdown file path                     |
+| `--report-depth <depth>`  | Heading depth for markdown output (default: 2)               |
+| `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`) |
 
 ## Configuration File
 
@@ -175,19 +176,18 @@ Capture mode creates a JSON file with the following structure:
 
 ### Publish Output (Markdown)
 
-Publish mode generates a markdown table consolidating versions from all jobs:
+Publish mode generates a markdown list consolidating versions from all jobs:
 
 ```markdown
-| Tool   | Version | Jobs                    |
-| ------ | ------- | ----------------------- |
-| dotnet | 8.0.100 | All jobs                |
-| node   | 20.11.0 | windows-net8, linux-net8|
-| gcc    | 13.2.0  | linux-net8              |
-| gcc    | 11.4.0  | windows-net8            |
+## Tool Versions
+
+- **dotnet**: 8.0.100 (All jobs)
+- **gcc**: 11.4.0 <sub>(windows-net8)</sub>, 13.2.0 <sub>(linux-net8)</sub>
+- **node**: 20.11.0 (All jobs)
 ```
 
-When a tool has the same version across all jobs, it's shown as "All jobs". When versions
-differ, each version is listed with the jobs that use it.
+When a tool has the same version across all jobs, it's shown as "(All jobs)". When versions
+differ, each version is listed with the jobs that use it shown in subscripts.
 
 ## Documentation
 
