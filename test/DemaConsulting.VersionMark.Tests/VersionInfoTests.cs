@@ -46,7 +46,7 @@ public class VersionInfoTests
         // Assert
         Assert.IsNotNull(versionInfo);
         Assert.AreEqual(jobId, versionInfo.JobId);
-        Assert.AreEqual(2, versionInfo.Versions.Count);
+        Assert.HasCount(2, versionInfo.Versions);
         Assert.AreEqual("8.0.0", versionInfo.Versions["dotnet"]);
         Assert.AreEqual("2.40.0", versionInfo.Versions["git"]);
     }
@@ -78,7 +78,7 @@ public class VersionInfoTests
             // Verify by loading and comparing
             var loaded = VersionInfo.LoadFromFile(tempFile);
             Assert.AreEqual("job-456", loaded.JobId);
-            Assert.AreEqual(2, loaded.Versions.Count);
+            Assert.HasCount(2, loaded.Versions);
             Assert.AreEqual("18.0.0", loaded.Versions["node"]);
             Assert.AreEqual("9.0.0", loaded.Versions["npm"]);
         }
@@ -116,7 +116,7 @@ public class VersionInfoTests
             // Assert
             Assert.IsNotNull(versionInfo);
             Assert.AreEqual("job-789", versionInfo.JobId);
-            Assert.AreEqual(2, versionInfo.Versions.Count);
+            Assert.HasCount(2, versionInfo.Versions);
             Assert.AreEqual("3.11.0", versionInfo.Versions["python"]);
             Assert.AreEqual("23.0.0", versionInfo.Versions["pip"]);
         }
@@ -154,11 +154,11 @@ public class VersionInfoTests
 
             // Assert
             Assert.AreEqual(original.JobId, loaded.JobId);
-            Assert.AreEqual(original.Versions.Count, loaded.Versions.Count);
+            Assert.HasCount(original.Versions.Count, loaded.Versions);
             foreach (var kvp in original.Versions)
             {
-                Assert.IsTrue(loaded.Versions.ContainsKey(kvp.Key));
-                Assert.AreEqual(kvp.Value, loaded.Versions[kvp.Key]);
+                Assert.IsTrue(loaded.Versions.TryGetValue(kvp.Key, out var value));
+                Assert.AreEqual(kvp.Value, value);
             }
         }
         finally
@@ -241,7 +241,7 @@ public class VersionInfoTests
     public void VersionInfo_SaveToFile_InvalidPath_ThrowsInvalidOperationException()
     {
         // Arrange
-        var versionInfo = new VersionInfo("job-123", new Dictionary<string, string>());
+        var versionInfo = new VersionInfo("job-123", []);
         var invalidPath = Path.Combine(Path.GetTempPath(), "non-existent-directory", "file.json");
 
         // Act & Assert
@@ -259,7 +259,7 @@ public class VersionInfoTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            var original = new VersionInfo("job-empty", new Dictionary<string, string>());
+            var original = new VersionInfo("job-empty", []);
 
             // Act
             original.SaveToFile(tempFile);
@@ -267,7 +267,7 @@ public class VersionInfoTests
 
             // Assert
             Assert.AreEqual(original.JobId, loaded.JobId);
-            Assert.AreEqual(0, loaded.Versions.Count);
+            Assert.IsEmpty(loaded.Versions);
         }
         finally
         {
@@ -303,7 +303,7 @@ public class VersionInfoTests
 
             // Assert
             Assert.AreEqual(original.JobId, loaded.JobId);
-            Assert.AreEqual(original.Versions.Count, loaded.Versions.Count);
+            Assert.HasCount(original.Versions.Count, loaded.Versions);
             foreach (var kvp in original.Versions)
             {
                 Assert.AreEqual(kvp.Value, loaded.Versions[kvp.Key]);

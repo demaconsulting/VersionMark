@@ -30,6 +30,14 @@ namespace DemaConsulting.VersionMark;
 public sealed record VersionInfo(string JobId, Dictionary<string, string> Versions)
 {
     /// <summary>
+    ///     Shared JSON serialization options for writing indented JSON.
+    /// </summary>
+    private static readonly JsonSerializerOptions s_jsonOptions = new()
+    {
+        WriteIndented = true
+    };
+
+    /// <summary>
     ///     Saves the VersionInfo to a JSON file.
     /// </summary>
     /// <param name="filePath">Path to the JSON file to write.</param>
@@ -38,12 +46,7 @@ public sealed record VersionInfo(string JobId, Dictionary<string, string> Versio
     {
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-
-            var json = JsonSerializer.Serialize(this, options);
+            var json = JsonSerializer.Serialize(this, s_jsonOptions);
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
         }
         catch (Exception ex) when (ex is not InvalidOperationException)

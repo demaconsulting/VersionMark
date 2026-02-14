@@ -48,7 +48,7 @@ public class VersionMarkConfigTests
 
         // Assert
         Assert.IsNotNull(config);
-        Assert.AreEqual(1, config.Tools.Count);
+        Assert.HasCount(1, config.Tools);
         Assert.IsTrue(config.Tools.ContainsKey("dotnet"));
     }
 
@@ -79,19 +79,19 @@ public class VersionMarkConfigTests
 
             // Assert
             Assert.IsNotNull(config);
-            Assert.AreEqual(2, config.Tools.Count);
-            Assert.IsTrue(config.Tools.ContainsKey("tool1"));
-            Assert.IsTrue(config.Tools.ContainsKey("tool2"));
+            Assert.HasCount(2, config.Tools);
+            Assert.IsTrue(config.Tools.TryGetValue("tool1", out var tool1));
+            Assert.IsTrue(config.Tools.TryGetValue("tool2", out var tool2));
 
             // Check tool1
-            Assert.AreEqual("tool1 --version", config.Tools["tool1"].Command[string.Empty]);
-            Assert.AreEqual(@"Tool1\s+(?<version>[\d\.]+)", config.Tools["tool1"].Regex[string.Empty]);
+            Assert.AreEqual("tool1 --version", tool1.Command[string.Empty]);
+            Assert.AreEqual(@"Tool1\s+(?<version>[\d\.]+)", tool1.Regex[string.Empty]);
 
             // Check tool2
-            Assert.AreEqual("tool2 version --client", config.Tools["tool2"].Command[string.Empty]);
-            Assert.AreEqual("tool2.cmd version --client", config.Tools["tool2"].Command["win"]);
-            Assert.AreEqual(@"Tool2:""v(?<version>[\d\.]+)""", config.Tools["tool2"].Regex[string.Empty]);
-            Assert.AreEqual(@"Tool2 Version: v(?<version>[\d\.]+)", config.Tools["tool2"].Regex["linux"]);
+            Assert.AreEqual("tool2 version --client", tool2.Command[string.Empty]);
+            Assert.AreEqual("tool2.cmd version --client", tool2.Command["win"]);
+            Assert.AreEqual(@"Tool2:""v(?<version>[\d\.]+)""", tool2.Regex[string.Empty]);
+            Assert.AreEqual(@"Tool2 Version: v(?<version>[\d\.]+)", tool2.Regex["linux"]);
         }
         finally
         {
@@ -130,10 +130,9 @@ public class VersionMarkConfigTests
 
             // Assert
             Assert.IsNotNull(config);
-            Assert.AreEqual(1, config.Tools.Count);
-            Assert.IsTrue(config.Tools.ContainsKey("gcc"));
+            Assert.HasCount(1, config.Tools);
+            Assert.IsTrue(config.Tools.TryGetValue("gcc", out var gcc));
 
-            var gcc = config.Tools["gcc"];
             Assert.AreEqual("gcc --version", gcc.Command[string.Empty]);
             Assert.AreEqual("gcc.exe --version", gcc.Command["win"]);
             Assert.AreEqual("gcc-13 --version", gcc.Command["linux"]);
@@ -165,7 +164,7 @@ public class VersionMarkConfigTests
         var ex = Assert.Throws<ArgumentException>(() =>
             VersionMarkConfig.ReadFromFile(nonExistentFile));
 
-        Assert.IsTrue(ex.Message.Contains("Configuration file not found"));
+        Assert.Contains("Configuration file not found", ex.Message);
     }
 
     /// <summary>
@@ -184,7 +183,7 @@ public class VersionMarkConfigTests
             var ex = Assert.Throws<ArgumentException>(() =>
                 VersionMarkConfig.ReadFromFile(tempFile));
 
-            Assert.IsTrue(ex.Message.Contains("Failed to parse YAML file"));
+            Assert.Contains("Failed to parse YAML file", ex.Message);
         }
         finally
         {
@@ -211,7 +210,7 @@ public class VersionMarkConfigTests
             var ex = Assert.Throws<ArgumentException>(() =>
                 VersionMarkConfig.ReadFromFile(tempFile));
 
-            Assert.IsTrue(ex.Message.Contains("must contain at least one tool"));
+            Assert.Contains("must contain at least one tool", ex.Message);
         }
         finally
         {
@@ -516,7 +515,7 @@ public class VersionMarkConfigTests
         // Assert
         Assert.IsNotNull(versionInfo);
         Assert.AreEqual("job-123", versionInfo.JobId);
-        Assert.AreEqual(2, versionInfo.Versions.Count);
+        Assert.HasCount(2, versionInfo.Versions);
         Assert.AreEqual("8.0.100", versionInfo.Versions["dotnet"]);
         Assert.AreEqual("2.43.0", versionInfo.Versions["git"]);
     }
@@ -543,9 +542,9 @@ public class VersionMarkConfigTests
         // Assert
         Assert.IsNotNull(versionInfo);
         Assert.AreEqual("test-job", versionInfo.JobId);
-        Assert.AreEqual(1, versionInfo.Versions.Count);
-        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
-        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["dotnet"], @"\d+\.\d+\.\d+"));
+        Assert.HasCount(1, versionInfo.Versions);
+        Assert.IsTrue(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
+        Assert.IsTrue(Regex.IsMatch(dotnetVersion, @"\d+\.\d+\.\d+"));
     }
 
     /// <summary>
@@ -574,11 +573,11 @@ public class VersionMarkConfigTests
         // Assert
         Assert.IsNotNull(versionInfo);
         Assert.AreEqual("test-job", versionInfo.JobId);
-        Assert.AreEqual(2, versionInfo.Versions.Count);
-        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
-        Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
-        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["dotnet"], @"\d+\.\d+\.\d+"));
-        Assert.IsTrue(Regex.IsMatch(versionInfo.Versions["git"], @"\d+\.\d+\.\d+"));
+        Assert.HasCount(2, versionInfo.Versions);
+        Assert.IsTrue(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
+        Assert.IsTrue(versionInfo.Versions.TryGetValue("git", out var gitVersion));
+        Assert.IsTrue(Regex.IsMatch(dotnetVersion, @"\d+\.\d+\.\d+"));
+        Assert.IsTrue(Regex.IsMatch(gitVersion, @"\d+\.\d+\.\d+"));
     }
 
     /// <summary>
@@ -601,7 +600,7 @@ public class VersionMarkConfigTests
         var ex = Assert.Throws<ArgumentException>(() =>
             config.FindVersions(new[] { "nonexistent" }, "test-job"));
 
-        Assert.IsTrue(ex.Message.Contains("Tool 'nonexistent' not found in configuration"));
+        Assert.Contains("Tool 'nonexistent' not found in configuration", ex.Message);
     }
 
     /// <summary>
@@ -624,7 +623,7 @@ public class VersionMarkConfigTests
         var ex = Assert.Throws<InvalidOperationException>(() =>
             config.FindVersions(new[] { "invalid" }, "test-job"));
 
-        Assert.IsTrue(ex.Message.Contains("Failed to run command"));
+        Assert.Contains("Failed to run command", ex.Message);
     }
 
     /// <summary>
@@ -647,7 +646,7 @@ public class VersionMarkConfigTests
         var ex = Assert.Throws<InvalidOperationException>(() =>
             config.FindVersions(new[] { "dotnet" }, "test-job"));
 
-        Assert.IsTrue(ex.Message.Contains("Failed to extract version for tool 'dotnet'"));
+        Assert.Contains("Failed to extract version for tool 'dotnet'", ex.Message);
     }
 
     /// <summary>
@@ -670,6 +669,6 @@ public class VersionMarkConfigTests
         var ex = Assert.Throws<InvalidOperationException>(() =>
             config.FindVersions(new[] { "dotnet" }, "test-job"));
 
-        Assert.IsTrue(ex.Message.Contains("must contain a named 'version' capture group"));
+        Assert.Contains("must contain a named 'version' capture group", ex.Message);
     }
 }
