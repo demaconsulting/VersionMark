@@ -353,3 +353,139 @@ sections:
             tests:
               - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
               - IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError
+
+      - title: Publish Command
+        requirements:
+          - id: PUB-001
+            title: The tool shall support --publish flag to enable publish mode.
+            justification: |
+              Provides a way to generate markdown reports from captured JSON version files,
+              enabling documentation and reporting workflows in CI/CD pipelines.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
+
+          - id: PUB-002
+            title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
+            justification: |
+              Allows users to control where the generated markdown report is saved,
+              enabling integration with documentation systems and custom workflows.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
+
+          - id: PUB-003
+            title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
+            justification: |
+              Enables users to adjust the heading level of the generated markdown to fit
+              within existing document structures and hierarchy requirements.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels
+
+          - id: PUB-004
+            title: The tool shall require --report parameter when publish mode is enabled.
+            justification: |
+              Ensures users specify an output file location for the generated markdown,
+              preventing ambiguity about where the report will be saved.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommandWithoutReport_ReturnsError
+
+          - id: PUB-005
+            title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
+            justification: |
+              Allows users to flexibly select which captured JSON files to include in
+              the report using standard glob patterns like versionmark-*.json.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
+
+          - id: PUB-006
+            title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
+            justification: |
+              Implements the core functionality of loading captured version data from
+              multiple JSON files for report generation.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
+
+          - id: PUB-007
+            title: The tool shall report errors when no JSON files match the specified glob patterns.
+            justification: |
+              Provides clear feedback to users when input files cannot be found,
+              preventing silent failures and helping diagnose configuration issues.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommandWithNoMatchingFiles_ReturnsError
+
+          - id: PUB-008
+            title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
+            justification: |
+              Provides clear feedback when input files are malformed or inaccessible,
+              helping users identify and fix data quality issues.
+            tags:
+              - publish
+            tests:
+              - VersionMark_PublishCommandWithInvalidJson_ReturnsError
+
+      - title: Markdown Formatter
+        requirements:
+          - id: FMT-001
+            title: The tool shall generate markdown output listing all tools in sorted order.
+            justification: |
+              Provides consistent, predictable output ordering that makes reports easier
+              to read and compare across multiple runs.
+            tags:
+              - formatter
+            tests:
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
+
+          - id: FMT-002
+            title: The tool shall collapse versions into "All jobs" when the same version appears across all input files.
+            justification: |
+              Reduces redundancy in reports when all jobs used the same version of a tool,
+              improving readability and report conciseness.
+            tags:
+              - formatter
+            tests:
+              - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs
+
+          - id: FMT-003
+            title: The tool shall display individual job IDs with their versions when versions differ across input files.
+            justification: |
+              Provides detailed visibility into version differences across jobs,
+              helping users identify and troubleshoot version inconsistencies.
+            tags:
+              - formatter
+            tests:
+              - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
+
+          - id: FMT-004
+            title: The tool shall use subscript formatting and parenthesized job IDs to indicate which jobs had which versions.
+            justification: |
+              Provides clear visual distinction between different job executions and their
+              versions in a compact, readable format.
+            tags:
+              - formatter
+            tests:
+              - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
+
+          - id: FMT-005
+            title: The tool shall respect the report-depth parameter when generating markdown heading levels.
+            justification: |
+              Allows the generated markdown to integrate properly into existing document
+              structures with appropriate heading hierarchy.
+            tags:
+              - formatter
+            tests:
+              - VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels
+              - MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel
