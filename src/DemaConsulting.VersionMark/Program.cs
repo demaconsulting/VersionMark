@@ -318,16 +318,8 @@ internal static class Program
     /// <exception cref="ArgumentException">Thrown when a file cannot be read or parsed.</exception>
     private static List<VersionInfo> LoadVersionInfoFiles(List<string> jsonFiles)
     {
-        var versionInfos = new List<VersionInfo>();
-
-        // Load each JSON file
-        foreach (var file in jsonFiles)
-        {
-            var versionInfo = VersionInfo.LoadFromFile(file);
-            versionInfos.Add(versionInfo);
-        }
-
-        return versionInfos;
+        // Load each JSON file using Select to map file paths to VersionInfo instances
+        return jsonFiles.Select(VersionInfo.LoadFromFile).ToList();
     }
 
     /// <summary>

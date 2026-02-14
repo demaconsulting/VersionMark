@@ -60,12 +60,14 @@ internal static class MarkdownFormatter
         {
             foreach (var (tool, version) in versionInfo.Versions)
             {
-                if (!toolVersions.ContainsKey(tool))
+                // Use TryGetValue to avoid double lookup
+                if (!toolVersions.TryGetValue(tool, out var versions))
                 {
-                    toolVersions[tool] = [];
+                    versions = [];
+                    toolVersions[tool] = versions;
                 }
 
-                toolVersions[tool].Add((versionInfo.JobId, version));
+                versions.Add((versionInfo.JobId, version));
             }
         }
 

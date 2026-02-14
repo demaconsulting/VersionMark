@@ -417,7 +417,7 @@ public class MarkdownFormatterTests
         var indexOf2 = toolLine.IndexOf("2.0.0", StringComparison.Ordinal);
         var indexOf3 = toolLine.IndexOf("3.0.0", StringComparison.Ordinal);
 
-        Assert.IsTrue(indexOf1 < indexOf2, "1.0.0 should appear before 2.0.0");
-        Assert.IsTrue(indexOf2 < indexOf3, "2.0.0 should appear before 3.0.0");
+        Assert.IsLessThan(indexOf2, indexOf1, "1.0.0 should appear before 2.0.0");
+        Assert.IsLessThan(indexOf3, indexOf2, "2.0.0 should appear before 3.0.0");
     }
 }
