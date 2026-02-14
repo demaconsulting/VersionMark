@@ -200,7 +200,7 @@ public sealed record VersionMarkConfig
     /// </summary>
     public VersionMarkConfig()
     {
-        Tools = new Dictionary<string, ToolConfig>();
+        Tools = [];
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ---
 # CodeQL configuration for VersionMark
 # Suppresses intentional generic catch clauses
+# Excludes generated code warnings
 
 name: "VersionMark CodeQL Config"
 
@@ -16,3 +17,12 @@ query-filters:
       id: cs/path-combine
     paths:
       - src/DemaConsulting.VersionMark/PathHelpers.cs
+  # Exclude generated code warnings
+  - exclude:
+      id: cs/unused-label
+    paths:
+      - '**/obj/**/generated/**/*.cs'
+  - exclude:
+      id: cs/useless-assignment-to-local
+    paths:
+      - '**/obj/**/generated/**/*.cs'

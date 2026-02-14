@@ -354,6 +354,12 @@ jobs:
           --report docs/quality/sonar-quality.md
           --report-depth 1
 
+      - name: Display SonarCloud Quality Report
+        shell: bash
+        run: |
+          echo "=== SonarCloud Quality Report ==="
+          cat docs/quality/sonar-quality.md
+
       - name: Generate Build Notes with BuildMark
         shell: bash
         env:
