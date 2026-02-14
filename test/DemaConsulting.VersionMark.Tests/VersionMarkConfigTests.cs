@@ -26,8 +26,16 @@ namespace DemaConsulting.VersionMark.Tests;
 ///     Unit tests for the VersionMarkConfig class.
 /// </summary>
 [TestClass]
-public class VersionMarkConfigTests
+public partial class VersionMarkConfigTests
 {
+    private static readonly string[] s_dotnetToolArray = ["dotnet"];
+    private static readonly string[] s_dotnetGitToolArray = ["dotnet", "git"];
+    private static readonly string[] s_nonexistentToolArray = ["nonexistent"];
+    private static readonly string[] s_invalidToolArray = ["invalid"];
+
+    [GeneratedRegex(@"\d+\.\d+\.\d+")]
+    private static partial Regex VersionRegex();
+
     /// <summary>
     ///     Test internal constructor creates config with tools.
     /// </summary>
@@ -537,14 +545,14 @@ public class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act
-        var versionInfo = config.FindVersions(new[] { "dotnet" }, "test-job");
+        var versionInfo = config.FindVersions(s_dotnetToolArray, "test-job");
 
         // Assert
         Assert.IsNotNull(versionInfo);
         Assert.AreEqual("test-job", versionInfo.JobId);
         Assert.HasCount(1, versionInfo.Versions);
         Assert.IsTrue(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
-        Assert.IsTrue(Regex.IsMatch(dotnetVersion, @"\d+\.\d+\.\d+"));
+        Assert.IsTrue(VersionRegex().IsMatch(dotnetVersion));
     }
 
     /// <summary>
@@ -568,7 +576,7 @@ public class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act
-        var versionInfo = config.FindVersions(new[] { "dotnet", "git" }, "test-job");
+        var versionInfo = config.FindVersions(s_dotnetGitToolArray, "test-job");
 
         // Assert
         Assert.IsNotNull(versionInfo);
@@ -576,8 +584,8 @@ public class VersionMarkConfigTests
         Assert.HasCount(2, versionInfo.Versions);
         Assert.IsTrue(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
         Assert.IsTrue(versionInfo.Versions.TryGetValue("git", out var gitVersion));
-        Assert.IsTrue(Regex.IsMatch(dotnetVersion, @"\d+\.\d+\.\d+"));
-        Assert.IsTrue(Regex.IsMatch(gitVersion, @"\d+\.\d+\.\d+"));
+        Assert.IsTrue(VersionRegex().IsMatch(dotnetVersion));
+        Assert.IsTrue(VersionRegex().IsMatch(gitVersion));
     }
 
     /// <summary>
@@ -598,7 +606,7 @@ public class VersionMarkConfigTests
 
         // Act & Assert
         var ex = Assert.Throws<ArgumentException>(() =>
-            config.FindVersions(new[] { "nonexistent" }, "test-job"));
+            config.FindVersions(s_nonexistentToolArray, "test-job"));
 
         Assert.Contains("Tool 'nonexistent' not found in configuration", ex.Message);
     }
@@ -621,7 +629,7 @@ public class VersionMarkConfigTests
 
         // Act & Assert
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            config.FindVersions(new[] { "invalid" }, "test-job"));
+            config.FindVersions(s_invalidToolArray, "test-job"));
 
         Assert.Contains("Failed to run command", ex.Message);
     }
@@ -644,7 +652,7 @@ public class VersionMarkConfigTests
 
         // Act & Assert
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            config.FindVersions(new[] { "dotnet" }, "test-job"));
+            config.FindVersions(s_dotnetToolArray, "test-job"));
 
         Assert.Contains("Failed to extract version for tool 'dotnet'", ex.Message);
     }
@@ -667,7 +675,7 @@ public class VersionMarkConfigTests
 
         // Act & Assert
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            config.FindVersions(new[] { "dotnet" }, "test-job"));
+            config.FindVersions(s_dotnetToolArray, "test-job"));
 
         Assert.Contains("must contain a named 'version' capture group", ex.Message);
     }
