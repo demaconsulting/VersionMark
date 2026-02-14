@@ -395,7 +395,10 @@ public sealed record VersionMarkConfig
     /// <exception cref="InvalidOperationException">Thrown when version cannot be extracted.</exception>
     private static string ExtractVersion(string output, string regexPattern, string toolName)
     {
-        var regex = new Regex(regexPattern, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        var regex = new Regex(
+            regexPattern,
+            RegexOptions.Multiline | RegexOptions.IgnoreCase,
+            TimeSpan.FromSeconds(1));
         var match = regex.Match(output);
 
         if (!match.Success)
