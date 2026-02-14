@@ -195,6 +195,7 @@ internal static class Program
             // Save to file
             versionInfo.SaveToFile(outputFile);
 
+            // Display the captured versions to the user for verification
             context.WriteLine("");
             context.WriteLine("Captured versions:");
             foreach (var (tool, version) in versionInfo.Versions)
@@ -202,6 +203,7 @@ internal static class Program
                 context.WriteLine($"  {tool}: {version}");
             }
 
+            // Confirm successful save with output file location
             context.WriteLine("");
             context.WriteLine($"Version information saved to {outputFile}");
         }
