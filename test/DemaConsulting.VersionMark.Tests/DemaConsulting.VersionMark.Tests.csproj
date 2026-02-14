@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DemaConsulting.TemplateDotNetTool\DemaConsulting.TemplateDotNetTool.csproj" />
+    <ProjectReference Include="..\..\src\DemaConsulting.VersionMark\DemaConsulting.VersionMark.csproj" />
   </ItemGroup>
 
 </Project>

@@ -21,10 +21,10 @@
 using System.Runtime.InteropServices;
 using DemaConsulting.TestResults.IO;
 
-namespace DemaConsulting.TemplateDotNetTool;
+namespace DemaConsulting.VersionMark;
 
 /// <summary>
-///     Provides self-validation functionality for the Template DotNet Tool.
+///     Provides self-validation functionality for the VersionMark.
 /// </summary>
 internal static class Validation
 {
@@ -40,7 +40,7 @@ internal static class Validation
         // Create test results collection
         var testResults = new DemaConsulting.TestResults.TestResults
         {
-            Name = "Template DotNet Tool Self-Validation"
+            Name = "VersionMark Self-Validation"
         };
 
         // Run core functionality tests
@@ -78,7 +78,7 @@ internal static class Validation
     /// <param name="context">The context for output.</param>
     private static void PrintValidationHeader(Context context)
     {
-        context.WriteLine("# DEMA Consulting Template DotNet Tool");
+        context.WriteLine("# DEMA Consulting VersionMark");
         context.WriteLine("");
         context.WriteLine("| Information         | Value                                              |");
         context.WriteLine("| :------------------ | :------------------------------------------------- |");

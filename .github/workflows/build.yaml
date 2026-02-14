@@ -132,8 +132,8 @@ jobs:
         with:
           name: artifacts-${{ matrix.os }}
           path: |
-            src/DemaConsulting.TemplateDotNetTool/bin/Release/*.nupkg
-            src/DemaConsulting.TemplateDotNetTool/bin/Release/*.snupkg
+            src/DemaConsulting.VersionMark/bin/Release/*.nupkg
+            src/DemaConsulting.VersionMark/bin/Release/*.snupkg
 
   # Runs CodeQL security and quality analysis, gathering results to include
   # in the code quality report.
@@ -229,27 +229,27 @@ jobs:
           dotnet tool install --global \
             --add-source packages \
             --version ${{ inputs.version }} \
-            DemaConsulting.TemplateDotNetTool
+            DemaConsulting.VersionMark
 
       - name: Test version display
         shell: bash
         run: |
-          echo "Testing templatetool --version..."
-          templatetool --version || { echo "✗ Version command failed"; exit 1; }
+          echo "Testing versionmark --version..."
+          versionmark --version || { echo "✗ Version command failed"; exit 1; }
           echo "✓ Version command succeeded"
 
       - name: Test help display
         shell: bash
         run: |
-          echo "Testing templatetool --help..."
-          templatetool --help || { echo "✗ Help command failed"; exit 1; }
+          echo "Testing versionmark --help..."
+          versionmark --help || { echo "✗ Help command failed"; exit 1; }
           echo "✓ Help command succeeded"
 
       - name: Run self-validation
         shell: bash
         run: |
           echo "Running self-validation..."
-          templatetool --validate --results validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.trx \
+          versionmark --validate --results validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.trx \
             || { echo "✗ Self-validation failed"; exit 1; }
           echo "✓ Self-validation succeeded"
 
@@ -305,14 +305,14 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Install TemplateTool from package
+      - name: Install VersionMark from package
         shell: bash
         run: |
-          echo "Installing TemplateTool version ${{ inputs.version }}"
+          echo "Installing VersionMark version ${{ inputs.version }}"
           dotnet tool install --global \
             --add-source packages \
             --version ${{ inputs.version }} \
-            DemaConsulting.TemplateDotNetTool
+            DemaConsulting.VersionMark
 
       - name: Restore Tools
         run: dotnet tool restore
@@ -332,7 +332,7 @@ jobs:
           dotnet sarifmark
           --sarif codeql-results/csharp.sarif
           --report docs/quality/codeql-quality.md
-          --heading "Template DotNet Tool CodeQL Analysis"
+          --heading "VersionMark CodeQL Analysis"
           --report-depth 1
 
       - name: Display CodeQL Quality Report
@@ -379,7 +379,7 @@ jobs:
           dotnet weasyprint
           --pdf-variant pdf/a-3u
           docs/buildnotes/buildnotes.html
-          "docs/TemplateDotNetTool Build Notes.pdf"
+          "docs/VersionMark Build Notes.pdf"
 
       - name: Generate Guide HTML with Pandoc
         shell: bash
@@ -396,7 +396,7 @@ jobs:
           dotnet weasyprint
           --pdf-variant pdf/a-3u
           docs/guide/guide.html
-          "docs/TemplateDotNetTool User Guide.pdf"
+          "docs/VersionMark User Guide.pdf"
 
       - name: Generate Code Quality HTML with Pandoc
         shell: bash
@@ -413,7 +413,7 @@ jobs:
           dotnet weasyprint
           --pdf-variant pdf/a-3u
           docs/quality/quality.html
-          "docs/TemplateDotNetTool Code Quality.pdf"
+          "docs/VersionMark Code Quality.pdf"
 
       - name: Generate Requirements HTML with Pandoc
         shell: bash
@@ -430,7 +430,7 @@ jobs:
           dotnet weasyprint
           --pdf-variant pdf/a-3u
           docs/requirements/requirements.html
-          "docs/TemplateDotNetTool Requirements.pdf"
+          "docs/VersionMark Requirements.pdf"
 
       - name: Generate Requirements Justifications HTML with Pandoc
         shell: bash
@@ -447,7 +447,7 @@ jobs:
           dotnet weasyprint
           --pdf-variant pdf/a-3u
           docs/justifications/justifications.html
-          "docs/TemplateDotNetTool Requirements Justifications.pdf"
+          "docs/VersionMark Requirements Justifications.pdf"
 
       - name: Generate Trace Matrix HTML with Pandoc
         shell: bash
@@ -464,7 +464,7 @@ jobs:
           dotnet weasyprint
           --pdf-variant pdf/a-3u
           docs/tracematrix/tracematrix.html
-          "docs/TemplateDotNetTool Trace Matrix.pdf"
+          "docs/VersionMark Trace Matrix.pdf"
 
       - name: Upload documentation
         uses: actions/upload-artifact@v6
