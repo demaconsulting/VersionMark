@@ -81,6 +81,26 @@ internal sealed class Context : IDisposable
     public string[] ToolNames { get; private init; } = [];
 
     /// <summary>
+    ///     Gets a value indicating whether the publish command was specified.
+    /// </summary>
+    public bool Publish { get; private init; }
+
+    /// <summary>
+    ///     Gets the report file path for publish mode.
+    /// </summary>
+    public string? ReportFile { get; private init; }
+
+    /// <summary>
+    ///     Gets the report depth for markdown heading levels in publish mode.
+    /// </summary>
+    public int ReportDepth { get; private init; } = 2;
+
+    /// <summary>
+    ///     Gets the list of glob patterns for JSON files in publish mode.
+    /// </summary>
+    public string[] GlobPatterns { get; private init; } = [];
+
+    /// <summary>
     ///     Gets the proposed exit code for the application (0 for success, 1 for errors).
     /// </summary>
     public int ExitCode => _hasErrors ? 1 : 0;
@@ -113,7 +133,11 @@ internal sealed class Context : IDisposable
             Capture = parser.Capture,
             JobId = parser.JobId,
             OutputFile = parser.OutputFile,
-            ToolNames = parser.ToolNames
+            ToolNames = parser.ToolNames,
+            Publish = parser.Publish,
+            ReportFile = parser.ReportFile,
+            ReportDepth = parser.ReportDepth,
+            GlobPatterns = parser.GlobPatterns
         };
 
         // Open log file if specified
@@ -200,6 +224,26 @@ internal sealed class Context : IDisposable
         public string[] ToolNames { get; private set; } = [];
 
         /// <summary>
+        ///     Gets a value indicating whether the publish flag was specified.
+        /// </summary>
+        public bool Publish { get; private set; }
+
+        /// <summary>
+        ///     Gets the report file path for publish mode.
+        /// </summary>
+        public string? ReportFile { get; private set; }
+
+        /// <summary>
+        ///     Gets the report depth for markdown heading levels in publish mode.
+        /// </summary>
+        public int ReportDepth { get; private set; } = 2;
+
+        /// <summary>
+        ///     Gets the list of glob patterns for JSON files in publish mode.
+        /// </summary>
+        public string[] GlobPatterns { get; private set; } = [];
+
+        /// <summary>
         ///     Parses command-line arguments
         /// </summary>
         /// <param name="args">Command-line arguments.</param>
@@ -210,16 +254,27 @@ internal sealed class Context : IDisposable
             {
                 var arg = args[i++];
 
-                // Check for -- separator (tool names follow)
+                // Check for -- separator (tool names or glob patterns follow)
                 if (arg == "--")
                 {
-                    // Remaining arguments are tool names
-                    var toolNamesList = new List<string>();
+                    // Remaining arguments depend on the mode
+                    var remainingArgs = new List<string>();
                     while (i < args.Length)
                     {
-                        toolNamesList.Add(args[i++]);
+                        remainingArgs.Add(args[i++]);
                     }
-                    ToolNames = [.. toolNamesList];
+
+                    // In capture mode, these are tool names
+                    // In publish mode, these are glob patterns
+                    if (Capture)
+                    {
+                        ToolNames = [.. remainingArgs];
+                    }
+                    else if (Publish)
+                    {
+                        GlobPatterns = [.. remainingArgs];
+                    }
+
                     break;
                 }
 
@@ -277,6 +332,18 @@ internal sealed class Context : IDisposable
                     OutputFile = GetRequiredStringArgument(arg, args, index, "an output filename argument");
                     return index + 1;
 
+                case "--publish":
+                    Publish = true;
+                    return index;
+
+                case "--report":
+                    ReportFile = GetRequiredStringArgument(arg, args, index, "a report filename argument");
+                    return index + 1;
+
+                case "--report-depth":
+                    ReportDepth = GetRequiredIntArgument(arg, args, index, "a depth value");
+                    return index + 1;
+
                 default:
                     throw new ArgumentException($"Unsupported argument '{arg}'", nameof(args));
             }
@@ -298,6 +365,29 @@ internal sealed class Context : IDisposable
             }
 
             return args[index];
+        }
+
+        /// <summary>
+        ///     Gets a required integer argument value
+        /// </summary>
+        /// <param name="arg">Argument name</param>
+        /// <param name="args">All arguments</param>
+        /// <param name="index">Current index</param>
+        /// <param name="description">Description of what's required</param>
+        /// <returns>Argument value</returns>
+        private static int GetRequiredIntArgument(string arg, string[] args, int index, string description)
+        {
+            if (index >= args.Length)
+            {
+                throw new ArgumentException($"{arg} requires {description}", nameof(args));
+            }
+
+            if (!int.TryParse(args[index], out var value))
+            {
+                throw new ArgumentException($"{arg} requires a valid integer value", nameof(args));
+            }
+
+            return value;
         }
     }
 
