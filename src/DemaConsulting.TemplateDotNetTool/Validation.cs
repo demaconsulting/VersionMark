@@ -278,7 +278,7 @@ internal static class Validation
         {
             Name = testName,
             ClassName = "Validation",
-            CodeBase = "TemplateDotNetTool"
+            CodeBase = "VersionMark"
         };
     }
 

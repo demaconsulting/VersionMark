@@ -82,7 +82,7 @@ jobs:
         run: >
           dotnet dotnet-sonarscanner
           begin
-          /k:"demaconsulting_TemplateDotNetTool"
+          /k:"demaconsulting_VersionMark"
           /o:"demaconsulting"
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           /d:sonar.host.url="https://sonarcloud.io"
@@ -348,7 +348,7 @@ jobs:
         run: >
           dotnet sonarmark
           --server https://sonarcloud.io
-          --project-key demaconsulting_TemplateDotNetTool
+          --project-key demaconsulting_VersionMark
           --branch ${{ github.ref_name }}
           --token "$SONAR_TOKEN"
           --report docs/quality/sonar-quality.md
