@@ -143,6 +143,7 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_WithCaptureCommand_CapturesToolVersions()
     {
+        // Arrange - Set up temp config file and redirect console output
         var outputFile = Path.GetTempFileName();
         var tempConfigFile = Path.Combine(Path.GetTempPath(), ".versionmark.yaml");
         var currentDir = Directory.GetCurrentDirectory();
@@ -173,8 +174,10 @@ tools:
                     "--", "dotnet"
                 ]);
 
+                // Act - Execute the capture command via Program.Run
                 Program.Run(context);
 
+                // Assert - Verify the command output, exit code, and captured data
                 var output = outWriter.ToString();
                 Assert.Contains("Capturing tool versions", output);
                 Assert.Contains("test-job", output);
@@ -216,6 +219,7 @@ tools:
     [TestMethod]
     public void Program_Run_WithCaptureCommandWithoutJobId_ReturnsError()
     {
+        // Arrange - Set up context with capture flag but no job-id
         var originalOut = Console.Out;
         try
         {
@@ -223,8 +227,10 @@ tools:
             Console.SetOut(outWriter);
             using var context = Context.Create(["--capture"]);
 
+            // Act - Run the program with incomplete capture arguments
             Program.Run(context);
 
+            // Assert - Verify error message and non-zero exit code
             var output = outWriter.ToString();
             Assert.Contains("--job-id is required", output);
             Assert.AreEqual(1, context.ExitCode);
@@ -241,6 +247,7 @@ tools:
     [TestMethod]
     public void Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError()
     {
+        // Arrange - Set up context in current directory (no .versionmark.yaml expected here)
         var originalOut = Console.Out;
         try
         {
@@ -251,8 +258,10 @@ tools:
                 "--job-id", "test-job"
             ]);
 
+            // Act - Run capture command without available config file
             Program.Run(context);
 
+            // Assert - Verify error is reported and exit code indicates failure
             var output = outWriter.ToString();
             Assert.Contains("Error:", output);
             Assert.AreEqual(1, context.ExitCode);

@@ -227,6 +227,7 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommand_CapturesToolVersions()
     {
+        // Arrange - Set up test output file and find repository root with config file
         var outputFile = Path.GetTempFileName();
         var currentDir = Directory.GetCurrentDirectory();
 
@@ -243,7 +244,7 @@ public class IntegrationTests
             // Change to repository root where .versionmark.yaml exists
             Directory.SetCurrentDirectory(repoRoot);
 
-            // Run the application with capture command
+            // Act - Run the capture command with specific tools
             var exitCode = Runner.Run(
                 out var output,
                 "dotnet",
@@ -253,6 +254,7 @@ public class IntegrationTests
                 "--output", outputFile,
                 "--", "dotnet", "git");
 
+            // Assert - Verify the command succeeded and captured the expected tool versions
             // Verify success
             Assert.AreEqual(0, exitCode);
 
@@ -308,14 +310,16 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommandWithoutJobId_ReturnsError()
     {
-        // Run the application with capture command but no job ID
+        // Arrange - No special setup needed for testing error condition
+
+        // Act - Run capture command without required --job-id parameter
         var exitCode = Runner.Run(
             out var output,
             "dotnet",
             _dllPath,
             "--capture");
 
-        // Verify error
+        // Assert - Verify the command fails with appropriate error message
         Assert.AreNotEqual(0, exitCode);
         Assert.Contains("--job-id is required", output);
     }
@@ -326,7 +330,7 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError()
     {
-        // Save current directory
+        // Arrange - Create temp directory without .versionmark.yaml config file
         var currentDir = Directory.GetCurrentDirectory();
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -336,7 +340,7 @@ public class IntegrationTests
             Directory.CreateDirectory(tempDir);
             Directory.SetCurrentDirectory(tempDir);
 
-            // Run the application with capture command (will look for .versionmark.yaml in current dir)
+            // Act - Run capture command in directory without config file
             var exitCode = Runner.Run(
                 out var output,
                 "dotnet",
@@ -344,7 +348,7 @@ public class IntegrationTests
                 "--capture",
                 "--job-id", "test-job");
 
-            // Verify error
+            // Assert - Verify the command fails with error message about missing config
             Assert.AreNotEqual(0, exitCode);
             Assert.Contains("Error:", output);
         }
@@ -365,6 +369,7 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename()
     {
+        // Arrange - Set up to test default output filename generation
         var outputFile = "versionmark-integration-test-job.json";
         var currentDir = Directory.GetCurrentDirectory();
 
@@ -387,7 +392,7 @@ public class IntegrationTests
                 File.Delete(outputFile);
             }
 
-            // Run the application with capture command (no output file specified)
+            // Act - Run capture command without specifying --output parameter
             var exitCode = Runner.Run(
                 out var _,
                 "dotnet",
@@ -396,6 +401,7 @@ public class IntegrationTests
                 "--job-id", "integration-test-job",
                 "--", "dotnet");
 
+            // Assert - Verify command succeeded and created file with default name pattern
             // Verify success
             Assert.AreEqual(0, exitCode);
 
