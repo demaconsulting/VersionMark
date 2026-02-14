@@ -146,19 +146,34 @@ tools:
                     // Verify output file was created
                     if (File.Exists(outputFile))
                     {
-                        var jsonContent = File.ReadAllText(outputFile);
+                        // Parse JSON and validate structure
+                        var versionInfo = VersionInfo.LoadFromFile(outputFile);
 
-                        // Verify JSON contains job-id and at least one version entry
-                        if (jsonContent.Contains("test-job") && jsonContent.Contains("dotnet"))
+                        // Verify job-id is correct
+                        if (versionInfo.JobId != "test-job")
                         {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                            context.WriteLine($"✓ Captures Versions Test - PASSED");
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = $"Expected job-id 'test-job', got '{versionInfo.JobId}'";
+                            context.WriteError($"✗ Captures Versions Test - FAILED: Wrong job-id");
+                        }
+                        // Verify dotnet version was captured
+                        else if (!versionInfo.Versions.ContainsKey("dotnet"))
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = "Output JSON missing 'dotnet' version";
+                            context.WriteError($"✗ Captures Versions Test - FAILED: Missing dotnet version");
+                        }
+                        // Verify dotnet version is not empty
+                        else if (string.IsNullOrWhiteSpace(versionInfo.Versions["dotnet"]))
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = "Dotnet version is empty";
+                            context.WriteError($"✗ Captures Versions Test - FAILED: Empty dotnet version");
                         }
                         else
                         {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                            test.ErrorMessage = "Output JSON missing expected content";
-                            context.WriteError($"✗ Captures Versions Test - FAILED: Missing content");
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
+                            context.WriteLine($"✓ Captures Versions Test - PASSED");
                         }
                     }
                     else
