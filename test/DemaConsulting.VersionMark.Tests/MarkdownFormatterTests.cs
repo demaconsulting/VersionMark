@@ -145,7 +145,7 @@ public class MarkdownFormatterTests
 
         // Assert - Verify individual job IDs are shown with subscript formatting
         // What is proved: Different versions show job IDs in subscript format <sub>(job-id)</sub>
-        
+
         // For dotnet: two different versions (7.0.0 and 8.0.0)
         Assert.Contains("<sub>(job-3)</sub>", result);
         Assert.Contains("<sub>(job-1, job-2)</sub>", result);

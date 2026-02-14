@@ -423,4 +423,305 @@ public class IntegrationTests
             }
         }
     }
+
+    /// <summary>
+    ///     Integration test that publish command generates markdown report.
+    ///     What is tested: PUB-001, PUB-002, FMT-001 - End-to-end publish workflow
+    ///     What the assertions prove: Publish command processes JSON files and creates markdown
+    /// </summary>
+    [TestMethod]
+    public void VersionMark_PublishCommand_GeneratesMarkdownReport()
+    {
+        // Arrange - Set up unique temp directory with multiple JSON files
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var json1File = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
+        var json2File = PathHelpers.SafePathCombine(tempDir, "versionmark-job2.json");
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Create test JSON files
+            var versionInfo1 = new VersionInfo(
+                "job-1",
+                new Dictionary<string, string>
+                {
+                    ["dotnet"] = "8.0.0",
+                    ["node"] = "18.0.0",
+                    ["python"] = "3.11.0"
+                });
+            var versionInfo2 = new VersionInfo(
+                "job-2",
+                new Dictionary<string, string>
+                {
+                    ["dotnet"] = "8.0.0",
+                    ["node"] = "20.0.0",
+                    ["python"] = "3.11.0"
+                });
+
+            versionInfo1.SaveToFile(json1File);
+            versionInfo2.SaveToFile(json2File);
+
+            // Act - Run publish command
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--publish",
+                "--report", reportFile);
+
+            // Assert - Verify command succeeded
+            // What is proved: Publish command successfully generates markdown from JSON files
+            Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
+            Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
+
+            var reportContent = File.ReadAllText(reportFile);
+
+            // Verify markdown structure
+            Assert.Contains("## Tool Versions", reportContent);
+
+            // Verify tools are present and sorted alphabetically
+            Assert.Contains("dotnet", reportContent);
+            Assert.Contains("node", reportContent);
+            Assert.Contains("python", reportContent);
+
+            // Verify version formatting (uniform versions show "All jobs")
+            Assert.Contains("8.0.0 (All jobs)", reportContent); // dotnet uniform
+            Assert.Contains("3.11.0 (All jobs)", reportContent); // python uniform
+
+            // Verify version formatting (different versions show job IDs)
+            Assert.Contains("18.0.0", reportContent);
+            Assert.Contains("20.0.0", reportContent);
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Integration test that publish command handles custom report depth.
+    ///     What is tested: PUB-003, FMT-005 - Custom report depth parameter
+    ///     What the assertions prove: --report-depth controls markdown heading level
+    /// </summary>
+    [TestMethod]
+    public void VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels()
+    {
+        // Arrange - Set up unique temp directory with JSON file
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var jsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Create test JSON file
+            var versionInfo = new VersionInfo(
+                "job-1",
+                new Dictionary<string, string> { ["dotnet"] = "8.0.0" });
+            versionInfo.SaveToFile(jsonFile);
+
+            // Act - Run publish command with custom depth
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--publish",
+                "--report", reportFile,
+                "--report-depth", "4");
+
+            // Assert - Verify command succeeded and used custom depth
+            // What is proved: --report-depth parameter controls heading level
+            Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
+            Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
+
+            var reportContent = File.ReadAllText(reportFile);
+            Assert.Contains("#### Tool Versions", reportContent);
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Integration test that publish command requires --report parameter.
+    ///     What is tested: PUB-004 - --report is required with --publish
+    ///     What the assertions prove: Command fails when --report is missing
+    /// </summary>
+    [TestMethod]
+    public void VersionMark_PublishCommandWithoutReport_ReturnsError()
+    {
+        // Act - Run publish command without --report
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "--publish");
+
+        // Assert - Verify command failed with appropriate error
+        // What is proved: --publish requires --report parameter
+        Assert.AreEqual(1, exitCode);
+        Assert.Contains("Error: --report is required for publish mode", output);
+    }
+
+    /// <summary>
+    ///     Integration test that publish command handles no matching files.
+    ///     What is tested: PUB-007 - Error when no JSON files match glob patterns
+    ///     What the assertions prove: Command fails with clear error when no files found
+    /// </summary>
+    [TestMethod]
+    public void VersionMark_PublishCommandWithNoMatchingFiles_ReturnsError()
+    {
+        // Arrange - Set up empty temp directory
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Act - Run publish command with pattern that matches no files
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--publish",
+                "--report", reportFile,
+                "--", "nonexistent-*.json");
+
+            // Assert - Verify command failed with appropriate error
+            // What is proved: No matching files results in an error
+            Assert.AreEqual(1, exitCode);
+            Assert.Contains("Error: No JSON files found matching patterns:", output);
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Integration test that publish command handles invalid JSON files.
+    ///     What is tested: PUB-008 - Error when JSON files cannot be parsed
+    ///     What the assertions prove: Command fails with clear error for malformed JSON
+    /// </summary>
+    [TestMethod]
+    public void VersionMark_PublishCommandWithInvalidJson_ReturnsError()
+    {
+        // Arrange - Set up temp directory with invalid JSON file
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var invalidJsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-invalid.json");
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Create invalid JSON file
+            File.WriteAllText(invalidJsonFile, "{ this is not valid JSON }");
+
+            // Act - Run publish command with invalid JSON file
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--publish",
+                "--report", reportFile);
+
+            // Assert - Verify command failed with appropriate error
+            // What is proved: Invalid JSON results in an error
+            Assert.AreEqual(1, exitCode);
+            Assert.Contains("Error: Failed to parse JSON file", output);
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Integration test that publish command uses custom glob patterns.
+    ///     What is tested: PUB-005 - Custom glob patterns after -- separator
+    ///     What the assertions prove: Custom patterns correctly filter JSON files
+    /// </summary>
+    [TestMethod]
+    public void VersionMark_PublishCommandWithCustomGlobPatterns_FiltersFiles()
+    {
+        // Arrange - Set up temp directory with multiple JSON files
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var includedFile = PathHelpers.SafePathCombine(tempDir, "included-job1.json");
+        var excludedFile = PathHelpers.SafePathCombine(tempDir, "versionmark-excluded.json");
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Create test JSON files
+            var includedInfo = new VersionInfo(
+                "included-job",
+                new Dictionary<string, string> { ["tool1"] = "1.0.0" });
+            var excludedInfo = new VersionInfo(
+                "excluded-job",
+                new Dictionary<string, string> { ["tool2"] = "2.0.0" });
+
+            includedInfo.SaveToFile(includedFile);
+            excludedInfo.SaveToFile(excludedFile);
+
+            // Act - Run publish command with custom glob pattern
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--publish",
+                "--report", reportFile,
+                "--", "included-*.json");
+
+            // Assert - Verify only matching files were included
+            // What is proved: Custom glob patterns correctly filter input files
+            Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
+            Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
+
+            var reportContent = File.ReadAllText(reportFile);
+            Assert.Contains("tool1", reportContent); // From included file
+            Assert.DoesNotContain("tool2", reportContent); // From excluded file
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
 }

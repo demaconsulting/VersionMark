@@ -228,4 +228,129 @@ public class ContextTests
             Console.SetOut(originalOut);
         }
     }
+
+    /// <summary>
+    ///     Test creating a context with the publish flag.
+    ///     What is tested: --publish flag parsing sets Publish property to true
+    ///     What the assertions prove: The Publish flag is correctly parsed and stored
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_PublishFlag_SetsPublishTrue()
+    {
+        // Arrange & Act - Create context with --publish and --report flags
+        using var context = Context.Create(["--publish", "--report", "output.md"]);
+
+        // Assert - Verify publish mode is enabled
+        // What is proved: --publish flag is correctly recognized and sets Publish property
+        Assert.IsTrue(context.Publish);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with the report parameter.
+    ///     What is tested: --report parameter parsing captures the output file path
+    ///     What the assertions prove: The report file path is correctly parsed and stored
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ReportParameter_SetsReportFile()
+    {
+        // Arrange & Act - Create context with --publish and --report flags
+        using var context = Context.Create(["--publish", "--report", "output.md"]);
+
+        // Assert - Verify report file path is captured
+        // What is proved: --report parameter value is correctly captured
+        Assert.AreEqual("output.md", context.ReportFile);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with the report-depth parameter.
+    ///     What is tested: --report-depth parameter parsing captures the depth value
+    ///     What the assertions prove: The report depth is correctly parsed as an integer
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ReportDepthParameter_SetsReportDepth()
+    {
+        // Arrange & Act - Create context with --publish, --report, and --report-depth flags
+        using var context = Context.Create(["--publish", "--report", "output.md", "--report-depth", "3"]);
+
+        // Assert - Verify report depth is captured
+        // What is proved: --report-depth parameter value is correctly parsed as an integer
+        Assert.AreEqual(3, context.ReportDepth);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with default report-depth.
+    ///     What is tested: Default report-depth value when not specified
+    ///     What the assertions prove: The default report depth is 2
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_NoReportDepth_DefaultsToTwo()
+    {
+        // Arrange & Act - Create context without --report-depth
+        using var context = Context.Create(["--publish", "--report", "output.md"]);
+
+        // Assert - Verify default report depth is 2
+        // What is proved: Report depth defaults to 2 when not specified
+        Assert.AreEqual(2, context.ReportDepth);
+    }
+
+    /// <summary>
+    ///     Test creating a context with glob patterns after -- separator.
+    ///     What is tested: Glob patterns after -- are captured in GlobPatterns array
+    ///     What the assertions prove: Multiple glob patterns are correctly parsed and stored
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_GlobPatternsAfterSeparator_CapturesPatterns()
+    {
+        // Arrange & Act - Create context with glob patterns after --
+        using var context = Context.Create([
+            "--publish",
+            "--report", "output.md",
+            "--",
+            "versionmark-*.json",
+            "results/*.json"
+        ]);
+
+        // Assert - Verify glob patterns are captured
+        // What is proved: Arguments after -- are correctly captured in GlobPatterns array
+        Assert.HasCount(2, context.GlobPatterns);
+        Assert.AreEqual("versionmark-*.json", context.GlobPatterns[0]);
+        Assert.AreEqual("results/*.json", context.GlobPatterns[1]);
+    }
+
+    /// <summary>
+    ///     Test that publish flag is set without --report parameter (validation happens in Program.Run).
+    ///     What is tested: --publish flag can be parsed without --report in Context.Create
+    ///     What the assertions prove: Context parsing accepts --publish without --report (error checked later)
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_PublishWithoutReport_ParsesSuccessfully()
+    {
+        // Arrange & Act - Create context with --publish but no --report
+        using var context = Context.Create(["--publish"]);
+
+        // Assert - Verify publish mode is enabled (validation happens in Program.Run)
+        // What is proved: --publish flag is parsed successfully without --report
+        Assert.IsTrue(context.Publish);
+        Assert.IsNull(context.ReportFile);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test that glob patterns is empty when not specified (default applied in Program.RunPublish).
+    ///     What is tested: GlobPatterns array when none provided after --
+    ///     What the assertions prove: GlobPatterns is empty array when not specified
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_NoGlobPatterns_EmptyArray()
+    {
+        // Arrange & Act - Create context without glob patterns
+        using var context = Context.Create(["--publish", "--report", "output.md"]);
+
+        // Assert - Verify glob patterns array is empty (default applied in Program.RunPublish)
+        // What is proved: When no glob patterns specified, GlobPatterns is an empty array
+        Assert.HasCount(0, context.GlobPatterns);
+    }
 }

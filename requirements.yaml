@@ -450,7 +450,9 @@ sections:
               - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
 
           - id: FMT-002
-            title: The tool shall collapse versions into "All jobs" when the same version appears across all input files.
+            title: >-
+              The tool shall collapse versions into "All jobs" when the same version appears across
+              all input files.
             justification: |
               Reduces redundancy in reports when all jobs used the same version of a tool,
               improving readability and report conciseness.
@@ -460,7 +462,9 @@ sections:
               - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs
 
           - id: FMT-003
-            title: The tool shall display individual job IDs with their versions when versions differ across input files.
+            title: >-
+              The tool shall display individual job IDs with their versions when versions differ
+              across input files.
             justification: |
               Provides detailed visibility into version differences across jobs,
               helping users identify and troubleshoot version inconsistencies.
@@ -470,7 +474,9 @@ sections:
               - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
 
           - id: FMT-004
-            title: The tool shall use subscript formatting and parenthesized job IDs to indicate which jobs had which versions.
+            title: >-
+              The tool shall use subscript formatting and parenthesized job IDs to indicate which
+              jobs had which versions.
             justification: |
               Provides clear visual distinction between different job executions and their
               versions in a compact, readable format.
