@@ -120,18 +120,25 @@ internal static class MarkdownFormatter
         }
 
         // Otherwise, group by version and show job IDs
+        // When versions differ across jobs, we need to show which jobs have which versions
         var versionGroups = versions
             .GroupBy(v => v.Version)
             .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
 
+        // Build formatted version strings with subscripted job IDs
+        // Each version gets its own entry showing which jobs use it
         var formattedVersions = new List<string>();
         foreach (var group in versionGroups)
         {
+            // For each unique version, collect and sort the job IDs that use it
             var jobIds = group.Select(v => v.JobId).OrderBy(j => j, StringComparer.OrdinalIgnoreCase);
             var jobIdList = string.Join(", ", jobIds);
+            
+            // Format as "version <sub>(job1, job2)</sub>" for HTML subscript rendering
             formattedVersions.Add($"{group.Key} <sub>({jobIdList})</sub>");
         }
 
+        // Join all version entries with commas to create the final output
         return string.Join(", ", formattedVersions);
     }
 }

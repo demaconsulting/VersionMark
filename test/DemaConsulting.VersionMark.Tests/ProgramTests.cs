@@ -32,15 +32,18 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_WithVersionFlag_DisplaysVersionOnly()
     {
+        // Arrange - Redirect console output
         var originalOut = Console.Out;
         try
         {
             using var outWriter = new StringWriter();
             Console.SetOut(outWriter);
-            using var context = Context.Create(["--version"]);
 
+            // Act - Run with version flag
+            using var context = Context.Create(["--version"]);
             Program.Run(context);
 
+            // Assert - Verify version-only output
             var output = outWriter.ToString();
             Assert.DoesNotContain("Copyright", output);
             Assert.DoesNotContain("VersionMark version", output);
@@ -57,15 +60,18 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_WithHelpFlag_DisplaysUsageInformation()
     {
+        // Arrange - Redirect console output
         var originalOut = Console.Out;
         try
         {
             using var outWriter = new StringWriter();
             Console.SetOut(outWriter);
-            using var context = Context.Create(["--help"]);
 
+            // Act - Run with help flag
+            using var context = Context.Create(["--help"]);
             Program.Run(context);
 
+            // Assert - Verify usage information output
             var output = outWriter.ToString();
             Assert.Contains("Usage:", output);
             Assert.Contains("Options:", output);
@@ -84,15 +90,18 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_WithValidateFlag_RunsValidation()
     {
+        // Arrange - Redirect console output
         var originalOut = Console.Out;
         try
         {
             using var outWriter = new StringWriter();
             Console.SetOut(outWriter);
-            using var context = Context.Create(["--validate"]);
 
+            // Act - Run with validate flag
+            using var context = Context.Create(["--validate"]);
             Program.Run(context);
 
+            // Assert - Verify validation output
             var output = outWriter.ToString();
             Assert.Contains("Total Tests:", output);
         }
@@ -108,15 +117,18 @@ public class ProgramTests
     [TestMethod]
     public void Program_Run_NoArguments_DisplaysDefaultBehavior()
     {
+        // Arrange - Redirect console output
         var originalOut = Console.Out;
         try
         {
             using var outWriter = new StringWriter();
             Console.SetOut(outWriter);
-            using var context = Context.Create([]);
 
+            // Act - Run with no arguments
+            using var context = Context.Create([]);
             Program.Run(context);
 
+            // Assert - Verify default output
             var output = outWriter.ToString();
             Assert.Contains("VersionMark version", output);
             Assert.Contains("Copyright", output);
@@ -133,7 +145,10 @@ public class ProgramTests
     [TestMethod]
     public void Program_Version_ReturnsNonEmptyString()
     {
+        // Arrange & Act - Get version property
         var version = Program.Version;
+
+        // Assert - Verify version is non-empty
         Assert.IsFalse(string.IsNullOrWhiteSpace(version));
     }
 

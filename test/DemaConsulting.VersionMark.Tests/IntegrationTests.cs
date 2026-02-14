@@ -48,14 +48,14 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_VersionFlag_OutputsVersion()
     {
-        // Run the application with --version flag
+        // Arrange & Act - Run the application with --version flag
         var exitCode = Runner.Run(
             out var output,
             "dotnet",
             _dllPath,
             "--version");
 
-        // Verify success
+        // Assert - Verify success and version output
         Assert.AreEqual(0, exitCode);
 
         // Verify version is output
@@ -70,14 +70,14 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_HelpFlag_OutputsUsageInformation()
     {
-        // Run the application with --help flag
+        // Arrange & Act - Run the application with --help flag
         var exitCode = Runner.Run(
             out var output,
             "dotnet",
             _dllPath,
             "--help");
 
-        // Verify success
+        // Assert - Verify success and usage information output
         Assert.AreEqual(0, exitCode);
 
         // Verify usage information is output
@@ -92,14 +92,14 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_ValidateFlag_RunsValidation()
     {
-        // Run the application with --validate flag
+        // Arrange & Act - Run the application with --validate flag
         var exitCode = Runner.Run(
             out var output,
             "dotnet",
             _dllPath,
             "--validate");
 
-        // Verify success
+        // Assert - Verify success and validation output
         Assert.AreEqual(0, exitCode);
 
         // Verify validation output
@@ -113,12 +113,13 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_ValidateWithResults_GeneratesTrxFile()
     {
+        // Arrange - Create temp file path for results
         var resultsFile = Path.GetTempFileName();
         resultsFile = Path.ChangeExtension(resultsFile, ".trx");
 
         try
         {
-            // Run the application with --validate and --results flags
+            // Act - Run the application with --validate and --results flags
             var exitCode = Runner.Run(
                 out var _,
                 "dotnet",
@@ -127,7 +128,7 @@ public class IntegrationTests
                 "--results",
                 resultsFile);
 
-            // Verify success
+            // Assert - Verify success and TRX file creation
             Assert.AreEqual(0, exitCode);
 
             // Verify TRX file was created
@@ -153,14 +154,14 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_SilentFlag_SuppressesOutput()
     {
-        // Run the application with --silent flag
+        // Arrange & Act - Run the application with --silent flag
         var exitCode = Runner.Run(
             out var _,
             "dotnet",
             _dllPath,
             "--silent");
 
-        // Verify success
+        // Assert - Verify success
         Assert.AreEqual(0, exitCode);
 
         // Output check removed since silent mode may still produce some output
@@ -172,11 +173,12 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_LogFlag_WritesOutputToFile()
     {
+        // Arrange - Create temp log file path
         var logFile = Path.GetTempFileName();
 
         try
         {
-            // Run the application with --log flag
+            // Act - Run the application with --log flag
             var exitCode = Runner.Run(
                 out var _,
                 "dotnet",
@@ -184,7 +186,7 @@ public class IntegrationTests
                 "--log",
                 logFile);
 
-            // Verify success
+            // Assert - Verify success and log file creation
             Assert.AreEqual(0, exitCode);
 
             // Verify log file was created
@@ -209,14 +211,14 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_UnknownArgument_ReturnsError()
     {
-        // Run the application with unknown argument
+        // Arrange & Act - Run the application with unknown argument
         var exitCode = Runner.Run(
             out var output,
             "dotnet",
             _dllPath,
             "--unknown");
 
-        // Verify error
+        // Assert - Verify error is returned
         Assert.AreNotEqual(0, exitCode);
         Assert.Contains("Error", output);
     }
@@ -566,7 +568,7 @@ public class IntegrationTests
     [TestMethod]
     public void VersionMark_PublishCommandWithoutReport_ReturnsError()
     {
-        // Act - Run publish command without --report
+        // Arrange & Act - Run publish command without --report
         var exitCode = Runner.Run(
             out var output,
             "dotnet",
