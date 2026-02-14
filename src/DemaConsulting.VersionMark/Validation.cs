@@ -44,17 +44,8 @@ internal static class Validation
         };
 
         // Run core functionality tests
-        RunVersionTest(context, testResults);
-        RunHelpTest(context, testResults);
-
-        // Run publish feature tests
-        RunPublishRequiresReportParameterTest(context, testResults);
-        RunPublishWithValidInputTest(context, testResults);
-        RunPublishWithNoMatchingFilesTest(context, testResults);
-        RunPublishWithUniformVersionsTest(context, testResults);
-        RunPublishWithDifferingVersionsTest(context, testResults);
-        RunPublishWithReportDepthTest(context, testResults);
-        RunPublishWithInvalidJsonTest(context, testResults);
+        RunCaptureTest(context, testResults);
+        RunPublishTest(context, testResults);
 
         // Calculate totals
         var totalTests = testResults.Results.Count;
@@ -100,200 +91,115 @@ internal static class Validation
     }
 
     /// <summary>
-    ///     Runs a test for version display functionality.
+    ///     Runs a test to verify the capture functionality works correctly.
     /// </summary>
     /// <param name="context">The context for output.</param>
     /// <param name="testResults">The test results collection.</param>
-    private static void RunVersionTest(Context context, DemaConsulting.TestResults.TestResults testResults)
+    private static void RunCaptureTest(Context context, DemaConsulting.TestResults.TestResults testResults)
     {
         var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_VersionDisplay");
+        var test = CreateTestResult("VersionMark_CapturesVersions");
 
         try
         {
             using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "version-test.log");
+            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "capture-test.log");
+            var configFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, ".versionmark.yaml");
+            var outputFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "versions.json");
 
-            // Build command line arguments
+            // Create minimal config file with just dotnet tool
+            var configContent = @"---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+";
+            File.WriteAllText(configFile, configContent, System.Text.Encoding.UTF8);
+
+            // Build command line arguments for capture
             var args = new List<string>
             {
                 "--silent",
                 "--log", logFile,
-                "--version"
+                "--capture",
+                "--job-id", "test-job",
+                "--output", outputFile
             };
 
-            // Run the program
-            int exitCode;
-            using (var testContext = Context.Create([.. args]))
+            // Save the current directory and change to temp directory
+            var originalDir = Directory.GetCurrentDirectory();
+            try
             {
-                Program.Run(testContext);
-                exitCode = testContext.ExitCode;
-            }
+                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
 
-            // Check if execution succeeded
-            if (exitCode == 0)
-            {
-                // Read log content
-                var logContent = File.ReadAllText(logFile);
-
-                // Verify version string is in log (version contains dots like 0.0.0)
-                if (!string.IsNullOrWhiteSpace(logContent) &&
-                    logContent.Split('.').Length >= 3)
+                // Run the program
+                int exitCode;
+                using (var testContext = Context.Create([.. args]))
                 {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                    context.WriteLine($"✓ Version Display Test - PASSED");
+                    Program.Run(testContext);
+                    exitCode = testContext.ExitCode;
+                }
+
+                // Check if execution succeeded
+                if (exitCode == 0)
+                {
+                    // Verify output file was created
+                    if (File.Exists(outputFile))
+                    {
+                        // Parse JSON and validate structure
+                        var versionInfo = VersionInfo.LoadFromFile(outputFile);
+
+                        // Verify job-id is correct
+                        if (versionInfo.JobId != "test-job")
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = $"Expected job-id 'test-job', got '{versionInfo.JobId}'";
+                            context.WriteError($"✗ Captures Versions Test - FAILED: Wrong job-id");
+                        }
+                        // Verify dotnet version was captured
+                        else if (!versionInfo.Versions.ContainsKey("dotnet"))
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = "Output JSON missing 'dotnet' version";
+                            context.WriteError($"✗ Captures Versions Test - FAILED: Missing dotnet version");
+                        }
+                        // Verify dotnet version is not empty
+                        else if (string.IsNullOrWhiteSpace(versionInfo.Versions["dotnet"]))
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = "Dotnet version is empty";
+                            context.WriteError($"✗ Captures Versions Test - FAILED: Empty dotnet version");
+                        }
+                        else
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
+                            context.WriteLine($"✓ Captures Versions Test - PASSED");
+                        }
+                    }
+                    else
+                    {
+                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                        test.ErrorMessage = "Output file was not created";
+                        context.WriteError($"✗ Captures Versions Test - FAILED: No output file");
+                    }
                 }
                 else
                 {
                     test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = "Version string not found in log";
-                    context.WriteError($"✗ Version Display Test - FAILED: Version string not found in log");
+                    test.ErrorMessage = $"Program exited with code {exitCode}";
+                    context.WriteError($"✗ Captures Versions Test - FAILED: Exit code {exitCode}");
                 }
             }
-            else
+            finally
             {
-                test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                test.ErrorMessage = $"Program exited with code {exitCode}";
-                context.WriteError($"✗ Version Display Test - FAILED: Exit code {exitCode}");
+                Directory.SetCurrentDirectory(originalDir);
             }
         }
         // Generic catch is justified here as this is a test framework - any exception should be
         // recorded as a test failure to ensure robust test execution and reporting.
         catch (Exception ex)
         {
-            HandleTestException(test, context, "Version Display Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test for help display functionality.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunHelpTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_HelpDisplay");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "help-test.log");
-
-            // Build command line arguments
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--help"
-            };
-
-            // Run the program
-            int exitCode;
-            using (var testContext = Context.Create([.. args]))
-            {
-                Program.Run(testContext);
-                exitCode = testContext.ExitCode;
-            }
-
-            // Check if execution succeeded
-            if (exitCode == 0)
-            {
-                // Read log content
-                var logContent = File.ReadAllText(logFile);
-
-                // Verify help text is in log
-                if (logContent.Contains("Usage:") && logContent.Contains("Options:"))
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                    context.WriteLine($"✓ Help Display Test - PASSED");
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = "Help text not found in log";
-                    context.WriteError($"✗ Help Display Test - FAILED: Help text not found in log");
-                }
-            }
-            else
-            {
-                test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                test.ErrorMessage = $"Program exited with code {exitCode}";
-                context.WriteError($"✗ Help Display Test - FAILED: Exit code {exitCode}");
-            }
-        }
-        // Generic catch is justified here as this is a test framework - any exception should be
-        // recorded as a test failure to ensure robust test execution and reporting.
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Help Display Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test to verify that --report parameter is required for publish mode.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishRequiresReportParameterTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommandWithoutReport_ReturnsError");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-no-report.log");
-
-            // Build command line arguments for publish without --report
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--publish"
-            };
-
-            // Run the program
-            int exitCode;
-            using (var testContext = Context.Create([.. args]))
-            {
-                Program.Run(testContext);
-                exitCode = testContext.ExitCode;
-            }
-
-            // Check if execution returned error
-            if (exitCode == 1)
-            {
-                // Read log content
-                var logContent = File.ReadAllText(logFile);
-
-                // Verify error message is in log
-                if (logContent.Contains("Error: --report is required for publish mode"))
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                    context.WriteLine($"✓ Publish Requires Report Parameter Test - PASSED");
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = "Expected error message not found in log";
-                    context.WriteError($"✗ Publish Requires Report Parameter Test - FAILED: Expected error message not found");
-                }
-            }
-            else
-            {
-                test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                test.ErrorMessage = $"Program exited with code {exitCode}, expected 1";
-                context.WriteError($"✗ Publish Requires Report Parameter Test - FAILED: Exit code {exitCode}");
-            }
-        }
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Publish Requires Report Parameter Test", ex);
+            HandleTestException(test, context, "Captures Versions Test", ex);
         }
 
         FinalizeTestResult(test, startTime, testResults);
@@ -304,10 +210,10 @@ internal static class Validation
     /// </summary>
     /// <param name="context">The context for output.</param>
     /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishWithValidInputTest(Context context, DemaConsulting.TestResults.TestResults testResults)
+    private static void RunPublishTest(Context context, DemaConsulting.TestResults.TestResults testResults)
     {
         var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommand_GeneratesMarkdownReport");
+        var test = CreateTestResult("VersionMark_GeneratesMarkdownReport");
 
         try
         {
@@ -374,27 +280,27 @@ internal static class Validation
                             reportContent.Contains("20.0.0"))
                         {
                             test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                            context.WriteLine($"✓ Publish Command Generates Markdown Report Test - PASSED");
+                            context.WriteLine($"✓ Generates Markdown Report Test - PASSED");
                         }
                         else
                         {
                             test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
                             test.ErrorMessage = "Report content missing expected elements";
-                            context.WriteError($"✗ Publish Command Generates Markdown Report Test - FAILED: Missing content");
+                            context.WriteError($"✗ Generates Markdown Report Test - FAILED: Missing content");
                         }
                     }
                     else
                     {
                         test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
                         test.ErrorMessage = "Report file was not created";
-                        context.WriteError($"✗ Publish Command Generates Markdown Report Test - FAILED: No report file");
+                        context.WriteError($"✗ Generates Markdown Report Test - FAILED: No report file");
                     }
                 }
                 else
                 {
                     test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
                     test.ErrorMessage = $"Program exited with code {exitCode}";
-                    context.WriteError($"✗ Publish Command Generates Markdown Report Test - FAILED: Exit code {exitCode}");
+                    context.WriteError($"✗ Generates Markdown Report Test - FAILED: Exit code {exitCode}");
                 }
             }
             finally
@@ -402,480 +308,11 @@ internal static class Validation
                 Directory.SetCurrentDirectory(originalDir);
             }
         }
+        // Generic catch is justified here as this is a test framework - any exception should be
+        // recorded as a test failure to ensure robust test execution and reporting.
         catch (Exception ex)
         {
-            HandleTestException(test, context, "Publish Command Generates Markdown Report Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test to verify that publish mode reports an error when no matching files are found.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishWithNoMatchingFilesTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommandWithNoMatchingFiles_ReturnsError");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-no-files.log");
-            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
-
-            // Build command line arguments for publish with pattern that won't match
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--publish",
-                "--report", reportFile,
-                "--",
-                "nonexistent-*.json"
-            };
-
-            // Save the current directory and change to temp directory
-            var originalDir = Directory.GetCurrentDirectory();
-            try
-            {
-                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
-
-                // Run the program
-                int exitCode;
-                using (var testContext = Context.Create([.. args]))
-                {
-                    Program.Run(testContext);
-                    exitCode = testContext.ExitCode;
-                }
-
-                // Check if execution returned error
-                if (exitCode == 1)
-                {
-                    // Read log content
-                    var logContent = File.ReadAllText(logFile);
-
-                    // Verify error message is in log
-                    if (logContent.Contains("Error: No JSON files found matching patterns"))
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                        context.WriteLine($"✓ Publish With No Matching Files Test - PASSED");
-                    }
-                    else
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                        test.ErrorMessage = "Expected error message not found in log";
-                        context.WriteError($"✗ Publish With No Matching Files Test - FAILED: Expected error message not found");
-                    }
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = $"Program exited with code {exitCode}, expected 1";
-                    context.WriteError($"✗ Publish With No Matching Files Test - FAILED: Exit code {exitCode}");
-                }
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalDir);
-            }
-        }
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Publish With No Matching Files Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test to verify that publish mode shows "All jobs" when versions are uniform.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishWithUniformVersionsTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommand_WithUniformVersions_ShowsAllJobs");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-uniform.log");
-            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
-            var jsonFile1 = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "test1.json");
-            var jsonFile2 = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "test2.json");
-
-            // Create test JSON files with same versions
-            var versionInfo1 = new VersionInfo("job1", new Dictionary<string, string>
-            {
-                { "tool1", "1.0.0" }
-            });
-            versionInfo1.SaveToFile(jsonFile1);
-
-            var versionInfo2 = new VersionInfo("job2", new Dictionary<string, string>
-            {
-                { "tool1", "1.0.0" }
-            });
-            versionInfo2.SaveToFile(jsonFile2);
-
-            // Build command line arguments for publish
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--publish",
-                "--report", reportFile,
-                "--",
-                "test*.json"
-            };
-
-            // Save the current directory and change to temp directory
-            var originalDir = Directory.GetCurrentDirectory();
-            try
-            {
-                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
-
-                // Run the program
-                int exitCode;
-                using (var testContext = Context.Create([.. args]))
-                {
-                    Program.Run(testContext);
-                    exitCode = testContext.ExitCode;
-                }
-
-                // Check if execution succeeded
-                if (exitCode == 0)
-                {
-                    // Verify report file was created
-                    if (File.Exists(reportFile))
-                    {
-                        var reportContent = File.ReadAllText(reportFile);
-
-                        // Verify report shows "All jobs" for uniform versions
-                        if (reportContent.Contains("1.0.0 (All jobs)"))
-                        {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                            context.WriteLine($"✓ Publish With Uniform Versions Shows All Jobs Test - PASSED");
-                        }
-                        else
-                        {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                            test.ErrorMessage = "Report does not show 'All jobs' for uniform versions";
-                            context.WriteError($"✗ Publish With Uniform Versions Shows All Jobs Test - FAILED: Missing 'All jobs'");
-                        }
-                    }
-                    else
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                        test.ErrorMessage = "Report file was not created";
-                        context.WriteError($"✗ Publish With Uniform Versions Shows All Jobs Test - FAILED: No report file");
-                    }
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = $"Program exited with code {exitCode}";
-                    context.WriteError($"✗ Publish With Uniform Versions Shows All Jobs Test - FAILED: Exit code {exitCode}");
-                }
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalDir);
-            }
-        }
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Publish With Uniform Versions Shows All Jobs Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test to verify that publish mode shows job IDs when versions differ.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishWithDifferingVersionsTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommand_WithDifferingVersions_ShowsJobIds");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-differ.log");
-            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
-            var jsonFile1 = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "test1.json");
-            var jsonFile2 = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "test2.json");
-
-            // Create test JSON files with different versions
-            var versionInfo1 = new VersionInfo("job1", new Dictionary<string, string>
-            {
-                { "tool1", "1.0.0" }
-            });
-            versionInfo1.SaveToFile(jsonFile1);
-
-            var versionInfo2 = new VersionInfo("job2", new Dictionary<string, string>
-            {
-                { "tool1", "2.0.0" }
-            });
-            versionInfo2.SaveToFile(jsonFile2);
-
-            // Build command line arguments for publish
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--publish",
-                "--report", reportFile,
-                "--",
-                "test*.json"
-            };
-
-            // Save the current directory and change to temp directory
-            var originalDir = Directory.GetCurrentDirectory();
-            try
-            {
-                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
-
-                // Run the program
-                int exitCode;
-                using (var testContext = Context.Create([.. args]))
-                {
-                    Program.Run(testContext);
-                    exitCode = testContext.ExitCode;
-                }
-
-                // Check if execution succeeded
-                if (exitCode == 0)
-                {
-                    // Verify report file was created
-                    if (File.Exists(reportFile))
-                    {
-                        var reportContent = File.ReadAllText(reportFile);
-
-                        // Verify report shows job IDs with subscripts for different versions
-                        if (reportContent.Contains("<sub>(job1)</sub>") &&
-                            reportContent.Contains("<sub>(job2)</sub>"))
-                        {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                            context.WriteLine($"✓ Publish With Differing Versions Shows Job IDs Test - PASSED");
-                        }
-                        else
-                        {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                            test.ErrorMessage = "Report does not show job IDs for different versions";
-                            context.WriteError($"✗ Publish With Differing Versions Shows Job IDs Test - FAILED: Missing job IDs");
-                        }
-                    }
-                    else
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                        test.ErrorMessage = "Report file was not created";
-                        context.WriteError($"✗ Publish With Differing Versions Shows Job IDs Test - FAILED: No report file");
-                    }
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = $"Program exited with code {exitCode}";
-                    context.WriteError($"✗ Publish With Differing Versions Shows Job IDs Test - FAILED: Exit code {exitCode}");
-                }
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalDir);
-            }
-        }
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Publish With Differing Versions Shows Job IDs Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test to verify that publish mode adjusts heading levels based on report-depth.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishWithReportDepthTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-depth.log");
-            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
-            var jsonFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "test.json");
-
-            // Create test JSON file
-            var versionInfo = new VersionInfo("job1", new Dictionary<string, string>
-            {
-                { "tool1", "1.0.0" }
-            });
-            versionInfo.SaveToFile(jsonFile);
-
-            // Build command line arguments for publish with custom depth
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--publish",
-                "--report", reportFile,
-                "--report-depth", "4",
-                "--",
-                "test.json"
-            };
-
-            // Save the current directory and change to temp directory
-            var originalDir = Directory.GetCurrentDirectory();
-            try
-            {
-                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
-
-                // Run the program
-                int exitCode;
-                using (var testContext = Context.Create([.. args]))
-                {
-                    Program.Run(testContext);
-                    exitCode = testContext.ExitCode;
-                }
-
-                // Check if execution succeeded
-                if (exitCode == 0)
-                {
-                    // Verify report file was created
-                    if (File.Exists(reportFile))
-                    {
-                        var reportContent = File.ReadAllText(reportFile);
-
-                        // Verify report uses heading level 4
-                        if (reportContent.Contains("#### Tool Versions"))
-                        {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                            context.WriteLine($"✓ Publish With Report Depth Test - PASSED");
-                        }
-                        else
-                        {
-                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                            test.ErrorMessage = "Report does not use correct heading depth";
-                            context.WriteError($"✗ Publish With Report Depth Test - FAILED: Wrong heading level");
-                        }
-                    }
-                    else
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                        test.ErrorMessage = "Report file was not created";
-                        context.WriteError($"✗ Publish With Report Depth Test - FAILED: No report file");
-                    }
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = $"Program exited with code {exitCode}";
-                    context.WriteError($"✗ Publish With Report Depth Test - FAILED: Exit code {exitCode}");
-                }
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalDir);
-            }
-        }
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Publish With Report Depth Test", ex);
-        }
-
-        FinalizeTestResult(test, startTime, testResults);
-    }
-
-    /// <summary>
-    ///     Runs a test to verify that publish mode reports an error when JSON files are invalid.
-    /// </summary>
-    /// <param name="context">The context for output.</param>
-    /// <param name="testResults">The test results collection.</param>
-    private static void RunPublishWithInvalidJsonTest(Context context, DemaConsulting.TestResults.TestResults testResults)
-    {
-        var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("VersionMark_PublishCommandWithInvalidJson_ReturnsError");
-
-        try
-        {
-            using var tempDir = new TemporaryDirectory();
-            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-invalid.log");
-            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
-            var jsonFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "invalid.json");
-
-            // Create invalid JSON file
-            File.WriteAllText(jsonFile, "{ invalid json content", System.Text.Encoding.UTF8);
-
-            // Build command line arguments for publish
-            var args = new List<string>
-            {
-                "--silent",
-                "--log", logFile,
-                "--publish",
-                "--report", reportFile,
-                "--",
-                "invalid.json"
-            };
-
-            // Save the current directory and change to temp directory
-            var originalDir = Directory.GetCurrentDirectory();
-            try
-            {
-                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
-
-                // Run the program
-                int exitCode;
-                using (var testContext = Context.Create([.. args]))
-                {
-                    Program.Run(testContext);
-                    exitCode = testContext.ExitCode;
-                }
-
-                // Check if execution returned error
-                if (exitCode == 1)
-                {
-                    // Read log content
-                    var logContent = File.ReadAllText(logFile);
-
-                    // Verify error message is in log
-                    if (logContent.Contains("Error:"))
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
-                        context.WriteLine($"✓ Publish With Invalid JSON Test - PASSED");
-                    }
-                    else
-                    {
-                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                        test.ErrorMessage = "Expected error message not found in log";
-                        context.WriteError($"✗ Publish With Invalid JSON Test - FAILED: Expected error message not found");
-                    }
-                }
-                else
-                {
-                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
-                    test.ErrorMessage = $"Program exited with code {exitCode}, expected 1";
-                    context.WriteError($"✗ Publish With Invalid JSON Test - FAILED: Exit code {exitCode}");
-                }
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalDir);
-            }
-        }
-        catch (Exception ex)
-        {
-            HandleTestException(test, context, "Publish With Invalid JSON Test", ex);
+            HandleTestException(test, context, "Generates Markdown Report Test", ex);
         }
 
         FinalizeTestResult(test, startTime, testResults);

@@ -114,8 +114,8 @@ sections:
               - platform
             tests:
               # Tests link to "windows" to ensure results come from Windows platform
-              - "windows@VersionMark_VersionDisplay"
-              - "windows@VersionMark_HelpDisplay"
+              - "windows@VersionMark_CapturesVersions"
+              - "windows@VersionMark_GeneratesMarkdownReport"
 
           - id: PLT-002
             title: The tool shall build and run on Linux platforms.
@@ -125,8 +125,8 @@ sections:
               - platform
             tests:
               # Tests link to "ubuntu" to ensure results come from Linux platform
-              - "ubuntu@VersionMark_VersionDisplay"
-              - "ubuntu@VersionMark_HelpDisplay"
+              - "ubuntu@VersionMark_CapturesVersions"
+              - "ubuntu@VersionMark_GeneratesMarkdownReport"
 
           - id: PLT-003
             title: The tool shall support .NET 8 runtime.
@@ -135,8 +135,8 @@ sections:
             tags:
               - platform
             tests:
-              - "dotnet8.x@VersionMark_VersionDisplay"
-              - "dotnet8.x@VersionMark_HelpDisplay"
+              - "dotnet8.x@VersionMark_CapturesVersions"
+              - "dotnet8.x@VersionMark_GeneratesMarkdownReport"
 
           - id: PLT-004
             title: The tool shall support .NET 9 runtime.
@@ -145,8 +145,8 @@ sections:
             tags:
               - platform
             tests:
-              - "dotnet9.x@VersionMark_VersionDisplay"
-              - "dotnet9.x@VersionMark_HelpDisplay"
+              - "dotnet9.x@VersionMark_CapturesVersions"
+              - "dotnet9.x@VersionMark_GeneratesMarkdownReport"
 
           - id: PLT-005
             title: The tool shall support .NET 10 runtime.
@@ -155,8 +155,8 @@ sections:
             tags:
               - platform
             tests:
-              - "dotnet10.x@VersionMark_VersionDisplay"
-              - "dotnet10.x@VersionMark_HelpDisplay"
+              - "dotnet10.x@VersionMark_CapturesVersions"
+              - "dotnet10.x@VersionMark_GeneratesMarkdownReport"
 
       - title: Configuration File
         requirements:
@@ -240,6 +240,7 @@ sections:
             tags:
               - capture
             tests:
+              - VersionMark_CapturesVersions
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
@@ -364,7 +365,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - VersionMark_GeneratesMarkdownReport
 
           - id: PUB-002
             title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
@@ -374,7 +375,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - VersionMark_GeneratesMarkdownReport
 
           - id: PUB-003
             title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
@@ -384,7 +385,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels
+              - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
 
           - id: PUB-004
             title: The tool shall require --report parameter when publish mode is enabled.
@@ -394,7 +395,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommandWithoutReport_ReturnsError
+              - Program_Run_WithPublishCommandWithoutReport_ReturnsError
 
           - id: PUB-005
             title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
@@ -404,7 +405,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - VersionMark_GeneratesMarkdownReport
 
           - id: PUB-006
             title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
@@ -414,7 +415,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - VersionMark_GeneratesMarkdownReport
 
           - id: PUB-007
             title: The tool shall report errors when no JSON files match the specified glob patterns.
@@ -424,7 +425,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommandWithNoMatchingFiles_ReturnsError
+              - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
 
           - id: PUB-008
             title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
@@ -434,7 +435,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommandWithInvalidJson_ReturnsError
+              - Program_Run_WithPublishCommandInvalidJson_ReturnsError
 
       - title: Markdown Formatter
         requirements:
@@ -446,7 +447,7 @@ sections:
             tags:
               - formatter
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - VersionMark_GeneratesMarkdownReport
               - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
 
           - id: FMT-002
@@ -493,5 +494,5 @@ sections:
             tags:
               - formatter
             tests:
-              - VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels
+              - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
               - MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel
