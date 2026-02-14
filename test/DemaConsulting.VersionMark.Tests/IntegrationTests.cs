@@ -21,7 +21,7 @@
 namespace DemaConsulting.VersionMark.Tests;
 
 /// <summary>
-///     Integration tests that run the Template DotNet Tool application through dotnet.
+///     Integration tests that run the VersionMark application through dotnet.
 /// </summary>
 [TestClass]
 public class IntegrationTests
@@ -29,7 +29,7 @@ public class IntegrationTests
     private string _dllPath = string.Empty;
 
     /// <summary>
-    ///     Initialize test by locating the Template DotNet Tool DLL.
+    ///     Initialize test by locating the VersionMark DLL.
     /// </summary>
     [TestInitialize]
     public void TestInitialize()
@@ -192,7 +192,7 @@ public class IntegrationTests
 
             // Verify log file contains output
             var logContent = File.ReadAllText(logFile);
-            Assert.Contains("Template DotNet Tool version", logContent);
+            Assert.Contains("VersionMark version", logContent);
         }
         finally
         {

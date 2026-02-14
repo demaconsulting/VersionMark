@@ -140,8 +140,8 @@ internal static class Program
     /// <param name="context">The context for output.</param>
     private static void PrintHelp(Context context)
     {
-        context.WriteLine("Usage: templatetool [options]");
-        context.WriteLine("       templatetool --capture --job-id <id> [options] [-- tool1 tool2 ...]");
+        context.WriteLine("Usage: versionmark [options]");
+        context.WriteLine("       versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]");
         context.WriteLine("");
         context.WriteLine("Options:");
         context.WriteLine("  -v, --version              Display version information");

@@ -98,7 +98,7 @@ internal static class Validation
     private static void RunVersionTest(Context context, DemaConsulting.TestResults.TestResults testResults)
     {
         var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("TemplateTool_VersionDisplay");
+        var test = CreateTestResult("VersionMark_VersionDisplay");
 
         try
         {
@@ -166,7 +166,7 @@ internal static class Validation
     private static void RunHelpTest(Context context, DemaConsulting.TestResults.TestResults testResults)
     {
         var startTime = DateTime.UtcNow;
-        var test = CreateTestResult("TemplateTool_HelpDisplay");
+        var test = CreateTestResult("VersionMark_HelpDisplay");
 
         try
         {
@@ -330,7 +330,7 @@ internal static class Validation
         /// </summary>
         public TemporaryDirectory()
         {
-            DirectoryPath = PathHelpers.SafePathCombine(Path.GetTempPath(), $"templatetool_validation_{Guid.NewGuid()}");
+            DirectoryPath = PathHelpers.SafePathCombine(Path.GetTempPath(), $"versionmark_validation_{Guid.NewGuid()}");
 
             try
             {
