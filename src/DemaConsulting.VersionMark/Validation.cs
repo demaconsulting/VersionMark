@@ -53,6 +53,8 @@ internal static class Validation
         RunPublishWithNoMatchingFilesTest(context, testResults);
         RunPublishWithUniformVersionsTest(context, testResults);
         RunPublishWithDifferingVersionsTest(context, testResults);
+        RunPublishWithReportDepthTest(context, testResults);
+        RunPublishWithInvalidJsonTest(context, testResults);
 
         // Calculate totals
         var totalTests = testResults.Results.Count;
@@ -692,6 +694,188 @@ internal static class Validation
         catch (Exception ex)
         {
             HandleTestException(test, context, "Publish With Differing Versions Shows Job IDs Test", ex);
+        }
+
+        FinalizeTestResult(test, startTime, testResults);
+    }
+
+    /// <summary>
+    ///     Runs a test to verify that publish mode adjusts heading levels based on report-depth.
+    /// </summary>
+    /// <param name="context">The context for output.</param>
+    /// <param name="testResults">The test results collection.</param>
+    private static void RunPublishWithReportDepthTest(Context context, DemaConsulting.TestResults.TestResults testResults)
+    {
+        var startTime = DateTime.UtcNow;
+        var test = CreateTestResult("VersionMark_PublishCommand_WithReportDepth_AdjustsHeadingLevels");
+
+        try
+        {
+            using var tempDir = new TemporaryDirectory();
+            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-depth.log");
+            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
+            var jsonFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "test.json");
+
+            // Create test JSON file
+            var versionInfo = new VersionInfo("job1", new Dictionary<string, string>
+            {
+                { "tool1", "1.0.0" }
+            });
+            versionInfo.SaveToFile(jsonFile);
+
+            // Build command line arguments for publish with custom depth
+            var args = new List<string>
+            {
+                "--silent",
+                "--log", logFile,
+                "--publish",
+                "--report", reportFile,
+                "--report-depth", "4",
+                "--",
+                "test.json"
+            };
+
+            // Save the current directory and change to temp directory
+            var originalDir = Directory.GetCurrentDirectory();
+            try
+            {
+                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
+
+                // Run the program
+                int exitCode;
+                using (var testContext = Context.Create([.. args]))
+                {
+                    Program.Run(testContext);
+                    exitCode = testContext.ExitCode;
+                }
+
+                // Check if execution succeeded
+                if (exitCode == 0)
+                {
+                    // Verify report file was created
+                    if (File.Exists(reportFile))
+                    {
+                        var reportContent = File.ReadAllText(reportFile);
+
+                        // Verify report uses heading level 4
+                        if (reportContent.Contains("#### Tool Versions"))
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
+                            context.WriteLine($"✓ Publish With Report Depth Test - PASSED");
+                        }
+                        else
+                        {
+                            test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                            test.ErrorMessage = "Report does not use correct heading depth";
+                            context.WriteError($"✗ Publish With Report Depth Test - FAILED: Wrong heading level");
+                        }
+                    }
+                    else
+                    {
+                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                        test.ErrorMessage = "Report file was not created";
+                        context.WriteError($"✗ Publish With Report Depth Test - FAILED: No report file");
+                    }
+                }
+                else
+                {
+                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                    test.ErrorMessage = $"Program exited with code {exitCode}";
+                    context.WriteError($"✗ Publish With Report Depth Test - FAILED: Exit code {exitCode}");
+                }
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalDir);
+            }
+        }
+        catch (Exception ex)
+        {
+            HandleTestException(test, context, "Publish With Report Depth Test", ex);
+        }
+
+        FinalizeTestResult(test, startTime, testResults);
+    }
+
+    /// <summary>
+    ///     Runs a test to verify that publish mode reports an error when JSON files are invalid.
+    /// </summary>
+    /// <param name="context">The context for output.</param>
+    /// <param name="testResults">The test results collection.</param>
+    private static void RunPublishWithInvalidJsonTest(Context context, DemaConsulting.TestResults.TestResults testResults)
+    {
+        var startTime = DateTime.UtcNow;
+        var test = CreateTestResult("VersionMark_PublishCommandWithInvalidJson_ReturnsError");
+
+        try
+        {
+            using var tempDir = new TemporaryDirectory();
+            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "publish-invalid.log");
+            var reportFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "report.md");
+            var jsonFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "invalid.json");
+
+            // Create invalid JSON file
+            File.WriteAllText(jsonFile, "{ invalid json content", System.Text.Encoding.UTF8);
+
+            // Build command line arguments for publish
+            var args = new List<string>
+            {
+                "--silent",
+                "--log", logFile,
+                "--publish",
+                "--report", reportFile,
+                "--",
+                "invalid.json"
+            };
+
+            // Save the current directory and change to temp directory
+            var originalDir = Directory.GetCurrentDirectory();
+            try
+            {
+                Directory.SetCurrentDirectory(tempDir.DirectoryPath);
+
+                // Run the program
+                int exitCode;
+                using (var testContext = Context.Create([.. args]))
+                {
+                    Program.Run(testContext);
+                    exitCode = testContext.ExitCode;
+                }
+
+                // Check if execution returned error
+                if (exitCode == 1)
+                {
+                    // Read log content
+                    var logContent = File.ReadAllText(logFile);
+
+                    // Verify error message is in log
+                    if (logContent.Contains("Error:"))
+                    {
+                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
+                        context.WriteLine($"✓ Publish With Invalid JSON Test - PASSED");
+                    }
+                    else
+                    {
+                        test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                        test.ErrorMessage = "Expected error message not found in log";
+                        context.WriteError($"✗ Publish With Invalid JSON Test - FAILED: Expected error message not found");
+                    }
+                }
+                else
+                {
+                    test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                    test.ErrorMessage = $"Program exited with code {exitCode}, expected 1";
+                    context.WriteError($"✗ Publish With Invalid JSON Test - FAILED: Exit code {exitCode}");
+                }
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalDir);
+            }
+        }
+        catch (Exception ex)
+        {
+            HandleTestException(test, context, "Publish With Invalid JSON Test", ex);
         }
 
         FinalizeTestResult(test, startTime, testResults);
