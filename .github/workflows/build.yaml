@@ -257,7 +257,11 @@ jobs:
         shell: bash
         run: |
           echo "Capturing tool versions..."
-          versionmark --capture --job-id "integration-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}"
+          # Create short job ID: int-win-8, int-win-9, int-ubuntu-8, etc.
+          OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/windows-latest/win/;s/ubuntu-latest/ubuntu/')
+          DOTNET_SHORT=$(echo "${{ matrix.dotnet-version }}" | sed 's/\.x$//')
+          JOB_ID="int-${OS_SHORT}-${DOTNET_SHORT}"
+          versionmark --capture --job-id "${JOB_ID}"
           echo "✓ Tool versions captured"
 
       - name: Upload validation test results
@@ -271,7 +275,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: version-capture-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}
-          path: versionmark-integration-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.json
+          path: versionmark-int-*.json
 
   # Builds the supporting documentation including user guides, requirements,
   # trace matrices, code quality reports, and build notes.
@@ -404,6 +408,12 @@ jobs:
           versionmark --publish --report docs/buildnotes/versions.md --report-depth 2 \
             -- "versionmark-*.json" "version-captures/**/versionmark-*.json"
           echo "✓ Tool versions published"
+
+      - name: Display Tool Versions Report
+        shell: bash
+        run: |
+          echo "=== Tool Versions Report ==="
+          cat docs/buildnotes/versions.md
 
       - name: Generate Build Notes HTML with Pandoc
         shell: bash
