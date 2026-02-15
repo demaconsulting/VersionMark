@@ -104,132 +104,6 @@ sections:
               - Context_Create_LogFlag_OpensLogFile
               - IntegrationTest_LogFlag_WritesOutputToFile
 
-      - title: Platform Support
-        requirements:
-          - id: PLT-001
-            title: The tool shall build and run on Windows platforms.
-            justification: |
-              DEMA Consulting tools must support Windows as a major development platform.
-            tags:
-              - platform
-            tests:
-              # Tests link to "windows" to ensure results come from Windows platform
-              - "windows@VersionMark_CapturesVersions"
-              - "windows@VersionMark_GeneratesMarkdownReport"
-
-          - id: PLT-002
-            title: The tool shall build and run on Linux platforms.
-            justification: |
-              DEMA Consulting tools must support Linux for CI/CD and containerized environments.
-            tags:
-              - platform
-            tests:
-              # Tests link to "ubuntu" to ensure results come from Linux platform
-              - "ubuntu@VersionMark_CapturesVersions"
-              - "ubuntu@VersionMark_GeneratesMarkdownReport"
-
-          - id: PLT-003
-            title: The tool shall support .NET 8 runtime.
-            justification: |
-              .NET 8 is an LTS release providing long-term stability for enterprise users.
-            tags:
-              - platform
-            tests:
-              - "dotnet8.x@VersionMark_CapturesVersions"
-              - "dotnet8.x@VersionMark_GeneratesMarkdownReport"
-
-          - id: PLT-004
-            title: The tool shall support .NET 9 runtime.
-            justification: |
-              .NET 9 support enables users to leverage the latest .NET features.
-            tags:
-              - platform
-            tests:
-              - "dotnet9.x@VersionMark_CapturesVersions"
-              - "dotnet9.x@VersionMark_GeneratesMarkdownReport"
-
-          - id: PLT-005
-            title: The tool shall support .NET 10 runtime.
-            justification: |
-              .NET 10 support ensures the tool remains compatible with the latest .NET ecosystem.
-            tags:
-              - platform
-            tests:
-              - "dotnet10.x@VersionMark_CapturesVersions"
-              - "dotnet10.x@VersionMark_GeneratesMarkdownReport"
-
-      - title: Configuration File
-        requirements:
-          - id: CFG-001
-            title: The tool shall read configuration from a .versionmark.yaml file.
-            justification: |
-              Provides a standardized configuration format for defining tools and their
-              version capture commands.
-            tags:
-              - configuration
-            tests:
-              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
-              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
-
-          - id: CFG-002
-            title: The tool shall support tool definitions with command and regex properties.
-            justification: |
-              Enables users to specify how to execute and parse version information for
-              each tool.
-            tags:
-              - configuration
-            tests:
-              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
-              - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
-              - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
-
-          - id: CFG-003
-            title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
-            justification: |
-              Different operating systems may require different commands or command
-              variations to capture tool versions.
-            tags:
-              - configuration
-            tests:
-              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
-              - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
-              - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
-              - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
-
-          - id: CFG-004
-            title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
-            justification: |
-              Different operating systems may produce different output formats requiring
-              different regular expressions for version extraction.
-            tags:
-              - configuration
-            tests:
-              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
-              - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
-              - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
-              - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
-
-          - id: CFG-005
-            title: The tool shall validate that configuration files contain at least one tool definition.
-            justification: |
-              Prevents misconfiguration by ensuring the configuration file has actionable
-              content.
-            tags:
-              - configuration
-            tests:
-              - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
-
-          - id: CFG-006
-            title: The tool shall report errors when configuration files cannot be read or parsed.
-            justification: |
-              Provides clear feedback to users when configuration files are missing,
-              inaccessible, or malformed.
-            tags:
-              - configuration
-            tests:
-              - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
-              - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
-
       - title: Capture Command
         requirements:
           - id: CAP-001
@@ -437,6 +311,78 @@ sections:
             tests:
               - Program_Run_WithPublishCommandInvalidJson_ReturnsError
 
+      - title: Configuration File
+        requirements:
+          - id: CFG-001
+            title: The tool shall read configuration from a .versionmark.yaml file.
+            justification: |
+              Provides a standardized configuration format for defining tools and their
+              version capture commands.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+
+          - id: CFG-002
+            title: The tool shall support tool definitions with command and regex properties.
+            justification: |
+              Enables users to specify how to execute and parse version information for
+              each tool.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
+              - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
+
+          - id: CFG-003
+            title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may require different commands or command
+              variations to capture tool versions.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
+              - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
+              - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+
+          - id: CFG-004
+            title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may produce different output formats requiring
+              different regular expressions for version extraction.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
+              - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
+              - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
+
+          - id: CFG-005
+            title: The tool shall validate that configuration files contain at least one tool definition.
+            justification: |
+              Prevents misconfiguration by ensuring the configuration file has actionable
+              content.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+
+          - id: CFG-006
+            title: The tool shall report errors when configuration files cannot be read or parsed.
+            justification: |
+              Provides clear feedback to users when configuration files are missing,
+              inaccessible, or malformed.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
+              - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
+
       - title: Markdown Formatter
         requirements:
           - id: FMT-001
@@ -496,3 +442,57 @@ sections:
             tests:
               - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
               - MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel
+
+      - title: Platform Support
+        requirements:
+          - id: PLT-001
+            title: The tool shall build and run on Windows platforms.
+            justification: |
+              DEMA Consulting tools must support Windows as a major development platform.
+            tags:
+              - platform
+            tests:
+              # Tests link to "windows" to ensure results come from Windows platform
+              - "windows@VersionMark_CapturesVersions"
+              - "windows@VersionMark_GeneratesMarkdownReport"
+
+          - id: PLT-002
+            title: The tool shall build and run on Linux platforms.
+            justification: |
+              DEMA Consulting tools must support Linux for CI/CD and containerized environments.
+            tags:
+              - platform
+            tests:
+              # Tests link to "ubuntu" to ensure results come from Linux platform
+              - "ubuntu@VersionMark_CapturesVersions"
+              - "ubuntu@VersionMark_GeneratesMarkdownReport"
+
+          - id: PLT-003
+            title: The tool shall support .NET 8 runtime.
+            justification: |
+              .NET 8 is an LTS release providing long-term stability for enterprise users.
+            tags:
+              - platform
+            tests:
+              - "dotnet8.x@VersionMark_CapturesVersions"
+              - "dotnet8.x@VersionMark_GeneratesMarkdownReport"
+
+          - id: PLT-004
+            title: The tool shall support .NET 9 runtime.
+            justification: |
+              .NET 9 support enables users to leverage the latest .NET features.
+            tags:
+              - platform
+            tests:
+              - "dotnet9.x@VersionMark_CapturesVersions"
+              - "dotnet9.x@VersionMark_GeneratesMarkdownReport"
+
+          - id: PLT-005
+            title: The tool shall support .NET 10 runtime.
+            justification: |
+              .NET 10 support ensures the tool remains compatible with the latest .NET ecosystem.
+            tags:
+              - platform
+            tests:
+              - "dotnet10.x@VersionMark_CapturesVersions"
+              - "dotnet10.x@VersionMark_GeneratesMarkdownReport"
