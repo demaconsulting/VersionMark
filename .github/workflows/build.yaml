@@ -409,7 +409,7 @@ jobs:
         shell: bash
         run: |
           echo "Publishing tool versions..."
-          versionmark --publish --report docs/buildnotes/versions.md --report-depth 2 \
+          versionmark --publish --report docs/buildnotes/versions.md --report-depth 1 \
             -- "versionmark-*.json" "version-captures/**/versionmark-*.json"
           echo "✓ Tool versions published"
 
