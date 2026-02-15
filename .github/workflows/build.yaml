@@ -253,12 +253,25 @@ jobs:
             || { echo "✗ Self-validation failed"; exit 1; }
           echo "✓ Self-validation succeeded"
 
+      - name: Capture tool versions
+        shell: bash
+        run: |
+          echo "Capturing tool versions..."
+          versionmark --capture --job-id "integration-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}"
+          echo "✓ Tool versions captured"
+
       - name: Upload validation test results
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: validation-test-results-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}
           path: validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.trx
+
+      - name: Upload version capture
+        uses: actions/upload-artifact@v6
+        with:
+          name: version-capture-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}
+          path: versionmark-integration-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.json
 
   # Builds the supporting documentation including user guides, requirements,
   # trace matrices, code quality reports, and build notes.
@@ -297,6 +310,13 @@ jobs:
           name: codeql-sarif
           path: codeql-results
 
+      - name: Download all version captures
+        uses: actions/download-artifact@v7
+        with:
+          path: version-captures
+          pattern: 'version-capture-*'
+        continue-on-error: true
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
@@ -316,6 +336,13 @@ jobs:
 
       - name: Restore Tools
         run: dotnet tool restore
+
+      - name: Capture tool versions for build-docs
+        shell: bash
+        run: |
+          echo "Capturing tool versions..."
+          versionmark --capture --job-id "build-docs"
+          echo "✓ Tool versions captured"
 
       - name: Generate Requirements Report, Justifications, and Trace Matrix
         run: >
@@ -369,6 +396,13 @@ jobs:
           --build-version ${{ inputs.version }}
           --report docs/buildnotes.md
           --report-depth 1
+
+      - name: Publish Tool Versions
+        shell: bash
+        run: |
+          echo "Publishing tool versions..."
+          versionmark --publish --report docs/buildnotes/versions.md --report-depth 2 -- "versionmark-*.json" "version-captures/**/versionmark-*.json"
+          echo "✓ Tool versions published"
 
       - name: Generate Build Notes HTML with Pandoc
         shell: bash

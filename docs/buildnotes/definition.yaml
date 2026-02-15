@@ -5,6 +5,7 @@ resource-path:
 input-files:
   - docs/buildnotes/title.txt
   - docs/buildnotes/introduction.md
+  - docs/buildnotes/versions.md
   - docs/buildnotes.md
 template: template.html
 table-of-contents: true
