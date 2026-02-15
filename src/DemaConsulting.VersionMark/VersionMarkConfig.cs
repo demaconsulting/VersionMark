@@ -336,27 +336,22 @@ public sealed record VersionMarkConfig
     /// </remarks>
     private static string RunCommand(string command)
     {
-        // Split command into executable and arguments
-        var parts = command.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 0)
-        {
-            throw new InvalidOperationException("Command is empty");
-        }
-
-        var fileName = parts[0];
-        var arguments = parts.Length > 1 ? parts[1] : string.Empty;
+        // To support .cmd/.bat files on Windows and shell features on all platforms,
+        // we run commands through the appropriate shell using ArgumentList to avoid escaping issues
+        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         try
         {
             var processStartInfo = new ProcessStartInfo
             {
-                FileName = fileName,
-                Arguments = arguments,
+                FileName = isWindows ? "cmd.exe" : "/bin/sh",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
+            processStartInfo.ArgumentList.Add(isWindows ? "/c" : "-c");
+            processStartInfo.ArgumentList.Add(command);
 
             using var process = Process.Start(processStartInfo);
             if (process == null)
@@ -370,6 +365,13 @@ public sealed record VersionMarkConfig
             process.WaitForExit();
             var output = outputTask.Result;
             var error = errorTask.Result;
+
+            // Check exit code - if non-zero, command failed
+            if (process.ExitCode != 0)
+            {
+                var errorMessage = string.IsNullOrEmpty(error) ? output : error;
+                throw new InvalidOperationException($"Failed to run command '{command}': {errorMessage}");
+            }
 
             // Combine stdout and stderr with newline separator for better debuggability
             if (string.IsNullOrEmpty(error))
