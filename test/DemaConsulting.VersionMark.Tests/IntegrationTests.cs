@@ -489,13 +489,13 @@ public class IntegrationTests
         Assert.Contains("node", reportContent);
         Assert.Contains("python", reportContent);
 
-        // Verify version formatting (uniform versions show "All jobs")
-        Assert.Contains("8.0.0 (All jobs)", reportContent); // dotnet uniform
-        Assert.Contains("3.11.0 (All jobs)", reportContent); // python uniform
+        // Verify version formatting (uniform versions show just the version)
+        Assert.Contains("- **dotnet**: 8.0.0", reportContent); // dotnet uniform, no job IDs
+        Assert.Contains("- **python**: 3.11.0", reportContent); // python uniform, no job IDs
 
-        // Verify version formatting (different versions show job IDs)
-        Assert.Contains("18.0.0", reportContent);
-        Assert.Contains("20.0.0", reportContent);
+        // Verify version formatting (different versions show job IDs in parentheses)
+        Assert.Contains("18.0.0 (job-", reportContent);
+        Assert.Contains("20.0.0 (job-", reportContent);
     }
 
     /// <summary>

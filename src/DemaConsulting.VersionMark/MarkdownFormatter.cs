@@ -98,49 +98,43 @@ internal static class MarkdownFormatter
         foreach (var tool in sortedTools)
         {
             var versions = toolVersions[tool];
-            var versionEntry = FormatVersionEntry(versions);
-            markdown.AppendLine($"- **{tool}**: {versionEntry}");
+            FormatVersionEntries(markdown, tool, versions);
         }
 
         return markdown.ToString();
     }
 
     /// <summary>
-    ///     Formats a version entry for a tool based on whether versions are uniform or different.
+    ///     Formats version entries for a tool as multiple bullets when versions differ.
     /// </summary>
+    /// <param name="markdown">The StringBuilder to append to.</param>
+    /// <param name="tool">The tool name.</param>
     /// <param name="versions">List of job ID and version pairs for a tool.</param>
-    /// <returns>Formatted version string with job IDs when appropriate.</returns>
-    private static string FormatVersionEntry(List<(string JobId, string Version)> versions)
+    private static void FormatVersionEntries(StringBuilder markdown, string tool, List<(string JobId, string Version)> versions)
     {
         // Check if all versions are the same
         var distinctVersions = versions.Select(v => v.Version).Distinct().ToList();
 
-        // If all versions are the same, show "All jobs"
+        // If all versions are the same, show single entry without job IDs
         if (distinctVersions.Count == 1)
         {
-            return $"{distinctVersions[0]} (All jobs)";
+            markdown.AppendLine($"- **{tool}**: {distinctVersions[0]}");
+            return;
         }
 
-        // Otherwise, group by version and show job IDs
-        // When versions differ across jobs, we need to show which jobs have which versions
+        // Otherwise, create multiple bullets - one for each version group
         var versionGroups = versions
             .GroupBy(v => v.Version)
             .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
 
-        // Build formatted version strings with subscripted job IDs
-        // Each version gets its own entry showing which jobs use it
-        var formattedVersions = new List<string>();
         foreach (var group in versionGroups)
         {
             // For each unique version, collect and sort the job IDs that use it
             var jobIds = group.Select(v => v.JobId).OrderBy(j => j, StringComparer.OrdinalIgnoreCase);
             var jobIdList = string.Join(", ", jobIds);
             
-            // Format as "version <sub>(job1, job2)</sub>" for HTML subscript rendering
-            formattedVersions.Add($"{group.Key} <sub>({jobIdList})</sub>");
+            // Format as separate bullet with tool name and version, showing which jobs use it
+            markdown.AppendLine($"- **{tool}**: {group.Key} ({jobIdList})");
         }
-
-        // Join all version entries with commas to create the final output
-        return string.Join(", ", formattedVersions);
     }
 }
