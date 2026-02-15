@@ -231,7 +231,7 @@ public class IntegrationTests
     {
         // Arrange - Set up unique temp directory with config file
         using var testDir = new TestDirectory(copyConfig: true);
-        var outputFile = Path.Combine(testDir.Path, "output.json");
+        var outputFile = PathHelpers.SafePathCombine(testDir.Path, "output.json");
 
         // Act - Run the capture command with specific tools
         var exitCode = Runner.Run(
@@ -283,7 +283,7 @@ public class IntegrationTests
         public TestDirectory(bool copyConfig = false)
         {
             _originalDirectory = Directory.GetCurrentDirectory();
-            Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+            Path = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
             
             Directory.CreateDirectory(Path);
 
@@ -292,8 +292,8 @@ public class IntegrationTests
                 var repoRoot = FindRepositoryRoot(_originalDirectory);
                 if (!string.IsNullOrEmpty(repoRoot))
                 {
-                    var configSource = System.IO.Path.Combine(repoRoot, ".versionmark.yaml");
-                    var configDest = System.IO.Path.Combine(Path, ".versionmark.yaml");
+                    var configSource = PathHelpers.SafePathCombine(repoRoot, ".versionmark.yaml");
+                    var configDest = PathHelpers.SafePathCombine(Path, ".versionmark.yaml");
                     File.Copy(configSource, configDest);
                 }
             }
@@ -508,7 +508,7 @@ public class IntegrationTests
     {
         // Arrange - Set up unique temp directory with JSON file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var jsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
@@ -581,7 +581,7 @@ public class IntegrationTests
     {
         // Arrange - Set up empty temp directory
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
         try
@@ -623,7 +623,7 @@ public class IntegrationTests
     {
         // Arrange - Set up temp directory with invalid JSON file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var invalidJsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-invalid.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
@@ -668,7 +668,7 @@ public class IntegrationTests
     {
         // Arrange - Set up temp directory with multiple JSON files
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var includedFile = PathHelpers.SafePathCombine(tempDir, "included-job1.json");
         var excludedFile = PathHelpers.SafePathCombine(tempDir, "versionmark-excluded.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
