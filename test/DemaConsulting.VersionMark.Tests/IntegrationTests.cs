@@ -284,7 +284,7 @@ public class IntegrationTests
         {
             _originalDirectory = Directory.GetCurrentDirectory();
             Path = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
-            
+
             Directory.CreateDirectory(Path);
 
             if (copyConfig)
@@ -407,7 +407,7 @@ public class IntegrationTests
         // Use a unique job ID to avoid conflicts with parallel test execution
         var jobId = $"integration-test-job-{Guid.NewGuid():N}";
         var outputFile = $"versionmark-{jobId}.json";
-        
+
         using var testDir = new TestDirectory(copyConfig: true);
 
         // Act - Run capture command without specifying --output parameter
