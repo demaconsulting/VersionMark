@@ -401,7 +401,8 @@ jobs:
         shell: bash
         run: |
           echo "Publishing tool versions..."
-          versionmark --publish --report docs/buildnotes/versions.md --report-depth 2 -- "versionmark-*.json" "version-captures/**/versionmark-*.json"
+          versionmark --publish --report docs/buildnotes/versions.md --report-depth 2 \
+            -- "versionmark-*.json" "version-captures/**/versionmark-*.json"
           echo "✓ Tool versions published"
 
       - name: Generate Build Notes HTML with Pandoc
