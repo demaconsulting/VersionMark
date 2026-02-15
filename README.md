@@ -164,9 +164,8 @@ Capture mode creates a JSON file with the following structure:
 
 ```json
 {
-  "job-id": "windows-net8",
-  "timestamp": "2024-03-15T10:30:00Z",
-  "versions": {
+  "JobId": "windows-net8",
+  "Versions": {
     "dotnet": "8.0.100",
     "node": "20.11.0",
     "gcc": "13.2.0"
@@ -181,13 +180,14 @@ Publish mode generates a markdown list consolidating versions from all jobs:
 ```markdown
 ## Tool Versions
 
-- **dotnet**: 8.0.100 (All jobs)
-- **gcc**: 11.4.0 <sub>(windows-net8)</sub>, 13.2.0 <sub>(linux-net8)</sub>
-- **node**: 20.11.0 (All jobs)
+- **dotnet**: 8.0.100
+- **gcc**: 11.4.0 (windows-net8)
+- **gcc**: 13.2.0 (linux-net8)
+- **node**: 20.11.0
 ```
 
-When a tool has the same version across all jobs, it's shown as "(All jobs)". When versions
-differ, each version is listed with the jobs that use it shown in subscripts.
+When a tool has the same version across all jobs, it's shown without job identifiers. When versions
+differ, each version is listed on a separate line with the jobs that use it shown in parentheses.
 
 ## Documentation
 
