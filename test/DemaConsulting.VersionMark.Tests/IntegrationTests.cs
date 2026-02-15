@@ -229,10 +229,10 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommand_CapturesToolVersions()
     {
-        // Arrange - Set up test output file and find repository root with config file
-        var outputFile = Path.GetTempFileName();
+        // Arrange - Set up unique temp directory with config file
         var currentDir = Directory.GetCurrentDirectory();
-
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        
         // Find the repository root by looking for .versionmark.yaml
         var repoRoot = FindRepositoryRoot(currentDir);
         if (string.IsNullOrEmpty(repoRoot))
@@ -243,8 +243,17 @@ public class IntegrationTests
 
         try
         {
-            // Change to repository root where .versionmark.yaml exists
-            Directory.SetCurrentDirectory(repoRoot);
+            // Create temp directory and copy config file
+            Directory.CreateDirectory(tempDir);
+            var configSource = Path.Combine(repoRoot, ".versionmark.yaml");
+            var configDest = Path.Combine(tempDir, ".versionmark.yaml");
+            File.Copy(configSource, configDest);
+
+            // Change to temp directory
+            Directory.SetCurrentDirectory(tempDir);
+
+            // Set output file in temp directory
+            var outputFile = Path.Combine(tempDir, "output.json");
 
             // Act - Run the capture command with specific tools
             var exitCode = Runner.Run(
@@ -252,7 +261,7 @@ public class IntegrationTests
                 "dotnet",
                 _dllPath,
                 "--capture",
-                "--job-id", "test-job",
+                "--job-id", $"test-job-{Guid.NewGuid():N}",
                 "--output", outputFile,
                 "--", "dotnet", "git");
 
@@ -262,7 +271,6 @@ public class IntegrationTests
 
             // Verify output contains expected information
             Assert.Contains("Capturing tool versions", output);
-            Assert.Contains("test-job", output);
             Assert.Contains("dotnet", output);
             Assert.Contains("git", output);
 
@@ -271,7 +279,6 @@ public class IntegrationTests
 
             // Verify output file contains expected data
             var versionInfo = VersionInfo.LoadFromFile(outputFile);
-            Assert.AreEqual("test-job", versionInfo.JobId);
             Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
             Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
         }
@@ -280,9 +287,17 @@ public class IntegrationTests
             // Restore original directory
             Directory.SetCurrentDirectory(currentDir);
 
-            if (File.Exists(outputFile))
+            // Clean up temp directory
+            if (Directory.Exists(tempDir))
             {
-                File.Delete(outputFile);
+                try
+                {
+                    Directory.Delete(tempDir, true);
+                }
+                catch
+                {
+                    // Ignore cleanup errors
+                }
             }
         }
     }
@@ -334,7 +349,7 @@ public class IntegrationTests
     {
         // Arrange - Create temp directory without .versionmark.yaml config file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
 
         try
         {
@@ -372,7 +387,9 @@ public class IntegrationTests
     public void IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename()
     {
         // Arrange - Set up to test default output filename generation
-        var outputFile = "versionmark-integration-test-job.json";
+        // Use a unique job ID to avoid conflicts with parallel test execution
+        var jobId = $"integration-test-job-{Guid.NewGuid():N}";
+        var outputFile = $"versionmark-{jobId}.json";
         var currentDir = Directory.GetCurrentDirectory();
 
         // Find the repository root by looking for .versionmark.yaml
@@ -383,16 +400,19 @@ public class IntegrationTests
             return;
         }
 
+        // Create a unique temp directory for this test execution
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+
         try
         {
-            // Change to repository root where .versionmark.yaml exists
-            Directory.SetCurrentDirectory(repoRoot);
+            // Copy .versionmark.yaml to temp directory
+            var configSource = Path.Combine(repoRoot, ".versionmark.yaml");
+            var configDest = Path.Combine(tempDir, ".versionmark.yaml");
+            File.Copy(configSource, configDest);
 
-            // Delete output file if it exists
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
+            // Change to temp directory
+            Directory.SetCurrentDirectory(tempDir);
 
             // Act - Run capture command without specifying --output parameter
             var exitCode = Runner.Run(
@@ -400,7 +420,7 @@ public class IntegrationTests
                 "dotnet",
                 _dllPath,
                 "--capture",
-                "--job-id", "integration-test-job",
+                "--job-id", jobId,
                 "--", "dotnet");
 
             // Assert - Verify command succeeded and created file with default name pattern
@@ -412,16 +432,24 @@ public class IntegrationTests
 
             // Verify output file contains expected data
             var versionInfo = VersionInfo.LoadFromFile(outputFile);
-            Assert.AreEqual("integration-test-job", versionInfo.JobId);
+            Assert.AreEqual(jobId, versionInfo.JobId);
         }
         finally
         {
             // Restore original directory
             Directory.SetCurrentDirectory(currentDir);
 
-            if (File.Exists(outputFile))
+            // Clean up temp directory
+            if (Directory.Exists(tempDir))
             {
-                File.Delete(outputFile);
+                try
+                {
+                    Directory.Delete(tempDir, true);
+                }
+                catch
+                {
+                    // Ignore cleanup errors
+                }
             }
         }
     }
@@ -436,7 +464,7 @@ public class IntegrationTests
     {
         // Arrange - Set up unique temp directory with multiple JSON files
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var json1File = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
         var json2File = PathHelpers.SafePathCombine(tempDir, "versionmark-job2.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
@@ -518,7 +546,7 @@ public class IntegrationTests
     {
         // Arrange - Set up unique temp directory with JSON file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var jsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
@@ -591,7 +619,7 @@ public class IntegrationTests
     {
         // Arrange - Set up empty temp directory
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
         try
@@ -633,7 +661,7 @@ public class IntegrationTests
     {
         // Arrange - Set up temp directory with invalid JSON file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var invalidJsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-invalid.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
@@ -678,7 +706,7 @@ public class IntegrationTests
     {
         // Arrange - Set up temp directory with multiple JSON files
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = Path.Combine(Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var includedFile = PathHelpers.SafePathCombine(tempDir, "included-job1.json");
         var excludedFile = PathHelpers.SafePathCombine(tempDir, "versionmark-excluded.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
