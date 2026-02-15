@@ -264,7 +264,7 @@ jobs:
           OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/windows-latest/win/;s/ubuntu-latest/ubuntu/')
           DOTNET_SHORT=$(echo "${{ matrix.dotnet-version }}" | sed 's/\.x$//')
           JOB_ID="int-${OS_SHORT}-${DOTNET_SHORT}"
-          versionmark --capture --job-id "${JOB_ID}"
+          versionmark --capture --job-id "${JOB_ID}" -- dotnet git
           echo "✓ Tool versions captured"
 
       - name: Upload validation test results
@@ -348,7 +348,8 @@ jobs:
         shell: bash
         run: |
           echo "Capturing tool versions..."
-          versionmark --capture --job-id "build-docs"
+          versionmark --capture --job-id "build-docs" -- \
+            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark
           echo "✓ Tool versions captured"
 
       - name: Generate Requirements Report, Justifications, and Trace Matrix
