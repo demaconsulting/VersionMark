@@ -64,8 +64,8 @@ When using VersionMark, we recommend following these security best practices:
 
 ### Input Validation
 
-- Validate SARIF analysis tools API responses before processing
-- Be cautious when processing data from untrusted sources
+- Validate configuration files (.versionmark.yaml) before processing
+- Be cautious when using untrusted configuration files
 - Use the latest version of VersionMark to benefit from security updates
 
 ### Dependencies
@@ -78,26 +78,30 @@ When using VersionMark, we recommend following these security best practices:
 
 - Run VersionMark with the minimum required permissions
 - Avoid running VersionMark as a privileged user unless necessary
-- Validate API tokens and credentials are stored securely
+- Review configuration files for potentially dangerous commands before execution
 
 ## Known Security Considerations
 
-### API Integration
+### Command Execution
 
-VersionMark integrates with SARIF analysis tools APIs. Users should:
+VersionMark executes shell commands defined in the configuration file to capture version
+information. Users should:
 
-- Protect API tokens and credentials
-- Use HTTPS connections to SARIF analysis tools
-- Validate SSL/TLS certificates
-- Be aware that API responses may contain sensitive code quality information
+- Review the `.versionmark.yaml` configuration file before use
+- Be cautious when using configuration files from untrusted sources
+- Understand that commands are executed with the same permissions as the VersionMark process
+- Validate that commands in the configuration file are safe to execute
+- Avoid executing commands that could modify system state or access sensitive data
 
 ### File System Access
 
 VersionMark reads and writes files on the local file system. Users should:
 
-- Ensure appropriate file permissions are set on output files
-- Be cautious when processing files in shared directories
-- Validate file paths to prevent directory traversal attacks
+- Ensure appropriate file permissions are set on output files (JSON and markdown)
+- Be cautious when writing files in shared directories
+- Validate that glob patterns used in publish mode do not inadvertently process
+  sensitive files
+- Review generated markdown files before committing to version control
 
 ## Security Disclosure Policy
 

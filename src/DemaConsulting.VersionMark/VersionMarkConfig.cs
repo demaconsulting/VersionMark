@@ -363,6 +363,7 @@ public sealed record VersionMarkConfig
             var outputTask = process.StandardOutput.ReadToEndAsync();
             var errorTask = process.StandardError.ReadToEndAsync();
             process.WaitForExit();
+            Task.WaitAll(outputTask, errorTask);
             var output = outputTask.Result;
             var error = errorTask.Result;
 
