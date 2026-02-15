@@ -104,7 +104,7 @@ public class MarkdownFormatterTests
         // What is proved: When all jobs have the same version, only the version is shown
         Assert.Contains("- **dotnet**: 8.0.0", result);
         Assert.Contains("- **node**: 18.0.0", result);
-        
+
         // Verify no job IDs appear since versions are uniform
         Assert.DoesNotContain("job-1", result);
         Assert.DoesNotContain("job-2", result);
@@ -420,10 +420,10 @@ public class MarkdownFormatterTests
         // What is proved: Different versions are listed in alphabetical order, each on its own line
         var lines = result.Split('\n', StringSplitOptions.RemoveEmptyEntries);
         var toolLines = lines.Where(l => l.StartsWith("- **tool**:")).ToArray();
-        
+
         // Should have 3 separate bullets for the 3 different versions
         Assert.HasCount(3, toolLines);
-        
+
         // Verify they appear in sorted order: 1.0.0, 2.0.0, 3.0.0
         Assert.Contains("1.0.0", toolLines[0]);
         Assert.Contains("2.0.0", toolLines[1]);

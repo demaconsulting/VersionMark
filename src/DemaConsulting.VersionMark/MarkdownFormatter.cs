@@ -132,7 +132,7 @@ internal static class MarkdownFormatter
             // For each unique version, collect and sort the job IDs that use it
             var jobIds = group.Select(v => v.JobId).OrderBy(j => j, StringComparer.OrdinalIgnoreCase);
             var jobIdList = string.Join(", ", jobIds);
-            
+
             // Format as separate bullet with tool name and version, showing which jobs use it
             markdown.AppendLine($"- **{tool}**: {group.Key} ({jobIdList})");
         }
