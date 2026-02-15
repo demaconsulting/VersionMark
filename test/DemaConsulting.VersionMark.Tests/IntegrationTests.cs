@@ -229,81 +229,130 @@ public class IntegrationTests
     [TestMethod]
     public void IntegrationTest_CaptureCommand_CapturesToolVersions()
     {
-        // Arrange - Set up test output file and find repository root with config file
-        var outputFile = Path.GetTempFileName();
-        var currentDir = Directory.GetCurrentDirectory();
+        // Arrange - Set up unique temp directory with config file
+        using var testDir = new TestDirectory(copyConfig: true);
+        var outputFile = PathHelpers.SafePathCombine(testDir.Path, "output.json");
 
-        // Find the repository root by looking for .versionmark.yaml
-        var repoRoot = FindRepositoryRoot(currentDir);
-        if (string.IsNullOrEmpty(repoRoot))
-        {
-            Assert.Inconclusive("Could not find repository root with .versionmark.yaml");
-            return;
-        }
+        // Act - Run the capture command with specific tools
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "--capture",
+            "--job-id", $"test-job-{Guid.NewGuid():N}",
+            "--output", outputFile,
+            "--", "dotnet", "git");
 
-        try
-        {
-            // Change to repository root where .versionmark.yaml exists
-            Directory.SetCurrentDirectory(repoRoot);
+        // Assert - Verify the command succeeded and captured the expected tool versions
+        // Verify success
+        Assert.AreEqual(0, exitCode);
 
-            // Act - Run the capture command with specific tools
-            var exitCode = Runner.Run(
-                out var output,
-                "dotnet",
-                _dllPath,
-                "--capture",
-                "--job-id", "test-job",
-                "--output", outputFile,
-                "--", "dotnet", "git");
+        // Verify output contains expected information
+        Assert.Contains("Capturing tool versions", output);
+        Assert.Contains("dotnet", output);
+        Assert.Contains("git", output);
 
-            // Assert - Verify the command succeeded and captured the expected tool versions
-            // Verify success
-            Assert.AreEqual(0, exitCode);
+        // Verify output file was created
+        Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
 
-            // Verify output contains expected information
-            Assert.Contains("Capturing tool versions", output);
-            Assert.Contains("test-job", output);
-            Assert.Contains("dotnet", output);
-            Assert.Contains("git", output);
-
-            // Verify output file was created
-            Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
-
-            // Verify output file contains expected data
-            var versionInfo = VersionInfo.LoadFromFile(outputFile);
-            Assert.AreEqual("test-job", versionInfo.JobId);
-            Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
-            Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
-        }
-        finally
-        {
-            // Restore original directory
-            Directory.SetCurrentDirectory(currentDir);
-
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
-        }
+        // Verify output file contains expected data
+        var versionInfo = VersionInfo.LoadFromFile(outputFile);
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+        Assert.IsTrue(versionInfo.Versions.ContainsKey("git"));
     }
 
     /// <summary>
-    ///     Helper method to find the repository root.
+    ///     Helper class for managing isolated test directories.
+    ///     Creates a unique temp directory with optional .versionmark.yaml config.
+    ///     Automatically cleans up on disposal.
     /// </summary>
-    /// <param name="startPath">Starting directory.</param>
-    /// <returns>Repository root path or empty string if not found.</returns>
-    private static string FindRepositoryRoot(string startPath)
+    private sealed class TestDirectory : IDisposable
     {
-        var dir = new DirectoryInfo(startPath);
-        while (dir != null)
+        private readonly string _originalDirectory;
+        private bool _disposed;
+
+        /// <summary>
+        ///     Gets the path to the test directory.
+        /// </summary>
+        public string Path { get; }
+
+        /// <summary>
+        ///     Creates a new isolated test directory.
+        /// </summary>
+        /// <param name="copyConfig">Whether to copy .versionmark.yaml from repo root.</param>
+        public TestDirectory(bool copyConfig = false)
         {
-            if (File.Exists(PathHelpers.SafePathCombine(dir.FullName, ".versionmark.yaml")))
+            _originalDirectory = Directory.GetCurrentDirectory();
+            Path = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+            
+            Directory.CreateDirectory(Path);
+
+            if (copyConfig)
             {
-                return dir.FullName;
+                var repoRoot = FindRepositoryRoot(_originalDirectory);
+                if (!string.IsNullOrEmpty(repoRoot))
+                {
+                    var configSource = PathHelpers.SafePathCombine(repoRoot, ".versionmark.yaml");
+                    var configDest = PathHelpers.SafePathCombine(Path, ".versionmark.yaml");
+                    File.Copy(configSource, configDest);
+                }
             }
-            dir = dir.Parent;
+
+            Directory.SetCurrentDirectory(Path);
         }
-        return string.Empty;
+
+        /// <summary>
+        ///     Disposes the test directory and restores the original directory.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            try
+            {
+                Directory.SetCurrentDirectory(_originalDirectory);
+            }
+            catch
+            {
+                // Ignore errors restoring directory
+            }
+
+            try
+            {
+                if (Directory.Exists(Path))
+                {
+                    Directory.Delete(Path, true);
+                }
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+
+            _disposed = true;
+        }
+
+        /// <summary>
+        ///     Helper method to find the repository root.
+        /// </summary>
+        /// <param name="startPath">Starting directory.</param>
+        /// <returns>Repository root path or empty string if not found.</returns>
+        private static string FindRepositoryRoot(string startPath)
+        {
+            var dir = new DirectoryInfo(startPath);
+            while (dir != null)
+            {
+                if (File.Exists(PathHelpers.SafePathCombine(dir.FullName, ".versionmark.yaml")))
+                {
+                    return dir.FullName;
+                }
+                dir = dir.Parent;
+            }
+            return string.Empty;
+        }
     }
 
     /// <summary>
@@ -333,36 +382,19 @@ public class IntegrationTests
     public void IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError()
     {
         // Arrange - Create temp directory without .versionmark.yaml config file
-        var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        using var testDir = new TestDirectory(copyConfig: false);
 
-        try
-        {
-            // Create and change to temp directory without .versionmark.yaml
-            Directory.CreateDirectory(tempDir);
-            Directory.SetCurrentDirectory(tempDir);
+        // Act - Run capture command in directory without config file
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "--capture",
+            "--job-id", "test-job");
 
-            // Act - Run capture command in directory without config file
-            var exitCode = Runner.Run(
-                out var output,
-                "dotnet",
-                _dllPath,
-                "--capture",
-                "--job-id", "test-job");
-
-            // Assert - Verify the command fails with error message about missing config
-            Assert.AreNotEqual(0, exitCode);
-            Assert.Contains("Error:", output);
-        }
-        finally
-        {
-            // Restore original directory and cleanup
-            Directory.SetCurrentDirectory(currentDir);
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
-            }
-        }
+        // Assert - Verify the command fails with error message about missing config
+        Assert.AreNotEqual(0, exitCode);
+        Assert.Contains("Error:", output);
     }
 
     /// <summary>
@@ -372,58 +404,31 @@ public class IntegrationTests
     public void IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename()
     {
         // Arrange - Set up to test default output filename generation
-        var outputFile = "versionmark-integration-test-job.json";
-        var currentDir = Directory.GetCurrentDirectory();
+        // Use a unique job ID to avoid conflicts with parallel test execution
+        var jobId = $"integration-test-job-{Guid.NewGuid():N}";
+        var outputFile = $"versionmark-{jobId}.json";
+        
+        using var testDir = new TestDirectory(copyConfig: true);
 
-        // Find the repository root by looking for .versionmark.yaml
-        var repoRoot = FindRepositoryRoot(currentDir);
-        if (string.IsNullOrEmpty(repoRoot))
-        {
-            Assert.Inconclusive("Could not find repository root with .versionmark.yaml");
-            return;
-        }
+        // Act - Run capture command without specifying --output parameter
+        var exitCode = Runner.Run(
+            out var _,
+            "dotnet",
+            _dllPath,
+            "--capture",
+            "--job-id", jobId,
+            "--", "dotnet");
 
-        try
-        {
-            // Change to repository root where .versionmark.yaml exists
-            Directory.SetCurrentDirectory(repoRoot);
+        // Assert - Verify command succeeded and created file with default name pattern
+        // Verify success
+        Assert.AreEqual(0, exitCode);
 
-            // Delete output file if it exists
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
+        // Verify output file was created with default name
+        Assert.IsTrue(File.Exists(outputFile), $"Output file '{outputFile}' was not created");
 
-            // Act - Run capture command without specifying --output parameter
-            var exitCode = Runner.Run(
-                out var _,
-                "dotnet",
-                _dllPath,
-                "--capture",
-                "--job-id", "integration-test-job",
-                "--", "dotnet");
-
-            // Assert - Verify command succeeded and created file with default name pattern
-            // Verify success
-            Assert.AreEqual(0, exitCode);
-
-            // Verify output file was created with default name
-            Assert.IsTrue(File.Exists(outputFile), $"Output file '{outputFile}' was not created");
-
-            // Verify output file contains expected data
-            var versionInfo = VersionInfo.LoadFromFile(outputFile);
-            Assert.AreEqual("integration-test-job", versionInfo.JobId);
-        }
-        finally
-        {
-            // Restore original directory
-            Directory.SetCurrentDirectory(currentDir);
-
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
-        }
+        // Verify output file contains expected data
+        var versionInfo = VersionInfo.LoadFromFile(outputFile);
+        Assert.AreEqual(jobId, versionInfo.JobId);
     }
 
     /// <summary>
@@ -435,77 +440,62 @@ public class IntegrationTests
     public void VersionMark_PublishCommand_GeneratesMarkdownReport()
     {
         // Arrange - Set up unique temp directory with multiple JSON files
-        var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
-        var json1File = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
-        var json2File = PathHelpers.SafePathCombine(tempDir, "versionmark-job2.json");
-        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+        using var testDir = new TestDirectory(copyConfig: false);
+        var json1File = PathHelpers.SafePathCombine(testDir.Path, "versionmark-job1.json");
+        var json2File = PathHelpers.SafePathCombine(testDir.Path, "versionmark-job2.json");
+        var reportFile = PathHelpers.SafePathCombine(testDir.Path, "report.md");
 
-        try
-        {
-            Directory.CreateDirectory(tempDir);
-            Directory.SetCurrentDirectory(tempDir);
-
-            // Create test JSON files
-            var versionInfo1 = new VersionInfo(
-                "job-1",
-                new Dictionary<string, string>
-                {
-                    ["dotnet"] = "8.0.0",
-                    ["node"] = "18.0.0",
-                    ["python"] = "3.11.0"
-                });
-            var versionInfo2 = new VersionInfo(
-                "job-2",
-                new Dictionary<string, string>
-                {
-                    ["dotnet"] = "8.0.0",
-                    ["node"] = "20.0.0",
-                    ["python"] = "3.11.0"
-                });
-
-            versionInfo1.SaveToFile(json1File);
-            versionInfo2.SaveToFile(json2File);
-
-            // Act - Run publish command
-            var exitCode = Runner.Run(
-                out var output,
-                "dotnet",
-                _dllPath,
-                "--publish",
-                "--report", reportFile);
-
-            // Assert - Verify command succeeded
-            // What is proved: Publish command successfully generates markdown from JSON files
-            Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
-            Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
-
-            var reportContent = File.ReadAllText(reportFile);
-
-            // Verify markdown structure
-            Assert.Contains("## Tool Versions", reportContent);
-
-            // Verify tools are present and sorted alphabetically
-            Assert.Contains("dotnet", reportContent);
-            Assert.Contains("node", reportContent);
-            Assert.Contains("python", reportContent);
-
-            // Verify version formatting (uniform versions show "All jobs")
-            Assert.Contains("8.0.0 (All jobs)", reportContent); // dotnet uniform
-            Assert.Contains("3.11.0 (All jobs)", reportContent); // python uniform
-
-            // Verify version formatting (different versions show job IDs)
-            Assert.Contains("18.0.0", reportContent);
-            Assert.Contains("20.0.0", reportContent);
-        }
-        finally
-        {
-            Directory.SetCurrentDirectory(currentDir);
-            if (Directory.Exists(tempDir))
+        // Create test JSON files
+        var versionInfo1 = new VersionInfo(
+            "job-1",
+            new Dictionary<string, string>
             {
-                Directory.Delete(tempDir, true);
-            }
-        }
+                ["dotnet"] = "8.0.0",
+                ["node"] = "18.0.0",
+                ["python"] = "3.11.0"
+            });
+        var versionInfo2 = new VersionInfo(
+            "job-2",
+            new Dictionary<string, string>
+            {
+                ["dotnet"] = "8.0.0",
+                ["node"] = "20.0.0",
+                ["python"] = "3.11.0"
+            });
+
+        versionInfo1.SaveToFile(json1File);
+        versionInfo2.SaveToFile(json2File);
+
+        // Act - Run publish command
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "--publish",
+            "--report", reportFile);
+
+        // Assert - Verify command succeeded
+        // What is proved: Publish command successfully generates markdown from JSON files
+        Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
+        Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
+
+        var reportContent = File.ReadAllText(reportFile);
+
+        // Verify markdown structure
+        Assert.Contains("## Tool Versions", reportContent);
+
+        // Verify tools are present and sorted alphabetically
+        Assert.Contains("dotnet", reportContent);
+        Assert.Contains("node", reportContent);
+        Assert.Contains("python", reportContent);
+
+        // Verify version formatting (uniform versions show just the version)
+        Assert.Contains("- **dotnet**: 8.0.0", reportContent); // dotnet uniform, no job IDs
+        Assert.Contains("- **python**: 3.11.0", reportContent); // python uniform, no job IDs
+
+        // Verify version formatting (different versions show job IDs in parentheses)
+        Assert.Contains("18.0.0 (job-", reportContent);
+        Assert.Contains("20.0.0 (job-", reportContent);
     }
 
     /// <summary>
@@ -518,7 +508,7 @@ public class IntegrationTests
     {
         // Arrange - Set up unique temp directory with JSON file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var jsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-job1.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
@@ -591,7 +581,7 @@ public class IntegrationTests
     {
         // Arrange - Set up empty temp directory
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
         try
@@ -633,7 +623,7 @@ public class IntegrationTests
     {
         // Arrange - Set up temp directory with invalid JSON file
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var invalidJsonFile = PathHelpers.SafePathCombine(tempDir, "versionmark-invalid.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
 
@@ -678,7 +668,7 @@ public class IntegrationTests
     {
         // Arrange - Set up temp directory with multiple JSON files
         var currentDir = Directory.GetCurrentDirectory();
-        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
         var includedFile = PathHelpers.SafePathCombine(tempDir, "included-job1.json");
         var excludedFile = PathHelpers.SafePathCombine(tempDir, "versionmark-excluded.json");
         var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");

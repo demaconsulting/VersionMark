@@ -64,9 +64,9 @@ public class MarkdownFormatterTests
     }
 
     /// <summary>
-    ///     Test that MarkdownFormatter shows "All jobs" when versions are uniform across all jobs.
-    ///     What is tested: FMT-002 - Versions that are the same across all jobs are collapsed to "All jobs"
-    ///     What the assertions prove: The output displays "(All jobs)" when all jobs have the same version
+    ///     Test that MarkdownFormatter shows version without job IDs when versions are uniform.
+    ///     What is tested: FMT-002 - Versions that are the same across all jobs show just the version
+    ///     What the assertions prove: The output displays only the version when all jobs have the same version
     /// </summary>
     [TestMethod]
     public void MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs()
@@ -100,16 +100,21 @@ public class MarkdownFormatterTests
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify "All jobs" appears for uniform versions
-        // What is proved: When all jobs have the same version, the output shows "(All jobs)"
-        Assert.Contains("8.0.0 (All jobs)", result);
-        Assert.Contains("18.0.0 (All jobs)", result);
+        // Assert - Verify uniform versions show without job IDs
+        // What is proved: When all jobs have the same version, only the version is shown
+        Assert.Contains("- **dotnet**: 8.0.0", result);
+        Assert.Contains("- **node**: 18.0.0", result);
+        
+        // Verify no job IDs appear since versions are uniform
+        Assert.DoesNotContain("job-1", result);
+        Assert.DoesNotContain("job-2", result);
+        Assert.DoesNotContain("job-3", result);
     }
 
     /// <summary>
     ///     Test that MarkdownFormatter shows individual job IDs when versions differ across jobs.
-    ///     What is tested: FMT-003, FMT-004 - Different versions show job IDs in subscript format
-    ///     What the assertions prove: The output displays job IDs in subscript format when versions differ
+    ///     What is tested: FMT-003, FMT-004 - Different versions show job IDs in parentheses
+    ///     What the assertions prove: The output displays job IDs in parentheses when versions differ
     /// </summary>
     [TestMethod]
     public void MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs()
@@ -143,19 +148,16 @@ public class MarkdownFormatterTests
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify individual job IDs are shown with subscript formatting
-        // What is proved: Different versions show job IDs in subscript format <sub>(job-id)</sub>
+        // Assert - Verify individual job IDs are shown in parentheses
+        // What is proved: Different versions show job IDs in parentheses
 
         // For dotnet: two different versions (7.0.0 and 8.0.0)
-        Assert.Contains("<sub>(job-3)</sub>", result);
-        Assert.Contains("<sub>(job-1, job-2)</sub>", result);
+        Assert.Contains("(job-3)", result);
+        Assert.Contains("(job-1, job-2)", result);
 
         // For node: two different versions (18.0.0 and 20.0.0)
-        Assert.Contains("<sub>(job-1, job-3)</sub>", result);
-        Assert.Contains("<sub>(job-2)</sub>", result);
-
-        // Verify "All jobs" does NOT appear since versions differ
-        Assert.DoesNotContain("(All jobs)", result);
+        Assert.Contains("(job-1, job-3)", result);
+        Assert.Contains("(job-2)", result);
     }
 
     /// <summary>
@@ -220,8 +222,8 @@ public class MarkdownFormatterTests
 
     /// <summary>
     ///     Test that MarkdownFormatter handles a single job correctly.
-    ///     What is tested: Edge case - single job shows "All jobs" notation
-    ///     What the assertions prove: Single job is treated as uniform (shows "All jobs")
+    ///     What is tested: Edge case - single job shows just the version
+    ///     What the assertions prove: Single job is treated as uniform (shows version only)
     /// </summary>
     [TestMethod]
     public void MarkdownFormatter_FormatVersions_SingleJob_ShowsAllJobs()
@@ -241,10 +243,11 @@ public class MarkdownFormatterTests
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify "All jobs" appears for single job
-        // What is proved: Single job is treated as uniform and shows "(All jobs)"
-        Assert.Contains("8.0.0 (All jobs)", result);
-        Assert.Contains("18.0.0 (All jobs)", result);
+        // Assert - Verify version appears without job IDs for single job
+        // What is proved: Single job is treated as uniform and shows version only
+        Assert.Contains("- **dotnet**: 8.0.0", result);
+        Assert.Contains("- **node**: 18.0.0", result);
+        Assert.DoesNotContain("job-1", result);
     }
 
     /// <summary>
@@ -279,17 +282,17 @@ public class MarkdownFormatterTests
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify uniform tools show "All jobs" and different tools show job IDs
+        // Assert - Verify uniform tools show version only and different tools show job IDs
         // What is proved: Formatter correctly distinguishes uniform from varying versions
-        Assert.Contains("8.0.0 (All jobs)", result);    // dotnet is uniform
-        Assert.Contains("3.11.0 (All jobs)", result);   // python is uniform
-        Assert.Contains("<sub>(job-1)</sub>", result);  // node differs
-        Assert.Contains("<sub>(job-2)</sub>", result);  // node differs
+        Assert.Contains("- **dotnet**: 8.0.0", result);    // dotnet is uniform, no job IDs
+        Assert.Contains("- **python**: 3.11.0", result);   // python is uniform, no job IDs
+        Assert.Contains("(job-1)", result);  // node differs
+        Assert.Contains("(job-2)", result);  // node differs
     }
 
     /// <summary>
-    ///     Test that MarkdownFormatter sorts job IDs alphabetically within subscript.
-    ///     What is tested: Job IDs are sorted within subscript when multiple jobs share a version
+    ///     Test that MarkdownFormatter sorts job IDs alphabetically when multiple jobs share a version.
+    ///     What is tested: Job IDs are sorted alphabetically when multiple jobs share a version
     ///     What the assertions prove: Job IDs appear in alphabetical order
     /// </summary>
     [TestMethod]
@@ -312,9 +315,12 @@ public class MarkdownFormatterTests
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify "All jobs" is shown (since all have same version)
-        // What is proved: When all jobs have the same version, "All jobs" is displayed
-        Assert.Contains("1.0.0 (All jobs)", result);
+        // Assert - Verify version is shown without job IDs (since all have same version)
+        // What is proved: When all jobs have the same version, just the version is displayed
+        Assert.Contains("- **tool**: 1.0.0", result);
+        Assert.DoesNotContain("job-zebra", result);
+        Assert.DoesNotContain("job-alpha", result);
+        Assert.DoesNotContain("job-beta", result);
     }
 
     /// <summary>
@@ -343,9 +349,9 @@ public class MarkdownFormatterTests
 
         // Assert - Verify special characters are preserved
         // What is proved: Version strings with special characters are correctly preserved
-        Assert.Contains("1.0.0-beta+build.123 (All jobs)", result);
-        Assert.Contains("2.0.0-rc.1 (All jobs)", result);
-        Assert.Contains("3.0.0+meta.data (All jobs)", result);
+        Assert.Contains("- **tool1**: 1.0.0-beta+build.123", result);
+        Assert.Contains("- **tool2**: 2.0.0-rc.1", result);
+        Assert.Contains("- **tool3**: 3.0.0+meta.data", result);
     }
 
     /// <summary>
@@ -410,14 +416,17 @@ public class MarkdownFormatterTests
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify versions appear in sorted order
-        // What is proved: Different versions are listed in alphabetical order
-        var toolLine = result.Split('\n').First(l => l.StartsWith("- **tool**:"));
-        var indexOf1 = toolLine.IndexOf("1.0.0", StringComparison.Ordinal);
-        var indexOf2 = toolLine.IndexOf("2.0.0", StringComparison.Ordinal);
-        var indexOf3 = toolLine.IndexOf("3.0.0", StringComparison.Ordinal);
-
-        Assert.IsLessThan(indexOf2, indexOf1, "1.0.0 should appear before 2.0.0");
-        Assert.IsLessThan(indexOf3, indexOf2, "2.0.0 should appear before 3.0.0");
+        // Assert - Verify versions appear in sorted order as separate bullets
+        // What is proved: Different versions are listed in alphabetical order, each on its own line
+        var lines = result.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        var toolLines = lines.Where(l => l.StartsWith("- **tool**:")).ToArray();
+        
+        // Should have 3 separate bullets for the 3 different versions
+        Assert.HasCount(3, toolLines);
+        
+        // Verify they appear in sorted order: 1.0.0, 2.0.0, 3.0.0
+        Assert.Contains("1.0.0", toolLines[0]);
+        Assert.Contains("2.0.0", toolLines[1]);
+        Assert.Contains("3.0.0", toolLines[2]);
     }
 }

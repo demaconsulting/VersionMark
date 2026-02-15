@@ -156,15 +156,15 @@ tools:
                             test.ErrorMessage = $"Expected job-id 'test-job', got '{versionInfo.JobId}'";
                             context.WriteError($"✗ Captures Versions Test - FAILED: Wrong job-id");
                         }
-                        // Verify dotnet version was captured
-                        else if (!versionInfo.Versions.ContainsKey("dotnet"))
+                        // Verify dotnet version was captured and is not empty
+                        else if (!versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion))
                         {
                             test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
                             test.ErrorMessage = "Output JSON missing 'dotnet' version";
                             context.WriteError($"✗ Captures Versions Test - FAILED: Missing dotnet version");
                         }
                         // Verify dotnet version is not empty
-                        else if (string.IsNullOrWhiteSpace(versionInfo.Versions["dotnet"]))
+                        else if (string.IsNullOrWhiteSpace(dotnetVersion))
                         {
                             test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
                             test.ErrorMessage = "Dotnet version is empty";
