@@ -45,7 +45,7 @@ Please run the following checks before submitting:
 
 - [ ] **Spell checker passes**: `cspell "**/*.{md,cs}"`
 - [ ] **Markdown linter passes**: `markdownlint "**/*.md"`
-- [ ] **YAML linter passes**: `yamllint '**/*.{yml,yaml}'`
+- [ ] **YAML linter passes**: `yamllint .`
 
 ### Testing
 
