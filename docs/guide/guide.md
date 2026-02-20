@@ -231,9 +231,8 @@ When you run the capture command, VersionMark creates a JSON file with the follo
 
 ```json
 {
-  "job-id": "windows-net8",
-  "timestamp": "2024-03-15T10:30:00Z",
-  "versions": {
+  "JobId": "windows-net8",
+  "Versions": {
     "dotnet": "8.0.100",
     "node": "20.11.0",
     "gcc": "13.2.0",
@@ -244,9 +243,8 @@ When you run the capture command, VersionMark creates a JSON file with the follo
 
 #### JSON Structure
 
-- **job-id**: The unique identifier provided via `--job-id`
-- **timestamp**: ISO 8601 timestamp of when versions were captured
-- **versions**: Object mapping tool names to their captured versions
+- **JobId**: The unique identifier provided via `--job-id`
+- **Versions**: Object mapping tool names to their captured versions
 
 ### Publish Output (Markdown)
 
@@ -257,26 +255,27 @@ The publish command generates a markdown file with a bulleted list of tool versi
 ```markdown
 ## Tool Versions
 
-- **dotnet**: 8.0.100 (All jobs)
-- **node**: 20.11.0 (All jobs)
+- **dotnet**: 8.0.100
+- **node**: 20.11.0
 ```
 
-When all jobs capture the same version of a tool, it's displayed as "(All jobs)".
+When all jobs capture the same version of a tool, only the version is displayed without job
+identifiers.
 
 #### Example 2: Different Versions Across Jobs
 
 ```markdown
 ## Tool Versions
 
-- **dotnet**: 8.0.100 (All jobs)
-- **gcc**: 11.4.0 <sub>(windows-net8, windows-net9)</sub>, 13.2.0 <sub>(linux-net8, 
-linux-net9)</sub>
-- **node**: 20.11.0 <sub>(windows-net8, linux-net8)</sub>, 21.0.0 <sub>(windows-net9, 
-linux-net9)</sub>
+- **dotnet**: 8.0.100
+- **gcc**: 11.4.0 (windows-net8, windows-net9)
+- **gcc**: 13.2.0 (linux-net8, linux-net9)
+- **node**: 20.11.0 (windows-net8, linux-net8)
+- **node**: 21.0.0 (windows-net9, linux-net9)
 ```
 
-When a tool has different versions across jobs, each version is listed separately with the
-jobs that use it shown in subscripts. Job IDs within each subscript are listed in
+When a tool has different versions across jobs, each version is listed as a separate bullet
+with the jobs that use it shown in parentheses. Job IDs within each group are listed in
 alphabetical order.
 
 #### Output Format Details
@@ -285,7 +284,6 @@ alphabetical order.
 - **Tool Order**: Tools are listed in alphabetical order (case-insensitive)
 - **Version Order**: When multiple versions exist, they are sorted alphabetically
 - **Job IDs**: Within each version group, job IDs are sorted alphabetically
-- **Subscripts**: Job IDs use HTML `<sub>` tags for compact display
 
 ## CI/CD Integration
 
