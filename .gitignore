@@ -90,6 +90,13 @@ __pycache__/
 docs/**/*.html
 docs/**/*.pdf
 !docs/template/**
+docs/requirements/requirements.md
+docs/justifications/justifications.md
+docs/tracematrix/tracematrix.md
+docs/quality/codeql-quality.md
+docs/quality/sonar-quality.md
+docs/buildnotes.md
+docs/buildnotes/versions.md
 
 # Test results
 TestResults/

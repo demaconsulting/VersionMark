@@ -1,10 +1,27 @@
-# VersionMark User Guide
+# Introduction
 
 VersionMark is a tool for capturing and publishing tool version information across CI/CD
 environments. It helps track which versions of build tools, compilers, and dependencies are
 used in different jobs and environments.
 
-## Installation
+## Purpose
+
+VersionMark provides a standardized way to capture, track, and document tool versions used
+across different CI/CD jobs and environments. This ensures transparency, reproducibility, and
+helps teams understand which tool versions are used in their build and deployment pipelines.
+
+## Scope
+
+This user guide covers:
+
+- Installing and configuring VersionMark
+- Capturing tool versions in CI/CD environments
+- Publishing version information to documentation
+- Integrating with CI/CD systems like GitHub Actions
+- Configuration file format and options
+- Troubleshooting and best practices
+
+# Installation
 
 Install the tool globally using the .NET CLI:
 
@@ -12,9 +29,9 @@ Install the tool globally using the .NET CLI:
 dotnet tool install -g DemaConsulting.VersionMark
 ```
 
-## Quick Start
+# Quick Start
 
-### Step 1: Create Configuration File
+## Step 1: Create Configuration File
 
 Create a `.versionmark.yaml` file in your repository root:
 
@@ -33,7 +50,7 @@ tools:
     regex: 'gcc \(.*\) (?<version>\d+\.\d+\.\d+)'
 ```
 
-### Step 2: Capture Tool Versions in CI/CD
+## Step 2: Capture Tool Versions in CI/CD
 
 In each CI/CD job, capture tool versions with a unique job identifier:
 
@@ -43,7 +60,7 @@ versionmark --capture --job-id "windows-net8"
 
 This creates a JSON file (e.g., `versionmark-windows-net8.json`) containing the captured versions.
 
-### Step 3: Publish Versions to Documentation
+## Step 3: Publish Versions to Documentation
 
 After all jobs complete, publish the captured versions:
 
@@ -53,9 +70,9 @@ versionmark --publish --report versions.md
 
 This generates a markdown file consolidating versions from all jobs.
 
-## Command-Line Reference
+# Command-Line Reference
 
-### Global Options
+## Global Options
 
 These options are available for all commands:
 
@@ -66,7 +83,7 @@ These options are available for all commands:
 | `--silent`           | Suppress console output                                      |
 | `--log <file>`       | Write output to log file                                     |
 
-### Capture Command
+## Capture Command
 
 Capture tool versions from the current environment:
 
@@ -74,7 +91,7 @@ Capture tool versions from the current environment:
 versionmark --capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 ```
 
-#### Options
+### Options
 
 | Option                    | Description                                                                         |
 | ------------------------- | ----------------------------------------------------------------------------------- |
@@ -85,7 +102,7 @@ versionmark --capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 | `-- <tools...>`           | List of tool names to capture. If not specified, all tools defined in the           |
 |                           | configuration file will be captured.                                                |
 
-#### Example
+### Example
 
 ```bash
 # Capture all tools defined in config
@@ -98,7 +115,7 @@ versionmark --capture --job-id "linux-gcc" -- gcc make cmake
 versionmark --capture --job-id "macos" --output versions/macos.json
 ```
 
-### Publish Command
+## Publish Command
 
 Publish captured versions to markdown documentation:
 
@@ -106,7 +123,7 @@ Publish captured versions to markdown documentation:
 versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
 ```
 
-#### Publish Options
+### Publish Options
 
 | Option                   | Description                                                      |
 | ------------------------ | ---------------------------------------------------------------- |
@@ -115,7 +132,7 @@ versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
 | `--report-depth <depth>` | Heading depth for markdown output (default: 2, min: 1, max: 6)   |
 | `-- <patterns...>`       | Glob patterns for JSON files (default: `versionmark-*.json`)     |
 
-#### Publish Examples
+### Publish Examples
 
 ```bash
 # Basic publish with default patterns (versionmark-*.json)
@@ -131,7 +148,7 @@ versionmark --publish --report versions.md --report-depth 3
 versionmark --publish --report docs/versions.md --report-depth 1 -- versionmark-*.json
 ```
 
-#### Glob Patterns
+### Glob Patterns
 
 The publish command uses glob patterns to find JSON files. Multiple patterns can be specified
 after the `--` separator:
@@ -149,11 +166,11 @@ Common glob pattern syntax:
 - `[abc]` - Matches one character from the set
 - `{a,b}` - Matches either pattern a or b
 
-## Configuration File Format
+# Configuration File Format
 
 The `.versionmark.yaml` file defines which tools to capture and how to extract version information.
 
-### Basic Configuration
+## Basic Configuration
 
 ```yaml
 tools:
@@ -170,7 +187,7 @@ tools:
     regex: 'Python (?<version>\d+\.\d+\.\d+)'
 ```
 
-### Configuration Properties
+## Configuration Properties
 
 Each tool entry in the `tools` dictionary supports the following properties:
 
@@ -185,7 +202,7 @@ Each tool entry in the `tools` dictionary supports the following properties:
 | `regex-linux`    | No       | Regex override for Linux                                            |
 | `regex-macos`    | No       | Regex override for macOS                                            |
 
-### OS-Specific Overrides
+## OS-Specific Overrides
 
 You can provide platform-specific commands and regex patterns for tools that have different
 behavior on different operating systems:
@@ -213,7 +230,7 @@ The tool uses OS-specific overrides when running on the corresponding platform. 
 is specified for the current platform, it falls back to the default `command` and `regex`
 values.
 
-### Regular Expression Tips
+## Regular Expression Tips
 
 The regex must contain a named 'version' capture group using .NET syntax `(?<version>...)` that
 captures the version number. Examples:
@@ -223,17 +240,16 @@ captures the version number. Examples:
 - **Multiline output**: `(?m)version (?<version>\d+\.\d+\.\d+)` - Uses multiline mode
 - **Build metadata**: `(?<version>\d+\.\d+\.\d+[-+][a-zA-Z0-9.]+)` - Captures `1.2.3-beta.1`
 
-## Output Formats
+# Output Formats
 
-### Capture Output (JSON)
+## Capture Output (JSON)
 
 When you run the capture command, VersionMark creates a JSON file with the following structure:
 
 ```json
 {
-  "job-id": "windows-net8",
-  "timestamp": "2024-03-15T10:30:00Z",
-  "versions": {
+  "JobId": "windows-net8",
+  "Versions": {
     "dotnet": "8.0.100",
     "node": "20.11.0",
     "gcc": "13.2.0",
@@ -242,54 +258,53 @@ When you run the capture command, VersionMark creates a JSON file with the follo
 }
 ```
 
-#### JSON Structure
+### JSON Structure
 
-- **job-id**: The unique identifier provided via `--job-id`
-- **timestamp**: ISO 8601 timestamp of when versions were captured
-- **versions**: Object mapping tool names to their captured versions
+- **JobId**: The unique identifier provided via `--job-id`
+- **Versions**: Object mapping tool names to their captured versions
 
-### Publish Output (Markdown)
+## Publish Output (Markdown)
 
 The publish command generates a markdown file with a bulleted list of tool versions:
 
-#### Example 1: All Jobs Use Same Version
+### Example 1: All Jobs Use Same Version
 
 ```markdown
 ## Tool Versions
 
-- **dotnet**: 8.0.100 (All jobs)
-- **node**: 20.11.0 (All jobs)
+- **dotnet**: 8.0.100
+- **node**: 20.11.0
 ```
 
-When all jobs capture the same version of a tool, it's displayed as "(All jobs)".
+When all jobs capture the same version of a tool, only the version is displayed without job
+identifiers.
 
-#### Example 2: Different Versions Across Jobs
+### Example 2: Different Versions Across Jobs
 
 ```markdown
 ## Tool Versions
 
-- **dotnet**: 8.0.100 (All jobs)
-- **gcc**: 11.4.0 <sub>(windows-net8, windows-net9)</sub>, 13.2.0 <sub>(linux-net8, 
-linux-net9)</sub>
-- **node**: 20.11.0 <sub>(windows-net8, linux-net8)</sub>, 21.0.0 <sub>(windows-net9, 
-linux-net9)</sub>
+- **dotnet**: 8.0.100
+- **gcc**: 11.4.0 (windows-net8, windows-net9)
+- **gcc**: 13.2.0 (linux-net8, linux-net9)
+- **node**: 20.11.0 (windows-net8, linux-net8)
+- **node**: 21.0.0 (windows-net9, linux-net9)
 ```
 
-When a tool has different versions across jobs, each version is listed separately with the
-jobs that use it shown in subscripts. Job IDs within each subscript are listed in
+When a tool has different versions across jobs, each version is listed as a separate bullet
+with the jobs that use it shown in parentheses. Job IDs within each group are listed in
 alphabetical order.
 
-#### Output Format Details
+### Output Format Details
 
 - **Heading**: Controlled by `--report-depth` parameter (default: `##` for depth 2)
 - **Tool Order**: Tools are listed in alphabetical order (case-insensitive)
 - **Version Order**: When multiple versions exist, they are sorted alphabetically
 - **Job IDs**: Within each version group, job IDs are sorted alphabetically
-- **Subscripts**: Job IDs use HTML `<sub>` tags for compact display
 
-## CI/CD Integration
+# CI/CD Integration
 
-### GitHub Actions Example
+## GitHub Actions Example
 
 Here's a complete example of using VersionMark in a GitHub Actions workflow:
 
@@ -370,7 +385,7 @@ jobs:
           git push
 ```
 
-### Key Integration Points
+## Key Integration Points
 
 1. **Install VersionMark**: Install the tool in each job that needs to capture versions
 2. **Capture per Job**: Run `versionmark capture` with a unique `--job-id` in each job
@@ -378,9 +393,9 @@ jobs:
 4. **Download Artifacts**: In the publish job, download all captured JSON files
 5. **Publish**: Run `versionmark publish` to generate consolidated documentation
 
-## Common Workflows
+# Common Workflows
 
-### Workflow 1: Track Build Environment Versions
+## Workflow 1: Track Build Environment Versions
 
 Use VersionMark to document which tool versions are used in your build environment:
 
@@ -396,7 +411,7 @@ tools:
     regex: '(?<version>\d+\.\d+\.\d+\.\d+)'
 ```
 
-### Workflow 2: Compare Versions Across Platforms
+## Workflow 2: Compare Versions Across Platforms
 
 Track how tool versions differ between Windows, Linux, and macOS:
 
@@ -412,7 +427,7 @@ tools:
     regex: 'clang version (?<version>\d+\.\d+\.\d+)'
 ```
 
-### Workflow 3: Monitor Dependency Versions
+## Workflow 3: Monitor Dependency Versions
 
 Track versions of runtime dependencies and tools:
 
@@ -432,9 +447,9 @@ tools:
     regex: 'Terraform v(?<version>\d+\.\d+\.\d+)'
 ```
 
-## Troubleshooting
+# Troubleshooting
 
-### Tool Not Found
+## Tool Not Found
 
 If a tool command fails because the tool is not installed:
 
@@ -442,7 +457,7 @@ If a tool command fails because the tool is not installed:
 - The capture will continue for other tools
 - The published output will note which tools failed to capture
 
-### Version Not Matched
+## Version Not Matched
 
 If the regex doesn't match the command output:
 
@@ -451,7 +466,7 @@ If the regex doesn't match the command output:
 - Use online regex testers to validate your pattern
 - Remember to escape special regex characters
 
-### OS-Specific Issues
+## OS-Specific Issues
 
 If a tool behaves differently on different platforms:
 
@@ -459,7 +474,7 @@ If a tool behaves differently on different platforms:
 - Test on each platform to ensure the commands work
 - Consider using platform-specific tools in separate configurations
 
-### No JSON Files Found
+## No JSON Files Found
 
 If the publish command reports "No JSON files found":
 
@@ -468,7 +483,7 @@ If the publish command reports "No JSON files found":
 - Use `-- versionmark-*.json` explicitly if files don't match the default pattern
 - Check that capture jobs successfully created JSON files before publishing
 
-### Invalid JSON Files
+## Invalid JSON Files
 
 If a JSON file cannot be parsed during publish:
 
@@ -477,7 +492,7 @@ If a JSON file cannot be parsed during publish:
 - Verify the file contains required fields: `JobId` and `Versions`
 - Re-run the capture command if the file is corrupted
 
-## Best Practices
+# Best Practices
 
 1. **Use Descriptive Job IDs**: Make job-ids descriptive (e.g., `windows-net8-release`
 instead of `job1`)
