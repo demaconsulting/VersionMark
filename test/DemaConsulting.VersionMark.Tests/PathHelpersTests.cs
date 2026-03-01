@@ -27,6 +27,36 @@ namespace DemaConsulting.VersionMark.Tests;
 public class PathHelpersTests
 {
     /// <summary>
+    ///     Test that SafePathCombine throws ArgumentNullException when basePath is null.
+    /// </summary>
+    [TestMethod]
+    public void PathHelpers_SafePathCombine_NullBasePath_ThrowsArgumentNullException()
+    {
+        // Arrange
+        string? basePath = null;
+        var relativePath = "subfolder/file.txt";
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() =>
+            PathHelpers.SafePathCombine(basePath!, relativePath));
+    }
+
+    /// <summary>
+    ///     Test that SafePathCombine throws ArgumentNullException when relativePath is null.
+    /// </summary>
+    [TestMethod]
+    public void PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var basePath = "/home/user/project";
+        string? relativePath = null;
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() =>
+            PathHelpers.SafePathCombine(basePath, relativePath!));
+    }
+
+    /// <summary>
     ///     Test that SafePathCombine correctly combines valid paths.
     /// </summary>
     [TestMethod]
