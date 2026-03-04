@@ -32,7 +32,9 @@ jobs:
       - name: Capture tool versions
         shell: bash
         run: |
+          echo "Capturing tool versions..."
           dotnet versionmark --capture --job-id "quality" -- dotnet git versionmark
+          echo "✓ Tool versions captured"
 
       - name: Upload version capture
         uses: actions/upload-artifact@v7
@@ -237,7 +239,7 @@ jobs:
             .versionmark.yaml
             .config/dotnet-tools.json
 
-
+      - name: Download package
         uses: actions/download-artifact@v8
         with:
           name: artifacts-${{ matrix.os }}
