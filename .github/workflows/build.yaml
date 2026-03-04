@@ -21,6 +21,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.x
+
+      - name: Restore Tools
+        run: dotnet tool restore
+
+      - name: Capture tool versions
+        shell: bash
+        run: |
+          dotnet versionmark --capture --job-id "quality" -- dotnet git versionmark
+
+      - name: Upload version capture
+        uses: actions/upload-artifact@v7
+        with:
+          name: version-capture-quality
+          path: versionmark-quality.json
+
       - name: Run markdown linter
         uses: DavidAnson/markdownlint-cli2-action@v22
         with:
@@ -213,8 +232,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            .versionmark.yaml
+            .config/dotnet-tools.json
 
-      - name: Download package
+
         uses: actions/download-artifact@v8
         with:
           name: artifacts-${{ matrix.os }}
@@ -404,6 +427,12 @@ jobs:
           --build-version ${{ inputs.version }}
           --report docs/buildnotes.md
           --report-depth 1
+
+      - name: Display Build Notes Report
+        shell: bash
+        run: |
+          echo "=== Build Notes Report ==="
+          cat docs/buildnotes.md
 
       - name: Publish Tool Versions
         shell: bash

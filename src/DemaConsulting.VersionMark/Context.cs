@@ -158,7 +158,7 @@ internal sealed class Context : IDisposable
     {
         try
         {
-            _logWriter = new StreamWriter(logFile, append: false);
+            _logWriter = new StreamWriter(logFile, append: false) { AutoFlush = true };
         }
         // Generic catch is justified here to wrap any file system exception with context.
         // Expected exceptions include IOException, UnauthorizedAccessException, ArgumentException,
@@ -425,7 +425,7 @@ internal sealed class Context : IDisposable
             try
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(message);
+                Console.Error.WriteLine(message);
             }
             finally
             {

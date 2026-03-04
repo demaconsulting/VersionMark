@@ -15,10 +15,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+      Test infrastructure packages use child-element form to configure both PrivateAssets and IncludeAssets:
+        PrivateAssets="all"   - prevents these build-time packages from becoming transitive dependencies.
+        IncludeAssets         - lists all asset types to ensure full activation during the build.
+    -->
     <PackageReference Include="coverlet.collector" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <!--
+      Analyzer packages use child-element form to configure both PrivateAssets and IncludeAssets:
+        PrivateAssets="all"   - prevents these build-time analyzers from becoming transitive dependencies.
+        IncludeAssets         - lists all asset types (including 'analyzers' and 'buildtransitive') to ensure
+                               Roslyn analyzers and MSBuild targets are fully activated during the build.
+    -->
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.103">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

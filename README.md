@@ -189,6 +189,50 @@ Publish mode generates a markdown list consolidating versions from all jobs:
 When a tool has the same version across all jobs, it's shown without job identifiers. When versions
 differ, each version is listed on a separate line with the jobs that use it shown in parentheses.
 
+## Self Validation
+
+VersionMark includes built-in self-validation tests that verify the tool is working correctly in
+its current environment. Run with `--validate`:
+
+```bash
+versionmark --validate
+```
+
+Example output:
+
+```text
+# DEMA Consulting VersionMark
+
+| Information         | Value                                              |
+| :------------------ | :------------------------------------------------- |
+| Tool Version        | 1.2.3                                              |
+| Machine Name        | build-agent-01                                     |
+| OS Version          | Ubuntu 22.04.3 LTS                                 |
+| DotNet Runtime      | .NET 10.0.0                                        |
+| Time Stamp          | 2025-01-01 12:00:00 UTC                            |
+
+✓ VersionMark_CapturesVersions - Passed
+✓ VersionMark_GeneratesMarkdownReport - Passed
+
+Total Tests: 2
+Passed: 2
+Failed: 0
+```
+
+To save results in TRX format (Visual Studio test results):
+
+```bash
+versionmark --validate --results results.trx
+```
+
+To save results in JUnit XML format:
+
+```bash
+versionmark --validate --results results.xml
+```
+
+If any tests fail, the exit code will be non-zero.
+
 ## Documentation
 
 Generated documentation includes:

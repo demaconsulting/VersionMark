@@ -14,7 +14,7 @@ publishing tool version information across CI/CD environments.
 
 ## Tech Stack
 
-- C# 12, .NET 8.0/9.0/10.0, dotnet CLI, NuGet
+- C# (latest), .NET 8.0/9.0/10.0, dotnet CLI, NuGet
 - YAML configuration files (.versionmark.yaml)
 - JSON for version capture data
 - Markdown for published documentation
