@@ -236,23 +236,27 @@ tools:
     {
         // Arrange - Set up context with capture flag but no job-id
         var originalOut = Console.Out;
+        var originalError = Console.Error;
         try
         {
             using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
             Console.SetOut(outWriter);
+            Console.SetError(errWriter);
             using var context = Context.Create(["--capture"]);
 
             // Act - Run the program with incomplete capture arguments
             Program.Run(context);
 
-            // Assert - Verify error message and non-zero exit code
-            var output = outWriter.ToString();
-            Assert.Contains("--job-id is required", output);
+            // Assert - Verify error message on stderr and non-zero exit code
+            var errorOutput = errWriter.ToString();
+            Assert.Contains("--job-id is required", errorOutput);
             Assert.AreEqual(1, context.ExitCode);
         }
         finally
         {
             Console.SetOut(originalOut);
+            Console.SetError(originalError);
         }
     }
 
@@ -264,10 +268,13 @@ tools:
     {
         // Arrange - Set up context in current directory (no .versionmark.yaml expected here)
         var originalOut = Console.Out;
+        var originalError = Console.Error;
         try
         {
             using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
             Console.SetOut(outWriter);
+            Console.SetError(errWriter);
             using var context = Context.Create([
                 "--capture",
                 "--job-id", "test-job"
@@ -276,14 +283,15 @@ tools:
             // Act - Run capture command without available config file
             Program.Run(context);
 
-            // Assert - Verify error is reported and exit code indicates failure
-            var output = outWriter.ToString();
-            Assert.Contains("Error:", output);
+            // Assert - Verify error is reported on stderr and exit code indicates failure
+            var errorOutput = errWriter.ToString();
+            Assert.Contains("Error:", errorOutput);
             Assert.AreEqual(1, context.ExitCode);
         }
         finally
         {
             Console.SetOut(originalOut);
+            Console.SetError(originalError);
         }
     }
 
@@ -297,24 +305,28 @@ tools:
     {
         // Arrange - Set up context without --report parameter
         var originalOut = Console.Out;
+        var originalError = Console.Error;
         try
         {
             using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
             Console.SetOut(outWriter);
+            Console.SetError(errWriter);
             using var context = Context.Create(["--publish"]);
 
             // Act - Run publish command without --report parameter
             Program.Run(context);
 
-            // Assert - Verify error message and non-zero exit code
+            // Assert - Verify error message on stderr and non-zero exit code
             // What is proved: --publish without --report results in an error
-            var output = outWriter.ToString();
-            Assert.Contains("Error: --report is required for publish mode", output);
+            var errorOutput = errWriter.ToString();
+            Assert.Contains("Error: --report is required for publish mode", errorOutput);
             Assert.AreEqual(1, context.ExitCode);
         }
         finally
         {
             Console.SetOut(originalOut);
+            Console.SetError(originalError);
         }
     }
 
@@ -337,10 +349,13 @@ tools:
             Directory.SetCurrentDirectory(tempDir);
 
             var originalOut = Console.Out;
+            var originalError = Console.Error;
             try
             {
                 using var outWriter = new StringWriter();
+                using var errWriter = new StringWriter();
                 Console.SetOut(outWriter);
+                Console.SetError(errWriter);
                 using var context = Context.Create([
                     "--publish",
                     "--report", reportFile,
@@ -350,15 +365,16 @@ tools:
                 // Act - Run publish command with pattern that matches no files
                 Program.Run(context);
 
-                // Assert - Verify error message and non-zero exit code
+                // Assert - Verify error message on stderr and non-zero exit code
                 // What is proved: No matching files results in an error
-                var output = outWriter.ToString();
-                Assert.Contains("Error: No JSON files found matching patterns:", output);
+                var errorOutput = errWriter.ToString();
+                Assert.Contains("Error: No JSON files found matching patterns:", errorOutput);
                 Assert.AreEqual(1, context.ExitCode);
             }
             finally
             {
                 Console.SetOut(originalOut);
+                Console.SetError(originalError);
             }
         }
         finally
@@ -394,10 +410,13 @@ tools:
             File.WriteAllText(invalidJsonFile, "{ this is not valid JSON }");
 
             var originalOut = Console.Out;
+            var originalError = Console.Error;
             try
             {
                 using var outWriter = new StringWriter();
+                using var errWriter = new StringWriter();
                 Console.SetOut(outWriter);
+                Console.SetError(errWriter);
                 using var context = Context.Create([
                     "--publish",
                     "--report", reportFile
@@ -406,15 +425,16 @@ tools:
                 // Act - Run publish command with invalid JSON file
                 Program.Run(context);
 
-                // Assert - Verify error message and non-zero exit code
+                // Assert - Verify error message on stderr and non-zero exit code
                 // What is proved: Invalid JSON results in an error
-                var output = outWriter.ToString();
-                Assert.Contains("Error: Failed to parse JSON file", output);
+                var errorOutput = errWriter.ToString();
+                Assert.Contains("Error: Failed to parse JSON file", errorOutput);
                 Assert.AreEqual(1, context.ExitCode);
             }
             finally
             {
                 Console.SetOut(originalOut);
+                Console.SetError(originalError);
             }
         }
         finally

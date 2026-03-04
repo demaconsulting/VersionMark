@@ -257,6 +257,148 @@ public class ContextTests
     }
 
     /// <summary>
+    ///     Test that WriteError does not write to console when silent.
+    ///     What is tested: WriteError is suppressed when Silent flag is set
+    ///     What the assertions prove: WriteError respects the Silent flag
+    /// </summary>
+    [TestMethod]
+    public void Context_WriteError_Silent_DoesNotWriteToConsole()
+    {
+        // Arrange - Redirect console error output
+        var originalError = Console.Error;
+        try
+        {
+            using var errorWriter = new StringWriter();
+            Console.SetError(errorWriter);
+
+            // Act - Create silent context and call WriteError
+            using var context = Context.Create(["--silent"]);
+            context.WriteError("Error message");
+
+            // Assert - Verify error message was not written to console
+            var output = errorWriter.ToString();
+            Assert.DoesNotContain("Error message", output);
+        }
+        finally
+        {
+            Console.SetError(originalError);
+        }
+    }
+
+    /// <summary>
+    ///     Test that WriteError sets the exit code to 1.
+    ///     What is tested: WriteError marks the context as having errors
+    ///     What the assertions prove: ExitCode is 1 after WriteError is called
+    /// </summary>
+    [TestMethod]
+    public void Context_WriteError_SetsErrorExitCode()
+    {
+        // Arrange - Create context with silent flag to avoid console output
+        using var context = Context.Create(["--silent"]);
+
+        // Act - Call WriteError
+        context.WriteError("Error message");
+
+        // Assert - Verify exit code is 1
+        Assert.AreEqual(1, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test that WriteError writes to stderr when not silent.
+    ///     What is tested: WriteError writes to Console.Error (stderr) when not silent
+    ///     What the assertions prove: Error messages go to stderr, not stdout
+    /// </summary>
+    [TestMethod]
+    public void Context_WriteError_NotSilent_WritesToConsole()
+    {
+        // Arrange - Redirect console error output
+        var originalError = Console.Error;
+        try
+        {
+            using var errorWriter = new StringWriter();
+            Console.SetError(errorWriter);
+
+            // Act - Create context and call WriteError
+            using var context = Context.Create([]);
+            context.WriteError("Error message");
+
+            // Assert - Verify error message was written to stderr
+            var output = errorWriter.ToString();
+            Assert.Contains("Error message", output);
+        }
+        finally
+        {
+            Console.SetError(originalError);
+        }
+    }
+
+    /// <summary>
+    ///     Test that WriteError writes to log file when logging is enabled.
+    ///     What is tested: WriteError writes to log file alongside stderr
+    ///     What the assertions prove: Error messages are recorded in the log file
+    /// </summary>
+    [TestMethod]
+    public void Context_WriteError_WritesToLogFile()
+    {
+        var logFile = Path.GetTempFileName();
+        var originalError = Console.Error;
+        try
+        {
+            // Suppress console error output during test
+            Console.SetError(TextWriter.Null);
+
+            using (var context = Context.Create(["--log", logFile]))
+            {
+                // Act - Call WriteError
+                context.WriteError("Error message");
+            }
+
+            // Assert - Verify error was written to log file
+            Assert.IsTrue(File.Exists(logFile));
+            var logContent = File.ReadAllText(logFile);
+            Assert.Contains("Error message", logContent);
+        }
+        finally
+        {
+            Console.SetError(originalError);
+            if (File.Exists(logFile))
+            {
+                File.Delete(logFile);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test creating a context with --log flag without a value throws ArgumentException.
+    ///     What is tested: --log flag requires a filename argument
+    ///     What the assertions prove: Missing value for --log raises ArgumentException
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_LogFlag_WithoutValue_ThrowsArgumentException()
+    {
+        // Arrange & Act - Create context with --log flag but no value
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--log"]));
+
+        // Assert - Verify exception is thrown
+        Assert.Contains("--log", exception.Message);
+    }
+
+    /// <summary>
+    ///     Test creating a context with --results flag without a value throws ArgumentException.
+    ///     What is tested: --results flag requires a filename argument
+    ///     What the assertions prove: Missing value for --results raises ArgumentException
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException()
+    {
+        // Arrange & Act - Create context with --results flag but no value
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--results"]));
+
+        // Assert - Verify exception is thrown
+        Assert.Contains("--results", exception.Message);
+    }
+
+    /// <summary>
     ///     Test creating a context with the publish flag.
     ///     What is tested: --publish flag parsing sets Publish property to true
     ///     What the assertions prove: The Publish flag is correctly parsed and stored

@@ -302,6 +302,69 @@ alphabetical order.
 - **Version Order**: When multiple versions exist, they are sorted alphabetically
 - **Job IDs**: Within each version group, job IDs are sorted alphabetically
 
+# Self-Validation
+
+VersionMark includes built-in self-validation tests that verify the tool is functioning correctly
+in its current environment.
+
+## Running Validation
+
+Run self-validation with the `--validate` flag:
+
+```bash
+versionmark --validate
+```
+
+To save results in TRX format (Visual Studio test results):
+
+```bash
+versionmark --validate --results results.trx
+```
+
+To save results in JUnit XML format:
+
+```bash
+versionmark --validate --results results.xml
+```
+
+Use `--silent` to suppress console output while still writing a results file:
+
+```bash
+versionmark --silent --validate --results results.trx
+```
+
+## Validation Report
+
+Example output:
+
+```text
+# DEMA Consulting VersionMark
+
+| Information         | Value                                              |
+| :------------------ | :------------------------------------------------- |
+| Tool Version        | 1.2.3                                              |
+| Machine Name        | build-agent-01                                     |
+| OS Version          | Ubuntu 22.04.3 LTS                                 |
+| DotNet Runtime      | .NET 10.0.0                                        |
+| Time Stamp          | 2025-01-01 12:00:00 UTC                            |
+
+✓ VersionMark_CapturesVersions - Passed
+✓ VersionMark_GeneratesMarkdownReport - Passed
+
+Total Tests: 2
+Passed: 2
+Failed: 0
+```
+
+If any tests fail, the exit code will be non-zero.
+
+## Validation Tests
+
+| Test | What It Proves |
+| :--- | :------------- |
+| `VersionMark_CapturesVersions` | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file |
+| `VersionMark_GeneratesMarkdownReport` | The tool can read captured JSON files and generate a markdown report |
+
 # CI/CD Integration
 
 ## GitHub Actions Example

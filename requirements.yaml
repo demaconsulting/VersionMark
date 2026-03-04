@@ -32,7 +32,7 @@ sections:
     sections:
       - title: Command-Line Interface
         requirements:
-          - id: CMD-001
+          - id: VersionMark-Cmd-Context
             title: The tool shall implement a Context class for command-line argument handling.
             justification: |
               Provides a standardized approach to command-line argument parsing and output
@@ -48,7 +48,7 @@ sections:
               - Context_Create_ResultsFlag_SetsResultsFile
               - Context_Create_LogFlag_OpensLogFile
 
-          - id: CMD-002
+          - id: VersionMark-Cmd-Version
             title: The tool shall support -v and --version flags to display version information.
             justification: |
               Users need to quickly identify the version of the tool they are using for
@@ -61,7 +61,7 @@ sections:
               - Program_Run_WithVersionFlag_DisplaysVersionOnly
               - IntegrationTest_VersionFlag_OutputsVersion
 
-          - id: CMD-003
+          - id: VersionMark-Cmd-Help
             title: The tool shall support -?, -h, and --help flags to display usage information.
             justification: |
               Users need access to command-line usage documentation without requiring
@@ -75,7 +75,7 @@ sections:
               - Program_Run_WithHelpFlag_DisplaysUsageInformation
               - IntegrationTest_HelpFlag_OutputsUsageInformation
 
-          - id: CMD-004
+          - id: VersionMark-Cmd-Silent
             title: The tool shall support --silent flag to suppress console output.
             justification: |
               Enables automated scripts and CI/CD pipelines to run the tool without
@@ -87,7 +87,7 @@ sections:
               - Context_WriteLine_Silent_DoesNotWriteToConsole
               - IntegrationTest_SilentFlag_SuppressesOutput
 
-          - id: CMD-005
+          - id: VersionMark-Cmd-Validate
             title: The tool shall support --validate flag to run self-validation tests.
             justification: |
               Provides a built-in mechanism to verify the tool is functioning correctly
@@ -99,7 +99,7 @@ sections:
               - Program_Run_WithValidateFlag_RunsValidation
               - IntegrationTest_ValidateFlag_RunsValidation
 
-          - id: CMD-006
+          - id: VersionMark-Cmd-Results
             title: The tool shall support --results flag to write validation results in TRX or JUnit format.
             justification: |
               Enables integration with CI/CD systems that expect standard test result formats.
@@ -108,8 +108,9 @@ sections:
             tests:
               - Context_Create_ResultsFlag_SetsResultsFile
               - IntegrationTest_ValidateWithResults_GeneratesTrxFile
+              - IntegrationTest_ValidateWithResults_GeneratesJUnitFile
 
-          - id: CMD-007
+          - id: VersionMark-Cmd-Log
             title: The tool shall support --log flag to write output to a log file.
             justification: |
               Provides persistent logging for debugging and audit trails.
@@ -119,9 +120,29 @@ sections:
               - Context_Create_LogFlag_OpensLogFile
               - IntegrationTest_LogFlag_WritesOutputToFile
 
+          - id: VersionMark-Cmd-ErrorOutput
+            title: The tool shall write error messages to stderr.
+            tests:
+              - Context_WriteError_NotSilent_WritesToConsole
+              - IntegrationTest_UnknownArgument_ReturnsError
+
+          - id: VersionMark-Cmd-InvalidArgs
+            title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
+            tests:
+              - Context_Create_UnknownArgument_ThrowsArgumentException
+              - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
+              - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
+              - IntegrationTest_UnknownArgument_ReturnsError
+
+          - id: VersionMark-Cmd-ExitCode
+            title: The tool shall return a non-zero exit code on failure.
+            tests:
+              - Context_WriteError_SetsErrorExitCode
+              - IntegrationTest_UnknownArgument_ReturnsError
+
       - title: Capture Command
         requirements:
-          - id: CAP-001
+          - id: VersionMark-Cap-Capture
             title: The tool shall support --capture flag to enable capture mode.
             justification: |
               Provides a way to capture tool versions from the current environment for
@@ -133,7 +154,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: CAP-002
+          - id: VersionMark-Cap-JobId
             title: The tool shall require --job-id parameter when capture mode is enabled.
             justification: |
               The job ID uniquely identifies the capture session and is used in the
@@ -144,7 +165,7 @@ sections:
               - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
               - IntegrationTest_CaptureCommandWithoutJobId_ReturnsError
 
-          - id: CAP-003
+          - id: VersionMark-Cap-Output
             title: The tool shall support --output parameter to specify the JSON output file path.
             justification: |
               Allows users to control where captured version information is saved,
@@ -155,7 +176,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: CAP-004
+          - id: VersionMark-Cap-DefaultOutput
             title: The tool shall default output filename to versionmark-<job-id>.json when --output is not specified.
             justification: |
               Provides a predictable default naming convention that includes the job ID,
@@ -165,7 +186,7 @@ sections:
             tests:
               - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
 
-          - id: CAP-005
+          - id: VersionMark-Cap-ToolFilter
             title: The tool shall accept an optional list of tool names after -- separator in capture mode.
             justification: |
               Allows users to capture versions for specific tools rather than all configured
@@ -176,7 +197,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: CAP-006
+          - id: VersionMark-Cap-MultipleTools
             title: The tool shall capture all tools defined in configuration when no tool names are specified.
             justification: |
               Provides a convenient default behavior where all configured tools are captured,
@@ -186,7 +207,7 @@ sections:
             tests:
               - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
 
-          - id: CAP-007
+          - id: VersionMark-Cap-Config
             title: The tool shall read .versionmark.yaml from the current directory in capture mode.
             justification: |
               Uses the standard configuration file location to determine which tools to
@@ -199,7 +220,7 @@ sections:
               - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
               - IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError
 
-          - id: CAP-008
+          - id: VersionMark-Cap-Command
             title: The tool shall execute configured commands and extract version information using regex patterns.
             justification: |
               Implements the core capture functionality by running tool commands and parsing
@@ -210,7 +231,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: CAP-009
+          - id: VersionMark-Cap-JsonOutput
             title: The tool shall save captured version information to a JSON file with job ID and version mappings.
             justification: |
               Stores captured versions in a structured format that can be easily consumed
@@ -222,7 +243,7 @@ sections:
               - IntegrationTest_CaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
 
-          - id: CAP-010
+          - id: VersionMark-Cap-Display
             title: The tool shall display captured tool names and versions to the user.
             justification: |
               Provides immediate feedback to users about what versions were captured,
@@ -233,7 +254,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: CAP-011
+          - id: VersionMark-Cap-ConfigError
             title: The tool shall report errors when .versionmark.yaml cannot be found or read in capture mode.
             justification: |
               Provides clear error messages to users when the configuration file is missing
@@ -246,7 +267,7 @@ sections:
 
       - title: Publish Command
         requirements:
-          - id: PUB-001
+          - id: VersionMark-Pub-Publish
             title: The tool shall support --publish flag to enable publish mode.
             justification: |
               Provides a way to generate markdown reports from captured JSON version files,
@@ -256,7 +277,7 @@ sections:
             tests:
               - VersionMark_GeneratesMarkdownReport
 
-          - id: PUB-002
+          - id: VersionMark-Pub-Report
             title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
             justification: |
               Allows users to control where the generated markdown report is saved,
@@ -266,7 +287,7 @@ sections:
             tests:
               - VersionMark_GeneratesMarkdownReport
 
-          - id: PUB-003
+          - id: VersionMark-Pub-ReportDepth
             title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
             justification: |
               Enables users to adjust the heading level of the generated markdown to fit
@@ -276,7 +297,7 @@ sections:
             tests:
               - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
 
-          - id: PUB-004
+          - id: VersionMark-Pub-RequireReport
             title: The tool shall require --report parameter when publish mode is enabled.
             justification: |
               Ensures users specify an output file location for the generated markdown,
@@ -286,7 +307,7 @@ sections:
             tests:
               - Program_Run_WithPublishCommandWithoutReport_ReturnsError
 
-          - id: PUB-005
+          - id: VersionMark-Pub-GlobPattern
             title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
             justification: |
               Allows users to flexibly select which captured JSON files to include in
@@ -296,7 +317,7 @@ sections:
             tests:
               - VersionMark_GeneratesMarkdownReport
 
-          - id: PUB-006
+          - id: VersionMark-Pub-Consolidate
             title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
             justification: |
               Implements the core functionality of loading captured version data from
@@ -306,7 +327,7 @@ sections:
             tests:
               - VersionMark_GeneratesMarkdownReport
 
-          - id: PUB-007
+          - id: VersionMark-Pub-ConflictReport
             title: The tool shall report errors when no JSON files match the specified glob patterns.
             justification: |
               Provides clear feedback to users when input files cannot be found,
@@ -316,7 +337,7 @@ sections:
             tests:
               - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
 
-          - id: PUB-008
+          - id: VersionMark-Pub-MultipleFiles
             title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
             justification: |
               Provides clear feedback when input files are malformed or inaccessible,
@@ -328,7 +349,7 @@ sections:
 
       - title: Configuration File
         requirements:
-          - id: CFG-001
+          - id: VersionMark-Cfg-YamlConfig
             title: The tool shall read configuration from a .versionmark.yaml file.
             justification: |
               Provides a standardized configuration format for defining tools and their
@@ -339,7 +360,7 @@ sections:
               - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
               - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
 
-          - id: CFG-002
+          - id: VersionMark-Cfg-ToolDefinition
             title: The tool shall support tool definitions with command and regex properties.
             justification: |
               Enables users to specify how to execute and parse version information for
@@ -351,7 +372,7 @@ sections:
               - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
               - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
 
-          - id: CFG-003
+          - id: VersionMark-Cfg-OsCommandOverride
             title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
             justification: |
               Different operating systems may require different commands or command
@@ -364,7 +385,7 @@ sections:
               - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
               - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
 
-          - id: CFG-004
+          - id: VersionMark-Cfg-OsRegexOverride
             title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
             justification: |
               Different operating systems may produce different output formats requiring
@@ -377,7 +398,7 @@ sections:
               - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
               - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
 
-          - id: CFG-005
+          - id: VersionMark-Cfg-ValidateTools
             title: The tool shall validate that configuration files contain at least one tool definition.
             justification: |
               Prevents misconfiguration by ensuring the configuration file has actionable
@@ -387,7 +408,7 @@ sections:
             tests:
               - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
 
-          - id: CFG-006
+          - id: VersionMark-Cfg-ParseError
             title: The tool shall report errors when configuration files cannot be read or parsed.
             justification: |
               Provides clear feedback to users when configuration files are missing,
@@ -400,7 +421,7 @@ sections:
 
       - title: Markdown Formatter
         requirements:
-          - id: FMT-001
+          - id: VersionMark-Fmt-JsonStructure
             title: The tool shall generate markdown output listing all tools in sorted order.
             justification: |
               Provides consistent, predictable output ordering that makes reports easier
@@ -411,7 +432,7 @@ sections:
               - VersionMark_GeneratesMarkdownReport
               - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
 
-          - id: FMT-002
+          - id: VersionMark-Fmt-JsonJobId
             title: >-
               The tool shall collapse versions into "All jobs" when the same version appears across
               all input files.
@@ -423,7 +444,7 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs
 
-          - id: FMT-003
+          - id: VersionMark-Fmt-JsonVersions
             title: >-
               The tool shall display individual job IDs with their versions when versions differ
               across input files.
@@ -435,7 +456,7 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
 
-          - id: FMT-004
+          - id: VersionMark-Fmt-MarkdownList
             title: >-
               The tool shall use subscript formatting and parenthesized job IDs to indicate which
               jobs had which versions.
@@ -447,7 +468,7 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
 
-          - id: FMT-005
+          - id: VersionMark-Fmt-MarkdownConsolidation
             title: The tool shall respect the report-depth parameter when generating markdown heading levels.
             justification: |
               Allows the generated markdown to integrate properly into existing document
@@ -460,7 +481,7 @@ sections:
 
       - title: Platform Support
         requirements:
-          - id: PLT-001
+          - id: VersionMark-Plt-Windows
             title: The tool shall build and run on Windows platforms.
             justification: |
               DEMA Consulting tools must support Windows as a major development platform.
@@ -471,7 +492,7 @@ sections:
               - "windows@VersionMark_CapturesVersions"
               - "windows@VersionMark_GeneratesMarkdownReport"
 
-          - id: PLT-002
+          - id: VersionMark-Plt-Linux
             title: The tool shall build and run on Linux platforms.
             justification: |
               DEMA Consulting tools must support Linux for CI/CD and containerized environments.
@@ -482,7 +503,7 @@ sections:
               - "ubuntu@VersionMark_CapturesVersions"
               - "ubuntu@VersionMark_GeneratesMarkdownReport"
 
-          - id: PLT-003
+          - id: VersionMark-Plt-Net8
             title: The tool shall support .NET 8 runtime.
             justification: |
               .NET 8 is an LTS release providing long-term stability for enterprise users.
@@ -492,7 +513,7 @@ sections:
               - "dotnet8.x@VersionMark_CapturesVersions"
               - "dotnet8.x@VersionMark_GeneratesMarkdownReport"
 
-          - id: PLT-004
+          - id: VersionMark-Plt-Net9
             title: The tool shall support .NET 9 runtime.
             justification: |
               .NET 9 support enables users to leverage the latest .NET features.
@@ -502,7 +523,7 @@ sections:
               - "dotnet9.x@VersionMark_CapturesVersions"
               - "dotnet9.x@VersionMark_GeneratesMarkdownReport"
 
-          - id: PLT-005
+          - id: VersionMark-Plt-Net10
             title: The tool shall support .NET 10 runtime.
             justification: |
               .NET 10 support ensures the tool remains compatible with the latest .NET ecosystem.
@@ -511,3 +532,74 @@ sections:
             tests:
               - "dotnet10.x@VersionMark_CapturesVersions"
               - "dotnet10.x@VersionMark_GeneratesMarkdownReport"
+
+      - title: OTS Software
+        requirements:
+          - id: VersionMark-OTS-MSTest
+            title: MSTest shall execute unit tests and report results.
+            justification: |
+              MSTest (MSTest.TestFramework and MSTest.TestAdapter) is the unit-testing
+              framework used by the project. It discovers and runs all test methods and
+              writes test result files (TRX and JUnit formats) that feed into coverage
+              reporting and requirements traceability. Passing tests confirm the framework
+              is functioning correctly.
+            tags: [ots]
+            tests:
+              - Context_Create_NoArguments_ReturnsDefaultContext
+              - Context_Create_VersionFlag_SetsVersionTrue
+              - Context_Create_HelpFlag_SetsHelpTrue
+              - Context_Create_SilentFlag_SetsSilentTrue
+              - Context_Create_ValidateFlag_SetsValidateTrue
+              - Context_Create_ResultsFlag_SetsResultsFile
+              - Context_Create_LogFlag_OpensLogFile
+              - Context_Create_UnknownArgument_ThrowsArgumentException
+              - Context_Create_ShortVersionFlag_SetsVersionTrue
+
+          - id: VersionMark-OTS-ReqStream
+            title: ReqStream shall enforce that every requirement is linked to passing test evidence.
+            justification: |
+              DemaConsulting.ReqStream processes requirements.yaml and TRX test-result
+              files to produce requirements reports, justifications, and a traceability
+              matrix. When run with --enforce, it exits with a non-zero code if any
+              requirement lacks test evidence. A successful pipeline run with --enforce
+              proves all requirements are covered and that ReqStream is functioning.
+            tags: [ots]
+            tests:
+              - ReqStream_EnforcementMode
+
+          - id: VersionMark-OTS-BuildMark
+            title: BuildMark shall generate build-notes documentation from GitHub Actions metadata.
+            justification: |
+              DemaConsulting.BuildMark queries the GitHub API to capture workflow run
+              details and renders them as a markdown build-notes document included in
+              release artifacts. A successful pipeline run is evidence that BuildMark
+              executed without error.
+            tags: [ots]
+            tests:
+              - BuildMark_MarkdownReportGeneration
+
+          - id: VersionMark-OTS-SarifMark
+            title: SarifMark shall convert CodeQL SARIF results into a markdown report.
+            justification: |
+              DemaConsulting.SarifMark reads the SARIF output produced by CodeQL code
+              scanning and renders it as a human-readable markdown document included in
+              release artifacts. A successful pipeline run is evidence that SarifMark
+              executed without error.
+            tags: [ots]
+            tests:
+              - SarifMark_SarifReading
+              - SarifMark_MarkdownReportGeneration
+
+          - id: VersionMark-OTS-SonarMark
+            title: SonarMark shall generate a SonarCloud quality report.
+            justification: |
+              DemaConsulting.SonarMark retrieves quality-gate and metrics data from
+              SonarCloud and renders it as a markdown document included in release
+              artifacts. A successful pipeline run is evidence that SonarMark executed
+              without error.
+            tags: [ots]
+            tests:
+              - SonarMark_QualityGateRetrieval
+              - SonarMark_IssuesRetrieval
+              - SonarMark_HotSpotsRetrieval
+              - SonarMark_MarkdownReportGeneration

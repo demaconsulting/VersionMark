@@ -149,6 +149,46 @@ public class IntegrationTests
     }
 
     /// <summary>
+    ///     Test that validate with results flag generates JUnit XML file.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_ValidateWithResults_GeneratesJUnitFile()
+    {
+        // Arrange - Create temp file path for results
+        var resultsFile = Path.GetTempFileName();
+        resultsFile = Path.ChangeExtension(resultsFile, ".xml");
+
+        try
+        {
+            // Act - Run the application with --validate and --results flags
+            var exitCode = Runner.Run(
+                out var _,
+                "dotnet",
+                _dllPath,
+                "--validate",
+                "--results",
+                resultsFile);
+
+            // Assert - Verify success and JUnit file creation
+            Assert.AreEqual(0, exitCode);
+
+            // Verify JUnit file was created
+            Assert.IsTrue(File.Exists(resultsFile), "Results file was not created");
+
+            // Verify JUnit file contains expected content
+            var xmlContent = File.ReadAllText(resultsFile);
+            Assert.Contains("<testsuites", xmlContent);
+        }
+        finally
+        {
+            if (File.Exists(resultsFile))
+            {
+                File.Delete(resultsFile);
+            }
+        }
+    }
+
+    /// <summary>
     ///     Test that silent flag suppresses output.
     /// </summary>
     [TestMethod]

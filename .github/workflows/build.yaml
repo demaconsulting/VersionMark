@@ -21,6 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # === RUN QUALITY CHECKS ===
       - name: Run markdown linter
         uses: DavidAnson/markdownlint-cli2-action@v22
         with:
@@ -55,6 +56,7 @@ jobs:
 
     steps:
 
+      # === INSTALL DEPENDENCIES ===
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -76,6 +78,7 @@ jobs:
         run: >
           dotnet restore
 
+      # === BUILD AND TEST ===
       - name: Start Sonar Scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -104,7 +107,7 @@ jobs:
           --property:Version=${{ inputs.version }}
           --collect "XPlat Code Coverage;Format=opencover"
           --logger "trx;LogFilePrefix=${{ matrix.os }}"
-          --results-directory test-results
+          --results-directory artifacts
 
       - name: End Sonar Scanner
         env:
@@ -121,16 +124,17 @@ jobs:
           --no-restore
           --property:PackageVersion=${{ inputs.version }}
 
-      - name: Upload Test Results
+      # === UPLOAD ARTIFACTS ===
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: test-results-${{ matrix.os }}
-          path: test-results/*.trx
+          name: artifacts-build-${{ matrix.os }}
+          path: artifacts/
 
-      - name: Upload Artifacts
+      - name: Upload packages
         uses: actions/upload-artifact@v7
         with:
-          name: artifacts-${{ matrix.os }}
+          name: packages-${{ matrix.os }}
           path: |
             src/DemaConsulting.VersionMark/bin/Release/*.nupkg
             src/DemaConsulting.VersionMark/bin/Release/*.snupkg
@@ -147,6 +151,7 @@ jobs:
       security-events: write
 
     steps:
+      # === INSTALL DEPENDENCIES ===
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -175,6 +180,7 @@ jobs:
         run: >
           dotnet restore
 
+      # === BUILD AND ANALYZE ===
       - name: Build
         run: >
           dotnet build
@@ -186,14 +192,15 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:csharp"
-          output: sarif-results
+          output: artifacts
           upload: false
 
-      - name: Upload CodeQL SARIF
+      # === UPLOAD ARTIFACTS ===
+      - name: Upload CodeQL artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: codeql-sarif
-          path: sarif-results/csharp.sarif
+          name: artifacts-codeql
+          path: artifacts/
 
   # Performs integration testing on a matrix of operating systems and .NET runtimes,
   # involving basic tool execution and running self-validation to ensure compatibility
@@ -211,13 +218,18 @@ jobs:
         dotnet-version: ['8.x', '9.x', '10.x']
 
     steps:
+      # === INSTALL DEPENDENCIES ===
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            .versionmark.yaml
+            .config/dotnet-tools.json
 
       - name: Download package
         uses: actions/download-artifact@v8
         with:
-          name: artifacts-${{ matrix.os }}
+          name: packages-${{ matrix.os }}
           path: packages
 
       - name: Setup dotnet
@@ -234,6 +246,21 @@ jobs:
             --version ${{ inputs.version }} \
             DemaConsulting.VersionMark
 
+      # === CAPTURE TOOL VERSIONS ===
+      - name: Capture tool versions
+        shell: bash
+        run: |
+          echo "Capturing tool versions..."
+          mkdir -p artifacts
+          # Create short job ID: int-win-8, int-win-9, int-ubuntu-8, etc.
+          OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/windows-latest/win/;s/ubuntu-latest/ubuntu/')
+          DOTNET_SHORT=$(echo "${{ matrix.dotnet-version }}" | sed 's/\.x$//')
+          JOB_ID="int-${OS_SHORT}-${DOTNET_SHORT}"
+          versionmark --capture --job-id "${JOB_ID}" \
+            --output "artifacts/versionmark-${JOB_ID}.json" -- dotnet git
+          echo "✓ Tool versions captured"
+
+      # === RUN INTEGRATION TESTS ===
       - name: Test version display
         shell: bash
         run: |
@@ -252,33 +279,19 @@ jobs:
         shell: bash
         run: |
           echo "Running self-validation..."
-          versionmark --validate --results validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.trx \
+          mkdir -p artifacts
+          RESULTS="artifacts/validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.trx"
+          versionmark --validate --results "${RESULTS}" \
             || { echo "✗ Self-validation failed"; exit 1; }
           echo "✓ Self-validation succeeded"
 
-      - name: Capture tool versions
-        shell: bash
-        run: |
-          echo "Capturing tool versions..."
-          # Create short job ID: int-win-8, int-win-9, int-ubuntu-8, etc.
-          OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/windows-latest/win/;s/ubuntu-latest/ubuntu/')
-          DOTNET_SHORT=$(echo "${{ matrix.dotnet-version }}" | sed 's/\.x$//')
-          JOB_ID="int-${OS_SHORT}-${DOTNET_SHORT}"
-          versionmark --capture --job-id "${JOB_ID}" -- dotnet git
-          echo "✓ Tool versions captured"
-
-      - name: Upload validation test results
+      # === UPLOAD ARTIFACTS ===
+      - name: Upload validation artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: validation-test-results-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}
-          path: validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}.trx
-
-      - name: Upload version capture
-        uses: actions/upload-artifact@v7
-        with:
-          name: version-capture-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}
-          path: versionmark-int-*.json
+          name: artifacts-validation-${{ matrix.os }}-dotnet${{ matrix.dotnet-version }}
+          path: artifacts/
 
   # Builds the supporting documentation including user guides, requirements,
   # trace matrices, code quality reports, and build notes.
@@ -290,6 +303,7 @@ jobs:
       contents: read
 
     steps:
+      # === CHECKOUT AND DOWNLOAD ARTIFACTS ===
       - name: Checkout
         uses: actions/checkout@v6
 
@@ -298,32 +312,21 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - name: Download all test results
+      - name: Download all job artifacts
         uses: actions/download-artifact@v8
         with:
-          path: test-results
-          pattern: '*test-results*'
+          path: artifacts
+          pattern: 'artifacts-*'
+          merge-multiple: true
         continue-on-error: true
 
-      - name: Download VersionMark package
+      - name: Download packages artifact
         uses: actions/download-artifact@v8
         with:
-          name: artifacts-windows-latest
+          name: packages-ubuntu-latest
           path: packages
 
-      - name: Download CodeQL SARIF
-        uses: actions/download-artifact@v8
-        with:
-          name: codeql-sarif
-          path: codeql-results
-
-      - name: Download all version captures
-        uses: actions/download-artifact@v8
-        with:
-          path: version-captures
-          pattern: 'version-capture-*'
-        continue-on-error: true
-
+      # === INSTALL DEPENDENCIES ===
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
@@ -344,19 +347,39 @@ jobs:
       - name: Restore Tools
         run: dotnet tool restore
 
+      # === CAPTURE TOOL VERSIONS ===
       - name: Capture tool versions for build-docs
         shell: bash
         run: |
+          mkdir -p artifacts
           echo "Capturing tool versions..."
-          versionmark --capture --job-id "build-docs" -- \
+          versionmark --capture --job-id "build-docs" \
+            --output "artifacts/versionmark-build-docs.json" -- \
             dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark
           echo "✓ Tool versions captured"
 
+      # === CAPTURE OTS SELF-VALIDATION RESULTS ===
+      - name: Run ReqStream self-validation
+        run: dotnet reqstream --validate --results artifacts/reqstream-self-validation.trx
+
+      - name: Run BuildMark self-validation
+        run: dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx
+
+      - name: Run VersionMark self-validation
+        run: versionmark --validate --results artifacts/versionmark-self-validation.trx
+
+      - name: Run SarifMark self-validation
+        run: dotnet sarifmark --validate --results artifacts/sarifmark-self-validation.trx
+
+      - name: Run SonarMark self-validation
+        run: dotnet sonarmark --validate --results artifacts/sonarmark-self-validation.trx
+
+      # === GENERATE MARKDOWN REPORTS ===
       - name: Generate Requirements Report, Justifications, and Trace Matrix
         run: >
           dotnet reqstream
           --requirements requirements.yaml
-          --tests "test-results/**/*.trx"
+          --tests "artifacts/**/*.trx"
           --report docs/requirements/requirements.md
           --justifications docs/justifications/justifications.md
           --matrix docs/tracematrix/tracematrix.md
@@ -365,7 +388,7 @@ jobs:
       - name: Generate CodeQL Quality Report with SarifMark
         run: >
           dotnet sarifmark
-          --sarif codeql-results/csharp.sarif
+          --sarif artifacts/csharp.sarif
           --report docs/quality/codeql-quality.md
           --heading "VersionMark CodeQL Analysis"
           --report-depth 1
@@ -405,12 +428,18 @@ jobs:
           --report docs/buildnotes.md
           --report-depth 1
 
+      - name: Display Build Notes Report
+        shell: bash
+        run: |
+          echo "=== Build Notes Report ==="
+          cat docs/buildnotes.md
+
       - name: Publish Tool Versions
         shell: bash
         run: |
           echo "Publishing tool versions..."
           versionmark --publish --report docs/buildnotes/versions.md --report-depth 1 \
-            -- "versionmark-*.json" "version-captures/**/versionmark-*.json"
+            -- "artifacts/**/versionmark-*.json"
           echo "✓ Tool versions published"
 
       - name: Display Tool Versions Report
@@ -419,6 +448,7 @@ jobs:
           echo "=== Tool Versions Report ==="
           cat docs/buildnotes/versions.md
 
+      # === GENERATE HTML DOCUMENTS WITH PANDOC ===
       - name: Generate Build Notes HTML with Pandoc
         shell: bash
         run: >
@@ -429,6 +459,7 @@ jobs:
           --metadata date="$(date +'%Y-%m-%d')"
           --output docs/buildnotes/buildnotes.html
 
+      # === GENERATE PDF DOCUMENTS WITH WEASYPRINT ===
       - name: Generate Build Notes PDF with Weasyprint
         run: >
           dotnet weasyprint
@@ -521,6 +552,7 @@ jobs:
           docs/tracematrix/tracematrix.html
           "docs/VersionMark Trace Matrix.pdf"
 
+      # === UPLOAD ARTIFACTS ===
       - name: Upload documentation
         uses: actions/upload-artifact@v7
         with:
