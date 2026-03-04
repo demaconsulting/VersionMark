@@ -481,7 +481,7 @@ sections:
 
       - title: Platform Support
         requirements:
-          - id: VersionMark-Platform-Windows
+          - id: VersionMark-Plt-Windows
             title: The tool shall build and run on Windows platforms.
             justification: |
               DEMA Consulting tools must support Windows as a major development platform.
@@ -492,7 +492,7 @@ sections:
               - "windows@VersionMark_CapturesVersions"
               - "windows@VersionMark_GeneratesMarkdownReport"
 
-          - id: VersionMark-Platform-Linux
+          - id: VersionMark-Plt-Linux
             title: The tool shall build and run on Linux platforms.
             justification: |
               DEMA Consulting tools must support Linux for CI/CD and containerized environments.
@@ -503,7 +503,7 @@ sections:
               - "ubuntu@VersionMark_CapturesVersions"
               - "ubuntu@VersionMark_GeneratesMarkdownReport"
 
-          - id: VersionMark-Platform-Net8
+          - id: VersionMark-Plt-Net8
             title: The tool shall support .NET 8 runtime.
             justification: |
               .NET 8 is an LTS release providing long-term stability for enterprise users.
@@ -513,7 +513,7 @@ sections:
               - "dotnet8.x@VersionMark_CapturesVersions"
               - "dotnet8.x@VersionMark_GeneratesMarkdownReport"
 
-          - id: VersionMark-Platform-Net9
+          - id: VersionMark-Plt-Net9
             title: The tool shall support .NET 9 runtime.
             justification: |
               .NET 9 support enables users to leverage the latest .NET features.
@@ -523,7 +523,7 @@ sections:
               - "dotnet9.x@VersionMark_CapturesVersions"
               - "dotnet9.x@VersionMark_GeneratesMarkdownReport"
 
-          - id: VersionMark-Platform-Net10
+          - id: VersionMark-Plt-Net10
             title: The tool shall support .NET 10 runtime.
             justification: |
               .NET 10 support ensures the tool remains compatible with the latest .NET ecosystem.

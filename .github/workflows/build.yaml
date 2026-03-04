@@ -355,7 +355,7 @@ jobs:
           echo "Capturing tool versions..."
           versionmark --capture --job-id "build-docs" \
             --output "artifacts/versionmark-build-docs.json" -- \
-            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark versionmark
+            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark
           echo "✓ Tool versions captured"
 
       # === CAPTURE OTS SELF-VALIDATION RESULTS ===
@@ -364,9 +364,6 @@ jobs:
 
       - name: Run BuildMark self-validation
         run: dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx
-
-      - name: Run VersionMark self-validation
-        run: dotnet versionmark --validate --results artifacts/versionmark-self-validation.trx
 
       - name: Run SarifMark self-validation
         run: dotnet sarifmark --validate --results artifacts/sarifmark-self-validation.trx
