@@ -362,7 +362,7 @@ If any tests fail, the exit code will be non-zero.
 
 | Test | What It Proves |
 | :--- | :------------- |
-| `VersionMark_CapturesVersions` | The tool can read a `.versionmark.yaml` config and capture tool versions to a JSON file |
+| `VersionMark_CapturesVersions` | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file |
 | `VersionMark_GeneratesMarkdownReport` | The tool can read captured JSON files and generate a markdown report |
 
 # CI/CD Integration
