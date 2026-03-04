@@ -21,27 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.x
-
-      - name: Restore Tools
-        run: dotnet tool restore
-
-      - name: Capture tool versions
-        shell: bash
-        run: |
-          echo "Capturing tool versions..."
-          dotnet versionmark --capture --job-id "quality" -- dotnet git versionmark
-          echo "✓ Tool versions captured"
-
-      - name: Upload version capture
-        uses: actions/upload-artifact@v7
-        with:
-          name: version-capture-quality
-          path: versionmark-quality.json
-
       - name: Run markdown linter
         uses: DavidAnson/markdownlint-cli2-action@v22
         with:
