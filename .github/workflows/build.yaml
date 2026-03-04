@@ -365,6 +365,9 @@ jobs:
       - name: Run BuildMark self-validation
         run: dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx
 
+      - name: Run VersionMark self-validation
+        run: versionmark --validate --results artifacts/versionmark-self-validation.trx
+
       - name: Run SarifMark self-validation
         run: dotnet sarifmark --validate --results artifacts/sarifmark-self-validation.trx
 
