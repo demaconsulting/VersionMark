@@ -21,8 +21,10 @@ used in different jobs and environments.
 - **Version Consolidation**: Collapses common versions across jobs while highlighting conflicts
 - **OS-Specific Overrides**: Supports platform-specific version capture commands
 - **Configurable**: Uses `.versionmark.yaml` config file to define tools and capture methods
-- **Multi-Platform Support**: Runs on Windows and Linux
+- **Multi-Platform Support**: Runs on Windows, Linux, and macOS
 - **Multi-Runtime Support**: Targets .NET 8, 9, and 10
+- **Continuous Compliance**: Compliance evidence generated automatically on every CI run, following
+  the [Continuous Compliance][link-continuous-compliance] methodology
 
 ## Installation
 
@@ -269,3 +271,4 @@ By contributing to this project, you agree that your contributions will be licen
 [link-quality]: https://sonarcloud.io/dashboard?id=demaconsulting_VersionMark
 [link-security]: https://sonarcloud.io/dashboard?id=demaconsulting_VersionMark
 [link-nuget]: https://www.nuget.org/packages/DemaConsulting.VersionMark
+[link-continuous-compliance]: https://github.com/demaconsulting/ContinuousCompliance

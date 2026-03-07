@@ -21,6 +21,20 @@ This user guide covers:
 - Configuration file format and options
 - Troubleshooting and best practices
 
+# Continuous Compliance
+
+VersionMark follows the [Continuous Compliance][continuous-compliance] methodology, which ensures
+compliance evidence is generated automatically on every CI run.
+
+## Key Practices
+
+- **Requirements Traceability**: Every requirement is linked to passing tests, and a trace matrix is
+  auto-generated on each release
+- **Linting Enforcement**: markdownlint, cspell, and yamllint are enforced before any build proceeds
+- **Automated Audit Documentation**: Each release ships with generated requirements, justifications,
+  trace matrix, and quality reports
+- **CodeQL and SonarCloud**: Security and quality analysis runs on every build
+
 # Installation
 
 Install the tool globally using the .NET CLI:
@@ -572,3 +586,6 @@ works well)
 publishing
 10. **Review Generated Reports**: Check the generated markdown to ensure version information
 is accurate
+
+<!-- Link References -->
+[continuous-compliance]: https://github.com/demaconsulting/ContinuousCompliance

@@ -18,10 +18,20 @@ jobs:
     permissions:
       contents: read
     steps:
+      # === INSTALL DEPENDENCIES ===
+      # This section installs all required dependencies for quality checks.
+      # Downstream projects: Add any additional dependency installations here.
+      # Note: VersionMark version capture is not available here because this job
+      # builds VersionMark itself - capture is performed in integration-test and
+      # build-docs jobs after the tool is built and installed.
+
       - name: Checkout
         uses: actions/checkout@v6
 
       # === RUN QUALITY CHECKS ===
+      # This section runs all quality checks for the project.
+      # Downstream projects: Add any additional quality checks here.
+
       - name: Run markdown linter
         uses: DavidAnson/markdownlint-cli2-action@v22
         with:
@@ -50,13 +60,16 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
 
       # === INSTALL DEPENDENCIES ===
+      # This section installs all required dependencies for the build.
+      # Downstream projects: Add any additional dependency installations here.
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -74,11 +87,17 @@ jobs:
         run: >
           dotnet tool restore
 
+      # === BUILD AND TEST ===
+      # This section builds and tests the project.
+      # Note: VersionMark version capture is not available here because this job
+      # builds VersionMark itself - capture is performed in integration-test and
+      # build-docs jobs after the tool is built and installed.
+      # Downstream projects: Add any additional build and test steps here.
+
       - name: Restore Dependencies
         run: >
           dotnet restore
 
-      # === BUILD AND TEST ===
       - name: Start Sonar Scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -125,6 +144,9 @@ jobs:
           --property:PackageVersion=${{ inputs.version }}
 
       # === UPLOAD ARTIFACTS ===
+      # This section uploads all build artifacts.
+      # Downstream projects: Add any additional artifact uploads here.
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -152,6 +174,9 @@ jobs:
 
     steps:
       # === INSTALL DEPENDENCIES ===
+      # This section installs all required dependencies for CodeQL analysis.
+      # Downstream projects: Add any additional dependency installations here.
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -161,6 +186,7 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: csharp
+          build-mode: manual
           queries: security-and-quality
           config-file: ./.github/codeql-config.yml
 
@@ -181,6 +207,9 @@ jobs:
           dotnet restore
 
       # === BUILD AND ANALYZE ===
+      # This section builds the project and runs CodeQL analysis.
+      # Downstream projects: Add any additional analysis steps here.
+
       - name: Build
         run: >
           dotnet build
@@ -196,6 +225,9 @@ jobs:
           upload: false
 
       # === UPLOAD ARTIFACTS ===
+      # This section uploads all CodeQL artifacts.
+      # Downstream projects: Add any additional artifact uploads here.
+
       - name: Upload CodeQL artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -214,11 +246,14 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         dotnet-version: ['8.x', '9.x', '10.x']
 
     steps:
       # === INSTALL DEPENDENCIES ===
+      # This section installs all required dependencies and tools for integration testing.
+      # Downstream projects: Add any additional dependency installations here.
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -237,6 +272,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
+      - name: Restore Tools
+        run: >
+          dotnet tool restore
+
       - name: Install tool from package
         shell: bash
         run: |
@@ -247,13 +286,16 @@ jobs:
             DemaConsulting.VersionMark
 
       # === CAPTURE TOOL VERSIONS ===
+      # This section captures the versions of all tools used in the integration tests.
+      # Downstream projects: Add any additional tools to capture here.
+
       - name: Capture tool versions
         shell: bash
         run: |
-          echo "Capturing tool versions..."
           mkdir -p artifacts
-          # Create short job ID: int-win-8, int-win-9, int-ubuntu-8, etc.
-          OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/windows-latest/win/;s/ubuntu-latest/ubuntu/')
+          echo "Capturing tool versions..."
+          # Create short job ID: int-windows-8, int-ubuntu-9, int-macos-10, etc.
+          OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/-latest//')
           DOTNET_SHORT=$(echo "${{ matrix.dotnet-version }}" | sed 's/\.x$//')
           JOB_ID="int-${OS_SHORT}-${DOTNET_SHORT}"
           versionmark --capture --job-id "${JOB_ID}" \
@@ -261,6 +303,9 @@ jobs:
           echo "✓ Tool versions captured"
 
       # === RUN INTEGRATION TESTS ===
+      # This section runs the integration tests for the tool.
+      # Downstream projects: Add any additional integration test steps here.
+
       - name: Test version display
         shell: bash
         run: |
@@ -286,6 +331,9 @@ jobs:
           echo "✓ Self-validation succeeded"
 
       # === UPLOAD ARTIFACTS ===
+      # This section uploads all generated artifacts for use by downstream jobs.
+      # Downstream projects: Add any additional artifact uploads here.
+
       - name: Upload validation artifacts
         if: always()
         uses: actions/upload-artifact@v7
@@ -304,13 +352,11 @@ jobs:
 
     steps:
       # === CHECKOUT AND DOWNLOAD ARTIFACTS ===
+      # This section retrieves the code and all necessary artifacts from previous jobs.
+      # Downstream projects: Add any additional artifact downloads here.
+
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
 
       - name: Download all job artifacts
         uses: actions/download-artifact@v8
@@ -327,6 +373,14 @@ jobs:
           path: packages
 
       # === INSTALL DEPENDENCIES ===
+      # This section installs all required dependencies and tools for document generation.
+      # Downstream projects: Add any additional dependency installations here.
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
@@ -348,6 +402,9 @@ jobs:
         run: dotnet tool restore
 
       # === CAPTURE TOOL VERSIONS ===
+      # This section captures the versions of all tools used in the build process.
+      # Downstream projects: Add any additional tools to capture here.
+
       - name: Capture tool versions for build-docs
         shell: bash
         run: |
@@ -359,6 +416,9 @@ jobs:
           echo "✓ Tool versions captured"
 
       # === CAPTURE OTS SELF-VALIDATION RESULTS ===
+      # This section captures self-validation results from OTS tools.
+      # Downstream projects: Add any additional self-validation steps here.
+
       - name: Run ReqStream self-validation
         run: dotnet reqstream --validate --results artifacts/reqstream-self-validation.trx
 
@@ -375,6 +435,9 @@ jobs:
         run: dotnet sonarmark --validate --results artifacts/sonarmark-self-validation.trx
 
       # === GENERATE MARKDOWN REPORTS ===
+      # This section generates all markdown reports from various tools and sources.
+      # Downstream projects: Add any additional markdown report generation steps here.
+
       - name: Generate Requirements Report, Justifications, and Trace Matrix
         run: >
           dotnet reqstream
@@ -449,6 +512,9 @@ jobs:
           cat docs/buildnotes/versions.md
 
       # === GENERATE HTML DOCUMENTS WITH PANDOC ===
+      # This section converts markdown documents to HTML using Pandoc.
+      # Downstream projects: Add any additional Pandoc HTML generation steps here.
+
       - name: Generate Build Notes HTML with Pandoc
         shell: bash
         run: >
@@ -460,6 +526,9 @@ jobs:
           --output docs/buildnotes/buildnotes.html
 
       # === GENERATE PDF DOCUMENTS WITH WEASYPRINT ===
+      # This section converts HTML documents to PDF using Weasyprint.
+      # Downstream projects: Add any additional Weasyprint PDF generation steps here.
+
       - name: Generate Build Notes PDF with Weasyprint
         run: >
           dotnet weasyprint
@@ -553,6 +622,9 @@ jobs:
           "docs/VersionMark Trace Matrix.pdf"
 
       # === UPLOAD ARTIFACTS ===
+      # This section uploads all generated documentation artifacts.
+      # Downstream projects: Add any additional artifact uploads here.
+
       - name: Upload documentation
         uses: actions/upload-artifact@v7
         with:
