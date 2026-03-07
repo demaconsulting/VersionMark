@@ -21,35 +21,12 @@ jobs:
       # === INSTALL DEPENDENCIES ===
       # This section installs all required dependencies for quality checks.
       # Downstream projects: Add any additional dependency installations here.
+      # Note: VersionMark version capture is not available here because this job
+      # builds VersionMark itself - capture is performed in integration-test and
+      # build-docs jobs after the tool is built and installed.
 
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.x
-
-      - name: Restore Tools
-        run: >
-          dotnet tool restore
-
-      - name: Capture tool versions
-        shell: bash
-        run: |
-          mkdir -p artifacts
-          echo "Capturing tool versions..."
-          dotnet versionmark --capture --job-id "quality" \
-            --output "artifacts/versionmark-quality.json" -- \
-            dotnet git versionmark
-          echo "✓ Tool versions captured"
-
-      # === CAPTURE OTS SELF-VALIDATION RESULTS ===
-      # This section captures self-validation results from OTS tools.
-      # Downstream projects: Add any additional self-validation steps here.
-
-      - name: Run VersionMark self-validation
-        run: dotnet versionmark --validate --results artifacts/versionmark-self-validation-quality.trx
 
       # === RUN QUALITY CHECKS ===
       # This section runs all quality checks for the project.
@@ -70,12 +47,6 @@ jobs:
         uses: ibiqlik/action-yamllint@v3
         with:
           config_file: .yamllint.yaml
-
-      - name: Upload quality artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: artifacts-quality
-          path: artifacts/
 
   # Builds and unit-tests the project on supported operating systems to ensure
   # unit-tests operate on all platforms and to run SonarScanner for generating
@@ -116,32 +87,11 @@ jobs:
         run: >
           dotnet tool restore
 
-      # === CAPTURE TOOL VERSIONS ===
-      # This section captures the versions of all tools used in the build process.
-      # Downstream projects: Add any additional tools to capture here.
-
-      - name: Capture tool versions
-        shell: bash
-        run: |
-          mkdir -p artifacts
-          echo "Capturing tool versions..."
-          # Create short job ID: build-windows, build-ubuntu, build-macos
-          OS_SHORT=$(echo "${{ matrix.os }}" | sed 's/-latest//')
-          JOB_ID="build-${OS_SHORT}"
-          dotnet versionmark --capture --job-id "${JOB_ID}" \
-            --output "artifacts/versionmark-${JOB_ID}.json" -- \
-            dotnet git dotnet-sonarscanner versionmark
-          echo "✓ Tool versions captured"
-
-      # === CAPTURE OTS SELF-VALIDATION RESULTS ===
-      # This section captures self-validation results from OTS tools.
-      # Downstream projects: Add any additional self-validation steps here.
-
-      - name: Run VersionMark self-validation
-        run: dotnet versionmark --validate --results artifacts/versionmark-self-validation-${{ matrix.os }}.trx
-
       # === BUILD AND TEST ===
       # This section builds and tests the project.
+      # Note: VersionMark version capture is not available here because this job
+      # builds VersionMark itself - capture is performed in integration-test and
+      # build-docs jobs after the tool is built and installed.
       # Downstream projects: Add any additional build and test steps here.
 
       - name: Restore Dependencies
