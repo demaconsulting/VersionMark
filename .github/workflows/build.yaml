@@ -299,7 +299,7 @@ jobs:
           DOTNET_SHORT=$(echo "${{ matrix.dotnet-version }}" | sed 's/\.x$//')
           JOB_ID="int-${OS_SHORT}-${DOTNET_SHORT}"
           versionmark --capture --job-id "${JOB_ID}" \
-            --output "artifacts/versionmark-${JOB_ID}.json" -- dotnet git versionmark
+            --output "artifacts/versionmark-${JOB_ID}.json" -- dotnet git
           echo "✓ Tool versions captured"
 
       # === RUN INTEGRATION TESTS ===
@@ -412,7 +412,7 @@ jobs:
           echo "Capturing tool versions..."
           versionmark --capture --job-id "build-docs" \
             --output "artifacts/versionmark-build-docs.json" -- \
-            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark versionmark
+            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark
           echo "✓ Tool versions captured"
 
       # === CAPTURE OTS SELF-VALIDATION RESULTS ===
