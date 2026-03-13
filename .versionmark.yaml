@@ -6,7 +6,7 @@ tools:
   # .NET SDK
   dotnet:
     command: dotnet --version
-    regex: '(?<version>\d+\.\d+\.\d+(?:\.\d+)?)'
+    regex: '(?<version>\d+\.\d+\.\d+(?:\.\d+)?(?:-[a-zA-Z0-9.]+)?)'
 
   # Git
   git:
