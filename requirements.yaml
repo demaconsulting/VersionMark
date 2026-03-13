@@ -10,5 +10,5 @@ includes:
   - docs/reqstream/publish.yaml
   - docs/reqstream/configuration.yaml
   - docs/reqstream/formatter.yaml
-  - docs/reqstream/runtime.yaml
+  - docs/reqstream/platform.yaml
   - docs/reqstream/ots-software.yaml

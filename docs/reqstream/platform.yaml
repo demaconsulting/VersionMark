@@ -13,7 +13,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Runtime
+      - title: Platform
         requirements:
           - id: VersionMark-Plt-Windows
             title: The tool shall build and run on Windows platforms.
