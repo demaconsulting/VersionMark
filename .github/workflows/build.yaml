@@ -412,7 +412,7 @@ jobs:
           echo "Capturing tool versions..."
           versionmark --capture --job-id "build-docs" \
             --output "artifacts/versionmark-build-docs.json" -- \
-            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark versionmark reviewmark
+            dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark reviewmark
           echo "✓ Tool versions captured"
 
       # === CAPTURE OTS SELF-VALIDATION RESULTS ===
