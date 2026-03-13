@@ -1,0 +1,48 @@
+---
+# ReviewMark Configuration File
+# This file defines which files require review, where the evidence store is located,
+# and how files are grouped into named review-sets.
+
+# Patterns identifying all files that require review.
+# Processed in order; prefix a pattern with '!' to exclude.
+needs-review:
+  - "**/*.cs"
+  - "!**/obj/**"
+
+# Evidence source: review data and index.json are located in the 'reviews' branch
+# of this repository, accessed through the GitHub public HTTPS raw content access.
+# Note: The 'reviews' branch must be created and populated with review evidence PDFs
+# and an index.json before enforcement (--enforce flag) can be enabled in the pipeline.
+evidence-source:
+  type: url
+  location: https://raw.githubusercontent.com/demaconsulting/VersionMark/reviews/index.json
+
+# Review sets grouping files by logical unit of review.
+reviews:
+  - id: VersionMark-CLI-Review
+    title: Review of VersionMark CLI
+    paths:
+      - "src/**/Program.cs"
+      - "src/**/Context.cs"
+      - "test/**/ProgramTests.cs"
+      - "test/**/ContextTests.cs"
+
+  - id: VersionMark-Utilities-Review
+    title: Review of VersionMark Utilities
+    paths:
+      - "src/**/PathHelpers.cs"
+      - "src/**/Validation.cs"
+      - "src/**/MarkdownFormatter.cs"
+      - "src/**/VersionInfo.cs"
+      - "src/**/VersionMarkConfig.cs"
+      - "test/**/PathHelpersTests.cs"
+      - "test/**/MarkdownFormatterTests.cs"
+      - "test/**/VersionInfoTests.cs"
+      - "test/**/VersionMarkConfigTests.cs"
+
+  - id: VersionMark-Tests-Review
+    title: Review of VersionMark Integration Tests
+    paths:
+      - "test/**/IntegrationTests.cs"
+      - "test/**/Runner.cs"
+      - "test/**/AssemblyInfo.cs"
