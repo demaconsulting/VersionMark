@@ -561,6 +561,23 @@ jobs:
           docs/buildnotes/buildnotes.html
           "docs/VersionMark Build Notes.pdf"
 
+      - name: Generate Design HTML with Pandoc
+        shell: bash
+        run: >
+          dotnet pandoc
+          --defaults docs/design/definition.yaml
+          --filter node_modules/.bin/mermaid-filter.cmd
+          --metadata version="${{ inputs.version }}"
+          --metadata date="$(date +'%Y-%m-%d')"
+          --output docs/design/design.html
+
+      - name: Generate Design PDF with Weasyprint
+        run: >
+          dotnet weasyprint
+          --pdf-variant pdf/a-3u
+          docs/design/design.html
+          "docs/VersionMark Design.pdf"
+
       - name: Generate Guide HTML with Pandoc
         shell: bash
         run: >

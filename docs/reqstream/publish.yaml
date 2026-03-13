@@ -1,0 +1,85 @@
+---
+sections:
+  - title: VersionMark Requirements
+    sections:
+      - title: Publish Command
+        requirements:
+          - id: VersionMark-Pub-Publish
+            title: The tool shall support --publish flag to enable publish mode.
+            justification: |
+              Provides a way to generate markdown reports from captured JSON version files,
+              enabling documentation and reporting workflows in CI/CD pipelines.
+            tags:
+              - publish
+            tests:
+              - VersionMark_GeneratesMarkdownReport
+
+          - id: VersionMark-Pub-Report
+            title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
+            justification: |
+              Allows users to control where the generated markdown report is saved,
+              enabling integration with documentation systems and custom workflows.
+            tags:
+              - publish
+            tests:
+              - VersionMark_GeneratesMarkdownReport
+
+          - id: VersionMark-Pub-ReportDepth
+            title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
+            justification: |
+              Enables users to adjust the heading level of the generated markdown to fit
+              within existing document structures and hierarchy requirements.
+            tags:
+              - publish
+            tests:
+              - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
+
+          - id: VersionMark-Pub-RequireReport
+            title: The tool shall require --report parameter when publish mode is enabled.
+            justification: |
+              Ensures users specify an output file location for the generated markdown,
+              preventing ambiguity about where the report will be saved.
+            tags:
+              - publish
+            tests:
+              - Program_Run_WithPublishCommandWithoutReport_ReturnsError
+
+          - id: VersionMark-Pub-GlobPattern
+            title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
+            justification: |
+              Allows users to flexibly select which captured JSON files to include in
+              the report using standard glob patterns like versionmark-*.json.
+            tags:
+              - publish
+            tests:
+              - VersionMark_GeneratesMarkdownReport
+
+          - id: VersionMark-Pub-Consolidate
+            title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
+            justification: |
+              Implements the core functionality of loading captured version data from
+              multiple JSON files for report generation.
+            tags:
+              - publish
+            tests:
+              - VersionMark_GeneratesMarkdownReport
+
+          - id: VersionMark-Pub-ConflictReport
+            title: The tool shall report errors when no JSON files match the specified glob patterns.
+            justification: |
+              Provides clear feedback to users when input files cannot be found,
+              preventing silent failures and helping diagnose configuration issues.
+            tags:
+              - publish
+            tests:
+              - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
+
+          - id: VersionMark-Pub-MultipleFiles
+            title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
+            justification: |
+              Provides clear feedback when input files are malformed or inaccessible,
+              helping users identify and fix data quality issues.
+            tags:
+              - publish
+            tests:
+              - Program_Run_WithPublishCommandInvalidJson_ReturnsError

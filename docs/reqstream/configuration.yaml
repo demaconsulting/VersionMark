@@ -1,0 +1,75 @@
+---
+sections:
+  - title: VersionMark Requirements
+    sections:
+      - title: Configuration File
+        requirements:
+          - id: VersionMark-Cfg-YamlConfig
+            title: The tool shall read configuration from a .versionmark.yaml file.
+            justification: |
+              Provides a standardized configuration format for defining tools and their
+              version capture commands.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+
+          - id: VersionMark-Cfg-ToolDefinition
+            title: The tool shall support tool definitions with command and regex properties.
+            justification: |
+              Enables users to specify how to execute and parse version information for
+              each tool.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
+              - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
+
+          - id: VersionMark-Cfg-OsCommandOverride
+            title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may require different commands or command
+              variations to capture tool versions.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
+              - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
+              - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+
+          - id: VersionMark-Cfg-OsRegexOverride
+            title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
+            justification: |
+              Different operating systems may produce different output formats requiring
+              different regular expressions for version extraction.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
+              - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
+              - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
+
+          - id: VersionMark-Cfg-ValidateTools
+            title: The tool shall validate that configuration files contain at least one tool definition.
+            justification: |
+              Prevents misconfiguration by ensuring the configuration file has actionable
+              content.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+
+          - id: VersionMark-Cfg-ParseError
+            title: The tool shall report errors when configuration files cannot be read or parsed.
+            justification: |
+              Provides clear feedback to users when configuration files are missing,
+              inaccessible, or malformed.
+            tags:
+              - configuration
+            tests:
+              - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
+              - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
