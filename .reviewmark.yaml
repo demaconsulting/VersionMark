@@ -17,30 +17,48 @@ evidence-source:
 
 # Review sets grouping files by logical unit of review.
 reviews:
-  - id: VersionMark-CLI-Review
-    title: Review of VersionMark CLI
+  - id: VersionMark-CommandLine-Review
+    title: Review of VersionMark Command Line
     paths:
+      - "docs/reqstream/command-line.yaml"
+      - "docs/reqstream/capture.yaml"
+      - "docs/reqstream/publish.yaml"
+      - "docs/design/command-line.md"
       - "src/**/Program.cs"
       - "src/**/Context.cs"
       - "test/**/ProgramTests.cs"
       - "test/**/ContextTests.cs"
+      - "test/**/IntegrationTests.cs"
+      - "test/**/Runner.cs"
+      - "test/**/AssemblyInfo.cs"
 
   - id: VersionMark-Utilities-Review
     title: Review of VersionMark Utilities
     paths:
+      - "docs/reqstream/formatter.yaml"
+      - "docs/design/utilities.md"
       - "src/**/PathHelpers.cs"
-      - "src/**/Validation.cs"
       - "src/**/MarkdownFormatter.cs"
-      - "src/**/VersionInfo.cs"
-      - "src/**/VersionMarkConfig.cs"
       - "test/**/PathHelpersTests.cs"
       - "test/**/MarkdownFormatterTests.cs"
-      - "test/**/VersionInfoTests.cs"
+
+  - id: VersionMark-Configuration-Review
+    title: Review of VersionMark Configuration
+    paths:
+      - "docs/reqstream/configuration.yaml"
+      - "docs/design/configuration.md"
+      - "src/**/VersionMarkConfig.cs"
       - "test/**/VersionMarkConfigTests.cs"
 
-  - id: VersionMark-Tests-Review
-    title: Review of VersionMark Integration Tests
+  - id: VersionMark-VersionInfo-Review
+    title: Review of VersionMark Version Information
     paths:
-      - "test/**/IntegrationTests.cs"
-      - "test/**/Runner.cs"
-      - "test/**/AssemblyInfo.cs"
+      - "docs/design/version-info.md"
+      - "src/**/VersionInfo.cs"
+      - "test/**/VersionInfoTests.cs"
+
+  - id: VersionMark-Validation-Review
+    title: Review of VersionMark Self-Validation
+    paths:
+      - "docs/design/validation.md"
+      - "src/**/Validation.cs"

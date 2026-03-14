@@ -1,0 +1,113 @@
+---
+sections:
+  - title: VersionMark Requirements
+    sections:
+      - title: Command-Line Interface
+        requirements:
+          - id: VersionMark-Cmd-Context
+            title: The tool shall implement a Context class for command-line argument handling.
+            justification: |
+              Provides a standardized approach to command-line argument parsing and output
+              handling across all DEMA Consulting DotNet Tools.
+            tags:
+              - cli
+            tests:
+              - Context_Create_NoArguments_ReturnsDefaultContext
+              - Context_Create_VersionFlag_SetsVersionTrue
+              - Context_Create_HelpFlag_SetsHelpTrue
+              - Context_Create_SilentFlag_SetsSilentTrue
+              - Context_Create_ValidateFlag_SetsValidateTrue
+              - Context_Create_ResultsFlag_SetsResultsFile
+              - Context_Create_LogFlag_OpensLogFile
+
+          - id: VersionMark-Cmd-Version
+            title: The tool shall support -v and --version flags to display version information.
+            justification: |
+              Users need to quickly identify the version of the tool they are using for
+              troubleshooting and compatibility verification.
+            tags:
+              - cli
+            tests:
+              - Context_Create_VersionFlag_SetsVersionTrue
+              - Context_Create_ShortVersionFlag_SetsVersionTrue
+              - Program_Run_WithVersionFlag_DisplaysVersionOnly
+              - IntegrationTest_VersionFlag_OutputsVersion
+
+          - id: VersionMark-Cmd-Help
+            title: The tool shall support -?, -h, and --help flags to display usage information.
+            justification: |
+              Users need access to command-line usage documentation without requiring
+              external resources.
+            tags:
+              - cli
+            tests:
+              - Context_Create_HelpFlag_SetsHelpTrue
+              - Context_Create_ShortHelpFlag_H_SetsHelpTrue
+              - Context_Create_ShortHelpFlag_Question_SetsHelpTrue
+              - Program_Run_WithHelpFlag_DisplaysUsageInformation
+              - IntegrationTest_HelpFlag_OutputsUsageInformation
+
+          - id: VersionMark-Cmd-Silent
+            title: The tool shall support --silent flag to suppress console output.
+            justification: |
+              Enables automated scripts and CI/CD pipelines to run the tool without
+              cluttering output logs.
+            tags:
+              - cli
+            tests:
+              - Context_Create_SilentFlag_SetsSilentTrue
+              - Context_WriteLine_Silent_DoesNotWriteToConsole
+              - IntegrationTest_SilentFlag_SuppressesOutput
+
+          - id: VersionMark-Cmd-Validate
+            title: The tool shall support --validate flag to run self-validation tests.
+            justification: |
+              Provides a built-in mechanism to verify the tool is functioning correctly
+              in the deployment environment.
+            tags:
+              - cli
+            tests:
+              - Context_Create_ValidateFlag_SetsValidateTrue
+              - Program_Run_WithValidateFlag_RunsValidation
+              - IntegrationTest_ValidateFlag_RunsValidation
+
+          - id: VersionMark-Cmd-Results
+            title: The tool shall support --results flag to write validation results in TRX or JUnit format.
+            justification: |
+              Enables integration with CI/CD systems that expect standard test result formats.
+            tags:
+              - cli
+            tests:
+              - Context_Create_ResultsFlag_SetsResultsFile
+              - IntegrationTest_ValidateWithResults_GeneratesTrxFile
+              - IntegrationTest_ValidateWithResults_GeneratesJUnitFile
+
+          - id: VersionMark-Cmd-Log
+            title: The tool shall support --log flag to write output to a log file.
+            justification: |
+              Provides persistent logging for debugging and audit trails.
+            tags:
+              - cli
+            tests:
+              - Context_Create_LogFlag_OpensLogFile
+              - IntegrationTest_LogFlag_WritesOutputToFile
+
+          - id: VersionMark-Cmd-ErrorOutput
+            title: The tool shall write error messages to stderr.
+            tests:
+              - Context_WriteError_NotSilent_WritesToConsole
+              - IntegrationTest_UnknownArgument_ReturnsError
+
+          - id: VersionMark-Cmd-InvalidArgs
+            title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
+            tests:
+              - Context_Create_UnknownArgument_ThrowsArgumentException
+              - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
+              - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
+              - IntegrationTest_UnknownArgument_ReturnsError
+
+          - id: VersionMark-Cmd-ExitCode
+            title: The tool shall return a non-zero exit code on failure.
+            tests:
+              - Context_WriteError_SetsErrorExitCode
+              - IntegrationTest_UnknownArgument_ReturnsError

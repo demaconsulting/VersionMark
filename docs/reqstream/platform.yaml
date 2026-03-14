@@ -1,0 +1,68 @@
+# Test links can include a source filter prefix (e.g. "windows@", "ubuntu@", "net8.0@") to restrict
+# which test results count as evidence for a requirement. This is critical for platform and framework
+# requirements - removing these filters invalidates the evidence-based proof.
+#
+# Source filter prefixes follow the general pattern "<source>@TestName":
+#   windows@TestName   - proves the test passed on a Windows platform
+#   ubuntu@TestName    - proves the test passed on a Linux (Ubuntu) platform
+#   dotnet8.x@TestName - proves the self-validation test ran with .NET 8.x runtime
+#   dotnet9.x@TestName - proves the self-validation test ran with .NET 9.x runtime
+#   dotnet10.x@TestName - proves the self-validation test ran with .NET 10.x runtime
+#
+---
+sections:
+  - title: VersionMark Requirements
+    sections:
+      - title: Platform Support
+        requirements:
+          - id: VersionMark-Plt-Windows
+            title: The tool shall build and run on Windows platforms.
+            justification: |
+              DEMA Consulting tools must support Windows as a major development platform.
+            tags:
+              - platform
+            tests:
+              # Tests link to "windows" to ensure results come from Windows platform
+              - "windows@VersionMark_CapturesVersions"
+              - "windows@VersionMark_GeneratesMarkdownReport"
+
+          - id: VersionMark-Plt-Linux
+            title: The tool shall build and run on Linux platforms.
+            justification: |
+              DEMA Consulting tools must support Linux for CI/CD and containerized environments.
+            tags:
+              - platform
+            tests:
+              # Tests link to "ubuntu" to ensure results come from Linux platform
+              - "ubuntu@VersionMark_CapturesVersions"
+              - "ubuntu@VersionMark_GeneratesMarkdownReport"
+
+          - id: VersionMark-Plt-Net8
+            title: The tool shall support .NET 8 runtime.
+            justification: |
+              .NET 8 is an LTS release providing long-term stability for enterprise users.
+            tags:
+              - platform
+            tests:
+              - "dotnet8.x@VersionMark_CapturesVersions"
+              - "dotnet8.x@VersionMark_GeneratesMarkdownReport"
+
+          - id: VersionMark-Plt-Net9
+            title: The tool shall support .NET 9 runtime.
+            justification: |
+              .NET 9 support enables users to leverage the latest .NET features.
+            tags:
+              - platform
+            tests:
+              - "dotnet9.x@VersionMark_CapturesVersions"
+              - "dotnet9.x@VersionMark_GeneratesMarkdownReport"
+
+          - id: VersionMark-Plt-Net10
+            title: The tool shall support .NET 10 runtime.
+            justification: |
+              .NET 10 support ensures the tool remains compatible with the latest .NET ecosystem.
+            tags:
+              - platform
+            tests:
+              - "dotnet10.x@VersionMark_CapturesVersions"
+              - "dotnet10.x@VersionMark_GeneratesMarkdownReport"
