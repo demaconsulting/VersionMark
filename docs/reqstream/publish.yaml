@@ -52,7 +52,8 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - VersionMark_PublishCommandWithCustomGlobPatterns_FiltersFiles
+              - Context_Create_GlobPatternsAfterSeparator_CapturesPatterns
 
           - id: VersionMark-Pub-Consolidate
             title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
