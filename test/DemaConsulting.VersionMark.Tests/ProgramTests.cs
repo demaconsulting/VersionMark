@@ -45,6 +45,7 @@ public class ProgramTests
 
             // Assert - Verify version-only output
             var output = outWriter.ToString();
+            Assert.IsFalse(string.IsNullOrWhiteSpace(output), "Version string should be printed");
             Assert.DoesNotContain("Copyright", output);
             Assert.DoesNotContain("VersionMark version", output);
         }

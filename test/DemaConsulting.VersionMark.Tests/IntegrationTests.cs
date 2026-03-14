@@ -196,7 +196,7 @@ public class IntegrationTests
     {
         // Arrange & Act - Run the application with --silent flag
         var exitCode = Runner.Run(
-            out var _,
+            out var output,
             "dotnet",
             _dllPath,
             "--silent");
@@ -204,7 +204,9 @@ public class IntegrationTests
         // Assert - Verify success
         Assert.AreEqual(0, exitCode);
 
-        // Output check removed since silent mode may still produce some output
+        // Verify the tool's normal output is suppressed
+        Assert.DoesNotContain("VersionMark version", output);
+        Assert.DoesNotContain("Copyright (c) DEMA Consulting", output);
     }
 
     /// <summary>
