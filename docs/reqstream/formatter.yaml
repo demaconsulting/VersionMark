@@ -41,7 +41,7 @@ sections:
 
           - id: VersionMark-Fmt-MarkdownList
             title: >-
-              The tool shall use subscript formatting and parenthesized job IDs to indicate which
+              The tool shall use bold formatting and parenthesized job IDs to indicate which
               jobs had which versions.
             justification: |
               Provides clear visual distinction between different job executions and their
