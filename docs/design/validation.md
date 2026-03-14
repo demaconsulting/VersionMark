@@ -30,7 +30,8 @@ organizes all test execution internally.
 
 1. Creates a `TemporaryDirectory` (see below).
 2. Writes a minimal `.versionmark.yaml` containing only the `dotnet` tool.
-3. Constructs a `Context` with `--capture`, `--job-id test-job`, and `--output <file>`.
+3. Constructs a `Context` with `--silent`, `--log <file>`, `--capture`, `--job-id test-job`,
+   and `--output <file>`.
 4. Changes the current directory to the temp directory and calls `Program.Run`.
 5. Verifies exit code is 0, output file exists, `JobId` equals `"test-job"`, and `dotnet`
    version was captured and is non-empty.
@@ -43,7 +44,8 @@ The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Cap-Cap
 
 1. Creates a `TemporaryDirectory`.
 2. Writes two `VersionInfo` JSON files with known content.
-3. Constructs a `Context` with `--publish`, `--report <file>`, and `-- versionmark-*.json`.
+3. Constructs a `Context` with `--silent`, `--log <file>`, `--publish`, `--report <file>`,
+   `--report-depth 2`, and `-- versionmark-*.json`.
 4. Changes the current directory to the temp directory and calls `Program.Run`.
 5. Verifies exit code is 0, report file exists, and contains `## Tool Versions`,
    `**dotnet**`, `**node**`, `8.0.0`, and `20.0.0`.
