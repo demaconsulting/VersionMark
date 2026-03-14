@@ -12,7 +12,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_GeneratesMarkdownReport
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
 
           - id: VersionMark-Pub-Report
             title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
@@ -22,7 +22,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_GeneratesMarkdownReport
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
 
           - id: VersionMark-Pub-ReportDepth
             title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
@@ -52,7 +52,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_GeneratesMarkdownReport
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
 
           - id: VersionMark-Pub-Consolidate
             title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
@@ -62,7 +62,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_GeneratesMarkdownReport
+              - VersionMark_PublishCommand_GeneratesMarkdownReport
 
           - id: VersionMark-Pub-ConflictReport
             title: The tool shall report errors when no JSON files match the specified glob patterns.

@@ -94,12 +94,22 @@ sections:
 
           - id: VersionMark-Cmd-ErrorOutput
             title: The tool shall write error messages to stderr.
+            justification: |
+              Separating error output from standard output allows callers and CI/CD
+              pipelines to distinguish normal output from failure diagnostics.
+            tags:
+              - cli
             tests:
               - Context_WriteError_NotSilent_WritesToConsole
               - IntegrationTest_UnknownArgument_ReturnsError
 
           - id: VersionMark-Cmd-InvalidArgs
             title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
+            justification: |
+              Clear rejection of invalid arguments prevents silent misconfiguration and
+              guides users toward correct usage without requiring external documentation.
+            tags:
+              - cli
             tests:
               - Context_Create_UnknownArgument_ThrowsArgumentException
               - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
@@ -108,6 +118,11 @@ sections:
 
           - id: VersionMark-Cmd-ExitCode
             title: The tool shall return a non-zero exit code on failure.
+            justification: |
+              A non-zero exit code on failure enables CI/CD pipelines and scripts to
+              detect and respond to tool failures automatically.
+            tags:
+              - cli
             tests:
               - Context_WriteError_SetsErrorExitCode
               - IntegrationTest_UnknownArgument_ReturnsError

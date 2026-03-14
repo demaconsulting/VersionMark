@@ -34,12 +34,12 @@ generate event-log entries. This satisfies requirements `VersionMark-Cmd-ExitCod
 | Priority | Condition              | Action                          |
 |----------|------------------------|---------------------------------|
 | 1        | `context.Version`      | Print version string and return |
-| 2        | Print banner           | Always executed after priority 1|
-| 3        | `context.Help`         | Print usage and return          |
-| 4        | `context.Validate`     | Run self-validation and return  |
-| 5        | `context.Capture`      | Run capture mode and return     |
-| 5.5      | `context.Publish`      | Run publish mode and return     |
-| 6        | Default                | Run placeholder tool logic      |
+| —        | Print banner           | Always executed after priority 1|
+| 2        | `context.Help`         | Print usage and return          |
+| 3        | `context.Validate`     | Run self-validation and return  |
+| 4        | `context.Capture`      | Run capture mode and return     |
+| 4.5      | `context.Publish`      | Run publish mode and return     |
+| 5        | Default                | Run placeholder tool logic      |
 
 This dispatch order satisfies requirements `VersionMark-Cmd-Version`, `VersionMark-Cmd-Help`,
 `VersionMark-Cmd-Validate`, `VersionMark-Cap-Capture`, and `VersionMark-Pub-Publish`.

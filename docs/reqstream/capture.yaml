@@ -12,7 +12,6 @@ sections:
             tags:
               - capture
             tests:
-              - VersionMark_CapturesVersions
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
