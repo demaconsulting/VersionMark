@@ -331,8 +331,9 @@ public sealed record VersionMarkConfig
     /// <returns>The combined stdout and stderr output.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the command fails to execute.</exception>
     /// <remarks>
-    ///     Commands are split on the first space character to separate executable from arguments.
-    ///     This does not handle quoted arguments containing spaces.
+    ///     Commands are delegated to the OS shell (<c>cmd.exe /c</c> on Windows, <c>/bin/sh -c</c>
+    ///     elsewhere) via <c>ArgumentList</c> to avoid escaping issues. This supports <c>.cmd</c>/<c>.bat</c>
+    ///     files on Windows and shell features (pipes, redirects, built-ins) on all platforms.
     /// </remarks>
     private static string RunCommand(string command)
     {
