@@ -279,6 +279,31 @@ public class VersionInfoTests
     }
 
     /// <summary>
+    ///     Test LoadFromFile throws ArgumentException when JSON deserializes to null (e.g., literal "null").
+    /// </summary>
+    [TestMethod]
+    public void VersionInfo_LoadFromFile_NullJson_ThrowsArgumentException()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(tempFile, "null");
+
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            Assert.Contains("deserialize", exception.Message, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
+
+    /// <summary>
     ///     Test VersionInfo with special characters in values.
     /// </summary>
     [TestMethod]

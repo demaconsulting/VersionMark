@@ -20,7 +20,8 @@ The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two prop
 `SaveToFile` serializes the record to indented JSON using `JsonSerializer.Serialize` with
 `WriteIndented = true` and writes it to the specified path using UTF-8 encoding. Non-`InvalidOperationException`
 errors are wrapped and re-thrown as `InvalidOperationException` with context. This satisfies
-requirements `VersionMark-Cap-JsonOutput` and `VersionMark-Cap-DefaultOutput`.
+requirement `VersionMark-Cap-JsonOutput`. The default output filename (`versionmark-<job-id>.json`)
+is determined by the CLI layer and contributes to satisfying `VersionMark-Cap-DefaultOutput`.
 
 ### LoadFromFile Method
 
