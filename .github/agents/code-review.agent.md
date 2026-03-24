@@ -1,6 +1,8 @@
 ---
-name: Code Review Agent
-description: Assists in performing formal file reviews - knows how to elaborate review-sets and perform structured review checks
+name: code-review
+description: Assists in performing formal file reviews.
+tools: [read, search, edit, execute, github, web, agent]
+user-invocable: true
 ---
 
 # Code Review Agent - VersionMark

@@ -63,10 +63,10 @@ jobs:
           name: documents
           path: artifacts
 
-      - name: Move buildnotes.md to root
+      - name: Move build_notes.md to root
         run: |
           set -e
-          mv artifacts/buildnotes.md buildnotes.md
+          mv artifacts/build_notes.md buildnotes.md
 
       - name: Create GitHub Release
         if: inputs.publish == 'release' || inputs.publish == 'publish'
