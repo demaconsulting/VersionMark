@@ -102,12 +102,11 @@ internal static class Lint
             return issueCount == 0;
         }
 
-        // Check for unknown top-level keys
+        // Check for unknown top-level keys (warnings are non-fatal)
         foreach (var keyNode in rootNode.Children.Keys.OfType<YamlScalarNode>().Where(k => k.Value != "tools"))
         {
             var location = FormatLocation(configFile, keyNode.Start.Line, keyNode.Start.Column);
-            context.WriteError($"{location}: warning: Unknown top-level key '{keyNode.Value}'");
-            issueCount++;
+            context.WriteLine($"{location}: warning: Unknown top-level key '{keyNode.Value}'");
         }
 
         // Check tools section exists
@@ -206,12 +205,11 @@ internal static class Lint
             var key = entryKeyNode.Value ?? string.Empty;
             var value = entryValueNode.Value ?? string.Empty;
 
-            // Check for unknown keys
+            // Check for unknown keys (warnings are non-fatal)
             if (!ValidToolKeys.Contains(key))
             {
                 var location = FormatLocation(configFile, entry.Key.Start.Line, entry.Key.Start.Column);
-                context.WriteError($"{location}: warning: Tool '{toolName}' has unknown key '{key}'");
-                issueCount++;
+                context.WriteLine($"{location}: warning: Tool '{toolName}' has unknown key '{key}'");
             }
 
             // Track required fields
@@ -251,10 +249,12 @@ internal static class Lint
                 else
                 {
                     // Validate regex can be compiled
-                    issueCount += ValidateRegex(context, configFile, toolName, key, value, entry.Value);
-
-                    // Validate regex has 'version' capture group
-                    if (!value.Contains("(?<version>", StringComparison.Ordinal))
+                    var compiledRegex = TryCompileRegex(context, configFile, toolName, key, value, entry.Value);
+                    if (compiledRegex == null)
+                    {
+                        issueCount++;
+                    }
+                    else if (!compiledRegex.GetGroupNames().Contains("version"))
                     {
                         var location = FormatLocation(configFile, entry.Value.Start.Line, entry.Value.Start.Column);
                         context.WriteError($"{location}: error: Tool '{toolName}' 'regex' must contain a named 'version' capture group: (?<version>...)");
@@ -273,10 +273,12 @@ internal static class Lint
                 else
                 {
                     // Validate OS-specific regex can be compiled
-                    issueCount += ValidateRegex(context, configFile, toolName, key, value, entry.Value);
-
-                    // Validate OS-specific regex has 'version' capture group
-                    if (!value.Contains("(?<version>", StringComparison.Ordinal))
+                    var compiledRegex = TryCompileRegex(context, configFile, toolName, key, value, entry.Value);
+                    if (compiledRegex == null)
+                    {
+                        issueCount++;
+                    }
+                    else if (!compiledRegex.GetGroupNames().Contains("version"))
                     {
                         var location = FormatLocation(configFile, entry.Value.Start.Line, entry.Value.Start.Column);
                         context.WriteError($"{location}: error: Tool '{toolName}' '{key}' must contain a named 'version' capture group: (?<version>...)");
@@ -305,49 +307,39 @@ internal static class Lint
     }
 
     /// <summary>
-    ///     Validates that a regex pattern can be compiled.
+    ///     Tries to compile a regex pattern, reporting an error if compilation fails.
     /// </summary>
     /// <param name="context">The context for reporting output.</param>
     /// <param name="configFile">Path to the configuration file (for error messages).</param>
     /// <param name="toolName">The name of the tool being validated.</param>
     /// <param name="key">The configuration key (for error messages).</param>
-    /// <param name="value">The regex pattern to validate.</param>
+    /// <param name="value">The regex pattern to compile.</param>
     /// <param name="node">The YAML node (for location).</param>
-    /// <returns>The number of issues found.</returns>
-    private static int ValidateRegex(Context context, string configFile, string toolName, string key, string value, YamlNode node)
+    /// <returns>The compiled <see cref="Regex"/>, or <see langword="null"/> if compilation failed.</returns>
+    private static Regex? TryCompileRegex(Context context, string configFile, string toolName, string key, string value, YamlNode node)
     {
         try
         {
-            _ = new Regex(value, RegexOptions.None, RegexTimeout);
-            return 0;
+            return new Regex(value, RegexOptions.None, RegexTimeout);
         }
         catch (ArgumentException ex)
         {
             var location = FormatLocation(configFile, node.Start.Line, node.Start.Column);
             context.WriteError($"{location}: error: Tool '{toolName}' '{key}' contains an invalid regex: {ex.Message}");
-            return 1;
+            return null;
         }
     }
 
     /// <summary>
-    ///     Formats a file location string with line and column information.
+    ///     Formats a file location string with 1-based line and column information.
     /// </summary>
     /// <param name="filePath">The file path.</param>
-    /// <param name="line">The line number (1-based).</param>
-    /// <param name="column">The column number (1-based).</param>
-    /// <returns>A formatted location string.</returns>
+    /// <param name="line">The line number (0-based, as provided by YamlDotNet).</param>
+    /// <param name="column">The column number (0-based, as provided by YamlDotNet).</param>
+    /// <returns>A formatted location string with 1-based line and column numbers.</returns>
     private static string FormatLocation(string filePath, long line, long column)
     {
-        if (line > 0 && column > 0)
-        {
-            return $"{filePath}({line},{column})";
-        }
-
-        if (line > 0)
-        {
-            return $"{filePath}({line})";
-        }
-
-        return filePath;
+        // Convert from 0-based (YamlDotNet) to 1-based (display)
+        return $"{filePath}({line + 1},{column + 1})";
     }
 }
