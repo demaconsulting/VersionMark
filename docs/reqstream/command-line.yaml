@@ -126,3 +126,26 @@ sections:
             tests:
               - Context_WriteError_SetsErrorExitCode
               - IntegrationTest_UnknownArgument_ReturnsError
+
+          - id: VersionMark-Cmd-Lint
+            title: The tool shall support --lint to check the configuration file for issues.
+            justification: |
+              Lint support lets users identify and fix issues in .versionmark.yaml files
+              during development, before running capture or publish operations. All issues
+              are reported with filename and line/column location.
+            tags:
+              - cli
+              - lint
+            tests:
+              - Context_Create_LintFlag_SetsLintTrue
+              - Context_Create_LintFlag_WithFile_SetsLintFile
+              - Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile
+              - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
+              - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
+              - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
+              - Program_Run_WithHelpFlag_IncludesLintInformation
+              - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
+              - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
+              - IntegrationTest_LintFlag_MissingConfig_ReturnsError
+              - VersionMark_LintPassesForValidConfig
+              - VersionMark_LintReportsErrorsForInvalidConfig

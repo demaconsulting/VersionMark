@@ -97,6 +97,63 @@ These options are available for all commands:
 | `--silent`           | Suppress console output                                      |
 | `--log <file>`       | Write output to log file                                     |
 
+## Lint Command
+
+Validate a `.versionmark.yaml` configuration file for issues:
+
+```bash
+versionmark --lint [<config-file>]
+```
+
+### Lint Options
+
+| Option                   | Description                                                      |
+| ------------------------ | ---------------------------------------------------------------- |
+| `--lint [<config-file>]` | Check configuration file (default: `.versionmark.yaml`)          |
+
+### Lint Behavior
+
+The lint command:
+
+- Reports **all** issues found in the configuration file, not just the first
+- Includes the filename and line/column number for each issue
+- Exits with code `0` if no issues are found, or `1` if any issues are detected
+- Checks for:
+  - Missing `tools` section
+  - Tools missing required `command` or `regex` fields
+  - Invalid regex patterns (cannot be compiled)
+  - Regex patterns missing the required `(?<version>...)` capture group
+  - Unknown configuration keys (reported as warnings)
+
+### Lint Examples
+
+```bash
+# Lint the default config file (.versionmark.yaml in the current directory)
+versionmark --lint
+
+# Lint a specific config file
+versionmark --lint path/to/.versionmark.yaml
+
+# Lint with silent mode (exit code only, no console output)
+versionmark --lint --silent
+```
+
+### Lint Output
+
+When issues are found, the lint command reports them in the format:
+
+```text
+filename(line,column): error: <description>
+filename(line,column): warning: <description>
+```
+
+For example:
+
+```text
+.versionmark.yaml(5,5): error: Tool 'dotnet' must have a 'regex' field
+.versionmark.yaml(8,5): error: Tool 'node' 'regex' contains an invalid regex: ...
+```
+
 ## Capture Command
 
 Capture tool versions from the current environment:

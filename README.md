@@ -17,6 +17,7 @@ used in different jobs and environments.
 
 - **Version Capture**: Captures tool versions from CI/CD jobs and saves them to JSON files
 - **Version Publishing**: Publishes captured versions to markdown documentation
+- **Configuration Linting**: Validates `.versionmark.yaml` files with precise error locations
 - **Job-ID Tracking**: Associates captured versions with specific CI/CD job identifiers
 - **Version Consolidation**: Collapses common versions across jobs while highlighting conflicts
 - **OS-Specific Overrides**: Supports platform-specific version capture commands
@@ -81,6 +82,31 @@ This consolidates versions from all jobs and generates a markdown report.
 | `-?`, `-h`, `--help` | Display help message                                         |
 | `--silent`           | Suppress console output                                      |
 | `--log <file>`       | Write output to log file                                     |
+
+### Lint Mode
+
+Validate a `.versionmark.yaml` configuration file for issues:
+
+```bash
+versionmark --lint [<config-file>]
+```
+
+| Option                  | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| `--lint [<config-file>]`| Check configuration file (default: `.versionmark.yaml`)               |
+
+Lint reports all issues with filename and line/column location. Exits with code 0 if no
+issues are found, or 1 if any issues are detected.
+
+**Example:**
+
+```bash
+# Lint the default config file
+versionmark --lint
+
+# Lint a specific config file
+versionmark --lint path/to/.versionmark.yaml
+```
 
 ### Capture Mode
 

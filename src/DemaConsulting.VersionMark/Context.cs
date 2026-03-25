@@ -61,6 +61,16 @@ internal sealed class Context : IDisposable
     public string? ResultsFile { get; private init; }
 
     /// <summary>
+    ///     Gets a value indicating whether the lint flag was specified.
+    /// </summary>
+    public bool Lint { get; private init; }
+
+    /// <summary>
+    ///     Gets the configuration file path for lint mode.
+    /// </summary>
+    public string? LintFile { get; private init; }
+
+    /// <summary>
     ///     Gets a value indicating whether the capture command was specified.
     /// </summary>
     public bool Capture { get; private init; }
@@ -131,6 +141,8 @@ internal sealed class Context : IDisposable
             Silent = parser.Silent,
             Validate = parser.Validate,
             ResultsFile = parser.ResultsFile,
+            Lint = parser.Lint,
+            LintFile = parser.LintFile,
             Capture = parser.Capture,
             JobId = parser.JobId,
             OutputFile = parser.OutputFile,
@@ -203,6 +215,16 @@ internal sealed class Context : IDisposable
         ///     Gets the validation results file path.
         /// </summary>
         public string? ResultsFile { get; private set; }
+
+        /// <summary>
+        ///     Gets a value indicating whether the lint flag was specified.
+        /// </summary>
+        public bool Lint { get; private set; }
+
+        /// <summary>
+        ///     Gets the configuration file path for lint mode.
+        /// </summary>
+        public string? LintFile { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether the capture flag was specified.
@@ -314,6 +336,11 @@ internal sealed class Context : IDisposable
                     Validate = true;
                     return index;
 
+                case "--lint":
+                    Lint = true;
+                    LintFile = GetOptionalStringArgument(args, index);
+                    return LintFile != null ? index + 1 : index;
+
                 case "--log":
                     LogFile = GetRequiredStringArgument(arg, args, index, "a filename argument");
                     return index + 1;
@@ -364,6 +391,28 @@ internal sealed class Context : IDisposable
             if (index >= args.Length)
             {
                 throw new ArgumentException($"{arg} requires {description}", nameof(args));
+            }
+
+            return args[index];
+        }
+
+        /// <summary>
+        ///     Gets an optional string argument value (returns null if next arg starts with '-' or is absent).
+        /// </summary>
+        /// <param name="args">All arguments</param>
+        /// <param name="index">Current index</param>
+        /// <returns>Argument value, or null if not present</returns>
+        private static string? GetOptionalStringArgument(string[] args, int index)
+        {
+            if (index >= args.Length)
+            {
+                return null;
+            }
+
+            // If the next token looks like a flag, do not consume it
+            if (args[index].StartsWith('-'))
+            {
+                return null;
             }
 
             return args[index];
