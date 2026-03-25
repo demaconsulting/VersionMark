@@ -48,6 +48,8 @@ internal static class Validation
         // Run core functionality tests
         RunCaptureTest(context, testResults);
         RunPublishTest(context, testResults);
+        RunLintValidTest(context, testResults);
+        RunLintInvalidTest(context, testResults);
 
         // Calculate totals
         var totalTests = testResults.Results.Count;
@@ -315,6 +317,131 @@ tools:
         catch (Exception ex)
         {
             HandleTestException(test, context, "Generates Markdown Report Test", ex);
+        }
+
+        FinalizeTestResult(test, startTime, testResults);
+    }
+
+    /// <summary>
+    ///     Runs a test to verify that lint mode passes for a valid configuration file.
+    /// </summary>
+    /// <param name="context">The context for output.</param>
+    /// <param name="testResults">The test results collection.</param>
+    private static void RunLintValidTest(Context context, DemaConsulting.TestResults.TestResults testResults)
+    {
+        var startTime = DateTime.UtcNow;
+        var test = CreateTestResult("VersionMark_LintPassesForValidConfig");
+
+        try
+        {
+            using var tempDir = new TemporaryDirectory();
+            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "lint-valid.log");
+            var configFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, ".versionmark.yaml");
+
+            // Create a valid config file
+            var configContent = @"---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+";
+            File.WriteAllText(configFile, configContent, System.Text.Encoding.UTF8);
+
+            // Build command line arguments for lint
+            var args = new List<string>
+            {
+                "--silent",
+                "--log", logFile,
+                "--lint", configFile
+            };
+
+            // Run the program
+            int exitCode;
+            using (var testContext = Context.Create([.. args]))
+            {
+                Program.Run(testContext);
+                exitCode = testContext.ExitCode;
+            }
+
+            if (exitCode == 0)
+            {
+                test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
+                context.WriteLine("✓ Lint Passes For Valid Config Test - PASSED");
+            }
+            else
+            {
+                test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                test.ErrorMessage = $"Lint reported errors for valid config (exit code {exitCode})";
+                context.WriteError("✗ Lint Passes For Valid Config Test - FAILED: Lint reported errors for valid config");
+            }
+        }
+        // Generic catch is justified here as this is a test framework - any exception should be
+        // recorded as a test failure to ensure robust test execution and reporting.
+        catch (Exception ex)
+        {
+            HandleTestException(test, context, "Lint Passes For Valid Config Test", ex);
+        }
+
+        FinalizeTestResult(test, startTime, testResults);
+    }
+
+    /// <summary>
+    ///     Runs a test to verify that lint mode reports errors for an invalid configuration file.
+    /// </summary>
+    /// <param name="context">The context for output.</param>
+    /// <param name="testResults">The test results collection.</param>
+    private static void RunLintInvalidTest(Context context, DemaConsulting.TestResults.TestResults testResults)
+    {
+        var startTime = DateTime.UtcNow;
+        var test = CreateTestResult("VersionMark_LintReportsErrorsForInvalidConfig");
+
+        try
+        {
+            using var tempDir = new TemporaryDirectory();
+            var logFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "lint-invalid.log");
+            var configFile = PathHelpers.SafePathCombine(tempDir.DirectoryPath, "bad.versionmark.yaml");
+
+            // Create an invalid config file (missing required 'regex' field)
+            var configContent = @"---
+tools:
+  dotnet:
+    command: dotnet --version
+";
+            File.WriteAllText(configFile, configContent, System.Text.Encoding.UTF8);
+
+            // Build command line arguments for lint
+            var args = new List<string>
+            {
+                "--silent",
+                "--log", logFile,
+                "--lint", configFile
+            };
+
+            // Run the program
+            int exitCode;
+            using (var testContext = Context.Create([.. args]))
+            {
+                Program.Run(testContext);
+                exitCode = testContext.ExitCode;
+            }
+
+            if (exitCode != 0)
+            {
+                test.Outcome = DemaConsulting.TestResults.TestOutcome.Passed;
+                context.WriteLine("✓ Lint Reports Errors For Invalid Config Test - PASSED");
+            }
+            else
+            {
+                test.Outcome = DemaConsulting.TestResults.TestOutcome.Failed;
+                test.ErrorMessage = "Lint did not report errors for invalid config";
+                context.WriteError("✗ Lint Reports Errors For Invalid Config Test - FAILED: Lint did not report errors");
+            }
+        }
+        // Generic catch is justified here as this is a test framework - any exception should be
+        // recorded as a test failure to ensure robust test execution and reporting.
+        catch (Exception ex)
+        {
+            HandleTestException(test, context, "Lint Reports Errors For Invalid Config Test", ex);
         }
 
         FinalizeTestResult(test, startTime, testResults);

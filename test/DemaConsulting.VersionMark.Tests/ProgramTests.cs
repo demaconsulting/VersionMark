@@ -587,4 +587,179 @@ tools:
             }
         }
     }
+
+    /// <summary>
+    ///     Test that Run with lint flag passes for a valid config file.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess()
+    {
+        // Arrange - Set up temp directory with a valid config file
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var configFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(configFile, @"---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+");
+
+            using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
+            Console.SetOut(outWriter);
+            Console.SetError(errWriter);
+
+            using var context = Context.Create(["--lint", configFile]);
+
+            // Act - Run lint on valid config
+            Program.Run(context);
+
+            // Assert - Verify success
+            Assert.AreEqual(0, context.ExitCode);
+            var output = outWriter.ToString();
+            Assert.Contains("No issues found", output);
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that Run with lint flag fails for an invalid config file.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithLintFlag_InvalidConfig_ReturnsError()
+    {
+        // Arrange - Set up temp directory with an invalid config file
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var configFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+
+            // Missing required 'regex' field
+            File.WriteAllText(configFile, @"---
+tools:
+  dotnet:
+    command: dotnet --version
+");
+
+            using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
+            Console.SetOut(outWriter);
+            Console.SetError(errWriter);
+
+            using var context = Context.Create(["--lint", configFile]);
+
+            // Act - Run lint on invalid config
+            Program.Run(context);
+
+            // Assert - Verify error is reported
+            Assert.AreEqual(1, context.ExitCode);
+            var errorOutput = errWriter.ToString();
+            Assert.Contains("error", errorOutput);
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that Run with lint flag without file uses default .versionmark.yaml.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile()
+    {
+        // Arrange - Set up temp directory with a default config file
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var configFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(configFile, @"---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+");
+            Directory.SetCurrentDirectory(tempDir);
+
+            using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
+            Console.SetOut(outWriter);
+            Console.SetError(errWriter);
+
+            using var context = Context.Create(["--lint"]);
+
+            // Act - Run lint without specifying a config file
+            Program.Run(context);
+
+            // Assert - Verify it found and linted the default file
+            Assert.AreEqual(0, context.ExitCode);
+            var output = outWriter.ToString();
+            Assert.Contains(".versionmark.yaml", output);
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that Run with lint flag outputs lint information in help.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithHelpFlag_IncludesLintInformation()
+    {
+        // Arrange - Redirect console output
+        var originalOut = Console.Out;
+        try
+        {
+            using var outWriter = new StringWriter();
+            Console.SetOut(outWriter);
+
+            // Act - Run with help flag
+            using var context = Context.Create(["--help"]);
+            Program.Run(context);
+
+            // Assert - Verify lint is documented in help output
+            var output = outWriter.ToString();
+            Assert.Contains("--lint", output);
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+        }
+    }
 }

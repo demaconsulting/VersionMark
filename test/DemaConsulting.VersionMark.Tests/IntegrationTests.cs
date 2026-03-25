@@ -758,4 +758,106 @@ public class IntegrationTests
             }
         }
     }
+
+    /// <summary>
+    ///     Integration test that lint command passes for a valid config file.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess()
+    {
+        // Arrange - Set up temp directory with a valid config file
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        var configFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(configFile, @"---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+");
+
+            // Act - Run the application with --lint flag and valid config
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--lint", configFile);
+
+            // Assert - Verify success and lint output
+            Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
+            Assert.Contains("No issues found", output);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Integration test that lint command reports errors for an invalid config file.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_LintFlag_InvalidConfig_ReturnsError()
+    {
+        // Arrange - Set up temp directory with an invalid config file
+        var tempDir = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"versionmark-test-{Guid.NewGuid():N}");
+        var configFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+
+            // Missing required 'regex' field
+            File.WriteAllText(configFile, @"---
+tools:
+  dotnet:
+    command: dotnet --version
+");
+
+            // Act - Run the application with --lint flag and invalid config
+            var exitCode = Runner.Run(
+                out var output,
+                "dotnet",
+                _dllPath,
+                "--lint", configFile);
+
+            // Assert - Verify error is reported
+            Assert.AreEqual(1, exitCode);
+            Assert.Contains("error", output);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Integration test that lint command reports error for missing config file.
+    /// </summary>
+    [TestMethod]
+    public void IntegrationTest_LintFlag_MissingConfig_ReturnsError()
+    {
+        // Arrange - Use a path that doesn't exist
+        var nonExistentFile = PathHelpers.SafePathCombine(System.IO.Path.GetTempPath(), $"does-not-exist-{Guid.NewGuid():N}.yaml");
+
+        // Act - Run the application with --lint flag and missing file
+        var exitCode = Runner.Run(
+            out var output,
+            "dotnet",
+            _dllPath,
+            "--lint", nonExistentFile);
+
+        // Assert - Verify error is reported
+        Assert.AreEqual(1, exitCode);
+        Assert.Contains("error", output);
+    }
 }

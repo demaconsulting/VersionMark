@@ -62,3 +62,11 @@ reviews:
     paths:
       - "docs/design/validation.md"
       - "src/**/Validation.cs"
+
+  - id: VersionMark-Lint-Review
+    title: Review of VersionMark Lint
+    paths:
+      - "docs/reqstream/lint.yaml"
+      - "docs/design/lint.md"
+      - "src/**/Lint.cs"
+      - "test/**/LintTests.cs"

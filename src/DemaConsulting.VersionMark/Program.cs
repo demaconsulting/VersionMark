@@ -114,21 +114,28 @@ internal static class Program
             return;
         }
 
-        // Priority 4: Capture command
+        // Priority 4: Lint command
+        if (context.Lint)
+        {
+            RunLint(context);
+            return;
+        }
+
+        // Priority 5: Capture command
         if (context.Capture)
         {
             RunCapture(context);
             return;
         }
 
-        // Priority 4.5: Publish command
+        // Priority 6: Publish command
         if (context.Publish)
         {
             RunPublish(context);
             return;
         }
 
-        // Priority 5: Main tool functionality
+        // Priority 7: Main tool functionality
         RunToolLogic(context);
     }
 
@@ -150,6 +157,7 @@ internal static class Program
     private static void PrintHelp(Context context)
     {
         context.WriteLine("Usage: versionmark [options]");
+        context.WriteLine("       versionmark --lint [<config-file>]");
         context.WriteLine("       versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]");
         context.WriteLine("       versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]");
         context.WriteLine("");
@@ -160,6 +168,10 @@ internal static class Program
         context.WriteLine("  --validate                 Run self-validation");
         context.WriteLine("  --results <file>           Write validation results to file (.trx or .xml)");
         context.WriteLine("  --log <file>               Write output to log file");
+        context.WriteLine("");
+        context.WriteLine("Lint Mode:");
+        context.WriteLine("  --lint [<config-file>]     Check configuration file for issues");
+        context.WriteLine("                             (default: .versionmark.yaml)");
         context.WriteLine("");
         context.WriteLine("Capture Mode:");
         context.WriteLine("  --capture                  Capture tool versions");
@@ -172,6 +184,17 @@ internal static class Program
         context.WriteLine("  --report <file>            Output markdown file (required)");
         context.WriteLine("  --report-depth <depth>     Heading depth for markdown (default: 2)");
         context.WriteLine("  -- <patterns...>           Glob patterns for JSON files (default: versionmark-*.json)");
+    }
+
+    /// <summary>
+    ///     Runs the lint command logic.
+    /// </summary>
+    /// <param name="context">The context containing command line arguments and program state.</param>
+    private static void RunLint(Context context)
+    {
+        // Use specified file, or default to .versionmark.yaml
+        var configFile = context.LintFile ?? ".versionmark.yaml";
+        Lint.Run(context, configFile);
     }
 
     /// <summary>

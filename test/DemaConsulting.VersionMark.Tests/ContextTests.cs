@@ -522,4 +522,50 @@ public class ContextTests
         // What is proved: When no glob patterns specified, GlobPatterns is an empty array
         Assert.HasCount(0, context.GlobPatterns);
     }
+
+    /// <summary>
+    ///     Test creating a context with the lint flag.
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_LintFlag_SetsLintTrue()
+    {
+        // Arrange & Act - Create context with --lint flag
+        using var context = Context.Create(["--lint"]);
+
+        // Assert - Verify lint flag is set
+        Assert.IsTrue(context.Lint);
+        Assert.IsNull(context.LintFile);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with the lint flag and a config file argument.
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_LintFlag_WithFile_SetsLintFile()
+    {
+        // Arrange & Act - Create context with --lint and a file argument
+        using var context = Context.Create(["--lint", "custom.yaml"]);
+
+        // Assert - Verify lint flag and file are set
+        Assert.IsTrue(context.Lint);
+        Assert.AreEqual("custom.yaml", context.LintFile);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test that lint flag without a file does not consume the next flag argument.
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile()
+    {
+        // Arrange & Act - Create context with --lint followed by another flag
+        using var context = Context.Create(["--lint", "--silent"]);
+
+        // Assert - Verify lint flag is set and silent is also set, LintFile is null
+        Assert.IsTrue(context.Lint);
+        Assert.IsNull(context.LintFile);
+        Assert.IsTrue(context.Silent);
+        Assert.AreEqual(0, context.ExitCode);
+    }
 }
