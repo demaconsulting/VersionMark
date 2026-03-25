@@ -535,27 +535,30 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a config with multiple errors reports all of them (does not stop at the first).
+    ///     Test that an OS-specific regex override that cannot be compiled returns false.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_MultipleErrors_ReportsAll()
+    public void Lint_Run_OsSpecificInvalidRegex_ReturnsFalse()
     {
-        // Arrange - Write a YAML file where a tool is missing both 'command' and 'regex'
+        // Arrange - Write a YAML file where regex-linux contains an invalid regex pattern
         var tempFile = Path.GetTempFileName();
         try
         {
             const string yaml = """
                 ---
                 tools:
-                  dotnet: {}
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                    regex-linux: '(?<version'
                 """;
             File.WriteAllText(tempFile, yaml);
             using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool that has no required fields at all
+            // Act - Run lint on a tool with an OS-specific regex that cannot be compiled
             var result = Lint.Run(context, tempFile);
 
-            // Assert - Lint should fail and the exit code should reflect that errors were found
+            // Assert - Lint should fail because the OS-specific regex is invalid
             Assert.IsFalse(result);
             Assert.AreEqual(1, context.ExitCode);
         }
@@ -563,6 +566,56 @@ public class LintTests
         {
             File.Delete(tempFile);
         }
+    }
+
+    /// <summary>
+    ///     Test that a config with multiple errors reports all of them (does not stop at the first).
+    /// </summary>
+    [TestMethod]
+    public void Lint_Run_MultipleErrors_ReportsAll()
+    {
+        // Arrange - Redirect Console.Error to verify both error messages are emitted
+        var previousError = Console.Error;
+        var errorOutput = new System.Text.StringBuilder();
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            // A tool with neither 'command' nor 'regex' should produce two separate error messages
+            const string yaml = """
+                ---
+                tools:
+                  dotnet: {}
+                """;
+            File.WriteAllText(tempFile, yaml);
+
+            using var captureWriter = new System.IO.StringWriter(errorOutput);
+            Console.SetError(captureWriter);
+
+            // Context must NOT be silent so that WriteError calls Console.Error.WriteLine
+            using var context = Context.Create([]);
+
+            // Act - Run lint on a tool that has no required fields at all
+            var result = Lint.Run(context, tempFile);
+            captureWriter.Flush();
+
+            // Assert - Lint should fail (both errors accumulated)
+            Assert.IsFalse(result);
+            Assert.AreEqual(1, context.ExitCode);
+        }
+        finally
+        {
+            Console.SetError(previousError);
+            File.Delete(tempFile);
+        }
+
+        // Assert - Both error messages must be present, confirming lint does not stop at the first
+        var captured = errorOutput.ToString();
+        Assert.IsTrue(
+            captured.Contains("'command'"),
+            $"Expected error about missing 'command' field, but got: {captured}");
+        Assert.IsTrue(
+            captured.Contains("'regex'"),
+            $"Expected error about missing 'regex' field, but got: {captured}");
     }
 
     /// <summary>

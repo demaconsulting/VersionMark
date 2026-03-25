@@ -66,6 +66,7 @@ sections:
               - lint
             tests:
               - Lint_Run_InvalidRegex_ReturnsFalse
+              - Lint_Run_OsSpecificInvalidRegex_ReturnsFalse
 
           - id: VersionMark-Lint-RegexVersion
             title: The tool shall report an error when a regex does not contain a named 'version' capture group.
