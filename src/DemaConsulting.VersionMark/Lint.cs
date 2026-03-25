@@ -262,7 +262,7 @@ internal static class Lint
                     }
                 }
             }
-            else if (key.StartsWith("regex", StringComparison.Ordinal))
+            else if (key is "regex-win" or "regex-linux" or "regex-macos")
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {

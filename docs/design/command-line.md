@@ -39,8 +39,8 @@ generate event-log entries. This satisfies requirements `VersionMark-Cmd-ExitCod
 | 3        | `context.Validate`     | Run self-validation and return  |
 | 4        | `context.Lint`         | Run lint mode and return        |
 | 5        | `context.Capture`      | Run capture mode and return     |
-| 5.5      | `context.Publish`      | Run publish mode and return     |
-| 6        | Default                | Run placeholder tool logic      |
+| 6        | `context.Publish`      | Run publish mode and return     |
+| 7        | Default                | Run placeholder tool logic      |
 
 This dispatch order satisfies requirements `VersionMark-Cmd-Version`, `VersionMark-Cmd-Help`,
 `VersionMark-Cmd-Validate`, `VersionMark-Cmd-Lint`, `VersionMark-Cap-Capture`, and
