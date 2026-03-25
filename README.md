@@ -241,9 +241,11 @@ Example output:
 
 ✓ VersionMark_CapturesVersions - Passed
 ✓ VersionMark_GeneratesMarkdownReport - Passed
+✓ VersionMark_LintPassesForValidConfig - Passed
+✓ VersionMark_LintReportsErrorsForInvalidConfig - Passed
 
-Total Tests: 2
-Passed: 2
+Total Tests: 4
+Passed: 4
 Failed: 0
 ```
 

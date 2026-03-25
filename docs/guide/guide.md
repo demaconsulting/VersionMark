@@ -421,9 +421,11 @@ Example output:
 
 ✓ VersionMark_CapturesVersions - Passed
 ✓ VersionMark_GeneratesMarkdownReport - Passed
+✓ VersionMark_LintPassesForValidConfig - Passed
+✓ VersionMark_LintReportsErrorsForInvalidConfig - Passed
 
-Total Tests: 2
-Passed: 2
+Total Tests: 4
+Passed: 4
 Failed: 0
 ```
 
@@ -435,6 +437,8 @@ If any tests fail, the exit code will be non-zero.
 | :--- | :------------- |
 | `VersionMark_CapturesVersions` | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file |
 | `VersionMark_GeneratesMarkdownReport` | The tool can read captured JSON files and generate a markdown report |
+| `VersionMark_LintPassesForValidConfig` | The lint command exits with code 0 for a valid configuration file |
+| `VersionMark_LintReportsErrorsForInvalidConfig` | The lint command exits with code 1 for an invalid config |
 
 # CI/CD Integration
 
