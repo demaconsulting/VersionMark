@@ -128,14 +128,14 @@ internal static class Program
             return;
         }
 
-        // Priority 4.5: Publish command
+        // Priority 6: Publish command
         if (context.Publish)
         {
             RunPublish(context);
             return;
         }
 
-        // Priority 6: Main tool functionality
+        // Priority 7: Main tool functionality
         RunToolLogic(context);
     }
 

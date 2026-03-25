@@ -227,6 +227,16 @@ internal static class Lint
                     issueCount++;
                 }
             }
+            else if (key is "command-win" or "command-linux" or "command-macos")
+            {
+                // Validate OS-specific command overrides are not empty
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    var location = FormatLocation(configFile, entry.Value.Start.Line, entry.Value.Start.Column);
+                    context.WriteError($"{location}: error: Tool '{toolName}' '{key}' must not be empty");
+                    issueCount++;
+                }
+            }
             else if (key == "regex")
             {
                 hasRegex = true;
@@ -252,17 +262,26 @@ internal static class Lint
                     }
                 }
             }
-            else if (key.StartsWith("regex", StringComparison.Ordinal) && !string.IsNullOrWhiteSpace(value))
+            else if (key.StartsWith("regex", StringComparison.Ordinal))
             {
-                // Validate OS-specific regex can be compiled
-                issueCount += ValidateRegex(context, configFile, toolName, key, value, entry.Value);
-
-                // Validate OS-specific regex has 'version' capture group
-                if (!value.Contains("(?<version>", StringComparison.Ordinal))
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     var location = FormatLocation(configFile, entry.Value.Start.Line, entry.Value.Start.Column);
-                    context.WriteError($"{location}: error: Tool '{toolName}' '{key}' must contain a named 'version' capture group: (?<version>...)");
+                    context.WriteError($"{location}: error: Tool '{toolName}' '{key}' must not be empty");
                     issueCount++;
+                }
+                else
+                {
+                    // Validate OS-specific regex can be compiled
+                    issueCount += ValidateRegex(context, configFile, toolName, key, value, entry.Value);
+
+                    // Validate OS-specific regex has 'version' capture group
+                    if (!value.Contains("(?<version>", StringComparison.Ordinal))
+                    {
+                        var location = FormatLocation(configFile, entry.Value.Start.Line, entry.Value.Start.Column);
+                        context.WriteError($"{location}: error: Tool '{toolName}' '{key}' must contain a named 'version' capture group: (?<version>...)");
+                        issueCount++;
+                    }
                 }
             }
         }
