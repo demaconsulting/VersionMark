@@ -37,12 +37,14 @@ generate event-log entries. This satisfies requirements `VersionMark-Cmd-ExitCod
 | —        | Print banner           | Always executed after priority 1|
 | 2        | `context.Help`         | Print usage and return          |
 | 3        | `context.Validate`     | Run self-validation and return  |
-| 4        | `context.Capture`      | Run capture mode and return     |
-| 4.5      | `context.Publish`      | Run publish mode and return     |
-| 5        | Default                | Run placeholder tool logic      |
+| 4        | `context.Lint`         | Run lint mode and return        |
+| 5        | `context.Capture`      | Run capture mode and return     |
+| 5.5      | `context.Publish`      | Run publish mode and return     |
+| 6        | Default                | Run placeholder tool logic      |
 
 This dispatch order satisfies requirements `VersionMark-Cmd-Version`, `VersionMark-Cmd-Help`,
-`VersionMark-Cmd-Validate`, `VersionMark-Cap-Capture`, and `VersionMark-Pub-Publish`.
+`VersionMark-Cmd-Validate`, `VersionMark-Cmd-Lint`, `VersionMark-Cap-Capture`, and
+`VersionMark-Pub-Publish`.
 
 ### Capture and Publish Orchestration
 
@@ -51,6 +53,12 @@ arguments, invoke configuration loading and version capture/report generation, a
 error handling to `context.WriteError`. These methods satisfy requirements
 `VersionMark-Cap-JobId`, `VersionMark-Cap-Output`, `VersionMark-Pub-RequireReport`, and
 `VersionMark-Pub-GlobPattern`.
+
+### RunLint
+
+`RunLint` is a private helper called from `Run`. It resolves the configuration file path,
+defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then delegates to
+`Lint.Run`. This satisfies requirement `VersionMark-Cmd-Lint`.
 
 ## Context Class
 
@@ -66,6 +74,8 @@ command-line state and output routing. It is constructed via the `Create` factor
 | `Silent`      | `bool`     | `false` | `--silent` flag                           |
 | `Validate`    | `bool`     | `false` | `--validate` flag                         |
 | `ResultsFile` | `string?`  | `null`  | `--results <file>`                        |
+| `Lint`        | `bool`     | `false` | `--lint` flag                             |
+| `LintFile`    | `string?`  | `null`  | Optional file argument for `--lint`       |
 | `Capture`     | `bool`     | `false` | `--capture` flag                          |
 | `JobId`       | `string?`  | `null`  | `--job-id <id>`                           |
 | `OutputFile`  | `string?`  | `null`  | `--output <file>`                         |
@@ -78,7 +88,8 @@ command-line state and output routing. It is constructed via the `Create` factor
 
 This satisfies requirements `VersionMark-Cmd-Context`, `VersionMark-Cmd-Version`,
 `VersionMark-Cmd-Help`, `VersionMark-Cmd-Silent`, `VersionMark-Cmd-Validate`,
-`VersionMark-Cmd-Results`, `VersionMark-Cmd-Log`, `VersionMark-Cmd-ExitCode`.
+`VersionMark-Cmd-Results`, `VersionMark-Cmd-Log`, `VersionMark-Cmd-ExitCode`,
+`VersionMark-Cmd-Lint`.
 
 ### ArgumentParser
 

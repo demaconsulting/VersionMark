@@ -62,3 +62,9 @@ reviews:
     paths:
       - "docs/design/validation.md"
       - "src/**/Validation.cs"
+
+  - id: VersionMark-Lint-Review
+    title: Review of VersionMark Lint
+    paths:
+      - "docs/design/lint.md"
+      - "src/**/Lint.cs"

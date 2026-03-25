@@ -19,7 +19,8 @@ organizes all test execution internally.
 1. Calls `PrintValidationHeader` to emit a markdown table with tool version, machine
    name, OS version, .NET runtime, and timestamp.
 2. Creates a `TestResults` collection named `"VersionMark Self-Validation"`.
-3. Calls `RunCaptureTest` and `RunPublishTest` to execute the two functional tests.
+3. Calls `RunCaptureTest`, `RunPublishTest`, `RunLintValidTest`, and `RunLintInvalidTest`
+   to execute the functional tests.
 4. Prints a summary of passed and failed tests, calling `context.WriteError` for the
    failed count if any tests failed.
 5. If `context.ResultsFile` is set, calls `WriteResultsFile` to persist the results.
@@ -51,6 +52,31 @@ The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Cap-Cap
    `**dotnet**`, `**node**`, `8.0.0`, and `20.0.0`.
 
 The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Pub-Publish`.
+
+### RunLintValidTest
+
+`RunLintValidTest` verifies that lint mode exits successfully for a valid configuration file:
+
+1. Creates a `TemporaryDirectory`.
+2. Writes a minimal `.versionmark.yaml` containing the `dotnet` tool with a valid `command`
+   and `regex` that includes the `(?<version>...)` capture group.
+3. Constructs a `Context` with `--silent`, `--log <file>`, and `--lint <config-file>`.
+4. Calls `Program.Run` and checks that the exit code is 0.
+
+The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-Cmd-Lint`.
+
+### RunLintInvalidTest
+
+`RunLintInvalidTest` verifies that lint mode reports errors for an invalid configuration file:
+
+1. Creates a `TemporaryDirectory`.
+2. Writes a `bad.versionmark.yaml` containing a tool entry with only a `command` field and
+   no `regex` field (deliberately invalid).
+3. Constructs a `Context` with `--silent`, `--log <file>`, and `--lint <config-file>`.
+4. Calls `Program.Run` and checks that the exit code is non-zero.
+
+The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
+`VersionMark-Cmd-Lint`.
 
 ### WriteResultsFile
 
