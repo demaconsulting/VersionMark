@@ -32,6 +32,29 @@ This document does not cover installation, end-user usage patterns, or the CI/CD
 configuration. Those topics are addressed in the [User Guide][user-guide] and the
 [Requirements document][requirements-doc].
 
+## Software Architecture
+
+The following tree shows the VersionMark software system, its software subsystems, and its
+software units. Each node has a corresponding requirements file in `docs/reqstream/`.
+
+```text
+VersionMark (Software System)          versionmark-system.yaml
+├── Command-Line Subsystem             subsystem-command-line.yaml
+├── Capture Subsystem                  subsystem-capture.yaml
+├── Publish Subsystem                  subsystem-publish.yaml
+├── Configuration Subsystem            subsystem-configuration.yaml
+├── Lint Subsystem                     subsystem-lint.yaml
+├── MarkdownFormatter (Software Unit)  unit-formatter.yaml
+├── VersionInfo (Software Unit)        unit-version-info.yaml
+├── PathHelpers (Software Unit)        unit-path-helpers.yaml
+└── Validation (Software Unit)         unit-validation.yaml
+```
+
+Platform support requirements are in `platform-requirements.yaml`. Each off-the-shelf
+component used by the tool has its own requirements file (`ots-mstest.yaml`,
+`ots-reqstream.yaml`, `ots-buildmark.yaml`, `ots-sarifmark.yaml`, `ots-sonarmark.yaml`,
+`ots-reviewmark.yaml`).
+
 ## Audience
 
 This document is intended for:

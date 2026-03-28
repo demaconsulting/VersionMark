@@ -1,0 +1,41 @@
+---
+sections:
+  - title: VersionMark System Requirements
+    requirements:
+      - id: VersionMark-Sys-Capture
+        title: The tool shall capture tool version information from CI/CD environments.
+        justification: |
+          The primary purpose of VersionMark is to record which tool versions were
+          present in each CI/CD job so that version differences across environments
+          can be detected and reported.
+        tests:
+          - VersionMark_CapturesVersions
+
+      - id: VersionMark-Sys-Publish
+        title: The tool shall publish collected version information as a markdown report.
+        justification: |
+          Teams need a human-readable summary of tool versions across all jobs.
+          Publishing to markdown enables the report to be included in release
+          documentation and artifact archives.
+        tests:
+          - VersionMark_GeneratesMarkdownReport
+
+      - id: VersionMark-Sys-Lint
+        title: The tool shall validate configuration files and report issues before capture or publish is run.
+        justification: |
+          Detecting configuration errors early, before a CI/CD run proceeds, reduces
+          wasted build time and provides precise error locations so users can fix
+          problems quickly.
+        tests:
+          - VersionMark_LintPassesForValidConfig
+          - VersionMark_LintReportsErrorsForInvalidConfig
+
+      - id: VersionMark-Sys-Validate
+        title: The tool shall verify its own correct installation and functionality.
+        justification: |
+          A built-in self-validation suite lets operators confirm that the installed
+          tool is functioning correctly in the deployment environment without
+          requiring external fixtures or test data.
+        tests:
+          - VersionMark_CapturesVersions
+          - VersionMark_GeneratesMarkdownReport

@@ -5,10 +5,20 @@
 # Requirements are verified through tests and documented in docs/requirements_doc/ and docs/requirements_report/.
 
 includes:
-  - docs/reqstream/command-line.yaml
-  - docs/reqstream/capture.yaml
-  - docs/reqstream/publish.yaml
-  - docs/reqstream/configuration.yaml
-  - docs/reqstream/formatter.yaml
-  - docs/reqstream/platform.yaml
-  - docs/reqstream/ots-software.yaml
+  - docs/reqstream/versionmark-system.yaml
+  - docs/reqstream/platform-requirements.yaml
+  - docs/reqstream/subsystem-command-line.yaml
+  - docs/reqstream/subsystem-capture.yaml
+  - docs/reqstream/subsystem-publish.yaml
+  - docs/reqstream/subsystem-configuration.yaml
+  - docs/reqstream/subsystem-lint.yaml
+  - docs/reqstream/unit-formatter.yaml
+  - docs/reqstream/unit-version-info.yaml
+  - docs/reqstream/unit-path-helpers.yaml
+  - docs/reqstream/unit-validation.yaml
+  - docs/reqstream/ots-mstest.yaml
+  - docs/reqstream/ots-reqstream.yaml
+  - docs/reqstream/ots-buildmark.yaml
+  - docs/reqstream/ots-sarifmark.yaml
+  - docs/reqstream/ots-sonarmark.yaml
+  - docs/reqstream/ots-reviewmark.yaml

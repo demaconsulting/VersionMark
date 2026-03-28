@@ -1,0 +1,21 @@
+---
+sections:
+  - title: PathHelpers Unit Requirements
+    requirements:
+      - id: VersionMark-PathHelpers-SafeCombine
+        title: The PathHelpers class shall combine paths safely, rejecting path-traversal attempts.
+        justification: |
+          Constructing file paths from partially-trusted input (such as job IDs and
+          configuration values) carries a path-traversal risk. SafePathCombine
+          enforces that the resulting path stays within the intended base directory,
+          defending against both explicit ".." segments and rooted path injections.
+        tests:
+          - PathHelpers_SafePathCombine_ValidPaths_CombinesCorrectly
+          - PathHelpers_SafePathCombine_PathTraversalWithDoubleDots_ThrowsArgumentException
+          - PathHelpers_SafePathCombine_DoubleDotsInMiddle_ThrowsArgumentException
+          - PathHelpers_SafePathCombine_AbsolutePath_ThrowsArgumentException
+          - PathHelpers_SafePathCombine_CurrentDirectoryReference_CombinesCorrectly
+          - PathHelpers_SafePathCombine_NestedPaths_CombinesCorrectly
+          - PathHelpers_SafePathCombine_EmptyRelativePath_ReturnsBasePath
+          - PathHelpers_SafePathCombine_NullBasePath_ThrowsArgumentNullException
+          - PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException
