@@ -33,51 +33,13 @@ reviews:
     title: VersionMark Design Document Review
     paths:
       - "docs/reqstream/versionmark-system.yaml"
-      - "docs/design/introduction.md"
-      - "docs/design/system.md"
-      - "docs/design/subsystem-cli.md"
-      - "docs/design/unit-program.md"
-      - "docs/design/unit-context.md"
-      - "docs/design/subsystem-configuration.md"
-      - "docs/design/unit-tool-config.md"
-      - "docs/design/unit-version-mark-config.md"
-      - "docs/design/subsystem-capture.md"
-      - "docs/design/unit-version-info.md"
-      - "docs/design/subsystem-publishing.md"
-      - "docs/design/unit-markdown-formatter.md"
-      - "docs/design/subsystem-linting.md"
-      - "docs/design/unit-lint.md"
-      - "docs/design/subsystem-selftest.md"
-      - "docs/design/unit-validation.md"
-      - "docs/design/unit-path-helpers.md"
+      - "docs/design/**/*.md"
 
   - id: VersionMark-AllRequirements
     title: VersionMark All Requirements Review
     paths:
       - "requirements.yaml"
-      - "docs/reqstream/versionmark-system.yaml"
-      - "docs/reqstream/platform-requirements.yaml"
-      - "docs/reqstream/subsystem-cli.yaml"
-      - "docs/reqstream/unit-program.yaml"
-      - "docs/reqstream/unit-context.yaml"
-      - "docs/reqstream/subsystem-configuration.yaml"
-      - "docs/reqstream/unit-version-mark-config.yaml"
-      - "docs/reqstream/unit-tool-config.yaml"
-      - "docs/reqstream/subsystem-capture.yaml"
-      - "docs/reqstream/unit-version-info.yaml"
-      - "docs/reqstream/subsystem-publishing.yaml"
-      - "docs/reqstream/unit-formatter.yaml"
-      - "docs/reqstream/subsystem-linting.yaml"
-      - "docs/reqstream/unit-lint.yaml"
-      - "docs/reqstream/subsystem-selftest.yaml"
-      - "docs/reqstream/unit-validation.yaml"
-      - "docs/reqstream/unit-path-helpers.yaml"
-      - "docs/reqstream/ots-mstest.yaml"
-      - "docs/reqstream/ots-reqstream.yaml"
-      - "docs/reqstream/ots-buildmark.yaml"
-      - "docs/reqstream/ots-sarifmark.yaml"
-      - "docs/reqstream/ots-sonarmark.yaml"
-      - "docs/reqstream/ots-reviewmark.yaml"
+      - "docs/reqstream/**/*.yaml"
 
   # Cli Subsystem
   - id: VersionMark-Cli-Subsystem
