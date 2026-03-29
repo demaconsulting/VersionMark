@@ -7,7 +7,7 @@ echo "📝 Checking markdown..."
 npx markdownlint-cli2 "**/*.md"
 
 echo "🔤 Checking spelling..."
-npx cspell "**/*.{cs,md,json,yaml,yml}" --no-progress
+npx cspell "**/*.{cs,md,json,yaml,yml}" --no-progress --quiet
 
 echo "📋 Checking YAML..."
 yamllint -c .yamllint.yaml .

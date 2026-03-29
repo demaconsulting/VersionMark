@@ -6,7 +6,7 @@ call npx markdownlint-cli2 "**/*.md"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo Checking spelling...
-call npx cspell "**/*.{cs,md,json,yaml,yml}" --no-progress
+call npx cspell "**/*.{cs,md,json,yaml,yml}" --no-progress --quiet
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo Checking YAML...
