@@ -1,0 +1,32 @@
+---
+sections:
+  - title: Validation Unit Requirements
+    requirements:
+      - id: VersionMark-Validation-Capture
+        title: The Validation class shall verify the capture mode end-to-end.
+        justification: |
+          Self-validation of the capture workflow confirms the tool is correctly
+          installed and able to execute commands and produce JSON output in the
+          deployment environment.
+        tests:
+          - VersionMark_CapturesVersions
+
+      - id: VersionMark-Validation-Publish
+        title: The Validation class shall verify the publish mode end-to-end.
+        justification: |
+          Self-validation of the publish workflow confirms the tool is correctly
+          able to read JSON capture files and produce markdown reports in the
+          deployment environment.
+        tests:
+          - VersionMark_GeneratesMarkdownReport
+
+      - id: VersionMark-Validation-Lint
+        title: >-
+          The Validation class shall verify that lint mode correctly accepts valid
+          and rejects invalid configurations.
+        justification: |
+          Self-validation of lint mode confirms that the configuration validation
+          logic is functioning correctly in the deployment environment.
+        tests:
+          - VersionMark_LintPassesForValidConfig
+          - VersionMark_LintReportsErrorsForInvalidConfig

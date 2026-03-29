@@ -1,0 +1,39 @@
+---
+sections:
+  - title: VersionInfo Unit Requirements
+    requirements:
+      - id: VersionMark-VersionInfo-Save
+        title: The VersionInfo class shall serialize captured version data to a JSON file.
+        justification: |
+          Captured version data must be persisted between the capture job and the
+          publish job. Writing to JSON provides a portable, human-readable format
+          that other tools can consume if needed.
+        tests:
+          - VersionInfo_SaveToFile_CreatesJsonFile
+          - VersionInfo_SaveAndLoad_RoundTripPreservesData
+          - VersionInfo_EmptyVersions_SavesAndLoadsCorrectly
+          - VersionInfo_SpecialCharacters_SavesAndLoadsCorrectly
+
+      - id: VersionMark-VersionInfo-Load
+        title: The VersionInfo class shall deserialize version data from a JSON file.
+        justification: |
+          The publish mode must read the JSON files written by capture jobs.
+          Deserializing from JSON allows version data captured in any previous job
+          to be reconstructed and included in the report.
+        tests:
+          - VersionInfo_LoadFromFile_ReadsJsonFile
+          - VersionInfo_SaveAndLoad_RoundTripPreservesData
+          - VersionInfo_EmptyVersions_SavesAndLoadsCorrectly
+          - VersionInfo_SpecialCharacters_SavesAndLoadsCorrectly
+
+      - id: VersionMark-VersionInfo-Error
+        title: The VersionInfo class shall report errors when JSON files cannot be read or parsed.
+        justification: |
+          Providing clear errors when a file is missing or malformed prevents silent
+          data loss and guides users to the source of the problem quickly.
+        tests:
+          - VersionInfo_LoadFromFile_NonExistentFile_ThrowsArgumentException
+          - VersionInfo_LoadFromFile_InvalidJson_ThrowsArgumentException
+          - VersionInfo_LoadFromFile_EmptyJson_ThrowsArgumentException
+          - VersionInfo_LoadFromFile_NullJson_ThrowsArgumentException
+          - VersionInfo_SaveToFile_InvalidPath_ThrowsInvalidOperationException

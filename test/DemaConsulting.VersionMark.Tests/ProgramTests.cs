@@ -230,6 +230,75 @@ tools:
     }
 
     /// <summary>
+    ///     Test that Run with capture command and no tool filter captures all configured tools.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithCaptureCommandNoToolFilter_CapturesAllConfiguredTools()
+    {
+        // Arrange - Set up unique temp directory with a two-tool config; do NOT specify tool names
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempConfigFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+        var outputFile = PathHelpers.SafePathCombine(tempDir, "output.json");
+
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+
+            File.WriteAllText(tempConfigFile, @"
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+  git:
+    command: git --version
+    regex: 'git version (?<version>\d+\.\d+\.\d+)'
+");
+
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalOut = Console.Out;
+            try
+            {
+                using var outWriter = new StringWriter();
+                Console.SetOut(outWriter);
+
+                // No tool names after -- : should capture all tools from configuration
+                using var context = Context.Create([
+                    "--capture",
+                    "--job-id", "test-job",
+                    "--output", outputFile
+                ]);
+
+                // Act - Execute the capture command without specifying tool names
+                Program.Run(context);
+
+                // Assert - All tools defined in configuration must be captured
+                Assert.AreEqual(0, context.ExitCode);
+                Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
+
+                var versionInfo = VersionInfo.LoadFromFile(outputFile);
+                Assert.AreEqual("test-job", versionInfo.JobId);
+                Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"), "Expected 'dotnet' to be captured");
+                Assert.IsTrue(versionInfo.Versions.ContainsKey("git"), "Expected 'git' to be captured");
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
     ///     Test that Run with capture command without job ID fails.
     /// </summary>
     [TestMethod]

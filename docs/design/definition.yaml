@@ -5,11 +5,22 @@ resource-path:
 input-files:
   - docs/design/title.txt
   - docs/design/introduction.md
-  - docs/design/command-line.md
-  - docs/design/utilities.md
-  - docs/design/configuration.md
-  - docs/design/version-info.md
-  - docs/design/validation.md
+  - docs/design/system.md
+  - docs/design/subsystem-command-line.md
+  - docs/design/unit-program.md
+  - docs/design/unit-context.md
+  - docs/design/subsystem-configuration.md
+  - docs/design/unit-tool-config.md
+  - docs/design/unit-version-mark-config.md
+  - docs/design/subsystem-capture.md
+  - docs/design/unit-version-info.md
+  - docs/design/subsystem-publish.md
+  - docs/design/unit-markdown-formatter.md
+  - docs/design/subsystem-lint.md
+  - docs/design/unit-lint.md
+  - docs/design/subsystem-validation.md
+  - docs/design/unit-validation.md
+  - docs/design/unit-path-helpers.md
 template: template.html
 table-of-contents: true
 number-sections: true

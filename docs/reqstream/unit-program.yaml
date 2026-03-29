@@ -1,0 +1,60 @@
+---
+sections:
+  - title: Program Unit Requirements
+    requirements:
+      - id: VersionMark-Program-Version
+        title: The Program class shall expose the tool version from assembly attributes.
+        justification: |
+          The version string is sourced from the assembly's InformationalVersion attribute
+          and falls back to AssemblyVersion or "0.0.0". This ensures the displayed version
+          matches the published package version without hard-coding.
+        tests:
+          - Program_Version_ReturnsNonEmptyString
+
+      - id: VersionMark-Program-Dispatch
+        title: >-
+          The Program.Run method shall dispatch to the appropriate operation based on
+          the context flags, in priority order.
+        justification: |
+          A single central dispatch method ensures consistent flag priority ordering
+          across all invocations, whether from Main or from self-validation tests.
+        tests:
+          - Program_Run_WithVersionFlag_DisplaysVersionOnly
+          - Program_Run_WithHelpFlag_DisplaysUsageInformation
+          - Program_Run_WithValidateFlag_RunsValidation
+          - Program_Run_NoArguments_DisplaysDefaultBehavior
+
+      - id: VersionMark-Program-RunCapture
+        title: The Program class shall orchestrate the capture workflow.
+        justification: |
+          RunCapture validates required arguments, loads configuration, executes tool
+          commands, and saves the result. Centralizing this orchestration in Program
+          keeps the subsystem boundary clear.
+        tests:
+          - Program_Run_WithCaptureCommand_CapturesToolVersions
+          - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
+          - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
+
+      - id: VersionMark-Program-RunPublish
+        title: The Program class shall orchestrate the publish workflow.
+        justification: |
+          RunPublish validates required arguments, globs for JSON files, loads version
+          data, formats a markdown report, and writes it. Centralizing this in Program
+          keeps the subsystem boundary clear.
+        tests:
+          - Program_Run_WithPublishCommandWithoutReport_ReturnsError
+          - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
+          - Program_Run_WithPublishCommandInvalidJson_ReturnsError
+          - Program_Run_WithPublishCommand_GeneratesMarkdownReport
+          - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
+
+      - id: VersionMark-Program-RunLint
+        title: The Program class shall delegate the lint workflow to the Lint unit.
+        justification: |
+          RunLint resolves the config file path and then delegates to Lint.Run,
+          keeping the dispatch logic and the lint logic cleanly separated.
+        tests:
+          - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
+          - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
+          - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
+          - Program_Run_WithHelpFlag_IncludesLintInformation

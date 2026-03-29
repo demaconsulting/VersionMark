@@ -1,0 +1,50 @@
+---
+sections:
+  - title: VersionMark Requirements
+    sections:
+      - title: Validation
+        requirements:
+          - id: VersionMark-Validate-Capture
+            title: The tool shall verify the capture workflow end-to-end during self-validation.
+            justification: |
+              Self-validation of the capture workflow confirms the tool is correctly
+              installed and able to execute commands and write JSON output in the
+              deployment environment, catching integration problems before real runs.
+            tags:
+              - validation
+            tests:
+              - VersionMark_CapturesVersions
+
+          - id: VersionMark-Validate-Publish
+            title: The tool shall verify the publish workflow end-to-end during self-validation.
+            justification: |
+              Self-validation of the publish workflow confirms the tool can read JSON
+              capture files and produce markdown reports in the deployment environment.
+            tags:
+              - validation
+            tests:
+              - VersionMark_GeneratesMarkdownReport
+
+          - id: VersionMark-Validate-Lint
+            title: >-
+              The tool shall verify that lint mode correctly accepts valid configurations
+              and rejects invalid configurations during self-validation.
+            justification: |
+              Self-validation of lint mode confirms the configuration validation logic
+              is functioning correctly in the deployment environment.
+            tags:
+              - validation
+            tests:
+              - VersionMark_LintPassesForValidConfig
+              - VersionMark_LintReportsErrorsForInvalidConfig
+
+          - id: VersionMark-Validate-Results
+            title: The tool shall write self-validation results to a file in TRX or JUnit XML format.
+            justification: |
+              Standard test result formats allow CI/CD systems and dashboards to consume
+              and display self-validation outcomes without custom tooling.
+            tags:
+              - validation
+            tests:
+              - IntegrationTest_ValidateWithResults_GeneratesTrxFile
+              - IntegrationTest_ValidateWithResults_GeneratesJUnitFile

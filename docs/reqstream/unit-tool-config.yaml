@@ -1,0 +1,33 @@
+---
+sections:
+  - title: ToolConfig Unit Requirements
+    requirements:
+      - id: VersionMark-ToolConfig-EffectiveCommand
+        title: >-
+          The ToolConfig.GetEffectiveCommand method shall return the OS-specific
+          command override when present, or the default command otherwise.
+        justification: |
+          Different platforms may require different command syntax. GetEffectiveCommand
+          selects the correct override for the current OS and falls back to the default
+          when no override is defined.
+        tests:
+          - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
+          - ToolConfig_GetEffectiveCommand_WithExplicitOs_ReturnsCorrectCommand
+          - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
+          - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
+          - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+
+      - id: VersionMark-ToolConfig-EffectiveRegex
+        title: >-
+          The ToolConfig.GetEffectiveRegex method shall return the OS-specific regex
+          override when present, or the default regex otherwise.
+        justification: |
+          Different platforms may produce different output formats requiring different
+          regex patterns. GetEffectiveRegex selects the correct override for the current
+          OS and falls back to the default when no override is defined.
+        tests:
+          - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
+          - ToolConfig_GetEffectiveRegex_WithExplicitOs_ReturnsCorrectRegex
+          - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
+          - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
+          - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex

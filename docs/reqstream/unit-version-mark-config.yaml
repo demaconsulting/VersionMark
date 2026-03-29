@@ -1,0 +1,34 @@
+---
+sections:
+  - title: VersionMarkConfig Unit Requirements
+    requirements:
+      - id: VersionMark-VersionMarkConfig-ReadFromFile
+        title: >-
+          The VersionMarkConfig.ReadFromFile method shall load and parse a
+          .versionmark.yaml file, validating structure and content.
+        justification: |
+          ReadFromFile is the single entry point for loading configuration. It validates
+          file existence, YAML structure, and presence of at least one tool definition,
+          providing clear errors when any check fails.
+        tests:
+          - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+          - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+          - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
+          - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
+          - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+
+      - id: VersionMark-VersionMarkConfig-FindVersions
+        title: >-
+          The VersionMarkConfig.FindVersions method shall execute tool commands and
+          extract version strings using the configured regex patterns.
+        justification: |
+          FindVersions is the core capture mechanism. It runs each configured tool's
+          command and applies the regex to extract the version string, returning a
+          VersionInfo record ready for serialization.
+        tests:
+          - VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo
+          - VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions
+          - VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException
+          - VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException
+          - VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException
+          - VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException

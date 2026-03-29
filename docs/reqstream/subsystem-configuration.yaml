@@ -4,7 +4,7 @@ sections:
     sections:
       - title: Configuration File
         requirements:
-          - id: VersionMark-Cfg-YamlConfig
+          - id: VersionMark-Configuration-YamlConfig
             title: The tool shall read configuration from a .versionmark.yaml file.
             justification: |
               Provides a standardized configuration format for defining tools and their
@@ -15,7 +15,7 @@ sections:
               - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
               - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
 
-          - id: VersionMark-Cfg-ToolDefinition
+          - id: VersionMark-Configuration-ToolDefinition
             title: The tool shall support tool definitions with command and regex properties.
             justification: |
               Enables users to specify how to execute and parse version information for
@@ -27,7 +27,7 @@ sections:
               - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
               - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
 
-          - id: VersionMark-Cfg-OsCommandOverride
+          - id: VersionMark-Configuration-OsCommandOverride
             title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
             justification: |
               Different operating systems may require different commands or command
@@ -40,7 +40,7 @@ sections:
               - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
               - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
 
-          - id: VersionMark-Cfg-OsRegexOverride
+          - id: VersionMark-Configuration-OsRegexOverride
             title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
             justification: |
               Different operating systems may produce different output formats requiring
@@ -53,7 +53,7 @@ sections:
               - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
               - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
 
-          - id: VersionMark-Cfg-ValidateTools
+          - id: VersionMark-Configuration-ValidateTools
             title: The tool shall validate that configuration files contain at least one tool definition.
             justification: |
               Prevents misconfiguration by ensuring the configuration file has actionable
@@ -63,7 +63,7 @@ sections:
             tests:
               - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
 
-          - id: VersionMark-Cfg-ParseError
+          - id: VersionMark-Configuration-ParseError
             title: The tool shall report errors when configuration files cannot be read or parsed.
             justification: |
               Provides clear feedback to users when configuration files are missing,

@@ -1,18 +1,11 @@
-# Self-Validation
+# Validation Unit
 
 ## Overview
-
-The self-validation layer provides built-in verification of the tool's core functionality.
-It is invoked when the `--validate` flag is passed and can write results to a TRX or
-JUnit XML file when `--results` is also provided. This satisfies requirements
-`VersionMark-Cmd-Validate` and `VersionMark-Cmd-Results`.
-
-## Validation Class
 
 The `Validation` class (`Validation.cs`) exposes a single public method, `Run`, and
 organizes all test execution internally.
 
-### Run Method
+## Run Method
 
 `Run` orchestrates the self-validation sequence:
 
@@ -25,7 +18,7 @@ organizes all test execution internally.
    failed count if any tests failed.
 5. If `context.ResultsFile` is set, calls `WriteResultsFile` to persist the results.
 
-### RunCaptureTest
+## RunCaptureTest
 
 `RunCaptureTest` verifies the capture mode end-to-end:
 
@@ -37,9 +30,9 @@ organizes all test execution internally.
 5. Verifies exit code is 0, output file exists, `JobId` equals `"test-job"`, and `dotnet`
    version was captured and is non-empty.
 
-The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Cap-Capture`.
+The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Capture-Capture`.
 
-### RunPublishTest
+## RunPublishTest
 
 `RunPublishTest` verifies the publish mode end-to-end:
 
@@ -51,9 +44,9 @@ The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Cap-Cap
 5. Verifies exit code is 0, report file exists, and contains `## Tool Versions`,
    `**dotnet**`, `**node**`, `8.0.0`, and `20.0.0`.
 
-The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Pub-Publish`.
+The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Publish-Publish`.
 
-### RunLintValidTest
+## RunLintValidTest
 
 `RunLintValidTest` verifies that lint mode exits successfully for a valid configuration file:
 
@@ -63,9 +56,9 @@ The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-
 3. Constructs a `Context` with `--silent`, `--log <file>`, and `--lint <config-file>`.
 4. Calls `Program.Run` and checks that the exit code is 0.
 
-The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-Cmd-Lint`.
+The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-CommandLine-Lint`.
 
-### RunLintInvalidTest
+## RunLintInvalidTest
 
 `RunLintInvalidTest` verifies that lint mode reports errors for an invalid configuration file:
 
@@ -76,9 +69,9 @@ The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark
 4. Calls `Program.Run` and checks that the exit code is non-zero.
 
 The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
-`VersionMark-Cmd-Lint`.
+`VersionMark-CommandLine-Lint`.
 
-### WriteResultsFile
+## WriteResultsFile
 
 `WriteResultsFile` inspects the file extension of `context.ResultsFile`:
 
@@ -87,9 +80,9 @@ The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
 - Other → writes an error via `context.WriteError`
 
 The serialized content is written with `File.WriteAllText`. This satisfies
-`VersionMark-Cmd-Results`.
+`VersionMark-CommandLine-Results`.
 
-### TemporaryDirectory
+## TemporaryDirectory
 
 `TemporaryDirectory` is a private nested class implementing `IDisposable`. It creates a
 uniquely-named subdirectory under `Path.GetTempPath()` using `PathHelpers.SafePathCombine`
