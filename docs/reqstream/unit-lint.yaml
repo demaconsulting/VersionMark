@@ -1,0 +1,33 @@
+---
+sections:
+  - title: Lint Unit Requirements
+    requirements:
+      - id: VersionMark-Lint-Run
+        title: >-
+          The Lint.Run method shall validate a .versionmark.yaml configuration file
+          and report all issues with file, line, and column location.
+        justification: |
+          Centralizing all lint checks in a single Run method ensures a consistent
+          validation pass and allows all issues to be reported in one run rather than
+          stopping at the first error. Precise locations allow users to jump directly
+          to the problem in their editor.
+        tests:
+          - Lint_Run_ValidConfig_ReturnsTrue
+          - Lint_Run_MissingFile_ReturnsFalse
+          - Lint_Run_InvalidYaml_ReturnsFalse
+          - Lint_Run_MissingToolsSection_ReturnsFalse
+          - Lint_Run_EmptyToolsSection_ReturnsFalse
+          - Lint_Run_MissingCommand_ReturnsFalse
+          - Lint_Run_EmptyCommand_ReturnsFalse
+          - Lint_Run_MissingRegex_ReturnsFalse
+          - Lint_Run_EmptyRegex_ReturnsFalse
+          - Lint_Run_InvalidRegex_ReturnsFalse
+          - Lint_Run_RegexMissingVersionGroup_ReturnsFalse
+          - Lint_Run_UnknownTopLevelKey_ReturnsTrue
+          - Lint_Run_UnknownToolKey_ReturnsTrue
+          - Lint_Run_OsSpecificEmptyCommand_ReturnsFalse
+          - Lint_Run_OsSpecificEmptyRegex_ReturnsFalse
+          - Lint_Run_OsSpecificRegexMissingVersionGroup_ReturnsFalse
+          - Lint_Run_OsSpecificInvalidRegex_ReturnsFalse
+          - Lint_Run_MultipleErrors_ReportsAll
+          - Lint_Run_ErrorMessageContainsFileName

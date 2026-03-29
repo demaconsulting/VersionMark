@@ -8,10 +8,15 @@ includes:
   - docs/reqstream/versionmark-system.yaml
   - docs/reqstream/platform-requirements.yaml
   - docs/reqstream/subsystem-command-line.yaml
+  - docs/reqstream/unit-program.yaml
+  - docs/reqstream/unit-context.yaml
   - docs/reqstream/subsystem-capture.yaml
   - docs/reqstream/subsystem-publish.yaml
   - docs/reqstream/subsystem-configuration.yaml
+  - docs/reqstream/unit-version-mark-config.yaml
+  - docs/reqstream/unit-tool-config.yaml
   - docs/reqstream/subsystem-lint.yaml
+  - docs/reqstream/unit-lint.yaml
   - docs/reqstream/unit-formatter.yaml
   - docs/reqstream/unit-version-info.yaml
   - docs/reqstream/unit-path-helpers.yaml

@@ -1,0 +1,57 @@
+---
+sections:
+  - title: Context Unit Requirements
+    requirements:
+      - id: VersionMark-Context-Create
+        title: >-
+          The Context.Create factory method shall parse command-line arguments into
+          a Context instance with typed properties for every supported flag.
+        justification: |
+          All argument parsing is centralized in the Create factory method, ensuring
+          consistent parsing behavior across all invocations and making the parsed
+          state available as typed properties throughout the program.
+        tests:
+          - Context_Create_NoArguments_ReturnsDefaultContext
+          - Context_Create_VersionFlag_SetsVersionTrue
+          - Context_Create_ShortVersionFlag_SetsVersionTrue
+          - Context_Create_HelpFlag_SetsHelpTrue
+          - Context_Create_ShortHelpFlag_H_SetsHelpTrue
+          - Context_Create_ShortHelpFlag_Question_SetsHelpTrue
+          - Context_Create_SilentFlag_SetsSilentTrue
+          - Context_Create_ValidateFlag_SetsValidateTrue
+          - Context_Create_ResultsFlag_SetsResultsFile
+          - Context_Create_LogFlag_OpensLogFile
+          - Context_Create_UnknownArgument_ThrowsArgumentException
+          - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
+          - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
+          - Context_Create_PublishFlag_SetsPublishTrue
+          - Context_Create_ReportParameter_SetsReportFile
+          - Context_Create_ReportDepthParameter_SetsReportDepth
+          - Context_Create_NoReportDepth_DefaultsToTwo
+          - Context_Create_GlobPatternsAfterSeparator_CapturesPatterns
+          - Context_Create_PublishWithoutReport_ParsesSuccessfully
+          - Context_Create_NoGlobPatterns_EmptyArray
+          - Context_Create_LintFlag_SetsLintTrue
+          - Context_Create_LintFlag_WithFile_SetsLintFile
+          - Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile
+
+      - id: VersionMark-Context-WriteLine
+        title: The Context.WriteLine method shall write output respecting the silent flag.
+        justification: |
+          Silent mode suppresses console output so automated scripts can run the tool
+          without cluttering their log. The log file always receives output regardless
+          of silent mode.
+        tests:
+          - Context_WriteLine_NotSilent_WritesToConsole
+          - Context_WriteLine_Silent_DoesNotWriteToConsole
+
+      - id: VersionMark-Context-WriteError
+        title: The Context.WriteError method shall write to stderr and set the error exit code.
+        justification: |
+          Errors must be visible even in silent mode and must cause the process to exit
+          with a non-zero code so that calling scripts can detect failure automatically.
+        tests:
+          - Context_WriteError_NotSilent_WritesToConsole
+          - Context_WriteError_Silent_DoesNotWriteToConsole
+          - Context_WriteError_SetsErrorExitCode
+          - Context_WriteError_WritesToLogFile

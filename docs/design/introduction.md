@@ -34,20 +34,25 @@ configuration. Those topics are addressed in the [User Guide][user-guide] and th
 
 ## Software Architecture
 
-The following tree shows the VersionMark software system, its software subsystems, and its
+The following tree shows the VersionMark software system, its software subsystems, and their
 software units. Each node has a corresponding requirements file in `docs/reqstream/`.
 
 ```text
-VersionMark (Software System)          versionmark-system.yaml
-├── Command-Line Subsystem             subsystem-command-line.yaml
-├── Capture Subsystem                  subsystem-capture.yaml
-├── Publish Subsystem                  subsystem-publish.yaml
-├── Configuration Subsystem            subsystem-configuration.yaml
-├── Lint Subsystem                     subsystem-lint.yaml
-├── MarkdownFormatter (Software Unit)  unit-formatter.yaml
-├── VersionInfo (Software Unit)        unit-version-info.yaml
-├── PathHelpers (Software Unit)        unit-path-helpers.yaml
-└── Validation (Software Unit)         unit-validation.yaml
+VersionMark (Software System)                      versionmark-system.yaml
+├── Command-Line Interface Subsystem               subsystem-command-line.yaml
+│   ├── Program (Software Unit)                    unit-program.yaml
+│   └── Context (Software Unit)                    unit-context.yaml
+├── Capture Subsystem                              subsystem-capture.yaml
+├── Publish Subsystem                              subsystem-publish.yaml
+├── Configuration Subsystem                        subsystem-configuration.yaml
+│   ├── VersionMarkConfig (Software Unit)          unit-version-mark-config.yaml
+│   └── ToolConfig (Software Unit)                 unit-tool-config.yaml
+├── Lint Subsystem                                 subsystem-lint.yaml
+│   └── Lint (Software Unit)                       unit-lint.yaml
+├── MarkdownFormatter (Software Unit)              unit-formatter.yaml
+├── VersionInfo (Software Unit)                    unit-version-info.yaml
+├── PathHelpers (Software Unit)                    unit-path-helpers.yaml
+└── Validation (Software Unit)                     unit-validation.yaml
 ```
 
 Platform support requirements are in `platform-requirements.yaml`. Each off-the-shelf
