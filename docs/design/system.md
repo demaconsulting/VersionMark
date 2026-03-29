@@ -103,8 +103,10 @@ that the tool is functioning correctly after installation:
 
 These test names appear in requirements files (e.g., `versionmark-system.yaml`,
 `platform-requirements.yaml`) as traceability evidence. When `--validate` is run in CI,
-the resulting TRX output links each self-validation test to the platform and runtime,
-allowing requirements to be verified per platform using source filters such as
+each matrix job runs on a specific platform/runtime and produces a TRX results file whose
+filename and CI job context (e.g., `artifacts/validation-windows-latest-dotnet8.x.trx`)
+provide the platform/runtime linkage used by filters, together with the test names, allowing
+requirements to be verified per platform using source filters such as
 `windows@VersionMark_CapturesVersions` or `dotnet8.x@VersionMark_GeneratesMarkdownReport`.
 
 ## Configuration File
