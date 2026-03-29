@@ -5,10 +5,12 @@ resource-path:
 input-files:
   - docs/design/title.txt
   - docs/design/introduction.md
+  - docs/design/system.md
   - docs/design/command-line.md
-  - docs/design/utilities.md
   - docs/design/configuration.md
-  - docs/design/version-info.md
+  - docs/design/capture.md
+  - docs/design/publish.md
+  - docs/design/lint.md
   - docs/design/validation.md
 template: template.html
 table-of-contents: true

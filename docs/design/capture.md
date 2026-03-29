@@ -1,10 +1,15 @@
-# Version Information
+# Capture Subsystem
 
 ## Overview
 
-The version information layer provides the `VersionInfo` record, which is the data transfer
-object for captured version data. It serializes to and deserializes from JSON files, and
-is used both by the capture mode (writing) and the publish mode (reading).
+The capture subsystem is responsible for recording tool version information from the
+current CI/CD job environment. It reads the tool configuration, executes the configured
+commands, extracts version strings using regular expressions, and saves the results to a
+JSON file. The captured data is later consumed by the publish subsystem to generate the
+version report.
+
+The capture subsystem consists of a single unit: `VersionInfo`, which is the data transfer
+record for captured version data.
 
 ## VersionInfo Record
 
@@ -15,12 +20,17 @@ The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two prop
 | `JobId`    | `string`                      | Identifies the CI/CD job that captured these versions |
 | `Versions` | `Dictionary<string, string>`  | Maps tool names to their version strings              |
 
+`VersionInfo` is the interface between the capture mode and the publish mode: capture
+produces it by executing commands and saving to JSON; publish reads it back and passes it
+to `MarkdownFormatter`.
+
 ### SaveToFile Method
 
 `SaveToFile` serializes the record to indented JSON using `JsonSerializer.Serialize` with
-`WriteIndented = true` and writes it to the specified path using UTF-8 encoding. Non-`InvalidOperationException`
-errors are wrapped and re-thrown as `InvalidOperationException` with context. This satisfies
-requirement `VersionMark-Cap-JsonOutput`. The default output filename (`versionmark-<job-id>.json`)
+`WriteIndented = true` and writes it to the specified path using UTF-8 encoding.
+Non-`InvalidOperationException` errors are wrapped and re-thrown as
+`InvalidOperationException` with context. This satisfies requirement
+`VersionMark-Cap-JsonOutput`. The default output filename (`versionmark-<job-id>.json`)
 is determined by the CLI layer and contributes to satisfying `VersionMark-Cap-DefaultOutput`.
 
 ### LoadFromFile Method
@@ -32,9 +42,9 @@ is determined by the CLI layer and contributes to satisfying `VersionMark-Cap-De
 3. Deserializes using `JsonSerializer.Deserialize<VersionInfo>`.
 4. Validates the result is not null.
 
-`JsonException` is caught and re-thrown as `ArgumentException`. Other non-`ArgumentException`
-errors are wrapped similarly. This satisfies `VersionMark-Pub-Consolidate` and
-`VersionMark-Pub-MultipleFiles`.
+`JsonException` is caught and re-thrown as `ArgumentException`. Other
+non-`ArgumentException` errors are wrapped similarly. This satisfies
+`VersionMark-Pub-Consolidate` and `VersionMark-Pub-MultipleFiles`.
 
 ## JSON Schema
 
