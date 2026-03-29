@@ -4,7 +4,7 @@ sections:
     sections:
       - title: Capture Command
         requirements:
-          - id: VersionMark-Cap-Capture
+          - id: VersionMark-Capture-Capture
             title: The tool shall support --capture flag to enable capture mode.
             justification: |
               Provides a way to capture tool versions from the current environment for
@@ -15,7 +15,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: VersionMark-Cap-JobId
+          - id: VersionMark-Capture-JobId
             title: The tool shall require --job-id parameter when capture mode is enabled.
             justification: |
               The job ID uniquely identifies the capture session and is used in the
@@ -26,7 +26,7 @@ sections:
               - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
               - IntegrationTest_CaptureCommandWithoutJobId_ReturnsError
 
-          - id: VersionMark-Cap-Output
+          - id: VersionMark-Capture-Output
             title: The tool shall support --output parameter to specify the JSON output file path.
             justification: |
               Allows users to control where captured version information is saved,
@@ -37,7 +37,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: VersionMark-Cap-DefaultOutput
+          - id: VersionMark-Capture-DefaultOutput
             title: The tool shall default output filename to versionmark-<job-id>.json when --output is not specified.
             justification: |
               Provides a predictable default naming convention that includes the job ID,
@@ -47,7 +47,7 @@ sections:
             tests:
               - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
 
-          - id: VersionMark-Cap-ToolFilter
+          - id: VersionMark-Capture-ToolFilter
             title: The tool shall accept an optional list of tool names after -- separator in capture mode.
             justification: |
               Allows users to capture versions for specific tools rather than all configured
@@ -58,7 +58,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: VersionMark-Cap-MultipleTools
+          - id: VersionMark-Capture-MultipleTools
             title: The tool shall capture all tools defined in configuration when no tool names are specified.
             justification: |
               Provides a convenient default behavior where all configured tools are captured,
@@ -68,7 +68,7 @@ sections:
             tests:
               - Program_Run_WithCaptureCommandNoToolFilter_CapturesAllConfiguredTools
 
-          - id: VersionMark-Cap-Config
+          - id: VersionMark-Capture-Config
             title: The tool shall read .versionmark.yaml from the current directory in capture mode.
             justification: |
               Uses the standard configuration file location to determine which tools to
@@ -81,7 +81,7 @@ sections:
               - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
               - IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError
 
-          - id: VersionMark-Cap-Command
+          - id: VersionMark-Capture-Command
             title: The tool shall execute configured commands and extract version information using regex patterns.
             justification: |
               Implements the core capture functionality by running tool commands and parsing
@@ -92,7 +92,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: VersionMark-Cap-JsonOutput
+          - id: VersionMark-Capture-JsonOutput
             title: The tool shall save captured version information to a JSON file with job ID and version mappings.
             justification: |
               Stores captured versions in a structured format that can be easily consumed
@@ -104,7 +104,7 @@ sections:
               - IntegrationTest_CaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
 
-          - id: VersionMark-Cap-Display
+          - id: VersionMark-Capture-Display
             title: The tool shall display captured tool names and versions to the user.
             justification: |
               Provides immediate feedback to users about what versions were captured,
@@ -115,7 +115,7 @@ sections:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommand_CapturesToolVersions
 
-          - id: VersionMark-Cap-ConfigError
+          - id: VersionMark-Capture-ConfigError
             title: The tool shall report errors when .versionmark.yaml cannot be found or read in capture mode.
             justification: |
               Provides clear error messages to users when the configuration file is missing

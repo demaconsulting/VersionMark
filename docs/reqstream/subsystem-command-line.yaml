@@ -4,7 +4,7 @@ sections:
     sections:
       - title: Command-Line Interface
         requirements:
-          - id: VersionMark-Cmd-Context
+          - id: VersionMark-CommandLine-Context
             title: The tool shall implement a Context class for command-line argument handling.
             justification: |
               Provides a standardized approach to command-line argument parsing and output
@@ -20,7 +20,7 @@ sections:
               - Context_Create_ResultsFlag_SetsResultsFile
               - Context_Create_LogFlag_OpensLogFile
 
-          - id: VersionMark-Cmd-Version
+          - id: VersionMark-CommandLine-Version
             title: The tool shall support -v and --version flags to display version information.
             justification: |
               Users need to quickly identify the version of the tool they are using for
@@ -33,7 +33,7 @@ sections:
               - Program_Run_WithVersionFlag_DisplaysVersionOnly
               - IntegrationTest_VersionFlag_OutputsVersion
 
-          - id: VersionMark-Cmd-Help
+          - id: VersionMark-CommandLine-Help
             title: The tool shall support -?, -h, and --help flags to display usage information.
             justification: |
               Users need access to command-line usage documentation without requiring
@@ -47,7 +47,7 @@ sections:
               - Program_Run_WithHelpFlag_DisplaysUsageInformation
               - IntegrationTest_HelpFlag_OutputsUsageInformation
 
-          - id: VersionMark-Cmd-Silent
+          - id: VersionMark-CommandLine-Silent
             title: The tool shall support --silent flag to suppress console output.
             justification: |
               Enables automated scripts and CI/CD pipelines to run the tool without
@@ -59,7 +59,7 @@ sections:
               - Context_WriteLine_Silent_DoesNotWriteToConsole
               - IntegrationTest_SilentFlag_SuppressesOutput
 
-          - id: VersionMark-Cmd-Validate
+          - id: VersionMark-CommandLine-Validate
             title: The tool shall support --validate flag to run self-validation tests.
             justification: |
               Provides a built-in mechanism to verify the tool is functioning correctly
@@ -71,7 +71,7 @@ sections:
               - Program_Run_WithValidateFlag_RunsValidation
               - IntegrationTest_ValidateFlag_RunsValidation
 
-          - id: VersionMark-Cmd-Results
+          - id: VersionMark-CommandLine-Results
             title: The tool shall support --results flag to write validation results in TRX or JUnit format.
             justification: |
               Enables integration with CI/CD systems that expect standard test result formats.
@@ -82,7 +82,7 @@ sections:
               - IntegrationTest_ValidateWithResults_GeneratesTrxFile
               - IntegrationTest_ValidateWithResults_GeneratesJUnitFile
 
-          - id: VersionMark-Cmd-Log
+          - id: VersionMark-CommandLine-Log
             title: The tool shall support --log flag to write output to a log file.
             justification: |
               Provides persistent logging for debugging and audit trails.
@@ -92,7 +92,7 @@ sections:
               - Context_Create_LogFlag_OpensLogFile
               - IntegrationTest_LogFlag_WritesOutputToFile
 
-          - id: VersionMark-Cmd-ErrorOutput
+          - id: VersionMark-CommandLine-ErrorOutput
             title: The tool shall write error messages to stderr.
             justification: |
               Separating error output from standard output allows callers and CI/CD
@@ -103,7 +103,7 @@ sections:
               - Context_WriteError_NotSilent_WritesToConsole
               - IntegrationTest_UnknownArgument_ReturnsError
 
-          - id: VersionMark-Cmd-InvalidArgs
+          - id: VersionMark-CommandLine-InvalidArgs
             title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
             justification: |
               Clear rejection of invalid arguments prevents silent misconfiguration and
@@ -116,7 +116,7 @@ sections:
               - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
               - IntegrationTest_UnknownArgument_ReturnsError
 
-          - id: VersionMark-Cmd-ExitCode
+          - id: VersionMark-CommandLine-ExitCode
             title: The tool shall return a non-zero exit code on failure.
             justification: |
               A non-zero exit code on failure enables CI/CD pipelines and scripts to
@@ -127,7 +127,7 @@ sections:
               - Context_WriteError_SetsErrorExitCode
               - IntegrationTest_UnknownArgument_ReturnsError
 
-          - id: VersionMark-Cmd-Lint
+          - id: VersionMark-CommandLine-Lint
             title: The tool shall support --lint to check the configuration file for issues.
             justification: |
               Lint support lets users identify and fix issues in .versionmark.yaml files

@@ -4,9 +4,9 @@
 
 The `MarkdownFormatter` class (`MarkdownFormatter.cs`) provides the `Format` static method
 that converts a collection of `VersionInfo` records into a markdown string. This satisfies
-requirements `VersionMark-Fmt-JsonStructure`, `VersionMark-Fmt-JsonJobId`,
-`VersionMark-Fmt-JsonVersions`, `VersionMark-Fmt-MarkdownList`, and
-`VersionMark-Fmt-MarkdownConsolidation`.
+requirements `VersionMark-Formatter-JsonStructure`, `VersionMark-Formatter-JsonJobId`,
+`VersionMark-Formatter-JsonVersions`, `VersionMark-Formatter-MarkdownList`, and
+`VersionMark-Formatter-MarkdownConsolidation`.
 
 ## Format Method
 
@@ -34,12 +34,12 @@ Both cases use bold tool names. In the multi-version case, each unique version a
 its own line with the alphabetically-sorted job IDs that produced it enclosed in
 parentheses.
 
-This behavior satisfies `VersionMark-Fmt-JsonJobId` (uniform versions collapse) and
-`VersionMark-Fmt-JsonVersions` / `VersionMark-Fmt-MarkdownList` (differing versions show
+This behavior satisfies `VersionMark-Formatter-JsonJobId` (uniform versions collapse) and
+`VersionMark-Formatter-JsonVersions` / `VersionMark-Formatter-MarkdownList` (differing versions show
 job attribution).
 
 ## Heading Depth
 
 The heading prefix is constructed as `new string('#', reportDepth)`, so `reportDepth = 2`
 yields `## Tool Versions`, `reportDepth = 1` yields `# Tool Versions`, and so on. This
-satisfies `VersionMark-Fmt-MarkdownConsolidation`.
+satisfies `VersionMark-Formatter-MarkdownConsolidation`.

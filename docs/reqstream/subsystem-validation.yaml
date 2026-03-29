@@ -4,7 +4,7 @@ sections:
     sections:
       - title: Validation
         requirements:
-          - id: VersionMark-Val-Capture
+          - id: VersionMark-Validate-Capture
             title: The tool shall verify the capture workflow end-to-end during self-validation.
             justification: |
               Self-validation of the capture workflow confirms the tool is correctly
@@ -15,7 +15,7 @@ sections:
             tests:
               - VersionMark_CapturesVersions
 
-          - id: VersionMark-Val-Publish
+          - id: VersionMark-Validate-Publish
             title: The tool shall verify the publish workflow end-to-end during self-validation.
             justification: |
               Self-validation of the publish workflow confirms the tool can read JSON
@@ -25,7 +25,7 @@ sections:
             tests:
               - VersionMark_GeneratesMarkdownReport
 
-          - id: VersionMark-Val-Lint
+          - id: VersionMark-Validate-Lint
             title: >-
               The tool shall verify that lint mode correctly accepts valid configurations
               and rejects invalid configurations during self-validation.
@@ -38,7 +38,7 @@ sections:
               - VersionMark_LintPassesForValidConfig
               - VersionMark_LintReportsErrorsForInvalidConfig
 
-          - id: VersionMark-Val-Results
+          - id: VersionMark-Validate-Results
             title: The tool shall write self-validation results to a file in TRX or JUnit XML format.
             justification: |
               Standard test result formats allow CI/CD systems and dashboards to consume

@@ -10,15 +10,15 @@ top-level exception translation.
 
 The static `Version` property reads the assembly's `AssemblyInformationalVersionAttribute`
 at runtime and falls back to `AssemblyVersion` or `"0.0.0"` if neither is available. This
-satisfies requirement `VersionMark-Cmd-Version`.
+satisfies requirement `VersionMark-CommandLine-Version`.
 
 ## Main Method
 
 `Main` creates a `Context` from the command-line arguments, calls `Run`, and returns
 `context.ExitCode`. `ArgumentException` and `InvalidOperationException` are caught and
 written to `Console.Error`, returning exit code 1. Unexpected exceptions are re-thrown to
-generate event-log entries. This satisfies requirements `VersionMark-Cmd-ExitCode` and
-`VersionMark-Cmd-ErrorOutput`.
+generate event-log entries. This satisfies requirements `VersionMark-CommandLine-ExitCode` and
+`VersionMark-CommandLine-ErrorOutput`.
 
 ## Run Method
 
@@ -35,20 +35,20 @@ generate event-log entries. This satisfies requirements `VersionMark-Cmd-ExitCod
 | 6        | `context.Publish`      | Run publish mode and return     |
 | 7        | Default                | Run placeholder tool logic      |
 
-This dispatch order satisfies requirements `VersionMark-Cmd-Version`, `VersionMark-Cmd-Help`,
-`VersionMark-Cmd-Validate`, `VersionMark-Cmd-Lint`, `VersionMark-Cap-Capture`, and
-`VersionMark-Pub-Publish`.
+This dispatch order satisfies requirements `VersionMark-CommandLine-Version`, `VersionMark-CommandLine-Help`,
+`VersionMark-CommandLine-Validate`, `VersionMark-CommandLine-Lint`, `VersionMark-Capture-Capture`, and
+`VersionMark-Publish-Publish`.
 
 ## Capture and Publish Orchestration
 
 `RunCapture` and `RunPublish` are private helpers called from `Run`. They validate required
 arguments, invoke configuration loading and version capture/report generation, and delegate
 error handling to `context.WriteError`. These methods satisfy requirements
-`VersionMark-Cap-JobId`, `VersionMark-Cap-Output`, `VersionMark-Pub-RequireReport`, and
-`VersionMark-Pub-GlobPattern`.
+`VersionMark-Capture-JobId`, `VersionMark-Capture-Output`, `VersionMark-Publish-RequireReport`, and
+`VersionMark-Publish-GlobPattern`.
 
 ## RunLint
 
 `RunLint` is a private helper called from `Run`. It resolves the configuration file path,
 defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then delegates to
-`Lint.Run`. This satisfies requirement `VersionMark-Cmd-Lint`.
+`Lint.Run`. This satisfies requirement `VersionMark-CommandLine-Lint`.

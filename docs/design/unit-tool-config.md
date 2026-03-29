@@ -14,8 +14,8 @@ tool entry. It holds two dictionaries keyed by OS name:
 
 `GetEffectiveCommand` and `GetEffectiveRegex` resolve the active OS at runtime using
 `RuntimeInformation.IsOSPlatform` and then look up the OS-specific key first, falling back
-to the default (`""`) key. This satisfies requirements `VersionMark-Cfg-OsCommandOverride`
-and `VersionMark-Cfg-OsRegexOverride`.
+to the default (`""`) key. This satisfies requirements `VersionMark-Configuration-OsCommandOverride`
+and `VersionMark-Configuration-OsRegexOverride`.
 
 ## YAML Parsing
 
@@ -24,4 +24,4 @@ the command and regex dictionaries. Known keys are `command`, `command-win`, `co
 `command-macos`, `regex`, `regex-win`, `regex-linux`, and `regex-macos`. Unknown keys are
 silently ignored for forward-compatibility. Both a default `command` and a default `regex`
 are required; their absence raises `ArgumentException`. This satisfies
-`VersionMark-Cfg-ToolDefinition`.
+`VersionMark-Configuration-ToolDefinition`.

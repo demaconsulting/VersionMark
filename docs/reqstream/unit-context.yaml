@@ -48,8 +48,9 @@ sections:
       - id: VersionMark-Context-WriteError
         title: The Context.WriteError method shall write to stderr and set the error exit code.
         justification: |
-          Errors must be visible even in silent mode and must cause the process to exit
-          with a non-zero code so that calling scripts can detect failure automatically.
+          Silent mode suppresses all console output, including error messages written to
+          stderr. However, the process must still exit with a non-zero code so that
+          calling scripts can detect failure automatically even when output is silenced.
         tests:
           - Context_WriteError_NotSilent_WritesToConsole
           - Context_WriteError_Silent_DoesNotWriteToConsole

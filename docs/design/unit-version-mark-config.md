@@ -18,8 +18,8 @@ the `.versionmark.yaml` file.
 
 YAML parse errors are caught and re-thrown as `ArgumentException` with context. All other
 non-`ArgumentException` errors are wrapped similarly. This satisfies requirements
-`VersionMark-Cfg-YamlConfig`, `VersionMark-Cfg-ValidateTools`, and
-`VersionMark-Cfg-ParseError`.
+`VersionMark-Configuration-YamlConfig`, `VersionMark-Configuration-ValidateTools`, and
+`VersionMark-Configuration-ParseError`.
 
 ## FindVersions Method
 
@@ -32,18 +32,18 @@ non-`ArgumentException` errors are wrapped similarly. This satisfies requirement
 5. Stores the result in a `versions` dictionary.
 
 The method returns a `VersionInfo` record. This satisfies requirements
-`VersionMark-Cap-Command` and `VersionMark-Cap-MultipleTools`.
+`VersionMark-Capture-Command` and `VersionMark-Capture-MultipleTools`.
 
 ## RunCommand Helper
 
 `RunCommand` runs the command through the OS shell (`cmd.exe /c` on Windows, `/bin/sh -c`
 on other platforms) using `Process.Start` with redirected stdout and stderr. Output and
 error streams are read asynchronously to prevent pipe-deadlock. A non-zero exit code
-raises `InvalidOperationException`. This satisfies `VersionMark-Cap-Command`.
+raises `InvalidOperationException`. This satisfies `VersionMark-Capture-Command`.
 
 ## ExtractVersion Helper
 
 `ExtractVersion` compiles the regex with `Multiline | IgnoreCase` and a 1-second timeout,
 matches against the command output, and returns the value of the named `version` capture
 group. Missing match or missing group raises `InvalidOperationException`. This satisfies
-`VersionMark-Cap-Command`.
+`VersionMark-Capture-Command`.

@@ -19,8 +19,8 @@ to `MarkdownFormatter`.
 `WriteIndented = true` and writes it to the specified path using UTF-8 encoding.
 Non-`InvalidOperationException` errors are wrapped and re-thrown as
 `InvalidOperationException` with context. This satisfies requirement
-`VersionMark-Cap-JsonOutput`. The default output filename (`versionmark-<job-id>.json`)
-is determined by the CLI layer and contributes to satisfying `VersionMark-Cap-DefaultOutput`.
+`VersionMark-Capture-JsonOutput`. The default output filename (`versionmark-<job-id>.json`)
+is determined by the CLI layer and contributes to satisfying `VersionMark-Capture-DefaultOutput`.
 
 ## LoadFromFile Method
 
@@ -33,7 +33,7 @@ is determined by the CLI layer and contributes to satisfying `VersionMark-Cap-De
 
 `JsonException` is caught and re-thrown as `ArgumentException`. Other
 non-`ArgumentException` errors are wrapped similarly. This satisfies
-`VersionMark-Pub-Consolidate` and `VersionMark-Pub-MultipleFiles`.
+`VersionMark-Publish-Consolidate` and `VersionMark-Publish-MultipleFiles`.
 
 ## JSON Schema
 

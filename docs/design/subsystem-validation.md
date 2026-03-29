@@ -9,4 +9,4 @@ utility used internally by `Validation`).
 
 The validation subsystem is invoked when the `--validate` flag is passed and can write
 results to a TRX or JUnit XML file when `--results` is also provided. This satisfies
-requirements `VersionMark-Cmd-Validate` and `VersionMark-Cmd-Results`.
+requirements `VersionMark-CommandLine-Validate` and `VersionMark-CommandLine-Results`.

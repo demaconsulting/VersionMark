@@ -4,7 +4,7 @@ sections:
     sections:
       - title: Markdown Formatter
         requirements:
-          - id: VersionMark-Fmt-JsonStructure
+          - id: VersionMark-Formatter-JsonStructure
             title: The tool shall generate markdown output listing all tools in sorted order.
             justification: |
               Provides consistent, predictable output ordering that makes reports easier
@@ -15,7 +15,7 @@ sections:
               - VersionMark_GeneratesMarkdownReport
               - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
 
-          - id: VersionMark-Fmt-JsonJobId
+          - id: VersionMark-Formatter-JsonJobId
             title: >-
               The tool shall collapse versions into "All jobs" when the same version appears across
               all input files.
@@ -27,7 +27,7 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs
 
-          - id: VersionMark-Fmt-JsonVersions
+          - id: VersionMark-Formatter-JsonVersions
             title: >-
               The tool shall display individual job IDs with their versions when versions differ
               across input files.
@@ -39,7 +39,7 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
 
-          - id: VersionMark-Fmt-MarkdownList
+          - id: VersionMark-Formatter-MarkdownList
             title: >-
               The tool shall use bold formatting and parenthesized job IDs to indicate which
               jobs had which versions.
@@ -51,7 +51,7 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
 
-          - id: VersionMark-Fmt-MarkdownConsolidation
+          - id: VersionMark-Formatter-MarkdownConsolidation
             title: The tool shall respect the report-depth parameter when generating markdown heading levels.
             justification: |
               Allows the generated markdown to integrate properly into existing document
