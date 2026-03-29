@@ -1,44 +1,12 @@
-# Configuration
+# VersionMarkConfig Unit
 
 ## Overview
 
-The configuration layer reads and interprets the `.versionmark.yaml` file that defines
-which tools to capture and how to extract their versions. It consists of two classes:
-`ToolConfig` (per-tool settings) and `VersionMarkConfig` (the top-level configuration
-container).
-
-## ToolConfig Record
-
-The `ToolConfig` record (`VersionMarkConfig.cs`) represents the configuration for a single
-tool entry. It holds two dictionaries keyed by OS name:
-
-| Dictionary | Key values                                      | Purpose                            |
-|------------|-------------------------------------------------|------------------------------------|
-| `Command`  | `""` (default), `"win"`, `"linux"`, `"macos"`   | Shell command to run               |
-| `Regex`    | `""` (default), `"win"`, `"linux"`, `"macos"`   | Regex pattern with `version` group |
-
-### OS-Specific Overrides
-
-`GetEffectiveCommand` and `GetEffectiveRegex` resolve the active OS at runtime using
-`RuntimeInformation.IsOSPlatform` and then look up the OS-specific key first, falling back
-to the default (`""`) key. This satisfies requirements `VersionMark-Cfg-OsCommandOverride`
-and `VersionMark-Cfg-OsRegexOverride`.
-
-### YAML Parsing
-
-`FromYamlNode` is an internal factory method that reads a `YamlMappingNode` and populates
-the command and regex dictionaries. Known keys are `command`, `command-win`, `command-linux`,
-`command-macos`, `regex`, `regex-win`, `regex-linux`, and `regex-macos`. Unknown keys are
-silently ignored for forward-compatibility. Both a default `command` and a default `regex`
-are required; their absence raises `ArgumentException`. This satisfies
-`VersionMark-Cfg-ToolDefinition`.
-
-## VersionMarkConfig Record
-
 The `VersionMarkConfig` record holds a `Dictionary<string, ToolConfig>` mapping tool names
-to their configurations.
+to their configurations. It is the top-level entry point for loading configuration from
+the `.versionmark.yaml` file.
 
-### ReadFromFile Method
+## ReadFromFile Method
 
 `ReadFromFile` is the public entry point for loading configuration. It:
 
@@ -53,7 +21,7 @@ non-`ArgumentException` errors are wrapped similarly. This satisfies requirement
 `VersionMark-Cfg-YamlConfig`, `VersionMark-Cfg-ValidateTools`, and
 `VersionMark-Cfg-ParseError`.
 
-### FindVersions Method
+## FindVersions Method
 
 `FindVersions` accepts a list of tool names and a job ID. For each named tool it:
 
@@ -66,14 +34,14 @@ non-`ArgumentException` errors are wrapped similarly. This satisfies requirement
 The method returns a `VersionInfo` record. This satisfies requirements
 `VersionMark-Cap-Command` and `VersionMark-Cap-MultipleTools`.
 
-### RunCommand Helper
+## RunCommand Helper
 
 `RunCommand` runs the command through the OS shell (`cmd.exe /c` on Windows, `/bin/sh -c`
 on other platforms) using `Process.Start` with redirected stdout and stderr. Output and
 error streams are read asynchronously to prevent pipe-deadlock. A non-zero exit code
 raises `InvalidOperationException`. This satisfies `VersionMark-Cap-Command`.
 
-### ExtractVersion Helper
+## ExtractVersion Helper
 
 `ExtractVersion` compiles the regex with `Multiline | IgnoreCase` and a 1-second timeout,
 matches against the command output, and returns the value of the named `version` capture

@@ -1,17 +1,11 @@
-# Lint
+# Lint Unit
 
 ## Overview
-
-The lint layer validates `.versionmark.yaml` configuration files without stopping at the
-first error. It is invoked by the `--lint [<config-file>]` command and reports all issues
-found before returning. This satisfies requirement `VersionMark-Cmd-Lint`.
-
-## Lint Class
 
 The `Lint` class (`Lint.cs`) is an internal static class with no instance state. All
 validation logic is contained in static methods.
 
-### Run Method
+## Run Method
 
 `Run` is the public entry point. It accepts a `Context` (for output) and the path to the
 configuration file to validate. It returns `true` when no issues are found, `false`
@@ -36,7 +30,7 @@ The method proceeds through the following steps:
 
 Returns `issueCount == 0`.
 
-### ValidateTool Method
+## ValidateTool Method
 
 `ValidateTool` validates a single tool's `YamlMappingNode`. It returns the number of
 issues found for that tool.
@@ -59,14 +53,14 @@ For each entry in the tool's mapping:
 After iterating all entries, missing `command` and missing `regex` fields are each reported
 as separate errors.
 
-### TryCompileRegex Method
+## TryCompileRegex Method
 
 `TryCompileRegex` attempts to compile the pattern using `new Regex(value, RegexOptions.None,
 RegexTimeout)`, where `RegexTimeout` is one second. On `ArgumentException`, it reports the
 compile error and returns `null`. If compilation succeeds it returns the compiled `Regex`
 instance so callers can immediately inspect it (e.g., to check `GetGroupNames()`).
 
-### FormatLocation Method
+## FormatLocation Method
 
 `FormatLocation` constructs a source-position prefix from a file path and the 0-based line
 and column numbers supplied by YamlDotNet. It always converts to 1-based display values by

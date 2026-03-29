@@ -1,45 +1,11 @@
-# Validation Subsystem
+# Validation Unit
 
 ## Overview
-
-The validation subsystem provides built-in verification of the tool's core functionality
-and safe path construction for use within that verification. It consists of two units:
-`Validation` (the self-validation test runner) and `PathHelpers` (a safe path combination
-utility used internally by `Validation`).
-
-The validation subsystem is invoked when the `--validate` flag is passed and can write
-results to a TRX or JUnit XML file when `--results` is also provided. This satisfies
-requirements `VersionMark-Cmd-Validate` and `VersionMark-Cmd-Results`.
-
-## PathHelpers Class
-
-The `PathHelpers` class (`PathHelpers.cs`) provides a single static method,
-`SafePathCombine`, designed to defend against path-traversal attacks when constructing
-file paths from partially-trusted input.
-
-### SafePathCombine Method
-
-`SafePathCombine` takes a `basePath` and a `relativePath` and returns a combined path,
-subject to two layers of validation:
-
-1. **Pre-combination check**: rejects `relativePath` if it contains `".."` or is a rooted
-   (absolute) path.
-2. **Post-combination check**: resolves both paths with `Path.GetFullPath` and calls
-   `Path.GetRelativePath` to verify the combined path still sits under `basePath`.
-
-If either check fails, `ArgumentException` is thrown. This defense-in-depth approach
-guards against edge-cases that might bypass the initial string check while remaining
-straightforward to audit.
-
-`PathHelpers` is used by `Validation` when constructing paths inside temporary directories
-for self-validation tests. This satisfies requirement `VersionMark-PathHelpers-SafeCombine`.
-
-## Validation Class
 
 The `Validation` class (`Validation.cs`) exposes a single public method, `Run`, and
 organizes all test execution internally.
 
-### Run Method
+## Run Method
 
 `Run` orchestrates the self-validation sequence:
 
@@ -52,7 +18,7 @@ organizes all test execution internally.
    failed count if any tests failed.
 5. If `context.ResultsFile` is set, calls `WriteResultsFile` to persist the results.
 
-### RunCaptureTest
+## RunCaptureTest
 
 `RunCaptureTest` verifies the capture mode end-to-end:
 
@@ -66,7 +32,7 @@ organizes all test execution internally.
 
 The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Cap-Capture`.
 
-### RunPublishTest
+## RunPublishTest
 
 `RunPublishTest` verifies the publish mode end-to-end:
 
@@ -80,7 +46,7 @@ The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Cap-Cap
 
 The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Pub-Publish`.
 
-### RunLintValidTest
+## RunLintValidTest
 
 `RunLintValidTest` verifies that lint mode exits successfully for a valid configuration file:
 
@@ -92,7 +58,7 @@ The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-
 
 The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-Cmd-Lint`.
 
-### RunLintInvalidTest
+## RunLintInvalidTest
 
 `RunLintInvalidTest` verifies that lint mode reports errors for an invalid configuration file:
 
@@ -105,7 +71,7 @@ The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark
 The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
 `VersionMark-Cmd-Lint`.
 
-### WriteResultsFile
+## WriteResultsFile
 
 `WriteResultsFile` inspects the file extension of `context.ResultsFile`:
 
@@ -116,7 +82,7 @@ The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
 The serialized content is written with `File.WriteAllText`. This satisfies
 `VersionMark-Cmd-Results`.
 
-### TemporaryDirectory
+## TemporaryDirectory
 
 `TemporaryDirectory` is a private nested class implementing `IDisposable`. It creates a
 uniquely-named subdirectory under `Path.GetTempPath()` using `PathHelpers.SafePathCombine`

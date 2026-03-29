@@ -35,12 +35,21 @@ reviews:
       - "docs/reqstream/versionmark-system.yaml"
       - "docs/design/introduction.md"
       - "docs/design/system.md"
-      - "docs/design/command-line.md"
-      - "docs/design/configuration.md"
-      - "docs/design/capture.md"
-      - "docs/design/publish.md"
-      - "docs/design/lint.md"
-      - "docs/design/validation.md"
+      - "docs/design/subsystem-command-line.md"
+      - "docs/design/unit-program.md"
+      - "docs/design/unit-context.md"
+      - "docs/design/subsystem-configuration.md"
+      - "docs/design/unit-tool-config.md"
+      - "docs/design/unit-version-mark-config.md"
+      - "docs/design/subsystem-capture.md"
+      - "docs/design/unit-version-info.md"
+      - "docs/design/subsystem-publish.md"
+      - "docs/design/unit-markdown-formatter.md"
+      - "docs/design/subsystem-lint.md"
+      - "docs/design/unit-lint.md"
+      - "docs/design/subsystem-validation.md"
+      - "docs/design/unit-validation.md"
+      - "docs/design/unit-path-helpers.md"
 
   - id: VersionMark-AllRequirements
     title: VersionMark All Requirements Review
@@ -75,7 +84,7 @@ reviews:
     title: Review of Command-Line Interface Subsystem
     paths:
       - "docs/reqstream/subsystem-command-line.yaml"
-      - "docs/design/command-line.md"
+      - "docs/design/subsystem-command-line.md"
       - "test/**/ProgramTests.cs"
       - "test/**/ContextTests.cs"
       - "test/**/IntegrationTests.cs"
@@ -84,7 +93,7 @@ reviews:
     title: Review of Program Unit
     paths:
       - "docs/reqstream/unit-program.yaml"
-      - "docs/design/command-line.md"
+      - "docs/design/unit-program.md"
       - "src/**/Program.cs"
       - "test/**/ProgramTests.cs"
       - "test/**/IntegrationTests.cs"
@@ -93,7 +102,7 @@ reviews:
     title: Review of Context Unit
     paths:
       - "docs/reqstream/unit-context.yaml"
-      - "docs/design/command-line.md"
+      - "docs/design/unit-context.md"
       - "src/**/Context.cs"
       - "test/**/ContextTests.cs"
 
@@ -102,14 +111,14 @@ reviews:
     title: Review of Configuration Subsystem
     paths:
       - "docs/reqstream/subsystem-configuration.yaml"
-      - "docs/design/configuration.md"
+      - "docs/design/subsystem-configuration.md"
       - "test/**/VersionMarkConfigTests.cs"
 
   - id: VersionMark-VersionMarkConfig-Review
     title: Review of VersionMarkConfig Unit
     paths:
       - "docs/reqstream/unit-version-mark-config.yaml"
-      - "docs/design/configuration.md"
+      - "docs/design/unit-version-mark-config.md"
       - "src/**/VersionMarkConfig.cs"
       - "test/**/VersionMarkConfigTests.cs"
 
@@ -117,7 +126,7 @@ reviews:
     title: Review of ToolConfig Unit
     paths:
       - "docs/reqstream/unit-tool-config.yaml"
-      - "docs/design/configuration.md"
+      - "docs/design/unit-tool-config.md"
       - "src/**/VersionMarkConfig.cs"
       - "test/**/VersionMarkConfigTests.cs"
 
@@ -126,14 +135,14 @@ reviews:
     title: Review of Capture Subsystem
     paths:
       - "docs/reqstream/subsystem-capture.yaml"
-      - "docs/design/capture.md"
+      - "docs/design/subsystem-capture.md"
       - "test/**/VersionInfoTests.cs"
 
   - id: VersionMark-VersionInfo-Review
     title: Review of VersionInfo Unit
     paths:
       - "docs/reqstream/unit-version-info.yaml"
-      - "docs/design/capture.md"
+      - "docs/design/unit-version-info.md"
       - "src/**/VersionInfo.cs"
       - "test/**/VersionInfoTests.cs"
 
@@ -142,14 +151,14 @@ reviews:
     title: Review of Publish Subsystem
     paths:
       - "docs/reqstream/subsystem-publish.yaml"
-      - "docs/design/publish.md"
+      - "docs/design/subsystem-publish.md"
       - "test/**/MarkdownFormatterTests.cs"
 
   - id: VersionMark-MarkdownFormatter-Review
     title: Review of MarkdownFormatter Unit
     paths:
       - "docs/reqstream/unit-formatter.yaml"
-      - "docs/design/publish.md"
+      - "docs/design/unit-markdown-formatter.md"
       - "src/**/MarkdownFormatter.cs"
       - "test/**/MarkdownFormatterTests.cs"
 
@@ -158,14 +167,14 @@ reviews:
     title: Review of Lint Subsystem
     paths:
       - "docs/reqstream/subsystem-lint.yaml"
-      - "docs/design/lint.md"
+      - "docs/design/subsystem-lint.md"
       - "test/**/LintTests.cs"
 
   - id: VersionMark-Lint-Review
     title: Review of Lint Unit
     paths:
       - "docs/reqstream/unit-lint.yaml"
-      - "docs/design/lint.md"
+      - "docs/design/unit-lint.md"
       - "src/**/Lint.cs"
       - "test/**/LintTests.cs"
 
@@ -174,19 +183,19 @@ reviews:
     title: Review of Validation Subsystem
     paths:
       - "docs/reqstream/subsystem-validation.yaml"
-      - "docs/design/validation.md"
+      - "docs/design/subsystem-validation.md"
 
   - id: VersionMark-Validation-Review
     title: Review of Validation Unit
     paths:
       - "docs/reqstream/unit-validation.yaml"
-      - "docs/design/validation.md"
+      - "docs/design/unit-validation.md"
       - "src/**/Validation.cs"
 
   - id: VersionMark-PathHelpers-Review
     title: Review of PathHelpers Unit
     paths:
       - "docs/reqstream/unit-path-helpers.yaml"
-      - "docs/design/validation.md"
+      - "docs/design/unit-path-helpers.md"
       - "src/**/PathHelpers.cs"
       - "test/**/PathHelpersTests.cs"

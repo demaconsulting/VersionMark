@@ -1,17 +1,6 @@
-# Capture Subsystem
+# VersionInfo Unit
 
 ## Overview
-
-The capture subsystem is responsible for recording tool version information from the
-current CI/CD job environment. It reads the tool configuration, executes the configured
-commands, extracts version strings using regular expressions, and saves the results to a
-JSON file. The captured data is later consumed by the publish subsystem to generate the
-version report.
-
-The capture subsystem consists of a single unit: `VersionInfo`, which is the data transfer
-record for captured version data.
-
-## VersionInfo Record
 
 The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two properties:
 
@@ -24,7 +13,7 @@ The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two prop
 produces it by executing commands and saving to JSON; publish reads it back and passes it
 to `MarkdownFormatter`.
 
-### SaveToFile Method
+## SaveToFile Method
 
 `SaveToFile` serializes the record to indented JSON using `JsonSerializer.Serialize` with
 `WriteIndented = true` and writes it to the specified path using UTF-8 encoding.
@@ -33,7 +22,7 @@ Non-`InvalidOperationException` errors are wrapped and re-thrown as
 `VersionMark-Cap-JsonOutput`. The default output filename (`versionmark-<job-id>.json`)
 is determined by the CLI layer and contributes to satisfying `VersionMark-Cap-DefaultOutput`.
 
-### LoadFromFile Method
+## LoadFromFile Method
 
 `LoadFromFile` is the symmetric counterpart to `SaveToFile`. It:
 

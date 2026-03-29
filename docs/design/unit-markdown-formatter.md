@@ -1,15 +1,6 @@
-# Publish Subsystem
+# MarkdownFormatter Unit
 
 ## Overview
-
-The publish subsystem is responsible for generating a human-readable markdown version
-report from captured JSON files. It reads the version data produced by the capture
-subsystem and consolidates identical versions across jobs, flagging any conflicts.
-
-The publish subsystem consists of a single unit: `MarkdownFormatter`, which converts
-a collection of `VersionInfo` records into a markdown string.
-
-## MarkdownFormatter Class
 
 The `MarkdownFormatter` class (`MarkdownFormatter.cs`) provides the `Format` static method
 that converts a collection of `VersionInfo` records into a markdown string. This satisfies
@@ -17,7 +8,7 @@ requirements `VersionMark-Fmt-JsonStructure`, `VersionMark-Fmt-JsonJobId`,
 `VersionMark-Fmt-JsonVersions`, `VersionMark-Fmt-MarkdownList`, and
 `VersionMark-Fmt-MarkdownConsolidation`.
 
-### Format Method
+## Format Method
 
 `Format` accepts an `IEnumerable<VersionInfo>` and an optional `reportDepth` (default 2),
 and returns a markdown string.
@@ -30,7 +21,7 @@ The method delegates to two helpers:
 2. **`GenerateMarkdown`**: writes the heading, sorts tools alphabetically, and calls
    `FormatVersionEntries` for each tool.
 
-### Version Consolidation Logic
+## Version Consolidation Logic
 
 `FormatVersionEntries` implements the consolidation rule:
 
@@ -47,7 +38,7 @@ This behavior satisfies `VersionMark-Fmt-JsonJobId` (uniform versions collapse) 
 `VersionMark-Fmt-JsonVersions` / `VersionMark-Fmt-MarkdownList` (differing versions show
 job attribution).
 
-### Heading Depth
+## Heading Depth
 
 The heading prefix is constructed as `new string('#', reportDepth)`, so `reportDepth = 2`
 yields `## Tool Versions`, `reportDepth = 1` yields `# Tool Versions`, and so on. This
