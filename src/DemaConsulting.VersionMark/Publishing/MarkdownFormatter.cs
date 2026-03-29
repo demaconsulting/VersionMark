@@ -19,8 +19,9 @@
 // SOFTWARE.
 
 using System.Text;
+using DemaConsulting.VersionMark.Capture;
 
-namespace DemaConsulting.VersionMark;
+namespace DemaConsulting.VersionMark.Publishing;
 
 /// <summary>
 ///     Provides markdown formatting functionality for version information.

@@ -20,7 +20,7 @@
 
 using System.Text.Json;
 
-namespace DemaConsulting.VersionMark;
+namespace DemaConsulting.VersionMark.Capture;
 
 /// <summary>
 ///     Version information record containing Job ID and tool versions.

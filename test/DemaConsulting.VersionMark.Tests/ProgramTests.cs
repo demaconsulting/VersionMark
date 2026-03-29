@@ -18,6 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using DemaConsulting.VersionMark.Capture;
+using DemaConsulting.VersionMark.Cli;
+using DemaConsulting.VersionMark.SelfTest;
+
 namespace DemaConsulting.VersionMark.Tests;
 
 /// <summary>

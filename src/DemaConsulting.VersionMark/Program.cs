@@ -19,6 +19,12 @@
 // SOFTWARE.
 
 using System.Reflection;
+using DemaConsulting.VersionMark.Capture;
+using DemaConsulting.VersionMark.Cli;
+using DemaConsulting.VersionMark.Configuration;
+using DemaConsulting.VersionMark.Linting;
+using DemaConsulting.VersionMark.Publishing;
+using DemaConsulting.VersionMark.SelfTest;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 

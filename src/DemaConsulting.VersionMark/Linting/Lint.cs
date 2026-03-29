@@ -19,9 +19,10 @@
 // SOFTWARE.
 
 using System.Text.RegularExpressions;
+using DemaConsulting.VersionMark.Cli;
 using YamlDotNet.RepresentationModel;
 
-namespace DemaConsulting.VersionMark;
+namespace DemaConsulting.VersionMark.Linting;
 
 /// <summary>
 ///     Provides lint functionality for checking .versionmark.yaml configuration files.

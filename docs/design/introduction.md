@@ -58,6 +58,30 @@ VersionMark (Software System)               Version capture/publish tool
     └── PathHelpers (Software Unit)         Safe path combination
 ```
 
+## Folder Layout
+
+The source files are arranged in subsystem-aligned subdirectories beneath the main project
+folder. Each directory corresponds to one subsystem described above, making it
+straightforward to locate the implementation for any given component.
+
+```text
+src/DemaConsulting.VersionMark/
+├── Program.cs                          — entry point and execution orchestrator
+├── Cli/
+│   └── Context.cs                      — command-line argument parser and I/O owner
+├── Configuration/
+│   └── VersionMarkConfig.cs            — YAML configuration and tool definitions
+├── Capture/
+│   └── VersionInfo.cs                  — captured version data record
+├── Publishing/
+│   └── MarkdownFormatter.cs            — markdown report generation
+├── Linting/
+│   └── Lint.cs                         — YAML configuration linter
+└── SelfTest/
+    ├── Validation.cs                   — self-validation test runner
+    └── PathHelpers.cs                  — safe path utilities
+```
+
 ## Audience
 
 This document is intended for:
