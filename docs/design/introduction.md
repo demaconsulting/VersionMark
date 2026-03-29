@@ -17,17 +17,17 @@ The purpose of this document is to:
 
 This document covers the design of six subsystems within VersionMark:
 
-- The **Command-Line Interface Subsystem**: the `Program` entry point and `Context` class
+- The **Cli Subsystem**: the `Program` entry point and `Context` class
   that handle argument parsing, output routing, and program flow control
 - The **Configuration Subsystem**: the `VersionMarkConfig` and `ToolConfig` classes that
   read and interpret `.versionmark.yaml` configuration files
 - The **Capture Subsystem**: the `VersionInfo` record that serializes and deserializes
   captured version data to and from JSON
-- The **Publish Subsystem**: the `MarkdownFormatter` class that generates the markdown
+- The **Publishing Subsystem**: the `MarkdownFormatter` class that generates the markdown
   version report from captured data
-- The **Lint Subsystem**: the `Lint` class that validates `.versionmark.yaml` configuration
+- The **Linting Subsystem**: the `Lint` class that validates `.versionmark.yaml` configuration
   files and reports issues with precise source locations
-- The **Validation Subsystem**: the `Validation` class and `PathHelpers` utility that
+- The **SelfTest Subsystem**: the `Validation` class and `PathHelpers` utility that
   together provide built-in verification of the tool's core functionality
 
 This document does not cover installation, end-user usage patterns, or the CI/CD pipeline
@@ -41,7 +41,7 @@ software units, with a short description of each node's role.
 
 ```text
 VersionMark (Software System)               Version capture/publish tool
-├── Command-Line Interface Subsystem        Argument parsing and dispatch
+├── Cli Subsystem                           Argument parsing and dispatch
 │   ├── Program (Software Unit)             Tool entry point
 │   └── Context (Software Unit)             Command-line state container
 ├── Configuration Subsystem                 YAML configuration loading
@@ -49,11 +49,11 @@ VersionMark (Software System)               Version capture/publish tool
 │   └── ToolConfig (Software Unit)          Per-tool config record
 ├── Capture Subsystem                       Tool version capture
 │   └── VersionInfo (Software Unit)         JSON version data record
-├── Publish Subsystem                       Markdown report publishing
+├── Publishing Subsystem                    Markdown report publishing
 │   └── MarkdownFormatter (Software Unit)   Version report formatter
-├── Lint Subsystem                          Configuration file lint
+├── Linting Subsystem                       Configuration file lint
 │   └── Lint (Software Unit)                YAML configuration validator
-└── Validation Subsystem                    Built-in self-validation
+└── SelfTest Subsystem                      Built-in self-validation
     ├── Validation (Software Unit)          Self-validation runner
     └── PathHelpers (Software Unit)         Safe path combination
 ```

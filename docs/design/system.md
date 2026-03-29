@@ -46,12 +46,12 @@ The subsystems interact as follows during the four operational modes:
 ### Capture Mode
 
 ```text
-CLI Subsystem → Configuration Subsystem → (shell)
+Cli Subsystem → Configuration Subsystem → (shell)
                                         ↓
                                Capture Subsystem (VersionInfo.SaveToFile)
 ```
 
-1. The CLI Subsystem (Program) parses arguments and calls `RunCapture`.
+1. The Cli Subsystem (Program) parses arguments and calls `RunCapture`.
 2. `RunCapture` uses the Configuration Subsystem to load `.versionmark.yaml` and call
    `FindVersions`, which executes shell commands and extracts version strings.
 3. The result is saved to disk by `VersionInfo.SaveToFile` (Capture Subsystem).
@@ -59,36 +59,36 @@ CLI Subsystem → Configuration Subsystem → (shell)
 ### Publish Mode
 
 ```text
-CLI Subsystem → Capture Subsystem (VersionInfo.LoadFromFile) → Publish Subsystem
+Cli Subsystem → Capture Subsystem (VersionInfo.LoadFromFile) → Publishing Subsystem
                                                                        ↓
                                                              markdown report file
 ```
 
-1. The CLI Subsystem (Program) parses arguments and calls `RunPublish`.
+1. The Cli Subsystem (Program) parses arguments and calls `RunPublish`.
 2. `RunPublish` resolves glob patterns, then uses the Capture Subsystem to load each
    JSON file via `VersionInfo.LoadFromFile`.
-3. The Publish Subsystem (`MarkdownFormatter.Format`) converts the loaded records into
+3. The Publishing Subsystem (`MarkdownFormatter.Format`) converts the loaded records into
    a markdown string, which is written to the report file.
 
 ### Lint Mode
 
 ```text
-CLI Subsystem → Lint Subsystem
+Cli Subsystem → Linting Subsystem
 ```
 
-1. The CLI Subsystem (Program) calls `RunLint`, which resolves the config file path.
-2. The Lint Subsystem validates the YAML structure and reports all issues.
+1. The Cli Subsystem (Program) calls `RunLint`, which resolves the config file path.
+2. The Linting Subsystem validates the YAML structure and reports all issues.
 
 ### Validate Mode
 
 ```text
-CLI Subsystem → Validation Subsystem
+Cli Subsystem → SelfTest Subsystem
                        ↓
              (exercises Capture, Publish, and Lint modes internally)
 ```
 
-1. The CLI Subsystem (Program) calls `Validation.Run`.
-2. The Validation Subsystem exercises capture, publish, and lint modes end-to-end,
+1. The Cli Subsystem (Program) calls `Validation.Run`.
+2. The SelfTest Subsystem exercises capture, publish, and lint modes end-to-end,
    using `PathHelpers` to safely construct paths inside a temporary directory.
 
 The self-validation suite includes the following named tests, which serve as evidence

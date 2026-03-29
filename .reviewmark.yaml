@@ -35,7 +35,7 @@ reviews:
       - "docs/reqstream/versionmark-system.yaml"
       - "docs/design/introduction.md"
       - "docs/design/system.md"
-      - "docs/design/subsystem-command-line.md"
+      - "docs/design/subsystem-cli.md"
       - "docs/design/unit-program.md"
       - "docs/design/unit-context.md"
       - "docs/design/subsystem-configuration.md"
@@ -43,11 +43,11 @@ reviews:
       - "docs/design/unit-version-mark-config.md"
       - "docs/design/subsystem-capture.md"
       - "docs/design/unit-version-info.md"
-      - "docs/design/subsystem-publish.md"
+      - "docs/design/subsystem-publishing.md"
       - "docs/design/unit-markdown-formatter.md"
-      - "docs/design/subsystem-lint.md"
+      - "docs/design/subsystem-linting.md"
       - "docs/design/unit-lint.md"
-      - "docs/design/subsystem-validation.md"
+      - "docs/design/subsystem-selftest.md"
       - "docs/design/unit-validation.md"
       - "docs/design/unit-path-helpers.md"
 
@@ -57,7 +57,7 @@ reviews:
       - "requirements.yaml"
       - "docs/reqstream/versionmark-system.yaml"
       - "docs/reqstream/platform-requirements.yaml"
-      - "docs/reqstream/subsystem-command-line.yaml"
+      - "docs/reqstream/subsystem-cli.yaml"
       - "docs/reqstream/unit-program.yaml"
       - "docs/reqstream/unit-context.yaml"
       - "docs/reqstream/subsystem-configuration.yaml"
@@ -65,11 +65,11 @@ reviews:
       - "docs/reqstream/unit-tool-config.yaml"
       - "docs/reqstream/subsystem-capture.yaml"
       - "docs/reqstream/unit-version-info.yaml"
-      - "docs/reqstream/subsystem-publish.yaml"
+      - "docs/reqstream/subsystem-publishing.yaml"
       - "docs/reqstream/unit-formatter.yaml"
-      - "docs/reqstream/subsystem-lint.yaml"
+      - "docs/reqstream/subsystem-linting.yaml"
       - "docs/reqstream/unit-lint.yaml"
-      - "docs/reqstream/subsystem-validation.yaml"
+      - "docs/reqstream/subsystem-selftest.yaml"
       - "docs/reqstream/unit-validation.yaml"
       - "docs/reqstream/unit-path-helpers.yaml"
       - "docs/reqstream/ots-mstest.yaml"
@@ -79,12 +79,12 @@ reviews:
       - "docs/reqstream/ots-sonarmark.yaml"
       - "docs/reqstream/ots-reviewmark.yaml"
 
-  # Command-Line Interface Subsystem
-  - id: VersionMark-CommandLine-Subsystem
-    title: Review of Command-Line Interface Subsystem
+  # Cli Subsystem
+  - id: VersionMark-Cli-Subsystem
+    title: Review of Cli Subsystem
     paths:
-      - "docs/reqstream/subsystem-command-line.yaml"
-      - "docs/design/subsystem-command-line.md"
+      - "docs/reqstream/subsystem-cli.yaml"
+      - "docs/design/subsystem-cli.md"
       - "test/**/ProgramTests.cs"
       - "test/**/ContextTests.cs"
       - "test/**/IntegrationTests.cs"
@@ -146,12 +146,12 @@ reviews:
       - "src/**/VersionInfo.cs"
       - "test/**/VersionInfoTests.cs"
 
-  # Publish Subsystem
-  - id: VersionMark-Publish-Subsystem
-    title: Review of Publish Subsystem
+  # Publishing Subsystem
+  - id: VersionMark-Publishing-Subsystem
+    title: Review of Publishing Subsystem
     paths:
-      - "docs/reqstream/subsystem-publish.yaml"
-      - "docs/design/subsystem-publish.md"
+      - "docs/reqstream/subsystem-publishing.yaml"
+      - "docs/design/subsystem-publishing.md"
       - "test/**/MarkdownFormatterTests.cs"
 
   - id: VersionMark-MarkdownFormatter-Review
@@ -162,12 +162,12 @@ reviews:
       - "src/**/MarkdownFormatter.cs"
       - "test/**/MarkdownFormatterTests.cs"
 
-  # Lint Subsystem
-  - id: VersionMark-Lint-Subsystem
-    title: Review of Lint Subsystem
+  # Linting Subsystem
+  - id: VersionMark-Linting-Subsystem
+    title: Review of Linting Subsystem
     paths:
-      - "docs/reqstream/subsystem-lint.yaml"
-      - "docs/design/subsystem-lint.md"
+      - "docs/reqstream/subsystem-linting.yaml"
+      - "docs/design/subsystem-linting.md"
       - "test/**/LintTests.cs"
 
   - id: VersionMark-Lint-Review
@@ -178,12 +178,12 @@ reviews:
       - "src/**/Lint.cs"
       - "test/**/LintTests.cs"
 
-  # Validation Subsystem
-  - id: VersionMark-Validation-Subsystem
-    title: Review of Validation Subsystem
+  # SelfTest Subsystem
+  - id: VersionMark-SelfTest-Subsystem
+    title: Review of SelfTest Subsystem
     paths:
-      - "docs/reqstream/subsystem-validation.yaml"
-      - "docs/design/subsystem-validation.md"
+      - "docs/reqstream/subsystem-selftest.yaml"
+      - "docs/design/subsystem-selftest.md"
 
   - id: VersionMark-Validation-Review
     title: Review of Validation Unit

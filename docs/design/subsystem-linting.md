@@ -1,4 +1,4 @@
-# Lint Subsystem
+# Linting Subsystem
 
 ## Overview
 

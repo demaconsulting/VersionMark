@@ -67,6 +67,8 @@ words:
   - Sarif
   - SarifMark
   - SBOM
+  - selftest
+  - SelfTest
   - Semgrep
   - semver
   - slnx
