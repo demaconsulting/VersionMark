@@ -37,4 +37,5 @@ sections:
           tool is functioning correctly in the deployment environment without
           requiring external fixtures or test data.
         tests:
-          - IntegrationTest_ValidateFlag_RunsValidation
+          - VersionMark_CapturesVersions
+          - VersionMark_GeneratesMarkdownReport

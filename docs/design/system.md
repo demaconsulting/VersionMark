@@ -91,6 +91,22 @@ CLI Subsystem → Validation Subsystem
 2. The Validation Subsystem exercises capture, publish, and lint modes end-to-end,
    using `PathHelpers` to safely construct paths inside a temporary directory.
 
+The self-validation suite includes the following named tests, which serve as evidence
+that the tool is functioning correctly after installation:
+
+| Test Name | What it Verifies |
+| --------- | ---------------- |
+| `VersionMark_CapturesVersions` | Capture mode correctly runs commands and saves version JSON |
+| `VersionMark_GeneratesMarkdownReport` | Publish mode correctly reads JSON and produces a markdown report |
+| `VersionMark_LintPassesForValidConfig` | Lint mode passes for a valid `.versionmark.yaml` configuration |
+| `VersionMark_LintReportsErrorsForInvalidConfig` | Lint mode reports errors for an invalid configuration |
+
+These test names appear in requirements files (e.g., `versionmark-system.yaml`,
+`platform-requirements.yaml`) as traceability evidence. When `--validate` is run in CI,
+the resulting TRX output links each self-validation test to the platform and runtime,
+allowing requirements to be verified per platform using source filters such as
+`windows@VersionMark_CapturesVersions` or `dotnet8.x@VersionMark_GeneratesMarkdownReport`.
+
 ## Configuration File
 
 The `.versionmark.yaml` configuration file defines which tools to capture and how to
