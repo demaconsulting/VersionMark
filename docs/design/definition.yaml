@@ -6,7 +6,7 @@ input-files:
   - docs/design/title.txt
   - docs/design/introduction.md
   - docs/design/system.md
-  - docs/design/subsystem-command-line.md
+  - docs/design/subsystem-cli.md
   - docs/design/unit-program.md
   - docs/design/unit-context.md
   - docs/design/subsystem-configuration.md
@@ -14,11 +14,11 @@ input-files:
   - docs/design/unit-version-mark-config.md
   - docs/design/subsystem-capture.md
   - docs/design/unit-version-info.md
-  - docs/design/subsystem-publish.md
+  - docs/design/subsystem-publishing.md
   - docs/design/unit-markdown-formatter.md
-  - docs/design/subsystem-lint.md
+  - docs/design/subsystem-linting.md
   - docs/design/unit-lint.md
-  - docs/design/subsystem-validation.md
+  - docs/design/subsystem-selftest.md
   - docs/design/unit-validation.md
   - docs/design/unit-path-helpers.md
 template: template.html

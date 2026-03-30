@@ -18,7 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DemaConsulting.VersionMark.Tests;
+using DemaConsulting.VersionMark.Cli;
+using DemaConsulting.VersionMark.Linting;
+
+namespace DemaConsulting.VersionMark.Tests.Linting;
 
 /// <summary>
 ///     Unit tests for the Lint class.

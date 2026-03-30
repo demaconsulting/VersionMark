@@ -20,8 +20,10 @@
 
 using System.Runtime.InteropServices;
 using DemaConsulting.TestResults.IO;
+using DemaConsulting.VersionMark.Capture;
+using DemaConsulting.VersionMark.Cli;
 
-namespace DemaConsulting.VersionMark;
+namespace DemaConsulting.VersionMark.SelfTest;
 
 /// <summary>
 ///     Provides self-validation functionality for the VersionMark.

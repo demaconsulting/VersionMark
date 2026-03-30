@@ -1,4 +1,4 @@
-# Publish Subsystem
+# Publishing Subsystem
 
 ## Overview
 

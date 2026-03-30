@@ -18,7 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DemaConsulting.VersionMark.Tests;
+using DemaConsulting.VersionMark.Capture;
+
+namespace DemaConsulting.VersionMark.Tests.Capture;
 
 /// <summary>
 ///     Unit tests for the VersionInfo class.

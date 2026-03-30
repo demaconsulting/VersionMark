@@ -21,9 +21,10 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using DemaConsulting.VersionMark.Capture;
 using YamlDotNet.RepresentationModel;
 
-namespace DemaConsulting.VersionMark;
+namespace DemaConsulting.VersionMark.Configuration;
 
 /// <summary>
 ///     Configuration for a single tool in .versionmark.yaml file.

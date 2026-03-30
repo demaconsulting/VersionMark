@@ -19,8 +19,10 @@
 // SOFTWARE.
 
 using System.Text.RegularExpressions;
+using DemaConsulting.VersionMark.Capture;
+using DemaConsulting.VersionMark.Configuration;
 
-namespace DemaConsulting.VersionMark.Tests;
+namespace DemaConsulting.VersionMark.Tests.Configuration;
 
 /// <summary>
 ///     Unit tests for the VersionMarkConfig class.
