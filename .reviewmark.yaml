@@ -7,6 +7,9 @@
 # Processed in order; prefix a pattern with '!' to exclude.
 needs-review:
   - "**/*.cs"
+  - "requirements.yaml"
+  - "docs/reqstream/**/*.yaml"
+  - "docs/design/**/*.md"
   - "!**/obj/**"
 
 # Evidence source: review data and index.json are located in the 'reviews' branch
@@ -21,143 +24,150 @@ reviews:
   - id: VersionMark-System
     title: VersionMark System Review
     paths:
-      - "docs/reqstream/versionmark-system.yaml"
-      - "docs/reqstream/platform-requirements.yaml"
-      - "docs/design/introduction.md"
-      - "docs/design/system.md"
-      - "test/**/IntegrationTests.cs"
-      - "test/**/AssemblyInfo.cs"
-      - "test/**/Runner.cs"
+      - "docs/reqstream/versionmark-system.yaml"     # system requirements
+      - "docs/reqstream/platform-requirements.yaml"  # platform requirements
+      - "docs/design/introduction.md"                # design introduction and architecture
+      - "docs/design/system.md"                      # system design
+      - "test/**/IntegrationTests.cs"                # integration tests
+      - "test/**/AssemblyInfo.cs"                    # test infrastructure
+      - "test/**/Runner.cs"                          # test infrastructure
 
   - id: VersionMark-Design
     title: VersionMark Design Document Review
     paths:
-      - "docs/reqstream/versionmark-system.yaml"
-      - "docs/design/**/*.md"
+      - "docs/design/**/*.md"                        # all design documents
 
   - id: VersionMark-AllRequirements
     title: VersionMark All Requirements Review
     paths:
-      - "requirements.yaml"
-      - "docs/reqstream/**/*.yaml"
+      - "requirements.yaml"                          # root requirements file
+      - "docs/reqstream/**/*.yaml"                   # all requirements files
 
   # Cli Subsystem
   - id: VersionMark-Cli-Subsystem
     title: Review of Cli Subsystem
     paths:
-      - "docs/reqstream/subsystem-cli.yaml"
-      - "docs/design/subsystem-cli.md"
+      - "docs/reqstream/cli/subsystem-cli.yaml"      # subsystem requirements
+      - "docs/design/cli/cli.md"                     # subsystem design
+      - "docs/design/cli/program.md"                 # Program unit design
+      - "docs/design/cli/context.md"                 # Context unit design
       - "test/**/ProgramTests.cs"
-      - "test/**/ContextTests.cs"
       - "test/**/IntegrationTests.cs"
 
   - id: VersionMark-Program-Review
     title: Review of Program Unit
     paths:
-      - "docs/reqstream/unit-program.yaml"
-      - "docs/design/unit-program.md"
-      - "src/**/Program.cs"
-      - "test/**/ProgramTests.cs"
-      - "test/**/IntegrationTests.cs"
+      - "docs/reqstream/cli/unit-program.yaml"       # requirements
+      - "docs/design/cli/program.md"                 # design
+      - "src/**/Program.cs"                          # implementation
+      - "test/**/ProgramTests.cs"                    # unit tests
+      - "test/**/IntegrationTests.cs"                # integration tests
 
   - id: VersionMark-Context-Review
     title: Review of Context Unit
     paths:
-      - "docs/reqstream/unit-context.yaml"
-      - "docs/design/unit-context.md"
-      - "src/**/Context.cs"
-      - "test/**/ContextTests.cs"
+      - "docs/reqstream/cli/unit-context.yaml"       # requirements
+      - "docs/design/cli/context.md"                 # design
+      - "src/**/Cli/Context.cs"                      # implementation
+      - "test/**/Cli/ContextTests.cs"                # unit tests
 
   # Configuration Subsystem
   - id: VersionMark-Configuration-Subsystem
     title: Review of Configuration Subsystem
     paths:
-      - "docs/reqstream/subsystem-configuration.yaml"
-      - "docs/design/subsystem-configuration.md"
-      - "test/**/VersionMarkConfigTests.cs"
+      - "docs/reqstream/configuration/subsystem-configuration.yaml"   # subsystem requirements
+      - "docs/design/configuration/configuration.md"                  # subsystem design
+      - "docs/design/configuration/version-mark-config.md"            # VersionMarkConfig unit design
+      - "docs/design/configuration/tool-config.md"                    # ToolConfig unit design
+      - "test/**/Configuration/VersionMarkConfigTests.cs"
 
   - id: VersionMark-VersionMarkConfig-Review
     title: Review of VersionMarkConfig Unit
     paths:
-      - "docs/reqstream/unit-version-mark-config.yaml"
-      - "docs/design/unit-version-mark-config.md"
-      - "src/**/VersionMarkConfig.cs"
-      - "test/**/VersionMarkConfigTests.cs"
+      - "docs/reqstream/configuration/unit-version-mark-config.yaml"  # requirements
+      - "docs/design/configuration/version-mark-config.md"            # design
+      - "src/**/Configuration/VersionMarkConfig.cs"                   # implementation
+      - "test/**/Configuration/VersionMarkConfigTests.cs"             # unit tests
 
   - id: VersionMark-ToolConfig-Review
     title: Review of ToolConfig Unit
     paths:
-      - "docs/reqstream/unit-tool-config.yaml"
-      - "docs/design/unit-tool-config.md"
-      - "src/**/VersionMarkConfig.cs"
-      - "test/**/VersionMarkConfigTests.cs"
+      - "docs/reqstream/configuration/unit-tool-config.yaml"          # requirements
+      - "docs/design/configuration/tool-config.md"                    # design
+      - "src/**/Configuration/VersionMarkConfig.cs"                   # implementation
+      - "test/**/Configuration/VersionMarkConfigTests.cs"             # unit tests
 
   # Capture Subsystem
   - id: VersionMark-Capture-Subsystem
     title: Review of Capture Subsystem
     paths:
-      - "docs/reqstream/subsystem-capture.yaml"
-      - "docs/design/subsystem-capture.md"
-      - "test/**/VersionInfoTests.cs"
+      - "docs/reqstream/capture/subsystem-capture.yaml"  # subsystem requirements
+      - "docs/design/capture/capture.md"                 # subsystem design
+      - "docs/design/capture/version-info.md"            # VersionInfo unit design
+      - "test/**/Capture/VersionInfoTests.cs"
 
   - id: VersionMark-VersionInfo-Review
     title: Review of VersionInfo Unit
     paths:
-      - "docs/reqstream/unit-version-info.yaml"
-      - "docs/design/unit-version-info.md"
-      - "src/**/VersionInfo.cs"
-      - "test/**/VersionInfoTests.cs"
+      - "docs/reqstream/capture/unit-version-info.yaml"  # requirements
+      - "docs/design/capture/version-info.md"            # design
+      - "src/**/Capture/VersionInfo.cs"                  # implementation
+      - "test/**/Capture/VersionInfoTests.cs"            # unit tests
 
   # Publishing Subsystem
   - id: VersionMark-Publishing-Subsystem
     title: Review of Publishing Subsystem
     paths:
-      - "docs/reqstream/subsystem-publishing.yaml"
-      - "docs/design/subsystem-publishing.md"
-      - "test/**/MarkdownFormatterTests.cs"
+      - "docs/reqstream/publishing/subsystem-publishing.yaml"    # subsystem requirements
+      - "docs/design/publishing/publishing.md"                   # subsystem design
+      - "docs/design/publishing/markdown-formatter.md"           # MarkdownFormatter unit design
+      - "test/**/Publishing/MarkdownFormatterTests.cs"
 
   - id: VersionMark-MarkdownFormatter-Review
     title: Review of MarkdownFormatter Unit
     paths:
-      - "docs/reqstream/unit-formatter.yaml"
-      - "docs/design/unit-markdown-formatter.md"
-      - "src/**/MarkdownFormatter.cs"
-      - "test/**/MarkdownFormatterTests.cs"
+      - "docs/reqstream/publishing/unit-formatter.yaml"          # requirements
+      - "docs/design/publishing/markdown-formatter.md"           # design
+      - "src/**/Publishing/MarkdownFormatter.cs"                 # implementation
+      - "test/**/Publishing/MarkdownFormatterTests.cs"           # unit tests
 
   # Linting Subsystem
   - id: VersionMark-Linting-Subsystem
     title: Review of Linting Subsystem
     paths:
-      - "docs/reqstream/subsystem-linting.yaml"
-      - "docs/design/subsystem-linting.md"
-      - "test/**/LintTests.cs"
+      - "docs/reqstream/linting/subsystem-linting.yaml"  # subsystem requirements
+      - "docs/design/linting/linting.md"                 # subsystem design
+      - "docs/design/linting/lint.md"                    # Lint unit design
+      - "test/**/Linting/LintTests.cs"
 
   - id: VersionMark-Lint-Review
     title: Review of Lint Unit
     paths:
-      - "docs/reqstream/unit-lint.yaml"
-      - "docs/design/unit-lint.md"
-      - "src/**/Lint.cs"
-      - "test/**/LintTests.cs"
+      - "docs/reqstream/linting/unit-lint.yaml"          # requirements
+      - "docs/design/linting/lint.md"                    # design
+      - "src/**/Linting/Lint.cs"                         # implementation
+      - "test/**/Linting/LintTests.cs"                   # unit tests
 
   # SelfTest Subsystem
   - id: VersionMark-SelfTest-Subsystem
     title: Review of SelfTest Subsystem
     paths:
-      - "docs/reqstream/subsystem-selftest.yaml"
-      - "docs/design/subsystem-selftest.md"
+      - "docs/reqstream/self-test/subsystem-selftest.yaml"  # subsystem requirements
+      - "docs/design/self-test/self-test.md"                # subsystem design
+      - "docs/design/self-test/validation.md"               # Validation unit design
+      - "docs/design/self-test/path-helpers.md"             # PathHelpers unit design
 
   - id: VersionMark-Validation-Review
     title: Review of Validation Unit
     paths:
-      - "docs/reqstream/unit-validation.yaml"
-      - "docs/design/unit-validation.md"
-      - "src/**/Validation.cs"
+      - "docs/reqstream/self-test/unit-validation.yaml"     # requirements
+      - "docs/design/self-test/validation.md"               # design
+      - "src/**/SelfTest/Validation.cs"                     # implementation
 
   - id: VersionMark-PathHelpers-Review
     title: Review of PathHelpers Unit
     paths:
-      - "docs/reqstream/unit-path-helpers.yaml"
-      - "docs/design/unit-path-helpers.md"
-      - "src/**/PathHelpers.cs"
-      - "test/**/PathHelpersTests.cs"
+      - "docs/reqstream/self-test/unit-path-helpers.yaml"   # requirements
+      - "docs/design/self-test/path-helpers.md"             # design
+      - "src/**/SelfTest/PathHelpers.cs"                    # implementation
+      - "test/**/SelfTest/PathHelpersTests.cs"              # unit tests

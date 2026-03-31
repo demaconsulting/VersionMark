@@ -34,53 +34,56 @@ This document does not cover installation, end-user usage patterns, or the CI/CD
 configuration. Those topics are addressed in the [User Guide][user-guide] and the
 [Requirements document][requirements-doc].
 
-## Software Architecture
+## Software Structure
 
-The following tree shows the VersionMark software system, its software subsystems, and their
-software units, with a short description of each node's role.
+The following tree shows how the VersionMark software items are organized across the
+system, subsystem, and unit levels:
 
 ```text
-VersionMark (Software System)               Version capture/publish tool
-├── Cli Subsystem                           Argument parsing and dispatch
-│   ├── Program (Software Unit)             Tool entry point
-│   └── Context (Software Unit)             Command-line state container
-├── Configuration Subsystem                 YAML configuration loading
-│   ├── VersionMarkConfig (Software Unit)   Top-level config container
-│   └── ToolConfig (Software Unit)          Per-tool config record
-├── Capture Subsystem                       Tool version capture
-│   └── VersionInfo (Software Unit)         JSON version data record
-├── Publishing Subsystem                    Markdown report publishing
-│   └── MarkdownFormatter (Software Unit)   Version report formatter
-├── Linting Subsystem                       Configuration file lint
-│   └── Lint (Software Unit)                YAML configuration validator
-└── SelfTest Subsystem                      Built-in self-validation
-    ├── Validation (Software Unit)          Self-validation runner
-    └── PathHelpers (Software Unit)         Safe path combination
+VersionMark (System)                        Version capture/publish tool
+├── Cli (Subsystem)                         Argument parsing and dispatch
+│   ├── Program (Unit)                      Tool entry point
+│   └── Context (Unit)                      Command-line state container
+├── Configuration (Subsystem)               YAML configuration loading
+│   ├── VersionMarkConfig (Unit)            Top-level config container
+│   └── ToolConfig (Unit)                   Per-tool config record
+├── Capture (Subsystem)                     Tool version capture
+│   └── VersionInfo (Unit)                  JSON version data record
+├── Publishing (Subsystem)                  Markdown report publishing
+│   └── MarkdownFormatter (Unit)            Version report formatter
+├── Linting (Subsystem)                     Configuration file lint
+│   └── Lint (Unit)                         YAML configuration validator
+└── SelfTest (Subsystem)                    Built-in self-validation
+    ├── Validation (Unit)                   Self-validation runner
+    └── PathHelpers (Unit)                  Safe path combination
 ```
+
+Each unit is described in detail in its own chapter within this document.
 
 ## Folder Layout
 
-The source files are arranged in subsystem-aligned subdirectories beneath the main project
-folder. Each directory corresponds to one subsystem described above, making it
-straightforward to locate the implementation for any given component.
+The source code folder structure mirrors the top-level subsystem breakdown above, giving
+reviewers an explicit navigation aid from design to code:
 
 ```text
 src/DemaConsulting.VersionMark/
-├── Program.cs                          — entry point and execution orchestrator
+├── Program.cs                              — entry point and execution orchestrator
 ├── Cli/
-│   └── Context.cs                      — command-line argument parser and I/O owner
+│   └── Context.cs                          — command-line argument parser and I/O owner
 ├── Configuration/
-│   └── VersionMarkConfig.cs            — YAML configuration and tool definitions
+│   └── VersionMarkConfig.cs                — YAML configuration and tool definitions
 ├── Capture/
-│   └── VersionInfo.cs                  — captured version data record
+│   └── VersionInfo.cs                      — captured version data record
 ├── Publishing/
-│   └── MarkdownFormatter.cs            — markdown report generation
+│   └── MarkdownFormatter.cs                — markdown report generation
 ├── Linting/
-│   └── Lint.cs                         — YAML configuration linter
+│   └── Lint.cs                             — YAML configuration linter
 └── SelfTest/
-    ├── Validation.cs                   — self-validation test runner
-    └── PathHelpers.cs                  — safe path utilities
+    ├── Validation.cs                        — self-validation test runner
+    └── PathHelpers.cs                       — safe path utilities
 ```
+
+The test project mirrors the same layout under `test/DemaConsulting.VersionMark.Tests/`.
 
 ## Audience
 
