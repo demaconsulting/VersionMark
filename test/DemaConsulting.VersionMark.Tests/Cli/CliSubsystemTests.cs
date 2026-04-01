@@ -207,14 +207,18 @@ public class CliSubsystemTests
         var logFile = Path.GetTempFileName();
         try
         {
-            using var context = Context.Create(["--version", "--log", logFile]);
+            string logContent;
+            using (var context = Context.Create(["--version", "--log", logFile]))
+            {
+                // Act - Run the full CLI pipeline with --log
+                Program.Run(context);
 
-            // Act - Run the full CLI pipeline with --log
-            Program.Run(context);
+                // Assert - Exit code should be zero
+                Assert.AreEqual(0, context.ExitCode);
+            }
 
-            // Assert - The log file should contain the version output
-            Assert.AreEqual(0, context.ExitCode);
-            var logContent = File.ReadAllText(logFile);
+            // Assert - The log file should contain the version output (after context is disposed)
+            logContent = File.ReadAllText(logFile);
             Assert.IsFalse(string.IsNullOrWhiteSpace(logContent),
                 "Log file should contain output when --log flag is specified");
         }
