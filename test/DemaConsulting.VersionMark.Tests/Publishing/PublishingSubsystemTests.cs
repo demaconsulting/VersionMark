@@ -196,7 +196,6 @@ public class PublishingSubsystemTests
         }
         finally
         {
-            Console.SetOut(Console.Out);
             Directory.SetCurrentDirectory(currentDir);
             if (Directory.Exists(tempDir))
             {
