@@ -73,6 +73,7 @@ public class LintingSubsystemTests
     public void LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass()
     {
         // Arrange - Write a configuration with multiple errors to a temp file
+        // tool1 is missing 'regex'; tool2 is missing 'command' and has a regex without a 'version' group
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -86,7 +87,8 @@ public class LintingSubsystemTests
                 """;
             File.WriteAllText(tempFile, yaml);
 
-            using var context = Context.Create(["--silent"]);
+            // Context without --silent so errors are written to Console.Error
+            using var context = Context.Create([]);
             var originalError = Console.Error;
             try
             {
@@ -96,11 +98,17 @@ public class LintingSubsystemTests
                 // Act - Run the full linting pipeline against a config with multiple errors
                 var result = Lint.Run(context, tempFile);
 
-                // Assert - The linting subsystem should report failure
+                // Assert - The linting subsystem should report failure and emit findings for both tools
                 Assert.IsFalse(result,
                     "Linting should fail for a configuration with multiple errors");
                 Assert.AreEqual(1, context.ExitCode,
                     "Exit code should be non-zero when linting finds errors");
+
+                var errorOutput = errorWriter.ToString();
+                StringAssert.Contains(errorOutput, "tool1",
+                    "Error output should mention tool1 (missing regex)");
+                StringAssert.Contains(errorOutput, "tool2",
+                    "Error output should mention tool2 (missing command and invalid regex)");
             }
             finally
             {
@@ -121,7 +129,7 @@ public class LintingSubsystemTests
     {
         // Arrange
         var tempFile = Path.GetTempFileName() + ".yaml";
-        File.WriteAllText(tempFile, "not: valid: yaml: content: : ::");
+        File.WriteAllText(tempFile, "tools:\n  dotnet:\n    command: [unclosed bracket");
 
         try
         {

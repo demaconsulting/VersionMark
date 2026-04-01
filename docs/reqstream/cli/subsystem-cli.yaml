@@ -77,7 +77,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_InvalidArgs_ReturnsNonZeroExitCode
+              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-InvalidArgs
             title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
@@ -87,7 +87,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_InvalidArgs_ReturnsNonZeroExitCode
+              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-ExitCode
             title: The tool shall return a non-zero exit code on failure.
@@ -97,7 +97,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_InvalidArgs_ReturnsNonZeroExitCode
+              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-Lint
             title: The tool shall support --lint to check the configuration file for issues.

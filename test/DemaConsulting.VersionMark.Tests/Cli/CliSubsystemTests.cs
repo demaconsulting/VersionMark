@@ -119,15 +119,14 @@ public class CliSubsystemTests
     }
 
     /// <summary>
-    ///     Test that the full CLI pipeline with unknown arguments returns a non-zero exit code.
+    ///     Test that the full CLI pipeline rejects unknown arguments by throwing ArgumentException.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_InvalidArgs_ReturnsNonZeroExitCode()
+    public void CliSubsystem_Run_InvalidArgs_ThrowsArgumentException()
     {
-        // Arrange
-        // No setup required - testing invalid argument rejection
+        // Arrange - No setup required; unknown flags are rejected by Context.Create
 
-        // Act & Assert
+        // Act & Assert - Context.Create itself throws for unrecognized flags
         Assert.ThrowsExactly<ArgumentException>(() =>
         {
             using var context = Context.Create(["--unknown-flag-xyz"]);

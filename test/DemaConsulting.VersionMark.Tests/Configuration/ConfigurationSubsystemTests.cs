@@ -94,10 +94,22 @@ public class ConfigurationSubsystemTests
             var config = VersionMarkConfig.ReadFromFile(tempFile);
             var effectiveCommand = config.Tools["dotnet"].GetEffectiveCommand();
 
-            // Assert - The effective command should be a non-empty string appropriate for the current OS
-            Assert.IsNotNull(effectiveCommand);
-            Assert.IsFalse(string.IsNullOrEmpty(effectiveCommand),
-                "Effective command should be selected from the config based on the current OS");
+            // Assert - The effective command should match the OS-specific override for the current platform
+            if (OperatingSystem.IsWindows())
+            {
+                Assert.AreEqual("dotnet.exe --version", effectiveCommand,
+                    "On Windows the Windows override should be selected");
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                Assert.AreEqual("dotnet-linux --version", effectiveCommand,
+                    "On Linux the Linux override should be selected");
+            }
+            else
+            {
+                Assert.AreEqual("dotnet --version", effectiveCommand,
+                    "On other platforms the default command should be selected");
+            }
         }
         finally
         {
@@ -129,8 +141,22 @@ public class ConfigurationSubsystemTests
             var tool = config.Tools["dotnet"];
             var effectiveRegex = tool.GetEffectiveRegex();
 
-            // Assert
-            Assert.IsTrue(effectiveRegex.Length > 0);
+            // Assert - The effective regex should match the OS-specific override for the current platform
+            if (OperatingSystem.IsWindows())
+            {
+                Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)-win", effectiveRegex,
+                    "On Windows the Windows regex override should be selected");
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)-linux", effectiveRegex,
+                    "On Linux the Linux regex override should be selected");
+            }
+            else
+            {
+                Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", effectiveRegex,
+                    "On other platforms the default regex should be selected");
+            }
         }
         finally
         {
@@ -169,7 +195,7 @@ public class ConfigurationSubsystemTests
     {
         // Arrange
         var tempFile = Path.GetTempFileName() + ".yaml";
-        File.WriteAllText(tempFile, "not: valid: yaml: content: : ::");
+        File.WriteAllText(tempFile, "invalid: yaml: content: [[[");
 
         try
         {
