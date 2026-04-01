@@ -12,8 +12,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
+              - CaptureSubsystem_Context_CaptureFlag_SetsCaptureMode
 
           - id: VersionMark-Capture-JobId
             title: The tool shall require --job-id parameter when capture mode is enabled.
@@ -23,8 +22,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
-              - IntegrationTest_CaptureCommandWithoutJobId_ReturnsError
+              - CaptureSubsystem_Context_WithJobId_SetsJobId
 
           - id: VersionMark-Capture-Output
             title: The tool shall support --output parameter to specify the JSON output file path.
@@ -34,8 +32,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
+              - CaptureSubsystem_SaveAndLoad_PreservesAllVersionData
 
           - id: VersionMark-Capture-DefaultOutput
             title: The tool shall default output filename to versionmark-<job-id>.json when --output is not specified.
@@ -45,7 +42,7 @@ sections:
             tags:
               - capture
             tests:
-              - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
+              - CaptureSubsystem_Run_NoOutputFlagSpecified_UsesDefaultFilename
 
           - id: VersionMark-Capture-ToolFilter
             title: The tool shall accept an optional list of tool names after -- separator in capture mode.
@@ -55,8 +52,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
+              - CaptureSubsystem_Context_WithToolFilter_SetsToolNames
 
           - id: VersionMark-Capture-MultipleTools
             title: The tool shall capture all tools defined in configuration when no tool names are specified.
@@ -66,7 +62,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommandNoToolFilter_CapturesAllConfiguredTools
+              - CaptureSubsystem_Run_NoToolFilter_CapturesAllConfiguredTools
 
           - id: VersionMark-Capture-Config
             title: The tool shall read .versionmark.yaml from the current directory in capture mode.
@@ -76,10 +72,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
-              - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
-              - IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError
+              - CaptureSubsystem_Config_ReadFromFile_LoadsToolDefinitions
 
           - id: VersionMark-Capture-Command
             title: The tool shall execute configured commands and extract version information using regex patterns.
@@ -89,8 +82,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
+              - CaptureSubsystem_FindVersions_ExecutesCommandAndExtractsVersion
 
           - id: VersionMark-Capture-JsonOutput
             title: The tool shall save captured version information to a JSON file with job ID and version mappings.
@@ -100,9 +92,8 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
+              - CaptureSubsystem_SaveAndLoad_PreservesAllVersionData
+              - CaptureSubsystem_MultipleCaptures_EachFileHasDistinctJobId
 
           - id: VersionMark-Capture-Display
             title: The tool shall display captured tool names and versions to the user.
@@ -112,8 +103,7 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommand_CapturesToolVersions
-              - IntegrationTest_CaptureCommand_CapturesToolVersions
+              - CaptureSubsystem_Run_DisplaysCapturedVersionsAfterCapture
 
           - id: VersionMark-Capture-ConfigError
             title: The tool shall report errors when .versionmark.yaml cannot be found or read in capture mode.
@@ -123,5 +113,4 @@ sections:
             tags:
               - capture
             tests:
-              - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
-              - IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError
+              - CaptureSubsystem_LoadFromFile_NonExistentFile_ThrowsArgumentException

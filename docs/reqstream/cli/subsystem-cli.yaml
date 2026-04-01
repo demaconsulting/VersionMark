@@ -12,13 +12,8 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_NoArguments_ReturnsDefaultContext
-              - Context_Create_VersionFlag_SetsVersionTrue
-              - Context_Create_HelpFlag_SetsHelpTrue
-              - Context_Create_SilentFlag_SetsSilentTrue
-              - Context_Create_ValidateFlag_SetsValidateTrue
-              - Context_Create_ResultsFlag_SetsResultsFile
-              - Context_Create_LogFlag_OpensLogFile
+              - CliSubsystem_Run_VersionFlag_ExitsCleanly
+              - CliSubsystem_Run_SilentWithVersionFlag_SuppressesOutput
 
           - id: VersionMark-CommandLine-Version
             title: The tool shall support -v and --version flags to display version information.
@@ -28,10 +23,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_VersionFlag_SetsVersionTrue
-              - Context_Create_ShortVersionFlag_SetsVersionTrue
-              - Program_Run_WithVersionFlag_DisplaysVersionOnly
-              - IntegrationTest_VersionFlag_OutputsVersion
+              - CliSubsystem_Run_VersionFlag_ExitsCleanly
 
           - id: VersionMark-CommandLine-Help
             title: The tool shall support -?, -h, and --help flags to display usage information.
@@ -41,11 +33,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_HelpFlag_SetsHelpTrue
-              - Context_Create_ShortHelpFlag_H_SetsHelpTrue
-              - Context_Create_ShortHelpFlag_Question_SetsHelpTrue
-              - Program_Run_WithHelpFlag_DisplaysUsageInformation
-              - IntegrationTest_HelpFlag_OutputsUsageInformation
+              - CliSubsystem_Run_HelpFlag_DisplaysUsageInformation
 
           - id: VersionMark-CommandLine-Silent
             title: The tool shall support --silent flag to suppress console output.
@@ -55,9 +43,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_SilentFlag_SetsSilentTrue
-              - Context_WriteLine_Silent_DoesNotWriteToConsole
-              - IntegrationTest_SilentFlag_SuppressesOutput
+              - CliSubsystem_Run_SilentWithVersionFlag_SuppressesOutput
 
           - id: VersionMark-CommandLine-Validate
             title: The tool shall support --validate flag to run self-validation tests.
@@ -67,9 +53,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_ValidateFlag_SetsValidateTrue
-              - Program_Run_WithValidateFlag_RunsValidation
-              - IntegrationTest_ValidateFlag_RunsValidation
+              - CliSubsystem_Run_ValidateFlag_RunsValidation
 
           - id: VersionMark-CommandLine-Results
             title: The tool shall support --results flag to write validation results in TRX or JUnit format.
@@ -78,9 +62,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_ResultsFlag_SetsResultsFile
-              - IntegrationTest_ValidateWithResults_GeneratesTrxFile
-              - IntegrationTest_ValidateWithResults_GeneratesJUnitFile
+              - CliSubsystem_Run_ResultsFlag_WritesResultsFile
 
           - id: VersionMark-CommandLine-Log
             title: The tool shall support --log flag to write output to a log file.
@@ -89,8 +71,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_LogFlag_OpensLogFile
-              - IntegrationTest_LogFlag_WritesOutputToFile
+              - CliSubsystem_Run_LogFlag_WritesOutputToLogFile
 
           - id: VersionMark-CommandLine-ErrorOutput
             title: The tool shall write error messages to stderr.
@@ -100,8 +81,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_WriteError_NotSilent_WritesToConsole
-              - IntegrationTest_UnknownArgument_ReturnsError
+              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-InvalidArgs
             title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
@@ -111,10 +91,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_Create_UnknownArgument_ThrowsArgumentException
-              - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
-              - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
-              - IntegrationTest_UnknownArgument_ReturnsError
+              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-ExitCode
             title: The tool shall return a non-zero exit code on failure.
@@ -124,8 +101,7 @@ sections:
             tags:
               - cli
             tests:
-              - Context_WriteError_SetsErrorExitCode
-              - IntegrationTest_UnknownArgument_ReturnsError
+              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-Lint
             title: The tool shall support --lint to check the configuration file for issues.
@@ -137,15 +113,4 @@ sections:
               - cli
               - lint
             tests:
-              - Context_Create_LintFlag_SetsLintTrue
-              - Context_Create_LintFlag_WithFile_SetsLintFile
-              - Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile
-              - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
-              - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
-              - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
-              - Program_Run_WithHelpFlag_IncludesLintInformation
-              - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
-              - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
-              - IntegrationTest_LintFlag_MissingConfig_ReturnsError
-              - VersionMark_LintPassesForValidConfig
-              - VersionMark_LintReportsErrorsForInvalidConfig
+              - CliSubsystem_Run_LintFlag_ValidConfig_Succeeds

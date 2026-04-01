@@ -12,7 +12,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_MissingFile_ReturnsFalse
+              - LintingSubsystem_Lint_NonExistentFile_Fails
 
           - id: VersionMark-Lint-YamlParsing
             title: The tool shall report an error when the configuration file contains invalid YAML.
@@ -22,7 +22,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_InvalidYaml_ReturnsFalse
+              - LintingSubsystem_Lint_InvalidYaml_Fails
 
           - id: VersionMark-Lint-ToolsSection
             title: The tool shall report an error when the configuration file is missing a non-empty 'tools' section.
@@ -32,8 +32,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_MissingToolsSection_ReturnsFalse
-              - Lint_Run_EmptyToolsSection_ReturnsFalse
+              - LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass
 
           - id: VersionMark-Lint-ToolCommand
             title: The tool shall report an error when a tool is missing a non-empty 'command' field.
@@ -43,8 +42,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_MissingCommand_ReturnsFalse
-              - Lint_Run_EmptyCommand_ReturnsFalse
+              - LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass
 
           - id: VersionMark-Lint-ToolRegex
             title: The tool shall report an error when a tool is missing a non-empty 'regex' field.
@@ -54,8 +52,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_MissingRegex_ReturnsFalse
-              - Lint_Run_EmptyRegex_ReturnsFalse
+              - LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass
 
           - id: VersionMark-Lint-RegexValid
             title: The tool shall report an error when a regex value cannot be compiled.
@@ -65,8 +62,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_InvalidRegex_ReturnsFalse
-              - Lint_Run_OsSpecificInvalidRegex_ReturnsFalse
+              - LintingSubsystem_Lint_InvalidRegex_ReportsError
 
           - id: VersionMark-Lint-RegexVersion
             title: The tool shall report an error when a regex does not contain a named 'version' capture group.
@@ -76,7 +72,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_RegexMissingVersionGroup_ReturnsFalse
+              - LintingSubsystem_Lint_RegexWithoutVersionGroup_ReportsError
 
           - id: VersionMark-Lint-OsOverrides
             title: The tool shall report an error when an OS-specific command or regex override is empty.
@@ -87,9 +83,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_OsSpecificEmptyCommand_ReturnsFalse
-              - Lint_Run_OsSpecificEmptyRegex_ReturnsFalse
-              - Lint_Run_OsSpecificRegexMissingVersionGroup_ReturnsFalse
+              - LintingSubsystem_Lint_EmptyOsSpecificOverride_ReportsError
 
           - id: VersionMark-Lint-UnknownKeys
             title: The tool shall report unknown keys as non-fatal warnings that do not fail lint.
@@ -100,8 +94,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_UnknownTopLevelKey_ReturnsTrue
-              - Lint_Run_UnknownToolKey_ReturnsTrue
+              - LintingSubsystem_Lint_UnknownKey_IsWarningNotError
 
           - id: VersionMark-Lint-ErrorLocation
             title: The tool shall report all lint findings with the filename and line/column location.
@@ -111,7 +104,7 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_ErrorMessageContainsFileName
+              - LintingSubsystem_Lint_Error_IncludesFileAndLineInfo
 
           - id: VersionMark-Lint-AllIssues
             title: The tool shall report all lint issues in a single pass without stopping at the first error.
@@ -121,4 +114,4 @@ sections:
             tags:
               - lint
             tests:
-              - Lint_Run_MultipleErrors_ReportsAll
+              - LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass

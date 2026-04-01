@@ -9,7 +9,7 @@ sections:
           present in each CI/CD job so that version differences across environments
           can be detected and reported.
         tests:
-          - VersionMark_CapturesVersions
+          - IntegrationTest_CaptureCommand_CapturesToolVersions
 
       - id: VersionMark-System-Publish
         title: The tool shall publish collected version information as a markdown report.
@@ -18,7 +18,7 @@ sections:
           Publishing to markdown enables the report to be included in release
           documentation and artifact archives.
         tests:
-          - VersionMark_GeneratesMarkdownReport
+          - VersionMark_PublishCommand_GeneratesMarkdownReport
 
       - id: VersionMark-System-Lint
         title: The tool shall validate configuration files and report issues before capture or publish is run.
@@ -27,8 +27,8 @@ sections:
           wasted build time and provides precise error locations so users can fix
           problems quickly.
         tests:
-          - VersionMark_LintPassesForValidConfig
-          - VersionMark_LintReportsErrorsForInvalidConfig
+          - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
+          - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
 
       - id: VersionMark-System-Validate
         title: The tool shall verify its own correct installation and functionality.
@@ -37,5 +37,4 @@ sections:
           tool is functioning correctly in the deployment environment without
           requiring external fixtures or test data.
         tests:
-          - VersionMark_CapturesVersions
-          - VersionMark_GeneratesMarkdownReport
+          - IntegrationTest_ValidateFlag_RunsValidation
