@@ -101,6 +101,8 @@ sections:
               - capture
             tests:
               - Program_Run_WithCaptureCommand_CapturesToolVersions
+              - CaptureSubsystem_SaveAndLoad_PreservesAllVersionData
+              - CaptureSubsystem_MultipleCaptures_EachFileHasDistinctJobId
               - IntegrationTest_CaptureCommand_CapturesToolVersions
               - IntegrationTest_CaptureCommandWithDefaultOutput_UsesDefaultFilename
 

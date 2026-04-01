@@ -13,6 +13,7 @@ sections:
               - lint
             tests:
               - Lint_Run_MissingFile_ReturnsFalse
+              - LintingSubsystem_Lint_ValidConfig_SucceedsWithZeroExitCode
 
           - id: VersionMark-Lint-YamlParsing
             title: The tool shall report an error when the configuration file contains invalid YAML.
@@ -122,3 +123,4 @@ sections:
               - lint
             tests:
               - Lint_Run_MultipleErrors_ReportsAll
+              - LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass

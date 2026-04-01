@@ -51,8 +51,7 @@ reviews:
       - "docs/design/cli/cli.md"                     # subsystem design
       - "docs/design/cli/program.md"                 # Program unit design
       - "docs/design/cli/context.md"                 # Context unit design
-      - "test/**/ProgramTests.cs"
-      - "test/**/IntegrationTests.cs"
+      - "test/**/Cli/CliSubsystemTests.cs"           # subsystem tests
 
   - id: VersionMark-Program-Review
     title: Review of Program Unit
@@ -61,7 +60,6 @@ reviews:
       - "docs/design/cli/program.md"                 # design
       - "src/**/Program.cs"                          # implementation
       - "test/**/ProgramTests.cs"                    # unit tests
-      - "test/**/IntegrationTests.cs"                # integration tests
 
   - id: VersionMark-Context-Review
     title: Review of Context Unit
@@ -75,11 +73,11 @@ reviews:
   - id: VersionMark-Configuration-Subsystem
     title: Review of Configuration Subsystem
     paths:
-      - "docs/reqstream/configuration/subsystem-configuration.yaml"   # subsystem requirements
-      - "docs/design/configuration/configuration.md"                  # subsystem design
-      - "docs/design/configuration/version-mark-config.md"            # VersionMarkConfig unit design
-      - "docs/design/configuration/tool-config.md"                    # ToolConfig unit design
-      - "test/**/Configuration/VersionMarkConfigTests.cs"
+      - "docs/reqstream/configuration/subsystem-configuration.yaml"         # subsystem requirements
+      - "docs/design/configuration/configuration.md"                        # subsystem design
+      - "docs/design/configuration/version-mark-config.md"                  # VersionMarkConfig unit design
+      - "docs/design/configuration/tool-config.md"                          # ToolConfig unit design
+      - "test/**/Configuration/ConfigurationSubsystemTests.cs"              # subsystem tests
 
   - id: VersionMark-VersionMarkConfig-Review
     title: Review of VersionMarkConfig Unit
@@ -101,10 +99,10 @@ reviews:
   - id: VersionMark-Capture-Subsystem
     title: Review of Capture Subsystem
     paths:
-      - "docs/reqstream/capture/subsystem-capture.yaml"  # subsystem requirements
-      - "docs/design/capture/capture.md"                 # subsystem design
-      - "docs/design/capture/version-info.md"            # VersionInfo unit design
-      - "test/**/Capture/VersionInfoTests.cs"
+      - "docs/reqstream/capture/subsystem-capture.yaml"           # subsystem requirements
+      - "docs/design/capture/capture.md"                          # subsystem design
+      - "docs/design/capture/version-info.md"                     # VersionInfo unit design
+      - "test/**/Capture/CaptureSubsystemTests.cs"                # subsystem tests
 
   - id: VersionMark-VersionInfo-Review
     title: Review of VersionInfo Unit
@@ -118,10 +116,10 @@ reviews:
   - id: VersionMark-Publishing-Subsystem
     title: Review of Publishing Subsystem
     paths:
-      - "docs/reqstream/publishing/subsystem-publishing.yaml"    # subsystem requirements
-      - "docs/design/publishing/publishing.md"                   # subsystem design
-      - "docs/design/publishing/markdown-formatter.md"           # MarkdownFormatter unit design
-      - "test/**/Publishing/MarkdownFormatterTests.cs"
+      - "docs/reqstream/publishing/subsystem-publishing.yaml"        # subsystem requirements
+      - "docs/design/publishing/publishing.md"                       # subsystem design
+      - "docs/design/publishing/markdown-formatter.md"               # MarkdownFormatter unit design
+      - "test/**/Publishing/PublishingSubsystemTests.cs"             # subsystem tests
 
   - id: VersionMark-MarkdownFormatter-Review
     title: Review of MarkdownFormatter Unit
@@ -135,10 +133,10 @@ reviews:
   - id: VersionMark-Linting-Subsystem
     title: Review of Linting Subsystem
     paths:
-      - "docs/reqstream/linting/subsystem-linting.yaml"  # subsystem requirements
-      - "docs/design/linting/linting.md"                 # subsystem design
-      - "docs/design/linting/lint.md"                    # Lint unit design
-      - "test/**/Linting/LintTests.cs"
+      - "docs/reqstream/linting/subsystem-linting.yaml"          # subsystem requirements
+      - "docs/design/linting/linting.md"                         # subsystem design
+      - "docs/design/linting/lint.md"                            # Lint unit design
+      - "test/**/Linting/LintingSubsystemTests.cs"               # subsystem tests
 
   - id: VersionMark-Lint-Review
     title: Review of Lint Unit
@@ -152,10 +150,11 @@ reviews:
   - id: VersionMark-SelfTest-Subsystem
     title: Review of SelfTest Subsystem
     paths:
-      - "docs/reqstream/self-test/subsystem-selftest.yaml"  # subsystem requirements
-      - "docs/design/self-test/self-test.md"                # subsystem design
-      - "docs/design/self-test/validation.md"               # Validation unit design
-      - "docs/design/self-test/path-helpers.md"             # PathHelpers unit design
+      - "docs/reqstream/self-test/subsystem-selftest.yaml"          # subsystem requirements
+      - "docs/design/self-test/self-test.md"                        # subsystem design
+      - "docs/design/self-test/validation.md"                       # Validation unit design
+      - "docs/design/self-test/path-helpers.md"                     # PathHelpers unit design
+      - "test/**/SelfTest/SelfTestSubsystemTests.cs"                # subsystem tests
 
   - id: VersionMark-Validation-Review
     title: Review of Validation Unit

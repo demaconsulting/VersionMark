@@ -31,6 +31,7 @@ sections:
               - Context_Create_VersionFlag_SetsVersionTrue
               - Context_Create_ShortVersionFlag_SetsVersionTrue
               - Program_Run_WithVersionFlag_DisplaysVersionOnly
+              - CliSubsystem_Run_VersionFlag_ExitsCleanly
               - IntegrationTest_VersionFlag_OutputsVersion
 
           - id: VersionMark-CommandLine-Help
@@ -57,6 +58,7 @@ sections:
             tests:
               - Context_Create_SilentFlag_SetsSilentTrue
               - Context_WriteLine_Silent_DoesNotWriteToConsole
+              - CliSubsystem_Run_SilentWithVersionFlag_SuppressesOutput
               - IntegrationTest_SilentFlag_SuppressesOutput
 
           - id: VersionMark-CommandLine-Validate

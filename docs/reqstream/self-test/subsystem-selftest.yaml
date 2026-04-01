@@ -14,6 +14,8 @@ sections:
               - validation
             tests:
               - VersionMark_CapturesVersions
+              - SelfTestSubsystem_PathHelpers_PathTraversal_ThrowsArgumentException
+              - SelfTestSubsystem_PathHelpers_ValidRelativePath_ProducesExpectedPath
 
           - id: VersionMark-Validate-Publish
             title: The tool shall verify the publish workflow end-to-end during self-validation.

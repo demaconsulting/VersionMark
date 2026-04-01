@@ -64,6 +64,8 @@ sections:
               - publish
             tests:
               - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - PublishingSubsystem_Format_MultipleCaptureFiles_ProducesConsolidatedReport
+              - PublishingSubsystem_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions
 
           - id: VersionMark-Publish-ConflictReport
             title: The tool shall report errors when no JSON files match the specified glob patterns.

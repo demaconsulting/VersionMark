@@ -14,6 +14,7 @@ sections:
             tests:
               - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
               - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+              - ConfigurationSubsystem_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-ToolDefinition
             title: The tool shall support tool definitions with command and regex properties.
@@ -39,6 +40,7 @@ sections:
               - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
               - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
               - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+              - ConfigurationSubsystem_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand
 
           - id: VersionMark-Configuration-OsRegexOverride
             title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
