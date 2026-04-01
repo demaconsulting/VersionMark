@@ -61,6 +61,8 @@ sections:
               during lint gives the user a clear error with a precise file location.
             tags:
               - lint
+            tests:
+              - LintingSubsystem_Lint_InvalidRegex_ReportsError
 
           - id: VersionMark-Lint-RegexVersion
             title: The tool shall report an error when a regex does not contain a named 'version' capture group.
@@ -69,6 +71,8 @@ sections:
               extracts the version string. Its absence causes silent data loss at runtime.
             tags:
               - lint
+            tests:
+              - LintingSubsystem_Lint_RegexWithoutVersionGroup_ReportsError
 
           - id: VersionMark-Lint-OsOverrides
             title: The tool shall report an error when an OS-specific command or regex override is empty.
@@ -78,6 +82,8 @@ sections:
               platform-specific surprises.
             tags:
               - lint
+            tests:
+              - LintingSubsystem_Lint_EmptyOsSpecificOverride_ReportsError
 
           - id: VersionMark-Lint-UnknownKeys
             title: The tool shall report unknown keys as non-fatal warnings that do not fail lint.
@@ -87,6 +93,8 @@ sections:
               proceeding.
             tags:
               - lint
+            tests:
+              - LintingSubsystem_Lint_UnknownKey_IsWarningNotError
 
           - id: VersionMark-Lint-ErrorLocation
             title: The tool shall report all lint findings with the filename and line/column location.
@@ -95,6 +103,8 @@ sections:
               problem in their editor, dramatically reducing the time needed to fix issues.
             tags:
               - lint
+            tests:
+              - LintingSubsystem_Lint_Error_IncludesFileAndLineInfo
 
           - id: VersionMark-Lint-AllIssues
             title: The tool shall report all lint issues in a single pass without stopping at the first error.

@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.SelfTest;
 
 namespace DemaConsulting.VersionMark.Tests.SelfTest;
@@ -76,5 +77,37 @@ public class SelfTestSubsystemTests
 
         // Act & Assert
         Assert.IsTrue(File.Exists(dllPath));
+    }
+
+    /// <summary>
+    ///     Test that the self-validation pipeline writes results to a TRX file when --results is specified.
+    /// </summary>
+    [TestMethod]
+    public void SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile()
+    {
+        // Arrange - Set up a TRX results file path
+        var resultsFile = Path.GetTempFileName() + ".trx";
+        try
+        {
+            using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
+
+            // Act - Run self-validation with --results to write TRX output
+            Program.Run(context);
+
+            // Assert - The TRX file should exist and contain XML content
+            Assert.AreEqual(0, context.ExitCode);
+            Assert.IsTrue(File.Exists(resultsFile),
+                "Self-validation should write results to the file specified by --results");
+            var content = File.ReadAllText(resultsFile);
+            Assert.IsTrue(content.Contains("TestRun") || content.Contains("testsuites"),
+                "Results file should contain TRX or JUnit test result data");
+        }
+        finally
+        {
+            if (File.Exists(resultsFile))
+            {
+                File.Delete(resultsFile);
+            }
+        }
     }
 }

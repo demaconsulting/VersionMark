@@ -164,4 +164,66 @@ public class CliSubsystemTests
             File.Delete(tempFile);
         }
     }
+
+    /// <summary>
+    ///     Test that the full CLI pipeline with --results flag writes validation results to a file.
+    /// </summary>
+    [TestMethod]
+    public void CliSubsystem_Run_ResultsFlag_WritesResultsFile()
+    {
+        // Arrange - Set up a results file path that should be written during --validate
+        var resultsFile = Path.GetTempFileName() + ".trx";
+        try
+        {
+            using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
+
+            // Act - Run the full CLI pipeline with both --validate and --results
+            Program.Run(context);
+
+            // Assert - The results file should exist and contain TRX content
+            Assert.AreEqual(0, context.ExitCode);
+            Assert.IsTrue(File.Exists(resultsFile),
+                "Results file should be written when --results flag is specified");
+            var content = File.ReadAllText(resultsFile);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(content),
+                "Results file should contain test result data");
+        }
+        finally
+        {
+            if (File.Exists(resultsFile))
+            {
+                File.Delete(resultsFile);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the full CLI pipeline with --log flag writes output to a log file.
+    /// </summary>
+    [TestMethod]
+    public void CliSubsystem_Run_LogFlag_WritesOutputToLogFile()
+    {
+        // Arrange - Set up a log file that should be written with version output
+        var logFile = Path.GetTempFileName();
+        try
+        {
+            using var context = Context.Create(["--version", "--log", logFile]);
+
+            // Act - Run the full CLI pipeline with --log
+            Program.Run(context);
+
+            // Assert - The log file should contain the version output
+            Assert.AreEqual(0, context.ExitCode);
+            var logContent = File.ReadAllText(logFile);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(logContent),
+                "Log file should contain output when --log flag is specified");
+        }
+        finally
+        {
+            if (File.Exists(logFile))
+            {
+                File.Delete(logFile);
+            }
+        }
+    }
 }

@@ -19,7 +19,9 @@
 // SOFTWARE.
 
 using DemaConsulting.VersionMark.Capture;
+using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.Publishing;
+using DemaConsulting.VersionMark.SelfTest;
 
 namespace DemaConsulting.VersionMark.Tests.Publishing;
 
@@ -129,5 +131,126 @@ public class PublishingSubsystemTests
 
         // Assert
         StringAssert.Contains(report, "###");
+    }
+
+    /// <summary>
+    ///     Test that the publishing pipeline requires the --report parameter and reports an error when it is missing.
+    /// </summary>
+    [TestMethod]
+    public void PublishingSubsystem_Run_WithoutReport_ReportsError()
+    {
+        // Arrange - Create a publish context without --report
+        var originalError = Console.Error;
+        try
+        {
+            using var errWriter = new StringWriter();
+            Console.SetError(errWriter);
+            using var context = Context.Create(["--publish"]);
+
+            // Act - Run the publish pipeline without --report
+            Program.Run(context);
+
+            // Assert - An error should be reported and exit code should be non-zero
+            Assert.AreEqual(1, context.ExitCode,
+                "Publishing without --report should result in a non-zero exit code");
+            StringAssert.Contains(errWriter.ToString(), "--report",
+                "Error message should mention the missing --report parameter");
+        }
+        finally
+        {
+            Console.SetError(originalError);
+        }
+    }
+
+    /// <summary>
+    ///     Test that the publishing pipeline accepts glob patterns after -- and reads all matching files.
+    /// </summary>
+    [TestMethod]
+    public void PublishingSubsystem_Run_WithGlobPattern_ReadsMatchingFiles()
+    {
+        // Arrange - Create a temp directory with JSON files and use a glob pattern to match them
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            var versionInfo = new VersionInfo("job-glob", new Dictionary<string, string> { ["dotnet"] = "8.0.100" });
+            versionInfo.SaveToFile(PathHelpers.SafePathCombine(tempDir, "versionmark-glob-job.json"));
+            Directory.SetCurrentDirectory(tempDir);
+
+            using var context = Context.Create([
+                "--publish", "--report", reportFile, "--silent", "--", "versionmark-*.json"
+            ]);
+
+            // Act - Run the publish pipeline with a glob pattern
+            Program.Run(context);
+
+            // Assert - The report should have been generated from the matched file
+            Assert.AreEqual(0, context.ExitCode,
+                "Publishing with a valid glob pattern should succeed");
+            Assert.IsTrue(File.Exists(reportFile),
+                "Report file should be created when glob pattern matches files");
+            StringAssert.Contains(File.ReadAllText(reportFile), "dotnet",
+                "Report should contain content from the matched JSON file");
+        }
+        finally
+        {
+            Console.SetOut(Console.Out);
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the publishing pipeline reports an error when a JSON file is malformed.
+    /// </summary>
+    [TestMethod]
+    public void PublishingSubsystem_Run_WithMalformedJsonFile_ReportsError()
+    {
+        // Arrange - Create a temp directory with a malformed JSON file
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(
+                PathHelpers.SafePathCombine(tempDir, "versionmark-bad.json"),
+                "{ this is not valid JSON }");
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalError = Console.Error;
+            try
+            {
+                using var errWriter = new StringWriter();
+                Console.SetError(errWriter);
+                using var context = Context.Create([
+                    "--publish", "--report", reportFile, "--", "versionmark-*.json"
+                ]);
+
+                // Act - Run the publish pipeline with a malformed JSON file
+                Program.Run(context);
+
+                // Assert - An error should be reported
+                Assert.AreEqual(1, context.ExitCode,
+                    "Publishing with malformed JSON should result in a non-zero exit code");
+            }
+            finally
+            {
+                Console.SetError(originalError);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
     }
 }

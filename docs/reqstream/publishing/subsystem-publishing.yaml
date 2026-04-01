@@ -41,6 +41,8 @@ sections:
               preventing ambiguity about where the report will be saved.
             tags:
               - publish
+            tests:
+              - PublishingSubsystem_Run_WithoutReport_ReportsError
 
           - id: VersionMark-Publish-GlobPattern
             title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
@@ -49,6 +51,8 @@ sections:
               the report using standard glob patterns like versionmark-*.json.
             tags:
               - publish
+            tests:
+              - PublishingSubsystem_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-Consolidate
             title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
@@ -78,3 +82,5 @@ sections:
               helping users identify and fix data quality issues.
             tags:
               - publish
+            tests:
+              - PublishingSubsystem_Run_WithMalformedJsonFile_ReportsError

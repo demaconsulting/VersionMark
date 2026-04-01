@@ -47,3 +47,5 @@ sections:
               and display self-validation outcomes without custom tooling.
             tags:
               - validation
+            tests:
+              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile

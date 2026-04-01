@@ -19,6 +19,9 @@
 // SOFTWARE.
 
 using DemaConsulting.VersionMark.Capture;
+using DemaConsulting.VersionMark.Cli;
+using DemaConsulting.VersionMark.Configuration;
+using DemaConsulting.VersionMark.SelfTest;
 
 namespace DemaConsulting.VersionMark.Tests.Capture;
 
@@ -112,5 +115,268 @@ public class CaptureSubsystemTests
 
         // Act & Assert
         Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentPath));
+    }
+
+    /// <summary>
+    ///     Test that Context correctly sets the capture mode flag when --capture is specified.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Context_CaptureFlag_SetsCaptureMode()
+    {
+        // Arrange & Act - Create a context with --capture and required --job-id
+        using var context = Context.Create(["--capture", "--job-id", "test-job"]);
+
+        // Assert - The capture flag should be set
+        Assert.IsTrue(context.Capture,
+            "Context should indicate capture mode when --capture flag is specified");
+    }
+
+    /// <summary>
+    ///     Test that Context correctly stores the job ID from --job-id parameter.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Context_WithJobId_SetsJobId()
+    {
+        // Arrange & Act - Create a context with --capture and a specific job ID
+        using var context = Context.Create(["--capture", "--job-id", "my-build-job"]);
+
+        // Assert - The job ID should be stored on the context
+        Assert.AreEqual("my-build-job", context.JobId,
+            "Context should store the job ID specified via --job-id");
+    }
+
+    /// <summary>
+    ///     Test that when --output is not specified, the default filename includes the job ID.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Run_NoOutputFlagSpecified_UsesDefaultFilename()
+    {
+        // Arrange - Set up temp directory with config; run without --output so default filename is used
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(
+                PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml"),
+                """
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                """);
+            Directory.SetCurrentDirectory(tempDir);
+
+            using var context = Context.Create(["--capture", "--job-id", "default-job", "--silent"]);
+
+            // Act - Run capture without specifying --output
+            Program.Run(context);
+
+            // Assert - The default output file versionmark-<job-id>.json should exist
+            var defaultFile = PathHelpers.SafePathCombine(tempDir, "versionmark-default-job.json");
+            Assert.IsTrue(File.Exists(defaultFile),
+                "Default output file 'versionmark-<job-id>.json' should be created when --output is not specified");
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that Context correctly stores tool names from the -- separator.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Context_WithToolFilter_SetsToolNames()
+    {
+        // Arrange & Act - Create a context with --capture and tool names after --
+        using var context = Context.Create(["--capture", "--job-id", "x", "--", "dotnet", "git"]);
+
+        // Assert - The tool names should be stored
+        Assert.AreEqual(2, context.ToolNames.Length,
+            "Context should store tool names specified after the -- separator");
+        Assert.IsTrue(context.ToolNames.Contains("dotnet"));
+        Assert.IsTrue(context.ToolNames.Contains("git"));
+    }
+
+    /// <summary>
+    ///     Test that capture without a tool filter captures all tools defined in configuration.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Run_NoToolFilter_CapturesAllConfiguredTools()
+    {
+        // Arrange - Set up temp directory with a two-tool config; no tool filter specified
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var outputFile = PathHelpers.SafePathCombine(tempDir, "output.json");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(
+                PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml"),
+                """
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                  git:
+                    command: git --version
+                    regex: 'git version (?<version>[\d\.]+)'
+                """);
+            Directory.SetCurrentDirectory(tempDir);
+
+            using var context = Context.Create([
+                "--capture", "--job-id", "all-tools-job", "--output", outputFile, "--silent"
+            ]);
+
+            // Act - Run capture without any tool filter
+            Program.Run(context);
+
+            // Assert - Both tools should appear in the saved output
+            Assert.AreEqual(0, context.ExitCode);
+            var versionInfo = VersionInfo.LoadFromFile(outputFile);
+            Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"),
+                "All configured tools should be captured when no tool filter is specified");
+            Assert.IsTrue(versionInfo.Versions.ContainsKey("git"),
+                "All configured tools should be captured when no tool filter is specified");
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that VersionMarkConfig.ReadFromFile correctly loads tool definitions from a YAML file.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Config_ReadFromFile_LoadsToolDefinitions()
+    {
+        // Arrange - Write a .versionmark.yaml file to a temp path
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        try
+        {
+            File.WriteAllText(tempFile, """
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                  git:
+                    command: git --version
+                    regex: 'git version (?<version>[\d\.]+)'
+                """);
+
+            // Act - Read the configuration from the file (simulates reading .versionmark.yaml)
+            var config = VersionMarkConfig.ReadFromFile(tempFile);
+
+            // Assert - All tool definitions should be loaded
+            Assert.IsNotNull(config);
+            Assert.IsTrue(config.Tools.ContainsKey("dotnet"),
+                "ReadFromFile should load all tools from the configuration file");
+            Assert.IsTrue(config.Tools.ContainsKey("git"),
+                "ReadFromFile should load all tools from the configuration file");
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that FindVersions executes the configured command and extracts the version via regex.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_FindVersions_ExecutesCommandAndExtractsVersion()
+    {
+        // Arrange - Create a configuration for dotnet (always available in the build environment)
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        try
+        {
+            File.WriteAllText(tempFile, """
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                """);
+            var config = VersionMarkConfig.ReadFromFile(tempFile);
+
+            // Act - Run the capture pipeline for the dotnet tool
+            var versionInfo = config.FindVersions(["dotnet"], "test-capture-job");
+
+            // Assert - A version string should have been extracted
+            Assert.IsNotNull(versionInfo);
+            Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"),
+                "FindVersions should capture the dotnet version");
+            Assert.IsFalse(string.IsNullOrEmpty(versionInfo.Versions["dotnet"]),
+                "Captured version should be a non-empty string");
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that the capture pipeline displays captured tool versions to the user.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_Run_DisplaysCapturedVersionsAfterCapture()
+    {
+        // Arrange - Set up temp directory with config and redirect console output to capture it
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var outputFile = PathHelpers.SafePathCombine(tempDir, "output.json");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(
+                PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml"),
+                """
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                """);
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalOut = Console.Out;
+            try
+            {
+                using var outWriter = new StringWriter();
+                Console.SetOut(outWriter);
+                using var context = Context.Create([
+                    "--capture", "--job-id", "display-job", "--output", outputFile
+                ]);
+
+                // Act - Run the full capture pipeline
+                Program.Run(context);
+
+                // Assert - Tool names and versions should appear in the output
+                var output = outWriter.ToString();
+                Assert.AreEqual(0, context.ExitCode);
+                Assert.IsTrue(output.Contains("dotnet"),
+                    "Capture output should display captured tool names to the user");
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
     }
 }

@@ -61,6 +61,8 @@ sections:
               Enables integration with CI/CD systems that expect standard test result formats.
             tags:
               - cli
+            tests:
+              - CliSubsystem_Run_ResultsFlag_WritesResultsFile
 
           - id: VersionMark-CommandLine-Log
             title: The tool shall support --log flag to write output to a log file.
@@ -68,6 +70,8 @@ sections:
               Provides persistent logging for debugging and audit trails.
             tags:
               - cli
+            tests:
+              - CliSubsystem_Run_LogFlag_WritesOutputToLogFile
 
           - id: VersionMark-CommandLine-ErrorOutput
             title: The tool shall write error messages to stderr.
