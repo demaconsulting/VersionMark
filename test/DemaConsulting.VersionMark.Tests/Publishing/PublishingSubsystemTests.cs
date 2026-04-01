@@ -85,4 +85,49 @@ public class PublishingSubsystemTests
         Assert.DoesNotContain("job-1", report,
             "Consolidated versions should not show individual job IDs");
     }
+
+    /// <summary>
+    ///     Test that the publishing pipeline shows individual job IDs when versions conflict across jobs.
+    /// </summary>
+    [TestMethod]
+    public void PublishingSubsystem_Format_ConflictingVersions_ShowsJobIds()
+    {
+        // Arrange
+        var versionInfoA = new VersionInfo("job-a", new Dictionary<string, string>
+        {
+            { "dotnet", "8.0.100" }
+        });
+        var versionInfoB = new VersionInfo("job-b", new Dictionary<string, string>
+        {
+            { "dotnet", "9.0.200" }
+        });
+        var versionInfos = new[] { versionInfoA, versionInfoB };
+
+        // Act
+        var report = MarkdownFormatter.Format(versionInfos);
+
+        // Assert
+        StringAssert.Contains(report, "job-a");
+        StringAssert.Contains(report, "job-b");
+    }
+
+    /// <summary>
+    ///     Test that the publishing pipeline uses the correct heading level when a custom report depth is specified.
+    /// </summary>
+    [TestMethod]
+    public void PublishingSubsystem_Format_WithCustomDepth_UsesCorrectHeadingLevel()
+    {
+        // Arrange
+        var versionInfo = new VersionInfo("job-1", new Dictionary<string, string>
+        {
+            { "dotnet", "8.0.100" }
+        });
+        var versionInfos = new[] { versionInfo };
+
+        // Act
+        var report = MarkdownFormatter.Format(versionInfos, reportDepth: 3);
+
+        // Assert
+        StringAssert.Contains(report, "###");
+    }
 }

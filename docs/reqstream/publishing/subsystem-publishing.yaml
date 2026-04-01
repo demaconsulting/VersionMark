@@ -12,7 +12,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - PublishingSubsystem_Format_MultipleCaptureFiles_ProducesConsolidatedReport
 
           - id: VersionMark-Publish-Report
             title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
@@ -22,7 +22,7 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
+              - PublishingSubsystem_Format_MultipleCaptureFiles_ProducesConsolidatedReport
 
           - id: VersionMark-Publish-ReportDepth
             title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
@@ -32,7 +32,7 @@ sections:
             tags:
               - publish
             tests:
-              - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
+              - PublishingSubsystem_Format_WithCustomDepth_UsesCorrectHeadingLevel
 
           - id: VersionMark-Publish-RequireReport
             title: The tool shall require --report parameter when publish mode is enabled.
@@ -41,8 +41,6 @@ sections:
               preventing ambiguity about where the report will be saved.
             tags:
               - publish
-            tests:
-              - Program_Run_WithPublishCommandWithoutReport_ReturnsError
 
           - id: VersionMark-Publish-GlobPattern
             title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
@@ -51,9 +49,6 @@ sections:
               the report using standard glob patterns like versionmark-*.json.
             tags:
               - publish
-            tests:
-              - VersionMark_PublishCommandWithCustomGlobPatterns_FiltersFiles
-              - Context_Create_GlobPatternsAfterSeparator_CapturesPatterns
 
           - id: VersionMark-Publish-Consolidate
             title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
@@ -63,7 +58,6 @@ sections:
             tags:
               - publish
             tests:
-              - VersionMark_PublishCommand_GeneratesMarkdownReport
               - PublishingSubsystem_Format_MultipleCaptureFiles_ProducesConsolidatedReport
               - PublishingSubsystem_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions
 
@@ -75,7 +69,7 @@ sections:
             tags:
               - publish
             tests:
-              - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
+              - PublishingSubsystem_Format_ConflictingVersions_ShowsJobIds
 
           - id: VersionMark-Publish-MultipleFiles
             title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
@@ -84,5 +78,3 @@ sections:
               helping users identify and fix data quality issues.
             tags:
               - publish
-            tests:
-              - Program_Run_WithPublishCommandInvalidJson_ReturnsError

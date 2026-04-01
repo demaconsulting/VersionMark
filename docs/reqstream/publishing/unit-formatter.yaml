@@ -12,7 +12,6 @@ sections:
             tags:
               - formatter
             tests:
-              - VersionMark_GeneratesMarkdownReport
               - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
 
           - id: VersionMark-Formatter-JsonJobId
@@ -59,5 +58,4 @@ sections:
             tags:
               - formatter
             tests:
-              - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
               - MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel

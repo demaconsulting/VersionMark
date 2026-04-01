@@ -12,8 +12,6 @@ sections:
             tags:
               - configuration
             tests:
-              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
-              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
               - ConfigurationSubsystem_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-ToolDefinition
@@ -24,9 +22,7 @@ sections:
             tags:
               - configuration
             tests:
-              - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
-              - ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand
-              - ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex
+              - ConfigurationSubsystem_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-OsCommandOverride
             title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
@@ -36,10 +32,6 @@ sections:
             tags:
               - configuration
             tests:
-              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
-              - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
-              - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
-              - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
               - ConfigurationSubsystem_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand
 
           - id: VersionMark-Configuration-OsRegexOverride
@@ -50,10 +42,7 @@ sections:
             tags:
               - configuration
             tests:
-              - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
-              - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
-              - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
-              - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
+              - ConfigurationSubsystem_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex
 
           - id: VersionMark-Configuration-ValidateTools
             title: The tool shall validate that configuration files contain at least one tool definition.
@@ -63,7 +52,7 @@ sections:
             tags:
               - configuration
             tests:
-              - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+              - ConfigurationSubsystem_ReadFromFile_EmptyTools_ThrowsArgumentException
 
           - id: VersionMark-Configuration-ParseError
             title: The tool shall report errors when configuration files cannot be read or parsed.
@@ -73,5 +62,4 @@ sections:
             tags:
               - configuration
             tests:
-              - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
-              - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
+              - ConfigurationSubsystem_ReadFromFile_InvalidYaml_ThrowsArgumentException

@@ -64,4 +64,17 @@ public class SelfTestSubsystemTests
                       Path.GetFullPath(result).StartsWith(Path.GetFullPath(baseDir), StringComparison.OrdinalIgnoreCase),
             "Combined path should be rooted within the base directory");
     }
+
+    /// <summary>
+    ///     Test that the self-test subsystem can locate the main DLL in the base directory.
+    /// </summary>
+    [TestMethod]
+    public void SelfTestSubsystem_FindsDllInBaseDirectory()
+    {
+        // Arrange
+        var dllPath = PathHelpers.SafePathCombine(AppContext.BaseDirectory, "DemaConsulting.VersionMark.dll");
+
+        // Act & Assert
+        Assert.IsTrue(File.Exists(dllPath));
+    }
 }

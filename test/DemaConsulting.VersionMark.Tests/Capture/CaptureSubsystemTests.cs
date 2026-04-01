@@ -100,4 +100,17 @@ public class CaptureSubsystemTests
             File.Delete(tempFile2);
         }
     }
+
+    /// <summary>
+    ///     Test that loading a version info file that does not exist throws an ArgumentException.
+    /// </summary>
+    [TestMethod]
+    public void CaptureSubsystem_LoadFromFile_NonExistentFile_ThrowsArgumentException()
+    {
+        // Arrange
+        var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentPath));
+    }
 }

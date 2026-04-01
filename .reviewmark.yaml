@@ -35,6 +35,8 @@ reviews:
   - id: VersionMark-Design
     title: VersionMark Design Document Review
     paths:
+      - "docs/reqstream/versionmark-system.yaml"     # system requirements
+      - "docs/reqstream/platform-requirements.yaml"  # platform requirements
       - "docs/design/**/*.md"                        # all design documents
 
   - id: VersionMark-AllRequirements

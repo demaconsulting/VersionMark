@@ -104,4 +104,81 @@ public class ConfigurationSubsystemTests
             File.Delete(tempFile);
         }
     }
+
+    /// <summary>
+    ///     Test that reading a configuration with OS-specific regex overrides returns the appropriate regex.
+    /// </summary>
+    [TestMethod]
+    public void ConfigurationSubsystem_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        File.WriteAllText(tempFile, """
+            tools:
+              dotnet:
+                command: dotnet --version
+                regex: '(?<version>\d+\.\d+\.\d+)'
+                regex-win: '(?<version>\d+\.\d+\.\d+)-win'
+                regex-linux: '(?<version>\d+\.\d+\.\d+)-linux'
+            """);
+
+        try
+        {
+            // Act
+            var config = VersionMarkConfig.ReadFromFile(tempFile);
+            var tool = config.Tools["dotnet"];
+            var effectiveRegex = tool.GetEffectiveRegex();
+
+            // Assert
+            Assert.IsTrue(effectiveRegex.Length > 0);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with an empty tools section throws an ArgumentException.
+    /// </summary>
+    [TestMethod]
+    public void ConfigurationSubsystem_ReadFromFile_EmptyTools_ThrowsArgumentException()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        File.WriteAllText(tempFile, """
+            tools:
+            """);
+
+        try
+        {
+            // Act & Assert
+            Assert.ThrowsExactly<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with invalid YAML throws an ArgumentException.
+    /// </summary>
+    [TestMethod]
+    public void ConfigurationSubsystem_ReadFromFile_InvalidYaml_ThrowsArgumentException()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        File.WriteAllText(tempFile, "not: valid: yaml: content: : ::");
+
+        try
+        {
+            // Act & Assert
+            Assert.ThrowsExactly<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
 }

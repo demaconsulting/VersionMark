@@ -112,4 +112,49 @@ public class LintingSubsystemTests
             File.Delete(tempFile);
         }
     }
+
+    /// <summary>
+    ///     Test that the linting pipeline fails for invalid YAML content.
+    /// </summary>
+    [TestMethod]
+    public void LintingSubsystem_Lint_InvalidYaml_Fails()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        File.WriteAllText(tempFile, "not: valid: yaml: content: : ::");
+
+        try
+        {
+            using var context = Context.Create(["--silent"]);
+
+            // Act
+            var result = Lint.Run(context, tempFile);
+
+            // Assert
+            Assert.IsFalse(result);
+            Assert.AreEqual(1, context.ExitCode);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that linting reports an error when the config file does not exist.
+    /// </summary>
+    [TestMethod]
+    public void LintingSubsystem_Lint_NonExistentFile_Fails()
+    {
+        // Arrange
+        var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".yaml");
+        using var context = Context.Create(["--silent"]);
+
+        // Act
+        var result = Lint.Run(context, nonExistentPath);
+
+        // Assert
+        Assert.IsFalse(result);
+        Assert.AreEqual(1, context.ExitCode);
+    }
 }

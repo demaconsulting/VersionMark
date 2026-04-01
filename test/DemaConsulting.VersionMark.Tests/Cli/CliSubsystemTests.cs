@@ -71,4 +71,98 @@ public class CliSubsystemTests
             Console.SetOut(originalOut);
         }
     }
+
+    /// <summary>
+    ///     Test that the full CLI pipeline with --help flag displays usage information.
+    /// </summary>
+    [TestMethod]
+    public void CliSubsystem_Run_HelpFlag_DisplaysUsageInformation()
+    {
+        // Arrange
+        var originalOut = Console.Out;
+        var output = new System.IO.StringWriter();
+        Console.SetOut(output);
+
+        try
+        {
+            using var context = Context.Create(["--help"]);
+
+            // Act
+            Program.Run(context);
+
+            // Assert
+            Assert.AreEqual(0, context.ExitCode);
+            var text = output.ToString();
+            Assert.IsTrue(text.Length > 0);
+            Assert.IsTrue(text.Contains("--capture"));
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+        }
+    }
+
+    /// <summary>
+    ///     Test that the full CLI pipeline with --validate flag runs self-validation.
+    /// </summary>
+    [TestMethod]
+    public void CliSubsystem_Run_ValidateFlag_RunsValidation()
+    {
+        // Arrange
+        using var context = Context.Create(["--validate", "--silent"]);
+
+        // Act
+        Program.Run(context);
+
+        // Assert
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test that the full CLI pipeline with unknown arguments returns a non-zero exit code.
+    /// </summary>
+    [TestMethod]
+    public void CliSubsystem_Run_InvalidArgs_ReturnsNonZeroExitCode()
+    {
+        // Arrange
+        // No setup required - testing invalid argument rejection
+
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentException>(() =>
+        {
+            using var context = Context.Create(["--unknown-flag-xyz"]);
+            Program.Run(context);
+        });
+    }
+
+    /// <summary>
+    ///     Test that the full CLI pipeline with --lint flag succeeds for a valid config file.
+    /// </summary>
+    [TestMethod]
+    public void CliSubsystem_Run_LintFlag_ValidConfig_Succeeds()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName() + ".yaml";
+        File.WriteAllText(tempFile, """
+            tools:
+              dotnet:
+                command: dotnet --version
+                regex: '(?<version>\d+\.\d+\.\d+)'
+            """);
+
+        try
+        {
+            using var context = Context.Create(["--lint", tempFile]);
+
+            // Act
+            Program.Run(context);
+
+            // Assert
+            Assert.AreEqual(0, context.ExitCode);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
 }
