@@ -439,7 +439,7 @@ public class IntegrationTests
 
         // Assert - Verify the command fails with error message about missing config
         Assert.AreNotEqual(0, exitCode);
-        Assert.Contains("Error:", output);
+        Assert.Contains("error:", output);
     }
 
     /// <summary>

@@ -359,7 +359,7 @@ tools:
 
             // Assert - Verify error is reported on stderr and exit code indicates failure
             var errorOutput = errWriter.ToString();
-            Assert.Contains("Error:", errorOutput);
+            Assert.Contains("error:", errorOutput);
             Assert.AreEqual(1, context.ExitCode);
         }
         finally

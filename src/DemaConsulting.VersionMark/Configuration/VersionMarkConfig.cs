@@ -22,8 +22,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using DemaConsulting.VersionMark.Capture;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.Core;
+using YamlDotNet.RepresentationModel;
 
 namespace DemaConsulting.VersionMark.Configuration;
 
@@ -51,77 +51,6 @@ public sealed record ToolConfig
     {
         Command = command;
         Regex = regex;
-    }
-
-    /// <summary>
-    ///     Creates a ToolConfig from a YAML mapping node.
-    /// </summary>
-    /// <param name="node">The YAML mapping node containing tool configuration.</param>
-    /// <param name="toolName">The name of the tool (for error messages).</param>
-    /// <returns>A new ToolConfig instance.</returns>
-    /// <exception cref="ArgumentException">Thrown when required fields are missing or node types are invalid.</exception>
-    /// <remarks>Unknown keys in the configuration are silently ignored to allow for future extensibility.</remarks>
-    internal static ToolConfig FromYamlNode(YamlMappingNode node, string toolName = "")
-    {
-        var commands = new Dictionary<string, string>();
-        var regexes = new Dictionary<string, string>();
-
-        foreach (var entry in node.Children)
-        {
-            if (entry.Key is not YamlScalarNode keyNode || entry.Value is not YamlScalarNode valueNode)
-            {
-                var toolContext = string.IsNullOrEmpty(toolName) ? "Tool" : $"Tool '{toolName}'";
-                throw new ArgumentException($"{toolContext} configuration entries must be scalar key-value pairs");
-            }
-
-            var key = keyNode.Value ?? string.Empty;
-            var value = valueNode.Value ?? string.Empty;
-
-            switch (key)
-            {
-                case "command":
-                    commands[string.Empty] = value;
-                    break;
-                case "command-win":
-                    commands["win"] = value;
-                    break;
-                case "command-linux":
-                    commands["linux"] = value;
-                    break;
-                case "command-macos":
-                    commands["macos"] = value;
-                    break;
-                case "regex":
-                    regexes[string.Empty] = value;
-                    break;
-                case "regex-win":
-                    regexes["win"] = value;
-                    break;
-                case "regex-linux":
-                    regexes["linux"] = value;
-                    break;
-                case "regex-macos":
-                    regexes["macos"] = value;
-                    break;
-                default:
-                    // Ignore unknown keys to allow for future extensibility
-                    break;
-            }
-        }
-
-        var toolContext2 = string.IsNullOrEmpty(toolName) ? "Tool" : $"Tool '{toolName}'";
-
-        if (!commands.ContainsKey(string.Empty))
-        {
-            throw new ArgumentException($"{toolContext2} configuration must contain a default 'command' field");
-        }
-
-        if (!regexes.ContainsKey(string.Empty))
-        {
-            throw new ArgumentException($"{toolContext2} configuration must contain a default 'regex' field");
-        }
-
-        return new ToolConfig(commands, regexes);
     }
 
     /// <summary>
@@ -252,7 +181,7 @@ public sealed record VersionMarkConfig
         // Check if file exists before attempting to parse
         if (!File.Exists(filePath))
         {
-            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, $"Configuration file not found: {filePath}"));
+            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, "Configuration file not found"));
             return (null, issues);
         }
 
@@ -266,7 +195,7 @@ public sealed record VersionMarkConfig
         }
         catch (YamlException ex)
         {
-            issues.Add(new LintIssue(filePath, ex.Start.Line + 1, ex.Start.Column + 1, LintSeverity.Error, $"Failed to parse YAML file '{filePath}': {ex.Message}"));
+            issues.Add(new LintIssue(filePath, ex.Start.Line + 1, ex.Start.Column + 1, LintSeverity.Error, $"Failed to parse YAML file: {ex.Message}"));
             return (null, issues);
         }
 

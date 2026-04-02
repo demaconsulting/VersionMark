@@ -249,7 +249,7 @@ internal static class Program
         {
             if (issue.Severity == LintSeverity.Error)
             {
-                context.WriteError($"Error: {issue}");
+                context.WriteError(issue.ToString());
             }
             else
             {
