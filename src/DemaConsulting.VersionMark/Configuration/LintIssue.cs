@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using DemaConsulting.VersionMark.Cli;
+
 namespace DemaConsulting.VersionMark.Configuration;
 
 /// <summary>
@@ -59,4 +61,43 @@ internal sealed record LintIssue(
     /// </returns>
     public override string ToString() =>
         $"{FilePath}({Line},{Column}): {Severity.ToString().ToLowerInvariant()}: {Description}";
+}
+
+/// <summary>
+///     Result returned by <see cref="VersionMarkConfig.Load"/>, containing both the loaded
+///     configuration (when successful) and the full list of validation issues found during loading.
+/// </summary>
+/// <param name="Config">
+///     The loaded <see cref="VersionMarkConfig"/>, or <see langword="null"/> when one or more
+///     <see cref="LintSeverity.Error"/>-severity issues prevented the configuration from being built.
+/// </param>
+/// <param name="Issues">
+///     All validation issues found during loading. Always populated; may contain warnings even
+///     when <paramref name="Config"/> is non-<see langword="null"/>.
+/// </param>
+internal sealed record VersionMarkLoadResult(
+    VersionMarkConfig? Config,
+    IReadOnlyList<LintIssue> Issues)
+{
+    /// <summary>
+    ///     Writes all validation issues to the specified context, routing errors to the error
+    ///     stream and warnings to the standard output stream.
+    /// </summary>
+    /// <param name="context">The context used to write output.</param>
+    public void ReportIssues(Context context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        foreach (var issue in Issues)
+        {
+            if (issue.Severity == LintSeverity.Error)
+            {
+                context.WriteError($"Error: {issue}");
+            }
+            else
+            {
+                context.WriteLine(issue.ToString());
+            }
+        }
+    }
 }

@@ -202,23 +202,13 @@ internal static class Program
         context.WriteLine($"Linting '{configFile}'...");
 
         // Load the configuration, which performs all validation in a single pass
-        var (config, issues) = VersionMarkConfig.Load(configFile);
+        var result = VersionMarkConfig.Load(configFile);
 
-        // Report all discovered issues, routing errors to the error stream
-        foreach (var issue in issues)
-        {
-            if (issue.Severity == LintSeverity.Error)
-            {
-                context.WriteError(issue.ToString());
-            }
-            else
-            {
-                context.WriteLine(issue.ToString());
-            }
-        }
+        // Report all discovered issues to the context
+        result.ReportIssues(context);
 
         // Confirm success when no errors were found
-        if (config != null)
+        if (result.Config != null)
         {
             context.WriteLine($"'{configFile}': No issues found");
         }
@@ -244,21 +234,11 @@ internal static class Program
         context.WriteLine($"Output file: {outputFile}");
 
         // Load and validate configuration, reporting all issues before proceeding
-        var (config, issues) = VersionMarkConfig.Load(".versionmark.yaml");
-        foreach (var issue in issues)
-        {
-            if (issue.Severity == LintSeverity.Error)
-            {
-                context.WriteError(issue.ToString());
-            }
-            else
-            {
-                context.WriteLine(issue.ToString());
-            }
-        }
+        var loadResult = VersionMarkConfig.Load(".versionmark.yaml");
+        loadResult.ReportIssues(context);
 
         // Abort capture if the configuration could not be loaded
-        if (config == null)
+        if (loadResult.Config == null)
         {
             return;
         }
@@ -268,12 +248,12 @@ internal static class Program
             // Determine which tools to capture
             var toolNames = context.ToolNames.Length > 0
                 ? context.ToolNames
-                : config.Tools.Keys.ToArray();
+                : loadResult.Config.Tools.Keys.ToArray();
 
             context.WriteLine($"Capturing {toolNames.Length} tool(s)...");
 
             // Capture versions
-            var versionInfo = config.FindVersions(toolNames, context.JobId);
+            var versionInfo = loadResult.Config.FindVersions(toolNames, context.JobId);
 
             // Save to file
             versionInfo.SaveToFile(outputFile);

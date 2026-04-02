@@ -170,11 +170,11 @@ public sealed record VersionMarkConfig
     /// </summary>
     /// <param name="filePath">Path to the YAML configuration file.</param>
     /// <returns>
-    ///     A tuple containing the loaded <see cref="VersionMarkConfig"/> (or <see langword="null"/>
-    ///     when fatal errors prevent loading) and a read-only list of <see cref="LintIssue"/> objects
-    ///     describing all warnings and errors encountered.
+    ///     A <see cref="VersionMarkLoadResult"/> containing the loaded <see cref="VersionMarkConfig"/>
+    ///     (or <see langword="null"/> when fatal errors prevent loading) and a read-only list of
+    ///     <see cref="LintIssue"/> objects describing all warnings and errors encountered.
     /// </returns>
-    internal static (VersionMarkConfig? Config, IReadOnlyList<LintIssue> Issues) Load(string filePath)
+    internal static VersionMarkLoadResult Load(string filePath)
     {
         var issues = new List<LintIssue>();
 
@@ -182,7 +182,7 @@ public sealed record VersionMarkConfig
         if (!File.Exists(filePath))
         {
             issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, "Configuration file not found"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Parse YAML, reporting any syntax errors with their source location
@@ -196,14 +196,14 @@ public sealed record VersionMarkConfig
         catch (YamlException ex)
         {
             issues.Add(new LintIssue(filePath, ex.Start.Line + 1, ex.Start.Column + 1, LintSeverity.Error, $"Failed to parse YAML file: {ex.Message}"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Validate that the file contains at least one YAML document
         if (yaml.Documents.Count == 0)
         {
             issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, "YAML file contains no documents"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Validate that the root node is a YAML mapping
@@ -211,7 +211,7 @@ public sealed record VersionMarkConfig
         {
             var node = yaml.Documents[0].RootNode;
             issues.Add(CreateIssue(filePath, node, LintSeverity.Error, "Root node must be a YAML mapping"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Warn about unknown top-level keys; they are non-fatal
@@ -224,21 +224,21 @@ public sealed record VersionMarkConfig
         if (!rootNode.Children.TryGetValue(new YamlScalarNode("tools"), out var toolsNode))
         {
             issues.Add(CreateIssue(filePath, rootNode, LintSeverity.Error, "Configuration must contain a 'tools' section"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Validate that 'tools' is a YAML mapping
         if (toolsNode is not YamlMappingNode toolsMapping)
         {
             issues.Add(CreateIssue(filePath, toolsNode, LintSeverity.Error, "The 'tools' section must be a mapping"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Require at least one tool to be defined
         if (toolsMapping.Children.Count == 0)
         {
             issues.Add(CreateIssue(filePath, toolsMapping, LintSeverity.Error, "Configuration must contain at least one tool"));
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Validate each tool entry and collect all issues before deciding whether to build the config
@@ -272,11 +272,11 @@ public sealed record VersionMarkConfig
         // Return null config if any errors were found, so callers can distinguish warnings-only from failures
         if (issues.Any(i => i.Severity == LintSeverity.Error))
         {
-            return (null, issues);
+            return new VersionMarkLoadResult(null, issues);
         }
 
         // Build and return the successfully validated configuration
-        return (new VersionMarkConfig(tools), issues);
+        return new VersionMarkLoadResult(new VersionMarkConfig(tools), issues);
     }
 
     /// <summary>
@@ -288,14 +288,14 @@ public sealed record VersionMarkConfig
     public static VersionMarkConfig ReadFromFile(string filePath)
     {
         // Delegate to Load and convert the first error to an ArgumentException for backward compatibility
-        var (config, issues) = Load(filePath);
-        var firstError = issues.FirstOrDefault(i => i.Severity == LintSeverity.Error);
+        var result = Load(filePath);
+        var firstError = result.Issues.FirstOrDefault(i => i.Severity == LintSeverity.Error);
         if (firstError != null)
         {
             throw new ArgumentException(firstError.Description);
         }
 
-        return config!;
+        return result.Config!;
     }
 
     /// <summary>
