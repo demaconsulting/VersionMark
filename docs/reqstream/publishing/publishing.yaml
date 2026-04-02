@@ -73,7 +73,7 @@ sections:
             tags:
               - publish
             tests:
-              - PublishingSubsystem_Format_ConflictingVersions_ShowsJobIds
+              - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
 
           - id: VersionMark-Publish-MultipleFiles
             title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.

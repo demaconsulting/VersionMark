@@ -6,20 +6,26 @@ The `VersionMarkConfig` record holds a `Dictionary<string, ToolConfig>` mapping 
 to their configurations. It is the top-level entry point for loading configuration from
 the `.versionmark.yaml` file.
 
-## ReadFromFile Method
+## Load Method
 
-`ReadFromFile` is the public entry point for loading configuration. It:
+`Load` is the primary entry point for loading configuration with integrated linting. It:
 
-1. Checks that the file exists; throws `ArgumentException` if not.
+1. Checks that the file exists; adds an error issue if not.
 2. Parses the YAML stream and validates the root node is a mapping.
-3. Locates the `tools` mapping key; throws `ArgumentException` if absent.
-4. Iterates tool entries, calling `ToolConfig.FromYamlNode` for each.
+3. Locates the `tools` mapping key; adds an error issue if absent.
+4. Iterates tool entries, calling the private `ValidateTool` method for each.
 5. Validates that at least one tool is present.
 
-YAML parse errors are caught and re-thrown as `ArgumentException` with context. All other
-non-`ArgumentException` errors are wrapped similarly. This satisfies requirements
-`VersionMark-Configuration-YamlConfig`, `VersionMark-Configuration-ValidateTools`, and
-`VersionMark-Configuration-ParseError`.
+The method returns a `VersionMarkLoadResult` containing both the parsed configuration and
+a list of `LintIssue` records. YAML parse errors are captured as error-level issues with
+source location. This satisfies requirements `VersionMark-Configuration-YamlConfig`,
+`VersionMark-Configuration-ValidateTools`, and `VersionMark-Configuration-ParseError`.
+
+## ReadFromFile Method
+
+`ReadFromFile` is a backward-compatibility wrapper that delegates to `Load`. It throws
+`ArgumentException` if any error-level lint issues are present. Use `Load` directly when
+you need access to lint issues.
 
 ## FindVersions Method
 
