@@ -101,7 +101,7 @@ that the tool is functioning correctly after installation:
 | `VersionMark_LintPassesForValidConfig` | Lint mode passes for a valid `.versionmark.yaml` configuration |
 | `VersionMark_LintReportsErrorsForInvalidConfig` | Lint mode reports errors for an invalid configuration |
 
-These test names appear in requirements files (e.g., `versionmark-system.yaml`,
+These test names appear in requirements files (e.g., `system.yaml`,
 `platform-requirements.yaml`) as traceability evidence. When `--validate` is run in CI,
 each matrix job runs on a specific platform/runtime and produces a TRX results file whose
 filename and CI job context (e.g., `artifacts/validation-windows-latest-dotnet8.x.trx`)
