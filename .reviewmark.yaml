@@ -173,9 +173,3 @@ reviews:
       - "src/**/SelfTest/PathHelpers.cs"               # implementation
       - "test/**/SelfTest/PathHelpersTests.cs"         # unit tests
 
-
-  # OTS Components
-  - id: VersionMark-OTS-Components
-    title: Review of OTS Components
-    paths:
-      - "docs/reqstream/ots/*.yaml"                  # OTS requirements
