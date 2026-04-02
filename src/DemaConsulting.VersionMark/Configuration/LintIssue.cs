@@ -21,23 +21,23 @@
 namespace DemaConsulting.VersionMark.Configuration;
 
 /// <summary>
-/// Severity level for a lint issue.
+///     Severity level for a lint issue.
 /// </summary>
 internal enum LintSeverity
 {
     /// <summary>
-    /// Non-fatal advisory message.
+    ///     Non-fatal advisory message.
     /// </summary>
     Warning,
 
     /// <summary>
-    /// Fatal validation failure that prevents loading.
+    ///     Fatal validation failure that prevents loading.
     /// </summary>
     Error
 }
 
 /// <summary>
-/// Represents a single validation issue found while loading a configuration file.
+///     Represents a single validation issue found while loading a configuration file.
 /// </summary>
 /// <param name="FilePath">Path to the file that contains the issue.</param>
 /// <param name="Line">One-based line number of the issue.</param>
@@ -52,10 +52,10 @@ internal sealed record LintIssue(
     string Description)
 {
     /// <summary>
-    /// Returns a formatted string representation of the issue suitable for display to the user.
+    ///     Returns a formatted string representation of the issue suitable for display to the user.
     /// </summary>
     /// <returns>
-    /// A string in the format <c>"{FilePath}({Line},{Column}): {severity}: {Description}"</c>.
+    ///     A string in the format <c>"{FilePath}({Line},{Column}): {severity}: {Description}"</c>.
     /// </returns>
     public override string ToString() =>
         $"{FilePath}({Line},{Column}): {Severity.ToString().ToLowerInvariant()}: {Description}";
