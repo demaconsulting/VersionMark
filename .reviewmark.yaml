@@ -172,4 +172,3 @@ reviews:
       - "docs/design/self-test/path-helpers.md"        # design
       - "src/**/SelfTest/PathHelpers.cs"               # implementation
       - "test/**/SelfTest/PathHelpersTests.cs"         # unit tests
-
