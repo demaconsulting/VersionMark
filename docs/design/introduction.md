@@ -15,18 +15,16 @@ The purpose of this document is to:
 
 ## Scope
 
-This document covers the design of six subsystems within VersionMark:
+This document covers the design of five subsystems within VersionMark:
 
 - The **Cli Subsystem**: the `Program` entry point and `Context` class
   that handle argument parsing, output routing, and program flow control
 - The **Configuration Subsystem**: the `VersionMarkConfig` and `ToolConfig` classes that
-  read and interpret `.versionmark.yaml` configuration files
+  read, validate, and interpret `.versionmark.yaml` configuration files
 - The **Capture Subsystem**: the `VersionInfo` record that serializes and deserializes
   captured version data to and from JSON
 - The **Publishing Subsystem**: the `MarkdownFormatter` class that generates the markdown
   version report from captured data
-- The **Linting Subsystem**: the `Lint` class that validates `.versionmark.yaml` configuration
-  files and reports issues with precise source locations
 - The **SelfTest Subsystem**: the `Validation` class and `PathHelpers` utility that
   together provide built-in verification of the tool's core functionality
 
@@ -44,15 +42,13 @@ VersionMark (System)                        Version capture/publish tool
 ├── Cli (Subsystem)                         Argument parsing and dispatch
 │   ├── Program (Unit)                      Tool entry point
 │   └── Context (Unit)                      Command-line state container
-├── Configuration (Subsystem)               YAML configuration loading
-│   ├── VersionMarkConfig (Unit)            Top-level config container
+├── Configuration (Subsystem)               YAML configuration loading and validation
+│   ├── VersionMarkConfig (Unit)            Top-level config container and validator
 │   └── ToolConfig (Unit)                   Per-tool config record
 ├── Capture (Subsystem)                     Tool version capture
 │   └── VersionInfo (Unit)                  JSON version data record
 ├── Publishing (Subsystem)                  Markdown report publishing
 │   └── MarkdownFormatter (Unit)            Version report formatter
-├── Linting (Subsystem)                     Configuration file lint
-│   └── Lint (Unit)                         YAML configuration validator
 └── SelfTest (Subsystem)                    Built-in self-validation
     ├── Validation (Unit)                   Self-validation runner
     └── PathHelpers (Unit)                  Safe path combination
@@ -71,13 +67,12 @@ src/DemaConsulting.VersionMark/
 ├── Cli/
 │   └── Context.cs                          — command-line argument parser and I/O owner
 ├── Configuration/
-│   └── VersionMarkConfig.cs                — YAML configuration and tool definitions
+│   ├── LintIssue.cs                        — lint issue record and severity enum
+│   └── VersionMarkConfig.cs                — YAML configuration, tool definitions, and validation
 ├── Capture/
 │   └── VersionInfo.cs                      — captured version data record
 ├── Publishing/
 │   └── MarkdownFormatter.cs                — markdown report generation
-├── Linting/
-│   └── Lint.cs                             — YAML configuration linter
 └── SelfTest/
     ├── Validation.cs                        — self-validation test runner
     └── PathHelpers.cs                       — safe path utilities

@@ -22,7 +22,6 @@ using System.Reflection;
 using DemaConsulting.VersionMark.Capture;
 using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.Configuration;
-using DemaConsulting.VersionMark.Linting;
 using DemaConsulting.VersionMark.Publishing;
 using DemaConsulting.VersionMark.SelfTest;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -200,7 +199,29 @@ internal static class Program
     {
         // Use specified file, or default to .versionmark.yaml
         var configFile = context.LintFile ?? ".versionmark.yaml";
-        Lint.Run(context, configFile);
+        context.WriteLine($"Linting '{configFile}'...");
+
+        // Load the configuration, which performs all validation in a single pass
+        var (config, issues) = VersionMarkConfig.Load(configFile);
+
+        // Report all discovered issues, routing errors to the error stream
+        foreach (var issue in issues)
+        {
+            if (issue.Severity == LintSeverity.Error)
+            {
+                context.WriteError(issue.ToString());
+            }
+            else
+            {
+                context.WriteLine(issue.ToString());
+            }
+        }
+
+        // Confirm success when no errors were found
+        if (config != null)
+        {
+            context.WriteLine($"'{configFile}': No issues found");
+        }
     }
 
     /// <summary>
@@ -222,11 +243,28 @@ internal static class Program
         context.WriteLine($"Capturing tool versions for job '{context.JobId}'...");
         context.WriteLine($"Output file: {outputFile}");
 
+        // Load and validate configuration, reporting all issues before proceeding
+        var (config, issues) = VersionMarkConfig.Load(".versionmark.yaml");
+        foreach (var issue in issues)
+        {
+            if (issue.Severity == LintSeverity.Error)
+            {
+                context.WriteError($"Error: {issue}");
+            }
+            else
+            {
+                context.WriteLine(issue.ToString());
+            }
+        }
+
+        // Abort capture if the configuration could not be loaded
+        if (config == null)
+        {
+            return;
+        }
+
         try
         {
-            // Load configuration from default location
-            var config = VersionMarkConfig.ReadFromFile(".versionmark.yaml");
-
             // Determine which tools to capture
             var toolNames = context.ToolNames.Length > 0
                 ? context.ToolNames

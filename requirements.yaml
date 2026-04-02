@@ -17,8 +17,7 @@ includes:
   - docs/reqstream/configuration/configuration.yaml
   - docs/reqstream/configuration/version-mark-config.yaml
   - docs/reqstream/configuration/tool-config.yaml
-  - docs/reqstream/linting/linting.yaml
-  - docs/reqstream/linting/lint.yaml
+  - docs/reqstream/configuration/load.yaml
   - docs/reqstream/self-test/self-test.yaml
   - docs/reqstream/self-test/validation.yaml
   - docs/reqstream/self-test/path-helpers.yaml

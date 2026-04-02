@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using DemaConsulting.VersionMark.Capture;
 using YamlDotNet.RepresentationModel;
+using YamlDotNet.Core;
 
 namespace DemaConsulting.VersionMark.Configuration;
 
@@ -197,6 +198,26 @@ public sealed record VersionMarkConfig
     public required Dictionary<string, ToolConfig> Tools { get; init; }
 
     /// <summary>
+    ///     Known valid keys for tool configuration entries.
+    /// </summary>
+    private static readonly HashSet<string> ValidToolKeys =
+    [
+        "command",
+        "command-win",
+        "command-linux",
+        "command-macos",
+        "regex",
+        "regex-win",
+        "regex-linux",
+        "regex-macos"
+    ];
+
+    /// <summary>
+    ///     Timeout for regex compilation and matching.
+    /// </summary>
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(1);
+
+    /// <summary>
     ///     Parameterless constructor required for object initializer.
     /// </summary>
     public VersionMarkConfig()
@@ -215,6 +236,121 @@ public sealed record VersionMarkConfig
     }
 
     /// <summary>
+    ///     Loads configuration from a .versionmark.yaml file, performing all lint validation
+    ///     in a single pass and returning both the configuration and any issues found.
+    /// </summary>
+    /// <param name="filePath">Path to the YAML configuration file.</param>
+    /// <returns>
+    ///     A tuple containing the loaded <see cref="VersionMarkConfig"/> (or <see langword="null"/>
+    ///     when fatal errors prevent loading) and a read-only list of <see cref="LintIssue"/> objects
+    ///     describing all warnings and errors encountered.
+    /// </returns>
+    internal static (VersionMarkConfig? Config, IReadOnlyList<LintIssue> Issues) Load(string filePath)
+    {
+        var issues = new List<LintIssue>();
+
+        // Check if file exists before attempting to parse
+        if (!File.Exists(filePath))
+        {
+            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, $"Configuration file not found: {filePath}"));
+            return (null, issues);
+        }
+
+        // Parse YAML, reporting any syntax errors with their source location
+        YamlStream yaml;
+        try
+        {
+            using var reader = new StreamReader(filePath, System.Text.Encoding.UTF8);
+            yaml = new YamlStream();
+            yaml.Load(reader);
+        }
+        catch (YamlException ex)
+        {
+            issues.Add(new LintIssue(filePath, ex.Start.Line + 1, ex.Start.Column + 1, LintSeverity.Error, $"Failed to parse YAML file '{filePath}': {ex.Message}"));
+            return (null, issues);
+        }
+
+        // Validate that the file contains at least one YAML document
+        if (yaml.Documents.Count == 0)
+        {
+            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, "YAML file contains no documents"));
+            return (null, issues);
+        }
+
+        // Validate that the root node is a YAML mapping
+        if (yaml.Documents[0].RootNode is not YamlMappingNode rootNode)
+        {
+            var node = yaml.Documents[0].RootNode;
+            issues.Add(CreateIssue(filePath, node, LintSeverity.Error, "Root node must be a YAML mapping"));
+            return (null, issues);
+        }
+
+        // Warn about unknown top-level keys; they are non-fatal
+        foreach (var keyNode in rootNode.Children.Keys.OfType<YamlScalarNode>().Where(k => k.Value != "tools"))
+        {
+            issues.Add(CreateIssue(filePath, keyNode, LintSeverity.Warning, $"Unknown top-level key '{keyNode.Value}'"));
+        }
+
+        // Ensure a 'tools' section is present
+        if (!rootNode.Children.TryGetValue(new YamlScalarNode("tools"), out var toolsNode))
+        {
+            issues.Add(CreateIssue(filePath, rootNode, LintSeverity.Error, "Configuration must contain a 'tools' section"));
+            return (null, issues);
+        }
+
+        // Validate that 'tools' is a YAML mapping
+        if (toolsNode is not YamlMappingNode toolsMapping)
+        {
+            issues.Add(CreateIssue(filePath, toolsNode, LintSeverity.Error, "The 'tools' section must be a mapping"));
+            return (null, issues);
+        }
+
+        // Require at least one tool to be defined
+        if (toolsMapping.Children.Count == 0)
+        {
+            issues.Add(CreateIssue(filePath, toolsMapping, LintSeverity.Error, "Configuration must contain at least one tool"));
+            return (null, issues);
+        }
+
+        // Validate each tool entry and collect all issues before deciding whether to build the config
+        var tools = new Dictionary<string, ToolConfig>();
+        foreach (var toolEntry in toolsMapping.Children)
+        {
+            // Tool names must be scalar values
+            if (toolEntry.Key is not YamlScalarNode toolKeyNode)
+            {
+                issues.Add(CreateIssue(filePath, toolEntry.Key, LintSeverity.Error, "Tool names must be scalar values"));
+                continue;
+            }
+
+            var toolName = toolKeyNode.Value ?? string.Empty;
+
+            // Tool configuration must be a mapping
+            if (toolEntry.Value is not YamlMappingNode toolNode)
+            {
+                issues.Add(CreateIssue(filePath, toolEntry.Value, LintSeverity.Error, $"Tool '{toolName}' configuration must be a mapping"));
+                continue;
+            }
+
+            // Validate all fields within the tool and accumulate issues
+            ValidateTool(filePath, toolName, toolNode, issues, out var toolConfig);
+            if (toolConfig != null)
+            {
+                tools[toolName] = toolConfig;
+            }
+        }
+
+        // Return null config if any errors were found, so callers can distinguish warnings-only from failures
+        if (issues.Any(i => i.Severity == LintSeverity.Error))
+        {
+            return (null, issues);
+        }
+
+        // Build and return the successfully validated configuration
+        return (new VersionMarkConfig(tools), issues);
+    }
+
+    /// <summary>
     ///     Reads configuration from a .versionmark.yaml file.
     /// </summary>
     /// <param name="filePath">Path to the YAML configuration file.</param>
@@ -222,79 +358,201 @@ public sealed record VersionMarkConfig
     /// <exception cref="ArgumentException">Thrown when the file cannot be read or parsed.</exception>
     public static VersionMarkConfig ReadFromFile(string filePath)
     {
-        // Check if file exists
-        if (!File.Exists(filePath))
+        // Delegate to Load and convert the first error to an ArgumentException for backward compatibility
+        var (config, issues) = Load(filePath);
+        var firstError = issues.FirstOrDefault(i => i.Severity == LintSeverity.Error);
+        if (firstError != null)
         {
-            throw new ArgumentException($"Configuration file not found: {filePath}");
+            throw new ArgumentException(firstError.Description);
         }
 
+        return config!;
+    }
+
+    /// <summary>
+    ///     Validates a single tool's configuration node, adding issues to the shared list
+    ///     and producing a <see cref="ToolConfig"/> when all required fields are valid.
+    /// </summary>
+    /// <param name="filePath">Path to the configuration file (for issue location).</param>
+    /// <param name="toolName">Name of the tool being validated.</param>
+    /// <param name="toolNode">YAML mapping node containing the tool's fields.</param>
+    /// <param name="issues">Shared list to which all discovered issues are appended.</param>
+    /// <param name="toolConfig">
+    ///     Set to a <see cref="ToolConfig"/> when validation succeeds; otherwise <see langword="null"/>.
+    /// </param>
+    private static void ValidateTool(
+        string filePath,
+        string toolName,
+        YamlMappingNode toolNode,
+        List<LintIssue> issues,
+        out ToolConfig? toolConfig)
+    {
+        var commands = new Dictionary<string, string>();
+        var regexes = new Dictionary<string, string>();
+        var hasCommand = false;
+        var hasRegex = false;
+        var toolIssuesBefore = issues.Count;
+
+        foreach (var entry in toolNode.Children)
+        {
+            // All tool config keys must be scalar values
+            if (entry.Key is not YamlScalarNode entryKeyNode)
+            {
+                issues.Add(CreateIssue(filePath, entry.Key, LintSeverity.Error, $"Tool '{toolName}' configuration keys must be scalar values"));
+                continue;
+            }
+
+            // All tool config values must be scalar values
+            if (entry.Value is not YamlScalarNode entryValueNode)
+            {
+                issues.Add(CreateIssue(filePath, entry.Value, LintSeverity.Error, $"Tool '{toolName}' configuration values must be scalar values"));
+                continue;
+            }
+
+            var key = entryKeyNode.Value ?? string.Empty;
+            var value = entryValueNode.Value ?? string.Empty;
+
+            // Warn about unrecognized keys without failing validation
+            if (!ValidToolKeys.Contains(key))
+            {
+                issues.Add(CreateIssue(filePath, entryKeyNode, LintSeverity.Warning, $"Tool '{toolName}' has unknown key '{key}'"));
+            }
+
+            // Validate default command
+            if (key == "command")
+            {
+                hasCommand = true;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' 'command' must not be empty"));
+                }
+                else
+                {
+                    commands[string.Empty] = value;
+                }
+            }
+
+            // Validate OS-specific command overrides
+            else if (key is "command-win" or "command-linux" or "command-macos")
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must not be empty"));
+                }
+                else
+                {
+                    var os = key["command-".Length..];
+                    commands[os] = value;
+                }
+            }
+
+            // Validate default regex
+            else if (key == "regex")
+            {
+                hasRegex = true;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' 'regex' must not be empty"));
+                }
+                else
+                {
+                    var compiled = TryCompileRegex(filePath, toolName, key, value, entryValueNode, issues);
+                    if (compiled != null)
+                    {
+                        if (!compiled.GetGroupNames().Contains("version"))
+                        {
+                            issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' 'regex' must contain a named 'version' capture group: (?<version>...)"));
+                        }
+                        else
+                        {
+                            regexes[string.Empty] = value;
+                        }
+                    }
+                }
+            }
+
+            // Validate OS-specific regex overrides
+            else if (key is "regex-win" or "regex-linux" or "regex-macos")
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must not be empty"));
+                }
+                else
+                {
+                    var compiled = TryCompileRegex(filePath, toolName, key, value, entryValueNode, issues);
+                    if (compiled != null)
+                    {
+                        if (!compiled.GetGroupNames().Contains("version"))
+                        {
+                            issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must contain a named 'version' capture group: (?<version>...)"));
+                        }
+                        else
+                        {
+                            var os = key["regex-".Length..];
+                            regexes[os] = value;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Report missing required fields after scanning all entries
+        if (!hasCommand)
+        {
+            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'command' field"));
+        }
+
+        if (!hasRegex)
+        {
+            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'regex' field"));
+        }
+
+        // Only produce a ToolConfig when no new errors were added for this tool
+        var hasNewErrors = issues.Skip(toolIssuesBefore).Any(i => i.Severity == LintSeverity.Error);
+        toolConfig = hasNewErrors ? null : new ToolConfig(commands, regexes);
+    }
+
+    /// <summary>
+    ///     Attempts to compile a regular expression, adding an error issue when compilation fails.
+    /// </summary>
+    /// <param name="filePath">Path to the configuration file (for issue location).</param>
+    /// <param name="toolName">Name of the tool owning the regex (for error messages).</param>
+    /// <param name="key">Configuration key of the regex field (for error messages).</param>
+    /// <param name="value">Regex pattern to compile.</param>
+    /// <param name="node">YAML node that holds the value (for source location).</param>
+    /// <param name="issues">Shared list to which a compilation error is appended on failure.</param>
+    /// <returns>The compiled <see cref="Regex"/>, or <see langword="null"/> if compilation failed.</returns>
+    private static Regex? TryCompileRegex(
+        string filePath,
+        string toolName,
+        string key,
+        string value,
+        YamlNode node,
+        List<LintIssue> issues)
+    {
         try
         {
-            // Read the YAML file and parse as document
-            using var reader = new StreamReader(filePath, System.Text.Encoding.UTF8);
-            var yaml = new YamlStream();
-            yaml.Load(reader);
-
-            // Validate document exists
-            if (yaml.Documents.Count == 0)
-            {
-                throw new ArgumentException("YAML file contains no documents");
-            }
-
-            // Get root document and validate it's a mapping
-            if (yaml.Documents[0].RootNode is not YamlMappingNode rootNode)
-            {
-                throw new ArgumentException("YAML root node must be a mapping");
-            }
-
-            // Get tools mapping
-            if (!rootNode.Children.TryGetValue(new YamlScalarNode("tools"), out var toolsNode))
-            {
-                throw new ArgumentException("Configuration file must contain a 'tools' section");
-            }
-
-            // Validate tools node is a mapping
-            if (toolsNode is not YamlMappingNode toolsMapping)
-            {
-                throw new ArgumentException("The 'tools' section must be a mapping");
-            }
-
-            var tools = new Dictionary<string, ToolConfig>();
-
-            // Parse each tool
-            foreach (var toolEntry in toolsMapping.Children)
-            {
-                if (toolEntry.Key is not YamlScalarNode keyNode)
-                {
-                    throw new ArgumentException("Tool names must be scalar values");
-                }
-
-                if (toolEntry.Value is not YamlMappingNode toolNode)
-                {
-                    throw new ArgumentException($"Tool '{keyNode.Value}' configuration must be a mapping");
-                }
-
-                var toolName = keyNode.Value ?? string.Empty;
-                tools[toolName] = ToolConfig.FromYamlNode(toolNode, toolName);
-            }
-
-            // Validate configuration
-            if (tools.Count == 0)
-            {
-                throw new ArgumentException("Configuration must contain at least one tool");
-            }
-
-            return new VersionMarkConfig(tools);
+            return new Regex(value, RegexOptions.None, RegexTimeout);
         }
-        catch (YamlDotNet.Core.YamlException ex)
+        catch (ArgumentException ex)
         {
-            throw new ArgumentException($"Failed to parse YAML file '{filePath}': {ex.Message}", ex);
-        }
-        catch (Exception ex) when (ex is not ArgumentException)
-        {
-            throw new ArgumentException($"Failed to read configuration file '{filePath}': {ex.Message}", ex);
+            issues.Add(CreateIssue(filePath, node, LintSeverity.Error, $"Tool '{toolName}' '{key}' contains an invalid regex: {ex.Message}"));
+            return null;
         }
     }
+
+    /// <summary>
+    ///     Creates a <see cref="LintIssue"/> using the source location of a YAML node,
+    ///     converting from the zero-based offsets reported by YamlDotNet to one-based display values.
+    /// </summary>
+    /// <param name="filePath">Path to the configuration file.</param>
+    /// <param name="node">YAML node whose start position provides the line and column.</param>
+    /// <param name="severity">Severity of the issue.</param>
+    /// <param name="description">Human-readable description of the issue.</param>
+    /// <returns>A new <see cref="LintIssue"/> with one-based line and column numbers.</returns>
+    private static LintIssue CreateIssue(string filePath, YamlNode node, LintSeverity severity, string description)
+        => new(filePath, node.Start.Line + 1, node.Start.Column + 1, severity, description);
 
     /// <summary>
     ///     Finds versions for the specified tools.
