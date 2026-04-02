@@ -1,15 +1,15 @@
-// Copyright (c) DEMA Consulting
-// 
+// Copyright (c) 2025 DEMA Consulting
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,21 +19,20 @@
 // SOFTWARE.
 
 using DemaConsulting.VersionMark.Cli;
-using DemaConsulting.VersionMark.Linting;
 
-namespace DemaConsulting.VersionMark.Tests.Linting;
+namespace DemaConsulting.VersionMark.Tests.Configuration;
 
 /// <summary>
-///     Subsystem tests for the Linting subsystem (Lint and Context working together).
+///     Subsystem tests for configuration loading via <see cref="Program.Run"/> with the <c>--lint</c> flag.
 /// </summary>
 [TestClass]
-public class LintingSubsystemTests
+public class ConfigurationLoadSubsystemTests
 {
     /// <summary>
-    ///     Test that the full linting pipeline succeeds and exits cleanly for a valid configuration.
+    ///     Test that the full configuration load pipeline succeeds and exits cleanly for a valid configuration.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_ValidConfig_SucceedsWithZeroExitCode()
+    public void ConfigurationLoad_ValidConfig_SucceedsWithZeroExitCode()
     {
         // Arrange - Write a complete and valid configuration to a temp file
         var tempFile = Path.GetTempFileName();
@@ -50,15 +49,14 @@ public class LintingSubsystemTests
                     regex: 'git version (?<version>[\d\.]+)'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run the full linting pipeline
-            var result = Lint.Run(context, tempFile);
+            // Act - Run the program with the --lint flag against the valid config
+            using var context = Context.Create(["--silent", "--lint", tempFile]);
+            Program.Run(context);
 
-            // Assert - The linting subsystem should report success with a clean exit code
-            Assert.IsTrue(result, "Linting should succeed for a valid configuration");
+            // Assert - The program should report success with a clean exit code
             Assert.AreEqual(0, context.ExitCode,
-                "Exit code should be zero after successful lint through the full linting pipeline");
+                "Exit code should be zero after successful configuration load");
         }
         finally
         {
@@ -67,10 +65,10 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that the linting pipeline reports all errors in a single pass for an invalid configuration.
+    ///     Test that the configuration load pipeline reports all errors in a single pass for an invalid configuration.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_MultipleErrors_ReportsAllErrorsInSinglePass()
+    public void ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass()
     {
         // Arrange - Write a configuration with multiple errors to a temp file
         // tool1 is missing 'regex'; tool2 is missing 'command' and has a regex without a 'version' group
@@ -87,22 +85,19 @@ public class LintingSubsystemTests
                 """;
             File.WriteAllText(tempFile, yaml);
 
-            // Context without --silent so errors are written to Console.Error
-            using var context = Context.Create([]);
             var originalError = Console.Error;
             try
             {
                 using var errorWriter = new StringWriter();
                 Console.SetError(errorWriter);
 
-                // Act - Run the full linting pipeline against a config with multiple errors
-                var result = Lint.Run(context, tempFile);
+                // Act - Run the program against a config with multiple errors
+                using var context = Context.Create(["--lint", tempFile]);
+                Program.Run(context);
 
-                // Assert - The linting subsystem should report failure and emit findings for both tools
-                Assert.IsFalse(result,
-                    "Linting should fail for a configuration with multiple errors");
+                // Assert - The program should report failure and emit findings for both tools
                 Assert.AreEqual(1, context.ExitCode,
-                    "Exit code should be non-zero when linting finds errors");
+                    "Exit code should be non-zero when configuration load finds errors");
 
                 var errorOutput = errorWriter.ToString();
                 StringAssert.Contains(errorOutput, "tool1",
@@ -122,24 +117,22 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that the linting pipeline fails for invalid YAML content.
+    ///     Test that the configuration load pipeline fails for invalid YAML content.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_InvalidYaml_Fails()
+    public void ConfigurationLoad_InvalidYaml_Fails()
     {
-        // Arrange
+        // Arrange - Write syntactically broken YAML to a temp file
         var tempFile = Path.GetTempFileName() + ".yaml";
         File.WriteAllText(tempFile, "tools:\n  dotnet:\n    command: [unclosed bracket");
 
         try
         {
-            using var context = Context.Create(["--silent"]);
+            // Act - Run the program against malformed YAML
+            using var context = Context.Create(["--silent", "--lint", tempFile]);
+            Program.Run(context);
 
-            // Act
-            var result = Lint.Run(context, tempFile);
-
-            // Assert
-            Assert.IsFalse(result);
+            // Assert - The program should fail with a non-zero exit code
             Assert.AreEqual(1, context.ExitCode);
         }
         finally
@@ -149,28 +142,27 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that linting reports an error when the config file does not exist.
+    ///     Test that the configuration load pipeline reports an error when the config file does not exist.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_NonExistentFile_Fails()
+    public void ConfigurationLoad_NonExistentFile_Fails()
     {
-        // Arrange
+        // Arrange - Use a path that does not exist
         var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".yaml");
-        using var context = Context.Create(["--silent"]);
 
-        // Act
-        var result = Lint.Run(context, nonExistentPath);
+        // Act - Run the program against a missing file
+        using var context = Context.Create(["--silent", "--lint", nonExistentPath]);
+        Program.Run(context);
 
-        // Assert
-        Assert.IsFalse(result);
+        // Assert - The program should fail with a non-zero exit code
         Assert.AreEqual(1, context.ExitCode);
     }
 
     /// <summary>
-    ///     Test that linting reports an error when a regex cannot be compiled.
+    ///     Test that the configuration load pipeline reports an error when a regex cannot be compiled.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_InvalidRegex_ReportsError()
+    public void ConfigurationLoad_InvalidRegex_ReportsError()
     {
         // Arrange - Write a config with a syntactically broken regex (unclosed group)
         var tempFile = Path.GetTempFileName();
@@ -184,15 +176,14 @@ public class LintingSubsystemTests
                     regex: '(?<version'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint against a tool with an invalid regex pattern
-            var result = Lint.Run(context, tempFile);
+            // Act - Run the program against a tool with an invalid regex pattern
+            using var context = Context.Create(["--silent", "--lint", tempFile]);
+            Program.Run(context);
 
-            // Assert - Lint should fail because the regex cannot be compiled
-            Assert.IsFalse(result,
-                "Lint should fail when a regex value cannot be compiled");
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - The program should fail because the regex cannot be compiled
+            Assert.AreEqual(1, context.ExitCode,
+                "Exit code should be non-zero when a regex value cannot be compiled");
         }
         finally
         {
@@ -201,10 +192,10 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that linting reports an error when a regex does not contain a named 'version' capture group.
+    ///     Test that the configuration load pipeline reports an error when a regex does not contain a named 'version' capture group.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_RegexWithoutVersionGroup_ReportsError()
+    public void ConfigurationLoad_RegexWithoutVersionGroup_ReportsError()
     {
         // Arrange - Write a config with a valid regex that lacks the required 'version' group
         var tempFile = Path.GetTempFileName();
@@ -218,15 +209,14 @@ public class LintingSubsystemTests
                     regex: '\d+\.\d+\.\d+'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool whose regex has no 'version' named capture group
-            var result = Lint.Run(context, tempFile);
+            // Act - Run the program on a tool whose regex has no 'version' named capture group
+            using var context = Context.Create(["--silent", "--lint", tempFile]);
+            Program.Run(context);
 
-            // Assert - Lint should fail because the 'version' group is required
-            Assert.IsFalse(result,
-                "Lint should fail when a regex does not contain a named 'version' capture group");
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - The program should fail because the 'version' group is required
+            Assert.AreEqual(1, context.ExitCode,
+                "Exit code should be non-zero when a regex does not contain a named 'version' capture group");
         }
         finally
         {
@@ -235,10 +225,10 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that linting reports an error when an OS-specific command override is empty.
+    ///     Test that the configuration load pipeline reports an error when an OS-specific command override is empty.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_EmptyOsSpecificOverride_ReportsError()
+    public void ConfigurationLoad_EmptyOsSpecificOverride_ReportsError()
     {
         // Arrange - Write a config with an empty command-win override
         var tempFile = Path.GetTempFileName();
@@ -253,15 +243,14 @@ public class LintingSubsystemTests
                     regex: '(?<version>\d+\.\d+\.\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an empty OS-specific override
-            var result = Lint.Run(context, tempFile);
+            // Act - Run the program on a tool with an empty OS-specific override
+            using var context = Context.Create(["--silent", "--lint", tempFile]);
+            Program.Run(context);
 
-            // Assert - Lint should fail because empty OS-specific overrides are not allowed
-            Assert.IsFalse(result,
-                "Lint should fail when an OS-specific command override is empty");
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - The program should fail because empty OS-specific overrides are not allowed
+            Assert.AreEqual(1, context.ExitCode,
+                "Exit code should be non-zero when an OS-specific command override is empty");
         }
         finally
         {
@@ -270,10 +259,10 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that linting treats unknown keys as non-fatal warnings and succeeds.
+    ///     Test that the configuration load pipeline treats unknown keys as non-fatal warnings and succeeds.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_UnknownKey_IsWarningNotError()
+    public void ConfigurationLoad_UnknownKey_IsWarningNotError()
     {
         // Arrange - Write a config with a valid tool plus an unknown key
         var tempFile = Path.GetTempFileName();
@@ -288,15 +277,14 @@ public class LintingSubsystemTests
                     unknown-tool-key: should-not-fail
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a config containing an unknown tool key
-            var result = Lint.Run(context, tempFile);
+            // Act - Run the program on a config containing an unknown tool key
+            using var context = Context.Create(["--silent", "--lint", tempFile]);
+            Program.Run(context);
 
-            // Assert - Lint should succeed; unknown keys produce warnings, not errors
-            Assert.IsTrue(result,
-                "Lint should succeed when only unknown keys are present (warnings are non-fatal)");
-            Assert.AreEqual(0, context.ExitCode);
+            // Assert - The program should succeed; unknown keys produce warnings, not errors
+            Assert.AreEqual(0, context.ExitCode,
+                "Exit code should be zero when only unknown keys are present (warnings are non-fatal)");
         }
         finally
         {
@@ -305,10 +293,10 @@ public class LintingSubsystemTests
     }
 
     /// <summary>
-    ///     Test that linting error messages include the filename and line/column location.
+    ///     Test that configuration load error messages include the filename and line/column location.
     /// </summary>
     [TestMethod]
-    public void LintingSubsystem_Lint_Error_IncludesFileAndLineInfo()
+    public void ConfigurationLoad_Error_IncludesFileAndLineInfo()
     {
         // Arrange - Write a config missing the required 'command' field and capture error output
         var tempFile = Path.GetTempFileName();
@@ -322,19 +310,18 @@ public class LintingSubsystemTests
                 """;
             File.WriteAllText(tempFile, yaml);
 
-            // Context without --silent so errors are written to Console.Error
-            using var context = Context.Create([]);
             var originalError = Console.Error;
             try
             {
                 using var errWriter = new StringWriter();
                 Console.SetError(errWriter);
 
-                // Act - Run lint on a config with a missing command field
-                var result = Lint.Run(context, tempFile);
+                // Act - Run the program on a config with a missing command field
+                using var context = Context.Create(["--lint", tempFile]);
+                Program.Run(context);
 
                 // Assert - The error message should contain the filename and line/column info
-                Assert.IsFalse(result);
+                Assert.AreEqual(1, context.ExitCode);
                 var errorOutput = errWriter.ToString();
                 StringAssert.Contains(errorOutput, Path.GetFileName(tempFile),
                     "Error message should include the config filename");

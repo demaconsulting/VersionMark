@@ -1,15 +1,15 @@
-// Copyright (c) DEMA Consulting
-// 
+// Copyright (c) 2025 DEMA Consulting
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,22 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using DemaConsulting.VersionMark.Cli;
-using DemaConsulting.VersionMark.Linting;
+using DemaConsulting.VersionMark.Configuration;
 
-namespace DemaConsulting.VersionMark.Tests.Linting;
+namespace DemaConsulting.VersionMark.Tests.Configuration;
 
 /// <summary>
-///     Unit tests for the Lint class.
+///     Unit tests for the <see cref="VersionMarkConfig.Load"/> method.
 /// </summary>
 [TestClass]
-public class LintTests
+public class VersionMarkConfigLoadTests
 {
     /// <summary>
-    ///     Test that a valid configuration file with command and regex returns true.
+    ///     Test that a valid configuration file returns a non-null config with no errors.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_ValidConfig_ReturnsTrue()
+    public void VersionMarkConfig_Load_ValidConfig_ReturnsConfig()
     {
         // Arrange - Create a well-formed .versionmark.yaml config file
         var tempFile = Path.GetTempFileName();
@@ -47,14 +46,13 @@ public class LintTests
                     regex: '(?<version>\d+\.\d+\.\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a valid config
-            var result = Lint.Run(context, tempFile);
+            // Act - Load the config from the valid file
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should succeed with no errors and exit code 0
-            Assert.IsTrue(result);
-            Assert.AreEqual(0, context.ExitCode);
+            // Assert - Config should be returned with no error issues
+            Assert.IsNotNull(config);
+            Assert.IsFalse(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -63,28 +61,27 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a non-existent file returns false with exit code 1.
+    ///     Test that a non-existent file returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_MissingFile_ReturnsFalse()
+    public void VersionMarkConfig_Load_MissingFile_ReturnsNullConfig()
     {
         // Arrange - Use a path that does not exist
         var nonExistentFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".yaml");
-        using var context = Context.Create(["--silent"]);
 
-        // Act - Run lint against a missing file
-        var result = Lint.Run(context, nonExistentFile);
+        // Act - Attempt to load config from a missing file
+        var (config, issues) = VersionMarkConfig.Load(nonExistentFile);
 
-        // Assert - Lint should fail and report an error
-        Assert.IsFalse(result);
-        Assert.AreEqual(1, context.ExitCode);
+        // Assert - Config should be null and issues should contain an error
+        Assert.IsNull(config);
+        Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
     }
 
     /// <summary>
-    ///     Test that a file containing invalid YAML returns false with exit code 1.
+    ///     Test that a file containing invalid YAML returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_InvalidYaml_ReturnsFalse()
+    public void VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig()
     {
         // Arrange - Write syntactically broken YAML to a temp file
         var tempFile = Path.GetTempFileName();
@@ -96,14 +93,13 @@ public class LintTests
                     command: [unclosed bracket
                 """;
             File.WriteAllText(tempFile, invalidYaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on malformed YAML
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config from malformed YAML
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail with a parse error
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null and issues should contain a parse error
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -112,10 +108,10 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a config without a 'tools' section returns false with exit code 1.
+    ///     Test that a config without a 'tools' section returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_MissingToolsSection_ReturnsFalse()
+    public void VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file that has no 'tools' key at the root
         var tempFile = Path.GetTempFileName();
@@ -126,14 +122,13 @@ public class LintTests
                 version: 1
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a config that lacks a 'tools' section
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config that lacks a 'tools' section
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because 'tools' is required
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because 'tools' is required
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -142,10 +137,10 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a config with an empty 'tools' section returns false with exit code 1.
+    ///     Test that a config with an empty 'tools' section returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_EmptyToolsSection_ReturnsFalse()
+    public void VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file that has a 'tools' mapping with no entries
         var tempFile = Path.GetTempFileName();
@@ -156,14 +151,13 @@ public class LintTests
                 tools: {}
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a config with an empty tools section
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an empty tools section
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because at least one tool is required
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because at least one tool is required
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -172,10 +166,10 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a tool without a 'command' field returns false with exit code 1.
+    ///     Test that a tool without a 'command' field returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_MissingCommand_ReturnsFalse()
+    public void VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file where the tool entry has no 'command' key
         var tempFile = Path.GetTempFileName();
@@ -188,14 +182,13 @@ public class LintTests
                     regex: '(?<version>\d+\.\d+\.\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool that is missing its required 'command' field
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with a tool missing its 'command' field
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because 'command' is required
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because 'command' is required
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -204,12 +197,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a tool with an empty 'command' field returns false with exit code 1.
+    ///     Test that a tool with an empty 'command' field returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_EmptyCommand_ReturnsFalse()
+    public void VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where the tool's 'command' value is blank
+        // Arrange - Write a YAML file where the tool has an empty 'command' value
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -221,14 +214,13 @@ public class LintTests
                     regex: '(?<version>\d+\.\d+\.\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an empty command string
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an empty command
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because an empty command is invalid
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because an empty command is invalid
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -237,10 +229,10 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a tool without a 'regex' field returns false with exit code 1.
+    ///     Test that a tool without a 'regex' field returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_MissingRegex_ReturnsFalse()
+    public void VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file where the tool entry has no 'regex' key
         var tempFile = Path.GetTempFileName();
@@ -253,14 +245,13 @@ public class LintTests
                     command: dotnet --version
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool that is missing its required 'regex' field
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with a tool missing its 'regex' field
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because 'regex' is required
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because 'regex' is required
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -269,12 +260,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a tool with an empty 'regex' field returns false with exit code 1.
+    ///     Test that a tool with an empty 'regex' field returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_EmptyRegex_ReturnsFalse()
+    public void VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where the tool's 'regex' value is blank
+        // Arrange - Write a YAML file where the tool has an empty 'regex' value
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -286,14 +277,13 @@ public class LintTests
                     regex: ''
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an empty regex string
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an empty regex
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because an empty regex is invalid
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because an empty regex is invalid
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -302,12 +292,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a tool with a regex that cannot be compiled returns false with exit code 1.
+    ///     Test that a tool with an invalid 'regex' value returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_InvalidRegex_ReturnsFalse()
+    public void VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where the tool's 'regex' is a syntactically invalid pattern
+        // Arrange - Write a YAML file with a syntactically broken regex (unclosed group)
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -319,14 +309,13 @@ public class LintTests
                     regex: '(?<version'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool whose regex cannot be compiled
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with a regex that cannot be compiled
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because the regex pattern is invalid
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because the regex is invalid
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -335,12 +324,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a tool with a valid regex that has no 'version' capture group returns false.
+    ///     Test that a tool with a regex missing the 'version' group returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_RegexMissingVersionGroup_ReturnsFalse()
+    public void VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where the tool's regex is valid but lacks a 'version' named group
+        // Arrange - Write a YAML file with a valid regex that lacks the required 'version' named group
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -352,14 +341,13 @@ public class LintTests
                     regex: '\d+\.\d+\.\d+'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool whose regex has no named 'version' capture group
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with a regex that has no 'version' group
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because the 'version' group is required
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because the 'version' capture group is required
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -368,12 +356,46 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that an unknown top-level key produces a warning but returns true (non-fatal).
+    ///     Test that an unknown top-level key produces a warning but config is still returned.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_UnknownTopLevelKey_ReturnsTrue()
+    public void VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig()
     {
-        // Arrange - Write a YAML file with a valid tools section plus an unknown top-level key
+        // Arrange - Write a YAML file with a valid tool plus an unknown top-level key
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            const string yaml = """
+                ---
+                unknown-top-level-key: some-value
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                """;
+            File.WriteAllText(tempFile, yaml);
+
+            // Act - Load config that has an unknown top-level key
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
+
+            // Assert - Config should be returned; unknown keys produce warnings, not errors
+            Assert.IsNotNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Warning));
+            Assert.IsFalse(issues.Any(i => i.Severity == LintSeverity.Error));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that an unknown tool key produces a warning but config is still returned.
+    /// </summary>
+    [TestMethod]
+    public void VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig()
+    {
+        // Arrange - Write a YAML file with a valid tool plus an unknown key inside the tool
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -383,17 +405,17 @@ public class LintTests
                   dotnet:
                     command: dotnet --version
                     regex: '(?<version>\d+\.\d+\.\d+)'
-                unknown-key: some-value
+                    unknown-tool-key: should-not-fail
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a config containing an unknown top-level key
-            var result = Lint.Run(context, tempFile);
+            // Act - Load config containing an unknown tool key
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should succeed (warnings are non-fatal) with exit code 0
-            Assert.IsTrue(result);
-            Assert.AreEqual(0, context.ExitCode);
+            // Assert - Config should be returned; unknown tool keys produce warnings, not errors
+            Assert.IsNotNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Warning));
+            Assert.IsFalse(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -402,46 +424,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that an unknown per-tool key produces a warning but returns true (non-fatal).
+    ///     Test that an empty OS-specific command override returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_UnknownToolKey_ReturnsTrue()
+    public void VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where a tool has an unknown configuration key
-        var tempFile = Path.GetTempFileName();
-        try
-        {
-            const string yaml = """
-                ---
-                tools:
-                  dotnet:
-                    command: dotnet --version
-                    regex: '(?<version>\d+\.\d+\.\d+)'
-                    unknown-tool-key: ignored
-                """;
-            File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
-
-            // Act - Run lint on a tool that contains an unknown configuration key
-            var result = Lint.Run(context, tempFile);
-
-            // Assert - Lint should succeed (unknown tool keys are non-fatal warnings) with exit code 0
-            Assert.IsTrue(result);
-            Assert.AreEqual(0, context.ExitCode);
-        }
-        finally
-        {
-            File.Delete(tempFile);
-        }
-    }
-
-    /// <summary>
-    ///     Test that an OS-specific command override with an empty value returns false.
-    /// </summary>
-    [TestMethod]
-    public void Lint_Run_OsSpecificEmptyCommand_ReturnsFalse()
-    {
-        // Arrange - Write a YAML file where command-win is present but empty
+        // Arrange - Write a YAML file with an empty command-win override
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -454,14 +442,13 @@ public class LintTests
                     regex: '(?<version>\d+\.\d+\.\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an empty OS-specific command override
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an empty OS-specific command override
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because an empty command-win is invalid
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because empty OS-specific overrides are not allowed
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -470,12 +457,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that an OS-specific regex override with an empty value returns false.
+    ///     Test that an empty OS-specific regex override returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_OsSpecificEmptyRegex_ReturnsFalse()
+    public void VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where regex-win is present but empty
+        // Arrange - Write a YAML file with an empty regex-linux override
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -485,17 +472,16 @@ public class LintTests
                   dotnet:
                     command: dotnet --version
                     regex: '(?<version>\d+\.\d+\.\d+)'
-                    regex-win: ''
+                    regex-linux: ''
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an empty OS-specific regex override
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an empty OS-specific regex override
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because an empty regex-win is invalid
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because empty OS-specific regex overrides are not allowed
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -504,12 +490,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that an OS-specific regex override that lacks a 'version' capture group returns false.
+    ///     Test that an OS-specific regex missing the 'version' group returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_OsSpecificRegexMissingVersionGroup_ReturnsFalse()
+    public void VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where regex-win is a valid pattern but has no 'version' named group
+        // Arrange - Write a YAML file with an OS-specific regex that has no 'version' named group
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -519,17 +505,16 @@ public class LintTests
                   dotnet:
                     command: dotnet --version
                     regex: '(?<version>\d+\.\d+\.\d+)'
-                    regex-win: '\d+\.\d+\.\d+'
+                    regex-macos: '\d+\.\d+\.\d+'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an OS-specific regex that has no 'version' group
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an OS-specific regex missing the 'version' group
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because the 'version' group is required even for OS-specific overrides
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because the 'version' group is required in all regexes
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -538,12 +523,12 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that an OS-specific regex override that cannot be compiled returns false.
+    ///     Test that an OS-specific regex that is invalid returns null config with an error issue.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_OsSpecificInvalidRegex_ReturnsFalse()
+    public void VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig()
     {
-        // Arrange - Write a YAML file where regex-linux contains an invalid regex pattern
+        // Arrange - Write a YAML file with a broken OS-specific regex (unclosed group)
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -553,17 +538,16 @@ public class LintTests
                   dotnet:
                     command: dotnet --version
                     regex: '(?<version>\d+\.\d+\.\d+)'
-                    regex-linux: '(?<version'
+                    regex-win: '(?<version'
                 """;
             File.WriteAllText(tempFile, yaml);
-            using var context = Context.Create(["--silent"]);
 
-            // Act - Run lint on a tool with an OS-specific regex that cannot be compiled
-            var result = Lint.Run(context, tempFile);
+            // Act - Attempt to load config with an invalid OS-specific regex
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Assert - Lint should fail because the OS-specific regex is invalid
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null because the OS-specific regex cannot be compiled
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
         }
         finally
         {
@@ -572,65 +556,50 @@ public class LintTests
     }
 
     /// <summary>
-    ///     Test that a config with multiple errors reports all of them (does not stop at the first).
+    ///     Test that multiple errors in different tools are all reported in a single Load call.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_MultipleErrors_ReportsAll()
+    public void VersionMarkConfig_Load_MultipleErrors_ReportsAll()
     {
-        // Arrange - Redirect Console.Error to verify both error messages are emitted
-        var previousError = Console.Error;
-        var errorOutput = new System.Text.StringBuilder();
+        // Arrange - Write a config where tool1 is missing 'regex' and tool2 is missing 'command'
         var tempFile = Path.GetTempFileName();
         try
         {
-            // A tool with neither 'command' nor 'regex' should produce two separate error messages
             const string yaml = """
                 ---
                 tools:
-                  dotnet: {}
+                  tool1:
+                    command: tool1 --version
+                  tool2:
+                    regex: '(?<version>\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
 
-            using var captureWriter = new System.IO.StringWriter(errorOutput);
-            Console.SetError(captureWriter);
+            // Act - Load a config containing errors in multiple tools
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Context must NOT be silent so that WriteError calls Console.Error.WriteLine
-            using var context = Context.Create([]);
-
-            // Act - Run lint on a tool that has no required fields at all
-            var result = Lint.Run(context, tempFile);
-            captureWriter.Flush();
-
-            // Assert - Lint should fail (both errors accumulated)
-            Assert.IsFalse(result);
-            Assert.AreEqual(1, context.ExitCode);
+            // Assert - Config should be null and issues should reference both tool1 and tool2
+            Assert.IsNull(config);
+            Assert.IsTrue(
+                issues.Any(i => i.Severity == LintSeverity.Error && i.Description.Contains("tool1")),
+                "Issues should contain an error mentioning tool1 (missing regex)");
+            Assert.IsTrue(
+                issues.Any(i => i.Severity == LintSeverity.Error && i.Description.Contains("tool2")),
+                "Issues should contain an error mentioning tool2 (missing command)");
         }
         finally
         {
-            Console.SetError(previousError);
             File.Delete(tempFile);
         }
-
-        // Assert - Both error messages must be present, confirming lint does not stop at the first
-        var captured = errorOutput.ToString();
-        Assert.IsTrue(
-            captured.Contains("'command'"),
-            $"Expected error about missing 'command' field, but got: {captured}");
-        Assert.IsTrue(
-            captured.Contains("'regex'"),
-            $"Expected error about missing 'regex' field, but got: {captured}");
     }
 
     /// <summary>
-    ///     Test that error messages contain the config file path.
+    ///     Test that all issues include the file path of the configuration file.
     /// </summary>
     [TestMethod]
-    public void Lint_Run_ErrorMessageContainsFileName()
+    public void VersionMarkConfig_Load_IssuesContainFilePath()
     {
-        // Arrange - Redirect Console.Error so we can inspect the messages that Lint emits.
-        //           A missing-command error is straightforward to trigger reliably.
-        var previousError = Console.Error;
-        var errorOutput = new System.Text.StringBuilder();
+        // Arrange - Write a config with a missing required field to force an error issue
         var tempFile = Path.GetTempFileName();
         try
         {
@@ -642,26 +611,18 @@ public class LintTests
                 """;
             File.WriteAllText(tempFile, yaml);
 
-            using var captureWriter = new System.IO.StringWriter(errorOutput);
-            Console.SetError(captureWriter);
+            // Act - Load the config and inspect the returned issues
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
 
-            // Context must NOT be silent so that WriteError calls Console.Error.WriteLine
-            using var context = Context.Create([]);
-
-            // Act - Run lint on a tool that is missing its required 'command' field
-            Lint.Run(context, tempFile);
-            captureWriter.Flush();
+            // Assert - All issues should reference the path of the config file that was loaded
+            Assert.IsNull(config);
+            Assert.IsTrue(
+                issues.Any(i => i.FilePath == tempFile),
+                "At least one issue should contain the config file path");
         }
         finally
         {
-            Console.SetError(previousError);
             File.Delete(tempFile);
         }
-
-        // Assert - The error message should embed the config file path so users know which file to fix
-        var captured = errorOutput.ToString();
-        Assert.IsTrue(
-            captured.Contains(Path.GetFileName(tempFile)),
-            $"Expected error output to contain the file name '{Path.GetFileName(tempFile)}', but got: {captured}");
     }
 }

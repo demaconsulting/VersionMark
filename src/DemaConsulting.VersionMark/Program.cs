@@ -22,7 +22,6 @@ using System.Reflection;
 using DemaConsulting.VersionMark.Capture;
 using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.Configuration;
-using DemaConsulting.VersionMark.Linting;
 using DemaConsulting.VersionMark.Publishing;
 using DemaConsulting.VersionMark.SelfTest;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -200,7 +199,19 @@ internal static class Program
     {
         // Use specified file, or default to .versionmark.yaml
         var configFile = context.LintFile ?? ".versionmark.yaml";
-        Lint.Run(context, configFile);
+        context.WriteLine($"Linting '{configFile}'...");
+
+        // Load the configuration, which performs all validation in a single pass
+        var result = VersionMarkConfig.Load(configFile);
+
+        // Report all discovered issues to the context
+        result.ReportIssues(context);
+
+        // Confirm success when no issues were found
+        if (result.Config != null && result.Issues.Count == 0)
+        {
+            context.WriteLine($"'{configFile}': No issues found");
+        }
     }
 
     /// <summary>
@@ -222,20 +233,27 @@ internal static class Program
         context.WriteLine($"Capturing tool versions for job '{context.JobId}'...");
         context.WriteLine($"Output file: {outputFile}");
 
+        // Load and validate configuration, reporting all issues before proceeding
+        var loadResult = VersionMarkConfig.Load(".versionmark.yaml");
+        loadResult.ReportIssues(context);
+
+        // Abort capture if the configuration could not be loaded
+        if (loadResult.Config == null)
+        {
+            return;
+        }
+
         try
         {
-            // Load configuration from default location
-            var config = VersionMarkConfig.ReadFromFile(".versionmark.yaml");
-
             // Determine which tools to capture
             var toolNames = context.ToolNames.Length > 0
                 ? context.ToolNames
-                : config.Tools.Keys.ToArray();
+                : loadResult.Config.Tools.Keys.ToArray();
 
             context.WriteLine($"Capturing {toolNames.Length} tool(s)...");
 
             // Capture versions
-            var versionInfo = config.FindVersions(toolNames, context.JobId);
+            var versionInfo = loadResult.Config.FindVersions(toolNames, context.JobId);
 
             // Save to file
             versionInfo.SaveToFile(outputFile);

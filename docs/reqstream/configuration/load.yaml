@@ -1,0 +1,145 @@
+---
+sections:
+  - title: VersionMark Load Requirements
+    requirements:
+      - id: VersionMark-Load-FileExistence
+        title: The tool shall report an error when the configuration file does not exist.
+        justification: |
+          Users may specify an incorrect path; an immediate, clear error message
+          avoids silent failures and directs the user to fix the file path.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_NonExistentFile_Fails
+
+      - id: VersionMark-Load-YamlParsing
+        title: The tool shall report an error when the configuration file contains invalid YAML.
+        justification: |
+          Malformed YAML cannot be interpreted. Reporting a parse error with its
+          location lets users quickly find and fix the syntax issue.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_InvalidYaml_Fails
+
+      - id: VersionMark-Load-ToolsSection
+        title: The tool shall report an error when the configuration file is missing a non-empty 'tools' section.
+        justification: |
+          A configuration without any tool definitions cannot perform any useful
+          capture or publish operations.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+
+      - id: VersionMark-Load-ToolCommand
+        title: The tool shall report an error when a tool is missing a non-empty 'command' field.
+        justification: |
+          The 'command' field defines how to invoke the tool to obtain version
+          information. Without it the tool cannot function at runtime.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+
+      - id: VersionMark-Load-ToolRegex
+        title: The tool shall report an error when a tool is missing a non-empty 'regex' field.
+        justification: |
+          The 'regex' field is used to extract the version string from command output.
+          Without it the tool cannot parse a version at runtime.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+
+      - id: VersionMark-Load-RegexValid
+        title: The tool shall report an error when a regex value cannot be compiled.
+        justification: |
+          An invalid regex pattern will cause a runtime failure. Detecting it early
+          during load gives the user a clear error with a precise file location.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_InvalidRegex_ReportsError
+
+      - id: VersionMark-Load-RegexVersion
+        title: The tool shall report an error when a regex does not contain a named 'version' capture group.
+        justification: |
+          The capture group named 'version' is the mechanism by which the tool
+          extracts the version string. Its absence causes silent data loss at runtime.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_RegexWithoutVersionGroup_ReportsError
+
+      - id: VersionMark-Load-OsOverrides
+        title: The tool shall report an error when an OS-specific command or regex override is empty.
+        justification: |
+          An empty OS-specific override will be used at runtime on the corresponding
+          platform, causing a capture failure. Detecting it during load prevents
+          platform-specific surprises.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_EmptyOsSpecificOverride_ReportsError
+
+      - id: VersionMark-Load-UnknownKeys
+        title: The tool shall report unknown keys as non-fatal warnings that do not fail loading.
+        justification: |
+          Unknown keys may be typos or forward-compatible extensions. Treating them
+          as warnings alerts users without blocking valid configurations from
+          proceeding.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_UnknownKey_IsWarningNotError
+
+      - id: VersionMark-Load-ErrorLocation
+        title: The tool shall report all load findings with the filename and line/column location.
+        justification: |
+          Precise locations (file, line, column) allow users to jump directly to the
+          problem in their editor, dramatically reducing the time needed to fix issues.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_Error_IncludesFileAndLineInfo
+
+      - id: VersionMark-Load-AllIssues
+        title: The tool shall report all load issues in a single pass without stopping at the first error.
+        justification: |
+          Reporting all issues at once lets users fix everything in one edit cycle
+          rather than repeatedly re-running to discover each subsequent problem.
+        tags:
+          - configuration
+        tests:
+          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+
+      - id: VersionMark-Load-Method
+        title: >-
+          The VersionMarkConfig.Load method shall validate a .versionmark.yaml configuration file
+          and return issues with file, line, and column location alongside the loaded configuration.
+        justification: |
+          Centralizing all load and validation checks in a single Load method ensures a consistent
+          validation pass and allows all issues to be reported in one run rather than
+          stopping at the first error. Returning both the config and issues allows callers
+          to proceed when only warnings are present.
+        tests:
+          - VersionMarkConfig_Load_ValidConfig_ReturnsConfig
+          - VersionMarkConfig_Load_MissingFile_ReturnsNullConfig
+          - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig
+          - VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig
+          - VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig
+          - VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig
+          - VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig
+          - VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig
+          - VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_MultipleErrors_ReportsAll
+          - VersionMarkConfig_Load_IssuesContainFilePath
