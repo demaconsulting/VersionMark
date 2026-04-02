@@ -198,7 +198,7 @@ public class ContextTests
     public void Context_Create_UnknownArgument_ThrowsArgumentException()
     {
         // Arrange & Act - Create context with unknown argument
-        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--unknown"]));
+        var exception = Assert.ThrowsExactly<ArgumentException>(() => Context.Create(["--unknown"]));
 
         // Assert - Verify exception is thrown with correct message
         Assert.Contains("Unsupported argument", exception.Message);
@@ -379,7 +379,7 @@ public class ContextTests
     public void Context_Create_LogFlag_WithoutValue_ThrowsArgumentException()
     {
         // Arrange & Act - Create context with --log flag but no value
-        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--log"]));
+        var exception = Assert.ThrowsExactly<ArgumentException>(() => Context.Create(["--log"]));
 
         // Assert - Verify exception is thrown
         Assert.Contains("--log", exception.Message);
@@ -394,7 +394,7 @@ public class ContextTests
     public void Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException()
     {
         // Arrange & Act - Create context with --results flag but no value
-        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--results"]));
+        var exception = Assert.ThrowsExactly<ArgumentException>(() => Context.Create(["--results"]));
 
         // Assert - Verify exception is thrown
         Assert.Contains("--results", exception.Message);

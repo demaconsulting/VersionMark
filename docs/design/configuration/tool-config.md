@@ -19,9 +19,9 @@ and `VersionMark-Configuration-OsRegexOverride`.
 
 ## YAML Parsing
 
-`FromYamlNode` is an internal factory method that reads a `YamlMappingNode` and populates
-the command and regex dictionaries. Known keys are `command`, `command-win`, `command-linux`,
-`command-macos`, `regex`, `regex-win`, `regex-linux`, and `regex-macos`. Unknown keys are
-silently ignored for forward-compatibility. Both a default `command` and a default `regex`
-are required; their absence raises `ArgumentException`. This satisfies
-`VersionMark-Configuration-ToolDefinition`.
+Tool YAML parsing is performed by the private `VersionMarkConfig.ValidateTool` method.
+It reads a `YamlMappingNode` and populates the command and regex dictionaries. Known keys
+are `command`, `command-win`, `command-linux`, `command-macos`, `regex`, `regex-win`,
+`regex-linux`, and `regex-macos`. Unknown keys produce a warning lint issue but do not
+prevent loading. Both a default `command` and a default `regex` are required; their absence
+produces an error lint issue. This satisfies `VersionMark-Configuration-ToolDefinition`.
