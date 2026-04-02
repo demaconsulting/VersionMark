@@ -25,7 +25,7 @@ namespace DemaConsulting.VersionMark.Configuration;
 /// <summary>
 ///     Severity level for a lint issue.
 /// </summary>
-internal enum LintSeverity
+public enum LintSeverity
 {
     /// <summary>
     ///     Non-fatal advisory message.
@@ -46,7 +46,7 @@ internal enum LintSeverity
 /// <param name="Column">One-based column number of the issue.</param>
 /// <param name="Severity">Severity of the issue.</param>
 /// <param name="Description">Human-readable description of the issue.</param>
-internal sealed record LintIssue(
+public sealed record LintIssue(
     string FilePath,
     long Line,
     long Column,
@@ -75,7 +75,7 @@ internal sealed record LintIssue(
 ///     All validation issues found during loading. Always populated; may contain warnings even
 ///     when <paramref name="Config"/> is non-<see langword="null"/>.
 /// </param>
-internal sealed record VersionMarkLoadResult(
+public sealed record VersionMarkLoadResult(
     VersionMarkConfig? Config,
     IReadOnlyList<LintIssue> Issues)
 {
@@ -84,7 +84,7 @@ internal sealed record VersionMarkLoadResult(
     ///     stream and warnings to the standard output stream.
     /// </summary>
     /// <param name="context">The context used to write output.</param>
-    public void ReportIssues(Context context)
+    internal void ReportIssues(Context context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
@@ -92,7 +92,7 @@ internal sealed record VersionMarkLoadResult(
         {
             if (issue.Severity == LintSeverity.Error)
             {
-                context.WriteError($"Error: {issue}");
+                context.WriteError(issue.ToString());
             }
             else
             {

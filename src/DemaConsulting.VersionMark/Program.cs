@@ -207,8 +207,8 @@ internal static class Program
         // Report all discovered issues to the context
         result.ReportIssues(context);
 
-        // Confirm success when no errors were found
-        if (result.Config != null)
+        // Confirm success when no issues were found
+        if (result.Config != null && result.Issues.Count == 0)
         {
             context.WriteLine($"'{configFile}': No issues found");
         }

@@ -174,7 +174,7 @@ public sealed record VersionMarkConfig
     ///     (or <see langword="null"/> when fatal errors prevent loading) and a read-only list of
     ///     <see cref="LintIssue"/> objects describing all warnings and errors encountered.
     /// </returns>
-    internal static VersionMarkLoadResult Load(string filePath)
+    public static VersionMarkLoadResult Load(string filePath)
     {
         var issues = new List<LintIssue>();
 
@@ -254,6 +254,13 @@ public sealed record VersionMarkConfig
 
             var toolName = toolKeyNode.Value ?? string.Empty;
 
+            // Tool names must be non-empty
+            if (string.IsNullOrWhiteSpace(toolName))
+            {
+                issues.Add(CreateIssue(filePath, toolKeyNode, LintSeverity.Error, "Tool names must not be empty or whitespace"));
+                continue;
+            }
+
             // Tool configuration must be a mapping
             if (toolEntry.Value is not YamlMappingNode toolNode)
             {
@@ -292,7 +299,7 @@ public sealed record VersionMarkConfig
         var firstError = result.Issues.FirstOrDefault(i => i.Severity == LintSeverity.Error);
         if (firstError != null)
         {
-            throw new ArgumentException(firstError.Description);
+            throw new ArgumentException(firstError.ToString());
         }
 
         return result.Config!;
