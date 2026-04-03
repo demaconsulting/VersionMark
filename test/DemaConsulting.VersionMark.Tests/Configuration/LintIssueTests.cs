@@ -152,13 +152,30 @@ public class LintIssueTests
     {
         // Arrange
         var issue = new LintIssue("config.yaml", 5, 3, LintSeverity.Warning, "unknown key 'x'");
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        using var stdout = new System.IO.StringWriter();
+        using var stderr = new System.IO.StringWriter();
 
-        // Act
-        using var context = Context.Create(["--silent", "--lint", "config.yaml"]);
-        var loadResult = new VersionMarkLoadResult(null, [issue]);
-        loadResult.ReportIssues(context);
+        try
+        {
+            Console.SetOut(stdout);
+            Console.SetError(stderr);
 
-        // Assert - a warning alone must not set the error exit code
-        Assert.AreEqual(0, context.ExitCode, "ExitCode should remain zero for warnings only");
+            // Act
+            using var context = Context.Create(["--lint", "config.yaml"]);
+            var loadResult = new VersionMarkLoadResult(null, [issue]);
+            loadResult.ReportIssues(context);
+
+            // Assert - warnings should go to stdout only and must not set the error exit code
+            Assert.AreEqual(0, context.ExitCode, "ExitCode should remain zero for warnings only");
+            StringAssert.Contains(stdout.ToString(), "config.yaml(5,3): warning: unknown key 'x'");
+            Assert.AreEqual(string.Empty, stderr.ToString(), "Warnings should not be written to stderr");
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+        }
     }
 }
