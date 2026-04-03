@@ -17,5 +17,6 @@ sections:
           - PathHelpers_SafePathCombine_CurrentDirectoryReference_CombinesCorrectly
           - PathHelpers_SafePathCombine_NestedPaths_CombinesCorrectly
           - PathHelpers_SafePathCombine_EmptyRelativePath_ReturnsBasePath
+          - PathHelpers_SafePathCombine_DotDotAsNamePrefix_CombinesCorrectly
           - PathHelpers_SafePathCombine_NullBasePath_ThrowsArgumentNullException
           - PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException

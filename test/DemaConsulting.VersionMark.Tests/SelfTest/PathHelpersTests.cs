@@ -183,4 +183,22 @@ public class PathHelpersTests
         // Assert
         Assert.AreEqual(Path.Combine(basePath, relativePath), result);
     }
+
+    /// <summary>
+    ///     Test that SafePathCombine correctly handles paths where a directory name starts with "..".
+    ///     Such names are valid and must not be rejected as false positives.
+    /// </summary>
+    [TestMethod]
+    public void PathHelpers_SafePathCombine_DotDotAsNamePrefix_CombinesCorrectly()
+    {
+        // Arrange - "..data" is a valid directory name that starts with ".." but is not a traversal segment
+        var basePath = Path.GetTempPath();
+        var relativePath = "..data/file.txt";
+
+        // Act
+        var result = PathHelpers.SafePathCombine(basePath, relativePath);
+
+        // Assert
+        Assert.AreEqual(Path.Combine(basePath, relativePath), result);
+    }
 }
