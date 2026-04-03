@@ -79,6 +79,7 @@ reviews:
       - "docs/design/version-mark/configuration/configuration.md"               # subsystem design
       - "docs/design/version-mark/configuration/version-mark-config.md"         # VersionMarkConfig unit design
       - "docs/design/version-mark/configuration/tool-config.md"                 # ToolConfig unit design
+      - "docs/design/version-mark/configuration/lint-issue.md"                  # LintIssue unit design
       - "test/**/Configuration/ConfigurationSubsystemTests.cs"                  # subsystem tests
 
   - id: VersionMark-VersionMarkConfig-Review
@@ -96,6 +97,14 @@ reviews:
       - "docs/design/version-mark/configuration/tool-config.md"                 # design
       - "src/**/Configuration/VersionMarkConfig.cs"                             # implementation
       - "test/**/Configuration/VersionMarkConfigTests.cs"                       # unit tests
+
+  - id: VersionMark-LintIssue-Review
+    title: Review of LintIssue Unit
+    paths:
+      - "docs/reqstream/version-mark/configuration/load.yaml"                   # requirements
+      - "docs/design/version-mark/configuration/lint-issue.md"                  # design
+      - "src/**/Configuration/LintIssue.cs"                                     # implementation
+      - "test/**/Configuration/LintIssueTests.cs"                               # unit tests
 
   # Capture Subsystem
   - id: VersionMark-Capture-Subsystem
@@ -130,23 +139,6 @@ reviews:
       - "docs/design/version-mark/publishing/markdown-formatter.md"       # design
       - "src/**/Publishing/MarkdownFormatter.cs"                          # implementation
       - "test/**/Publishing/MarkdownFormatterTests.cs"                    # unit tests
-
-  # Linting Subsystem
-  - id: VersionMark-Linting-Subsystem
-    title: Review of Linting Subsystem
-    paths:
-      - "docs/reqstream/version-mark/linting/linting.yaml"      # subsystem requirements
-      - "docs/design/version-mark/linting/linting.md"           # subsystem design
-      - "docs/design/version-mark/linting/lint.md"              # Lint unit design
-      - "test/**/Linting/LintingSubsystemTests.cs"              # subsystem tests
-
-  - id: VersionMark-Lint-Review
-    title: Review of Lint Unit
-    paths:
-      - "docs/reqstream/version-mark/linting/lint.yaml"         # requirements
-      - "docs/design/version-mark/linting/lint.md"              # design
-      - "src/**/Linting/Lint.cs"                                # implementation
-      - "test/**/Linting/LintTests.cs"                          # unit tests
 
   # SelfTest Subsystem
   - id: VersionMark-SelfTest-Subsystem
