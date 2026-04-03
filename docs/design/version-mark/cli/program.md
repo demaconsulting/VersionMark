@@ -50,5 +50,7 @@ error handling to `context.WriteError`. These methods satisfy requirements
 ## RunLint
 
 `RunLint` is a private helper called from `Run`. It resolves the configuration file path,
-defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then delegates to
-`Lint.Run`. This satisfies requirement `VersionMark-CommandLine-Lint`.
+defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then calls
+`VersionMarkConfig.Load` to validate the configuration. It reports all discovered issues via
+`result.ReportIssues` and confirms success when no issues were found. This satisfies
+requirement `VersionMark-CommandLine-Lint`.

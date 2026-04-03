@@ -12,12 +12,11 @@ input-files:
   - docs/design/version-mark/configuration/configuration.md
   - docs/design/version-mark/configuration/tool-config.md
   - docs/design/version-mark/configuration/version-mark-config.md
+  - docs/design/version-mark/configuration/lint-issue.md
   - docs/design/version-mark/capture/capture.md
   - docs/design/version-mark/capture/version-info.md
   - docs/design/version-mark/publishing/publishing.md
   - docs/design/version-mark/publishing/markdown-formatter.md
-  - docs/design/version-mark/linting/linting.md
-  - docs/design/version-mark/linting/lint.md
   - docs/design/version-mark/self-test/self-test.md
   - docs/design/version-mark/self-test/validation.md
   - docs/design/version-mark/self-test/path-helpers.md
