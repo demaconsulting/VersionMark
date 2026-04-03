@@ -198,6 +198,11 @@ public sealed record VersionMarkConfig
             issues.Add(new LintIssue(filePath, ex.Start.Line + 1, ex.Start.Column + 1, LintSeverity.Error, $"Failed to parse YAML file: {ex.Message}"));
             return new VersionMarkLoadResult(null, issues);
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, $"Failed to read file: {ex.Message}"));
+            return new VersionMarkLoadResult(null, issues);
+        }
 
         // Validate that the file contains at least one YAML document
         if (yaml.Documents.Count == 0)
@@ -469,7 +474,7 @@ public sealed record VersionMarkConfig
     {
         try
         {
-            return new Regex(value, RegexOptions.None, RegexTimeout);
+            return new Regex(value, RegexOptions.Multiline | RegexOptions.IgnoreCase, RegexTimeout);
         }
         catch (ArgumentException ex)
         {

@@ -371,6 +371,11 @@ internal sealed class Context : IDisposable
 
                 case "--report-depth":
                     ReportDepth = GetRequiredIntArgument(arg, args, index, "a depth value");
+                    if (ReportDepth < 1)
+                    {
+                        throw new ArgumentException($"{arg} requires a positive integer value (minimum 1)", nameof(args));
+                    }
+
                     return index + 1;
 
                 default:
