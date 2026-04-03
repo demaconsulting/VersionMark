@@ -73,11 +73,15 @@ Cli Subsystem → Capture Subsystem (VersionInfo.LoadFromFile) → Publishing Su
 ### Lint Mode
 
 ```text
-Cli Subsystem → Linting Subsystem
+Cli Subsystem → Configuration Subsystem (VersionMarkConfig.Load)
 ```
 
-1. The Cli Subsystem (Program) calls `RunLint`, which resolves the config file path.
-2. The Linting Subsystem validates the YAML structure and reports all issues.
+1. The Cli Subsystem (Program) calls `RunLint`, which resolves the config file path,
+   defaulting to `.versionmark.yaml`.
+2. `RunLint` delegates to `VersionMarkConfig.Load`, which validates the YAML structure and
+   returns a `VersionMarkLoadResult` containing all `LintIssue` records found.
+3. `RunLint` calls `result.ReportIssues` to write all issues to the context, then confirms
+   success when no issues were found.
 
 ### Validate Mode
 
