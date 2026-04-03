@@ -178,13 +178,6 @@ public sealed record VersionMarkConfig
     {
         var issues = new List<LintIssue>();
 
-        // Check if file exists before attempting to parse
-        if (!File.Exists(filePath))
-        {
-            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, "Configuration file not found"));
-            return new VersionMarkLoadResult(null, issues);
-        }
-
         // Parse YAML, reporting any syntax errors with their source location
         YamlStream yaml;
         try
@@ -196,6 +189,11 @@ public sealed record VersionMarkConfig
         catch (YamlException ex)
         {
             issues.Add(new LintIssue(filePath, ex.Start.Line + 1, ex.Start.Column + 1, LintSeverity.Error, $"Failed to parse YAML file: {ex.Message}"));
+            return new VersionMarkLoadResult(null, issues);
+        }
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+        {
+            issues.Add(new LintIssue(filePath, 1, 1, LintSeverity.Error, "Configuration file not found"));
             return new VersionMarkLoadResult(null, issues);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -602,7 +600,7 @@ public sealed record VersionMarkConfig
         var regex = new Regex(
             regexPattern,
             RegexOptions.Multiline | RegexOptions.IgnoreCase,
-            TimeSpan.FromSeconds(1));
+            RegexTimeout);
         var match = regex.Match(output);
 
         if (!match.Success)

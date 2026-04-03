@@ -468,6 +468,32 @@ public class ContextTests
     }
 
     /// <summary>
+    ///     Test that --report-depth 0 throws ArgumentException.
+    ///     What is tested: Validation rejects a depth value less than 1
+    ///     What the assertions prove: ArgumentException is thrown for report-depth values less than 1
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ReportDepthZero_ThrowsArgumentException()
+    {
+        // Arrange & Act & Assert - Zero is not a valid heading depth
+        Assert.ThrowsExactly<ArgumentException>(() =>
+            Context.Create(["--publish", "--report", "output.md", "--report-depth", "0"]));
+    }
+
+    /// <summary>
+    ///     Test that a negative --report-depth throws ArgumentException.
+    ///     What is tested: Validation rejects negative depth values
+    ///     What the assertions prove: ArgumentException is thrown for negative report-depth values
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ReportDepthNegative_ThrowsArgumentException()
+    {
+        // Arrange & Act & Assert - Negative values are not valid heading depths
+        Assert.ThrowsExactly<ArgumentException>(() =>
+            Context.Create(["--publish", "--report", "output.md", "--report-depth", "-1"]));
+    }
+
+    /// <summary>
     ///     Test creating a context with glob patterns after -- separator.
     ///     What is tested: Glob patterns after -- are captured in GlobPatterns array
     ///     What the assertions prove: Multiple glob patterns are correctly parsed and stored
