@@ -28,8 +28,8 @@ enumeration, the `LintIssue` record, and the `VersionMarkLoadResult` record.
 | `Description` | `string`       | Human-readable description of the issue.       |
 
 `ToString` formats the record as `"{FilePath}({Line},{Column}): {severity}: {Description}"`,
-producing output in the familiar `file(line,col): error: message` format understood by CI
-systems and editors.
+where `{severity}` is emitted in lowercase (`warning` or `error`), producing output in
+the familiar `file(line,col): error: message` format understood by CI systems and editors.
 
 ## VersionMarkLoadResult Record
 

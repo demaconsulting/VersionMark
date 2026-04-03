@@ -81,6 +81,7 @@ reviews:
       - "docs/design/version-mark/configuration/tool-config.md"                 # ToolConfig unit design
       - "docs/design/version-mark/configuration/lint-issue.md"                  # LintIssue unit design
       - "test/**/Configuration/ConfigurationSubsystemTests.cs"                  # subsystem tests
+      - "test/**/Configuration/ConfigurationLoadSubsystemTests.cs"              # load subsystem tests
 
   - id: VersionMark-VersionMarkConfig-Review
     title: Review of VersionMarkConfig Unit
@@ -89,6 +90,7 @@ reviews:
       - "docs/design/version-mark/configuration/version-mark-config.md"         # design
       - "src/**/Configuration/VersionMarkConfig.cs"                             # implementation
       - "test/**/Configuration/VersionMarkConfigTests.cs"                       # unit tests
+      - "test/**/Configuration/VersionMarkConfigLoadTests.cs"                   # Load method unit tests
 
   - id: VersionMark-ToolConfig-Review
     title: Review of ToolConfig Unit
