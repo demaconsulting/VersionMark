@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Runtime.Versioning;
 using DemaConsulting.VersionMark.Configuration;
 
 namespace DemaConsulting.VersionMark.Tests.Configuration;
@@ -622,6 +623,43 @@ public class VersionMarkConfigLoadTests
         }
         finally
         {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that an unreadable file (permission denied) returns null config with an error issue.
+    /// </summary>
+    [TestMethod]
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("osx")]
+    public void VersionMarkConfig_Load_UnreadableFile_ReturnsError()
+    {
+        // Skip on non-Unix platforms where Unix file permissions are not supported
+        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
+        {
+            Assert.Inconclusive("Unix file permissions not supported on this platform");
+            return;
+        }
+
+        // Arrange - Create a temp file and remove all read permissions
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(tempFile, "tools:\n  dotnet:\n    command: dotnet --version\n");
+            File.SetUnixFileMode(tempFile, UnixFileMode.None);
+
+            // Act - Attempt to load config from an unreadable file
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
+
+            // Assert - Config should be null and issues should contain an I/O error
+            Assert.IsNull(config);
+            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+        }
+        finally
+        {
+            // Restore permissions so the file can be deleted
+            File.SetUnixFileMode(tempFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
             File.Delete(tempFile);
         }
     }
