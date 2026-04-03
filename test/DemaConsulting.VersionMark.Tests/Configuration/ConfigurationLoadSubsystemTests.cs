@@ -32,7 +32,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the full configuration load pipeline succeeds and exits cleanly for a valid configuration.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_ValidConfig_SucceedsWithZeroExitCode()
+    public void ConfigurationLoadSubsystem_Run_ValidConfig_SucceedsWithZeroExitCode()
     {
         // Arrange - Write a complete and valid configuration to a temp file
         var tempFile = Path.GetTempFileName();
@@ -68,7 +68,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline reports all errors in a single pass for an invalid configuration.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass()
+    public void ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass()
     {
         // Arrange - Write a configuration with multiple errors to a temp file
         // tool1 is missing 'regex'; tool2 is missing 'command' and has a regex without a 'version' group
@@ -120,7 +120,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline fails for invalid YAML content.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_InvalidYaml_Fails()
+    public void ConfigurationLoadSubsystem_Run_InvalidYaml_Fails()
     {
         // Arrange - Write syntactically broken YAML to a temp file
         var tempFile = Path.GetTempFileName() + ".yaml";
@@ -145,7 +145,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline reports an error when the config file does not exist.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_NonExistentFile_Fails()
+    public void ConfigurationLoadSubsystem_Run_NonExistentFile_Fails()
     {
         // Arrange - Use a path that does not exist
         var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".yaml");
@@ -162,7 +162,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline reports an error when a regex cannot be compiled.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_InvalidRegex_ReportsError()
+    public void ConfigurationLoadSubsystem_Run_InvalidRegex_ReportsError()
     {
         // Arrange - Write a config with a syntactically broken regex (unclosed group)
         var tempFile = Path.GetTempFileName();
@@ -195,7 +195,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline reports an error when a regex does not contain a named 'version' capture group.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_RegexWithoutVersionGroup_ReportsError()
+    public void ConfigurationLoadSubsystem_Run_RegexWithoutVersionGroup_ReportsError()
     {
         // Arrange - Write a config with a valid regex that lacks the required 'version' group
         var tempFile = Path.GetTempFileName();
@@ -228,7 +228,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline reports an error when an OS-specific command override is empty.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_EmptyOsSpecificOverride_ReportsError()
+    public void ConfigurationLoadSubsystem_Run_EmptyOsSpecificOverride_ReportsError()
     {
         // Arrange - Write a config with an empty command-win override
         var tempFile = Path.GetTempFileName();
@@ -262,7 +262,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that the configuration load pipeline treats unknown keys as non-fatal warnings and succeeds.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_UnknownKey_IsWarningNotError()
+    public void ConfigurationLoadSubsystem_Run_UnknownKey_IsWarningNotError()
     {
         // Arrange - Write a config with a valid tool plus an unknown key
         var tempFile = Path.GetTempFileName();
@@ -296,7 +296,7 @@ public class ConfigurationLoadSubsystemTests
     ///     Test that configuration load error messages include the filename and line/column location.
     /// </summary>
     [TestMethod]
-    public void ConfigurationLoad_Error_IncludesFileAndLineInfo()
+    public void ConfigurationLoadSubsystem_Run_Error_IncludesFileAndLineInfo()
     {
         // Arrange - Write a config missing the required 'command' field and capture error output
         var tempFile = Path.GetTempFileName();

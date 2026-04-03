@@ -10,7 +10,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_NonExistentFile_Fails
+          - ConfigurationLoadSubsystem_Run_NonExistentFile_Fails
 
       - id: VersionMark-Load-YamlParsing
         title: The tool shall report an error when the configuration file contains invalid YAML.
@@ -20,7 +20,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_InvalidYaml_Fails
+          - ConfigurationLoadSubsystem_Run_InvalidYaml_Fails
 
       - id: VersionMark-Load-ToolsSection
         title: The tool shall report an error when the configuration file is missing a non-empty 'tools' section.
@@ -30,7 +30,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
 
       - id: VersionMark-Load-ToolCommand
         title: The tool shall report an error when a tool is missing a non-empty 'command' field.
@@ -40,7 +40,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
 
       - id: VersionMark-Load-ToolRegex
         title: The tool shall report an error when a tool is missing a non-empty 'regex' field.
@@ -50,7 +50,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
 
       - id: VersionMark-Load-RegexValid
         title: The tool shall report an error when a regex value cannot be compiled.
@@ -60,7 +60,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_InvalidRegex_ReportsError
+          - ConfigurationLoadSubsystem_Run_InvalidRegex_ReportsError
 
       - id: VersionMark-Load-RegexVersion
         title: The tool shall report an error when a regex does not contain a named 'version' capture group.
@@ -70,7 +70,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_RegexWithoutVersionGroup_ReportsError
+          - ConfigurationLoadSubsystem_Run_RegexWithoutVersionGroup_ReportsError
 
       - id: VersionMark-Load-OsOverrides
         title: The tool shall report an error when an OS-specific command or regex override is empty.
@@ -81,7 +81,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_EmptyOsSpecificOverride_ReportsError
+          - ConfigurationLoadSubsystem_Run_EmptyOsSpecificOverride_ReportsError
 
       - id: VersionMark-Load-UnknownKeys
         title: The tool shall report unknown keys as non-fatal warnings that do not fail loading.
@@ -92,7 +92,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_UnknownKey_IsWarningNotError
+          - ConfigurationLoadSubsystem_Run_UnknownKey_IsWarningNotError
 
       - id: VersionMark-Load-ErrorLocation
         title: The tool shall report all load findings with the filename and line/column location.
@@ -102,7 +102,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_Error_IncludesFileAndLineInfo
+          - ConfigurationLoadSubsystem_Run_Error_IncludesFileAndLineInfo
 
       - id: VersionMark-Load-AllIssues
         title: The tool shall report all load issues in a single pass without stopping at the first error.
@@ -112,7 +112,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoad_MultipleErrors_ReportsAllErrorsInSinglePass
+          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
 
       - id: VersionMark-Load-Method
         title: >-
@@ -143,3 +143,32 @@ sections:
           - VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig
           - VersionMarkConfig_Load_MultipleErrors_ReportsAll
           - VersionMarkConfig_Load_IssuesContainFilePath
+
+      - id: VersionMark-Load-LintIssue
+        title: >-
+          The LintIssue record shall store file path, line, column, severity, and description,
+          and format them as "{FilePath}({Line},{Column}): {severity}: {Description}" with
+          severity in lowercase.
+        justification: |
+          A consistent, editor-friendly format (identical to the MSBuild/GCC diagnostic
+          convention) lets CI systems and editors parse the output automatically and
+          navigate to the exact location of each issue.
+        tests:
+          - LintIssue_Constructor_AllFields_AreStoredCorrectly
+          - LintIssue_ToString_Error_ProducesLowercaseSeverity
+          - LintIssue_ToString_Warning_ProducesLowercaseSeverity
+
+      - id: VersionMark-Load-VersionMarkLoadResult
+        title: >-
+          The VersionMarkLoadResult record shall bundle the loaded configuration and all
+          validation issues, routing errors to the error stream and warnings to standard
+          output when ReportIssues is called.
+        justification: |
+          Bundling the config and issues in a single return value lets callers
+          distinguish between fatal errors (which prevent loading) and non-fatal
+          warnings (which allow loading to proceed). Routing errors to the error stream
+          ensures non-zero exit codes are set for fatal issues.
+        tests:
+          - VersionMarkLoadResult_Constructor_AllFields_AreStoredCorrectly
+          - VersionMarkLoadResult_ReportIssues_Error_WritesToErrorStream
+          - VersionMarkLoadResult_ReportIssues_Warning_WritesToStdOut

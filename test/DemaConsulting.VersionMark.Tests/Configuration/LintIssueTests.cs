@@ -33,7 +33,7 @@ public class LintIssueTests
     ///     Test that <see cref="LintIssue"/> properties are stored correctly.
     /// </summary>
     [TestMethod]
-    public void LintIssue_Properties_AreStoredCorrectly()
+    public void LintIssue_Constructor_AllFields_AreStoredCorrectly()
     {
         // Arrange & Act
         var issue = new LintIssue(
@@ -97,7 +97,7 @@ public class LintIssueTests
     ///     Test that <see cref="VersionMarkLoadResult"/> properties are stored correctly.
     /// </summary>
     [TestMethod]
-    public void VersionMarkLoadResult_Properties_AreStoredCorrectly()
+    public void VersionMarkLoadResult_Constructor_AllFields_AreStoredCorrectly()
     {
         // Arrange
         var issue = new LintIssue("f.yaml", 1, 1, LintSeverity.Warning, "unknown key");
