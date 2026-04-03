@@ -5,22 +5,22 @@ resource-path:
 input-files:
   - docs/design/title.txt
   - docs/design/introduction.md
-  - docs/design/system.md
-  - docs/design/cli/cli.md
-  - docs/design/cli/program.md
-  - docs/design/cli/context.md
-  - docs/design/configuration/configuration.md
-  - docs/design/configuration/tool-config.md
-  - docs/design/configuration/version-mark-config.md
-  - docs/design/capture/capture.md
-  - docs/design/capture/version-info.md
-  - docs/design/publishing/publishing.md
-  - docs/design/publishing/markdown-formatter.md
-  - docs/design/linting/linting.md
-  - docs/design/linting/lint.md
-  - docs/design/self-test/self-test.md
-  - docs/design/self-test/validation.md
-  - docs/design/self-test/path-helpers.md
+  - docs/design/version-mark/version-mark.md
+  - docs/design/version-mark/cli/cli.md
+  - docs/design/version-mark/cli/program.md
+  - docs/design/version-mark/cli/context.md
+  - docs/design/version-mark/configuration/configuration.md
+  - docs/design/version-mark/configuration/tool-config.md
+  - docs/design/version-mark/configuration/version-mark-config.md
+  - docs/design/version-mark/capture/capture.md
+  - docs/design/version-mark/capture/version-info.md
+  - docs/design/version-mark/publishing/publishing.md
+  - docs/design/version-mark/publishing/markdown-formatter.md
+  - docs/design/version-mark/linting/linting.md
+  - docs/design/version-mark/linting/lint.md
+  - docs/design/version-mark/self-test/self-test.md
+  - docs/design/version-mark/self-test/validation.md
+  - docs/design/version-mark/self-test/path-helpers.md
 template: template.html
 table-of-contents: true
 number-sections: true
