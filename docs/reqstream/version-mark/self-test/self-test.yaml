@@ -14,7 +14,7 @@ sections:
               - validation
             tests:
               - SelfTestSubsystem_FindsDllInBaseDirectory
-              - CliSubsystem_Run_ValidateFlag_RunsValidation
+              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Publish
             title: The tool shall verify the publish workflow end-to-end during self-validation.
@@ -25,7 +25,7 @@ sections:
               - validation
             tests:
               - SelfTestSubsystem_FindsDllInBaseDirectory
-              - CliSubsystem_Run_ValidateFlag_RunsValidation
+              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Lint
             title: >-
@@ -38,7 +38,7 @@ sections:
               - validation
             tests:
               - SelfTestSubsystem_FindsDllInBaseDirectory
-              - CliSubsystem_Run_ValidateFlag_RunsValidation
+              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Results
             title: The tool shall write self-validation results to a file in TRX or JUnit XML format.

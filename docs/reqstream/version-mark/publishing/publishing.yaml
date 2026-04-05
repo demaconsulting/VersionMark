@@ -73,7 +73,7 @@ sections:
             tags:
               - publish
             tests:
-              - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
+              - PublishingSubsystem_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-MultipleFiles
             title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
