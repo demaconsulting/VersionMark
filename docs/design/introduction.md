@@ -19,7 +19,7 @@ This document covers the design of five subsystems within VersionMark:
 
 - The **Cli Subsystem**: the `Program` entry point and `Context` class
   that handle argument parsing, output routing, and program flow control
-- The **Configuration Subsystem**: the `VersionMarkConfig` and `ToolConfig` classes that
+- The **Configuration Subsystem**: the `VersionMarkConfig`, `ToolConfig`, and `LintIssue` classes that
   read, validate, and interpret `.versionmark.yaml` configuration files
 - The **Capture Subsystem**: the `VersionInfo` record that serializes and deserializes
   captured version data to and from JSON
@@ -44,7 +44,8 @@ VersionMark (System)                        Version capture/publish tool
 │   └── Context (Unit)                      Command-line state container
 ├── Configuration (Subsystem)               YAML configuration loading and validation
 │   ├── VersionMarkConfig (Unit)            Top-level config container and validator
-│   └── ToolConfig (Unit)                   Per-tool config record
+│   ├── ToolConfig (Unit)                   Per-tool config record
+│   └── LintIssue (Unit)                    Lint severity, issue record, and load result
 ├── Capture (Subsystem)                     Tool version capture
 │   └── VersionInfo (Unit)                  JSON version data record
 ├── Publishing (Subsystem)                  Markdown report publishing
