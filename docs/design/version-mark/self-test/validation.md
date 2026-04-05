@@ -30,7 +30,7 @@ organizes all test execution internally.
 5. Verifies exit code is 0, output file exists, `JobId` equals `"test-job"`, and `dotnet`
    version was captured and is non-empty.
 
-The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Capture-Capture`.
+The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Validation-Capture`.
 
 ## RunPublishTest
 
@@ -44,7 +44,7 @@ The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Capture
 5. Verifies exit code is 0, report file exists, and contains `## Tool Versions`,
    `**dotnet**`, `**node**`, `8.0.0`, and `20.0.0`.
 
-The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Publish-Publish`.
+The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Validation-Publish`.
 
 ## RunLintValidTest
 
@@ -56,7 +56,7 @@ The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-
 3. Constructs a `Context` with `--silent`, `--log <file>`, and `--lint <config-file>`.
 4. Calls `Program.Run` and checks that the exit code is 0.
 
-The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-CommandLine-Lint`.
+The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-Validation-Lint`.
 
 ## RunLintInvalidTest
 
@@ -69,7 +69,7 @@ The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark
 4. Calls `Program.Run` and checks that the exit code is non-zero.
 
 The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
-`VersionMark-CommandLine-Lint`.
+`VersionMark-Validation-Lint`.
 
 ## WriteResultsFile
 
@@ -80,7 +80,7 @@ The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
 - Other → writes an error via `context.WriteError`
 
 The serialized content is written with `File.WriteAllText`. This satisfies
-`VersionMark-CommandLine-Results`.
+`VersionMark-Validate-Results`.
 
 ## TemporaryDirectory
 
