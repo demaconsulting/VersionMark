@@ -88,7 +88,6 @@ reviews:
       - "docs/reqstream/version-mark/configuration/configuration.yaml"          # subsystem requirements
       - "docs/design/version-mark/configuration/configuration.md"               # subsystem design
       - "test/**/Configuration/ConfigurationTests.cs"                            # subsystem tests
-      - "test/**/Configuration/ConfigurationLoadTests.cs"                       # load subsystem tests
 
   - id: VersionMark-Configuration-VersionMarkConfig
     title: Review that VersionMark Configuration VersionMarkConfig Implementation is Correct

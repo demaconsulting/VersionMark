@@ -13,8 +13,8 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTestSubsystem_FindsDllInBaseDirectory
-              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_FindsDllInBaseDirectory
+              - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Publish
             title: The tool shall verify the publish workflow end-to-end during self-validation.
@@ -24,8 +24,8 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTestSubsystem_FindsDllInBaseDirectory
-              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_FindsDllInBaseDirectory
+              - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Lint
             title: >-
@@ -37,8 +37,8 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTestSubsystem_FindsDllInBaseDirectory
-              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_FindsDllInBaseDirectory
+              - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Results
             title: The tool shall write self-validation results to a file in TRX or JUnit XML format.
@@ -48,4 +48,4 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_Run_WithResultsFlag_WritesResultsFile

@@ -12,7 +12,7 @@ sections:
             tags:
               - configuration
             tests:
-              - ConfigurationSubsystem_ReadFromFile_MultipleTools_AllToolsAccessible
+              - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-ToolDefinition
             title: The tool shall support tool definitions with command and regex properties.
@@ -22,7 +22,7 @@ sections:
             tags:
               - configuration
             tests:
-              - ConfigurationSubsystem_ReadFromFile_MultipleTools_AllToolsAccessible
+              - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-OsCommandOverride
             title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
@@ -32,7 +32,7 @@ sections:
             tags:
               - configuration
             tests:
-              - ConfigurationSubsystem_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand
+              - Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand
 
           - id: VersionMark-Configuration-OsRegexOverride
             title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
@@ -42,7 +42,7 @@ sections:
             tags:
               - configuration
             tests:
-              - ConfigurationSubsystem_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex
+              - Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex
 
           - id: VersionMark-Configuration-ValidateTools
             title: The tool shall validate that configuration files contain at least one tool definition.
@@ -52,7 +52,7 @@ sections:
             tags:
               - configuration
             tests:
-              - ConfigurationSubsystem_ReadFromFile_EmptyTools_ThrowsArgumentException
+              - Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException
 
           - id: VersionMark-Configuration-ParseError
             title: The tool shall report errors when configuration files cannot be read or parsed.
@@ -62,4 +62,4 @@ sections:
             tags:
               - configuration
             tests:
-              - ConfigurationSubsystem_ReadFromFile_InvalidYaml_ThrowsArgumentException
+              - Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException

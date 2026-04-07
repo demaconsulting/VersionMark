@@ -12,8 +12,8 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_VersionFlag_ExitsCleanly
-              - CliSubsystem_Run_SilentWithVersionFlag_SuppressesOutput
+              - Cli_Run_VersionFlag_ExitsCleanly
+              - Cli_Run_SilentWithVersionFlag_SuppressesOutput
 
           - id: VersionMark-CommandLine-Version
             title: The tool shall support -v and --version flags to display version information.
@@ -23,7 +23,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_VersionFlag_ExitsCleanly
+              - Cli_Run_VersionFlag_ExitsCleanly
 
           - id: VersionMark-CommandLine-Help
             title: The tool shall support -?, -h, and --help flags to display usage information.
@@ -33,7 +33,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_HelpFlag_DisplaysUsageInformation
+              - Cli_Run_HelpFlag_DisplaysUsageInformation
 
           - id: VersionMark-CommandLine-Silent
             title: The tool shall support --silent flag to suppress console output.
@@ -43,7 +43,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_SilentWithVersionFlag_SuppressesOutput
+              - Cli_Run_SilentWithVersionFlag_SuppressesOutput
 
           - id: VersionMark-CommandLine-Validate
             title: The tool shall support --validate flag to run self-validation tests.
@@ -53,7 +53,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_ValidateFlag_RunsValidation
+              - Cli_Run_ValidateFlag_RunsValidation
 
           - id: VersionMark-CommandLine-Results
             title: The tool shall support --results flag to write validation results in TRX or JUnit format.
@@ -62,7 +62,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_ResultsFlag_WritesResultsFile
+              - Cli_Run_ResultsFlag_WritesResultsFile
 
           - id: VersionMark-CommandLine-Log
             title: The tool shall support --log flag to write output to a log file.
@@ -71,7 +71,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_LogFlag_WritesOutputToLogFile
+              - Cli_Run_LogFlag_WritesOutputToLogFile
 
           - id: VersionMark-CommandLine-ErrorOutput
             title: The tool shall write error messages to stderr.
@@ -81,7 +81,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
+              - Cli_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-InvalidArgs
             title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
@@ -91,7 +91,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
+              - Cli_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-ExitCode
             title: The tool shall return a non-zero exit code on failure.
@@ -101,7 +101,7 @@ sections:
             tags:
               - cli
             tests:
-              - CliSubsystem_Run_InvalidArgs_ThrowsArgumentException
+              - Cli_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-Lint
             title: The tool shall support --lint to check the configuration file for issues.
@@ -113,4 +113,4 @@ sections:
               - cli
               - lint
             tests:
-              - CliSubsystem_Run_LintFlag_ValidConfig_Succeeds
+              - Cli_Run_LintFlag_ValidConfig_Succeeds
