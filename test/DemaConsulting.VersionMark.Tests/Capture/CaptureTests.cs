@@ -29,13 +29,13 @@ namespace DemaConsulting.VersionMark.Tests.Capture;
 ///     Subsystem tests for the Capture subsystem (version capture and persistence pipeline).
 /// </summary>
 [TestClass]
-public class CaptureSubsystemTests
+public class CaptureTests
 {
     /// <summary>
     ///     Test that the full capture pipeline saves and loads version data without data loss.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_SaveAndLoad_PreservesAllVersionData()
+    public void Capture_SaveAndLoad_PreservesAllVersionData()
     {
         // Arrange - Create version info representing a complete capture result
         var tempFile = Path.GetTempFileName();
@@ -73,7 +73,7 @@ public class CaptureSubsystemTests
     ///     Test that the capture subsystem correctly handles multiple capture files from the same job.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_MultipleCaptures_EachFileHasDistinctJobId()
+    public void Capture_MultipleCaptures_EachFileHasDistinctJobId()
     {
         // Arrange - Create two capture files representing different CI jobs
         var tempFile1 = Path.GetTempFileName();
@@ -108,7 +108,7 @@ public class CaptureSubsystemTests
     ///     Test that loading a version info file that does not exist throws an ArgumentException.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_LoadFromFile_NonExistentFile_ThrowsArgumentException()
+    public void Capture_LoadFromFile_NonExistentFile_ThrowsArgumentException()
     {
         // Arrange
         var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
@@ -121,7 +121,7 @@ public class CaptureSubsystemTests
     ///     Test that Context correctly sets the capture mode flag when --capture is specified.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Context_CaptureFlag_SetsCaptureMode()
+    public void Capture_Context_CaptureFlag_SetsCaptureMode()
     {
         // Arrange & Act - Create a context with --capture and required --job-id
         using var context = Context.Create(["--capture", "--job-id", "test-job"]);
@@ -135,7 +135,7 @@ public class CaptureSubsystemTests
     ///     Test that Context correctly stores the job ID from --job-id parameter.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Context_WithJobId_SetsJobId()
+    public void Capture_Context_WithJobId_SetsJobId()
     {
         // Arrange & Act - Create a context with --capture and a specific job ID
         using var context = Context.Create(["--capture", "--job-id", "my-build-job"]);
@@ -149,7 +149,7 @@ public class CaptureSubsystemTests
     ///     Test that when --output is not specified, the default filename includes the job ID.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Run_NoOutputFlagSpecified_UsesDefaultFilename()
+    public void Capture_Run_NoOutputFlagSpecified_UsesDefaultFilename()
     {
         // Arrange - Set up temp directory with config; run without --output so default filename is used
         var currentDir = Directory.GetCurrentDirectory();
@@ -191,7 +191,7 @@ public class CaptureSubsystemTests
     ///     Test that Context correctly stores tool names from the -- separator.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Context_WithToolFilter_SetsToolNames()
+    public void Capture_Context_WithToolFilter_SetsToolNames()
     {
         // Arrange & Act - Create a context with --capture and tool names after --
         using var context = Context.Create(["--capture", "--job-id", "x", "--", "dotnet", "git"]);
@@ -207,7 +207,7 @@ public class CaptureSubsystemTests
     ///     Test that capture without a tool filter captures all tools defined in configuration.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Run_NoToolFilter_CapturesAllConfiguredTools()
+    public void Capture_Run_NoToolFilter_CapturesAllConfiguredTools()
     {
         // Arrange - Set up temp directory with a two-tool config; no tool filter specified
         var currentDir = Directory.GetCurrentDirectory();
@@ -258,7 +258,7 @@ public class CaptureSubsystemTests
     ///     Test that VersionMarkConfig.ReadFromFile correctly loads tool definitions from a YAML file.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Config_ReadFromFile_LoadsToolDefinitions()
+    public void Capture_Config_ReadFromFile_LoadsToolDefinitions()
     {
         // Arrange - Write a .versionmark.yaml file to a temp path
         var tempFile = Path.GetTempFileName() + ".yaml";
@@ -294,7 +294,7 @@ public class CaptureSubsystemTests
     ///     Test that FindVersions executes the configured command and extracts the version via regex.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_FindVersions_ExecutesCommandAndExtractsVersion()
+    public void Capture_FindVersions_ExecutesCommandAndExtractsVersion()
     {
         // Arrange - Create a configuration for dotnet (always available in the build environment)
         var tempFile = Path.GetTempFileName() + ".yaml";
@@ -328,7 +328,7 @@ public class CaptureSubsystemTests
     ///     Test that the capture pipeline displays captured tool versions to the user.
     /// </summary>
     [TestMethod]
-    public void CaptureSubsystem_Run_DisplaysCapturedVersionsAfterCapture()
+    public void Capture_Run_DisplaysCapturedVersionsAfterCapture()
     {
         // Arrange - Set up temp directory with config and redirect console output to capture it
         var currentDir = Directory.GetCurrentDirectory();

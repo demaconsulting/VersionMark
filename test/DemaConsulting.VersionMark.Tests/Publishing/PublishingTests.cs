@@ -29,13 +29,13 @@ namespace DemaConsulting.VersionMark.Tests.Publishing;
 ///     Subsystem tests for the Publishing subsystem (capture data to markdown report pipeline).
 /// </summary>
 [TestClass]
-public class PublishingSubsystemTests
+public class PublishingTests
 {
     /// <summary>
     ///     Test that the publishing pipeline produces a valid markdown report from multiple captures.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Format_MultipleCaptureFiles_ProducesConsolidatedReport()
+    public void Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport()
     {
         // Arrange - Create version infos representing captures from multiple CI jobs
         var versionInfos = new[]
@@ -69,7 +69,7 @@ public class PublishingSubsystemTests
     ///     Test that the publishing pipeline consolidates identical versions across jobs.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions()
+    public void Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions()
     {
         // Arrange - Create version infos with the same dotnet version across all jobs
         var versionInfos = new[]
@@ -92,7 +92,7 @@ public class PublishingSubsystemTests
     ///     Test that the publishing pipeline shows individual job IDs when versions conflict across jobs.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Format_ConflictingVersions_ShowsJobIds()
+    public void Publishing_Format_ConflictingVersions_ShowsJobIds()
     {
         // Arrange
         var versionInfoA = new VersionInfo("job-a", new Dictionary<string, string>
@@ -117,7 +117,7 @@ public class PublishingSubsystemTests
     ///     Test that the publishing pipeline uses the correct heading level when a custom report depth is specified.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Format_WithCustomDepth_UsesCorrectHeadingLevel()
+    public void Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel()
     {
         // Arrange
         var versionInfo = new VersionInfo("job-1", new Dictionary<string, string>
@@ -137,7 +137,7 @@ public class PublishingSubsystemTests
     ///     Test that the publishing pipeline requires the --report parameter and reports an error when it is missing.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Run_WithoutReport_ReportsError()
+    public void Publishing_Run_WithoutReport_ReportsError()
     {
         // Arrange - Create a publish context without --report
         var originalError = Console.Error;
@@ -166,7 +166,7 @@ public class PublishingSubsystemTests
     ///     Test that the publishing pipeline accepts glob patterns after -- and reads all matching files.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Run_WithGlobPattern_ReadsMatchingFiles()
+    public void Publishing_Run_WithGlobPattern_ReadsMatchingFiles()
     {
         // Arrange - Create a temp directory with JSON files and use a glob pattern to match them
         var currentDir = Directory.GetCurrentDirectory();
@@ -208,7 +208,7 @@ public class PublishingSubsystemTests
     ///     Test that the publishing pipeline reports an error when a JSON file is malformed.
     /// </summary>
     [TestMethod]
-    public void PublishingSubsystem_Run_WithMalformedJsonFile_ReportsError()
+    public void Publishing_Run_WithMalformedJsonFile_ReportsError()
     {
         // Arrange - Create a temp directory with a malformed JSON file
         var currentDir = Directory.GetCurrentDirectory();

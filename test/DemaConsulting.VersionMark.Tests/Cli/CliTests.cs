@@ -26,13 +26,13 @@ namespace DemaConsulting.VersionMark.Tests.Cli;
 ///     Subsystem tests for the Cli subsystem (Program and Context working together).
 /// </summary>
 [TestClass]
-public class CliSubsystemTests
+public class CliTests
 {
     /// <summary>
     ///     Test that the full CLI pipeline with --version flag exits cleanly.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_VersionFlag_ExitsCleanly()
+    public void Cli_Run_VersionFlag_ExitsCleanly()
     {
         // Arrange - Create a context with --version via the full CLI pipeline
         using var context = Context.Create(["--version"]);
@@ -48,7 +48,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline with --silent flag suppresses standard output.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_SilentWithVersionFlag_SuppressesOutput()
+    public void Cli_Run_SilentWithVersionFlag_SuppressesOutput()
     {
         // Arrange - Redirect console output to capture what the CLI writes
         var originalOut = Console.Out;
@@ -76,7 +76,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline with --help flag displays usage information.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_HelpFlag_DisplaysUsageInformation()
+    public void Cli_Run_HelpFlag_DisplaysUsageInformation()
     {
         // Arrange
         var originalOut = Console.Out;
@@ -106,7 +106,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline with --validate flag runs self-validation.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_ValidateFlag_RunsValidation()
+    public void Cli_Run_ValidateFlag_RunsValidation()
     {
         // Arrange
         using var context = Context.Create(["--validate", "--silent"]);
@@ -122,7 +122,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline rejects unknown arguments by throwing ArgumentException.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_InvalidArgs_ThrowsArgumentException()
+    public void Cli_Run_InvalidArgs_ThrowsArgumentException()
     {
         // Arrange - No setup required; unknown flags are rejected by Context.Create
 
@@ -138,7 +138,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline with --lint flag succeeds for a valid config file.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_LintFlag_ValidConfig_Succeeds()
+    public void Cli_Run_LintFlag_ValidConfig_Succeeds()
     {
         // Arrange
         var tempFile = Path.GetTempFileName() + ".yaml";
@@ -169,7 +169,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline with --results flag writes validation results to a file.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_ResultsFlag_WritesResultsFile()
+    public void Cli_Run_ResultsFlag_WritesResultsFile()
     {
         // Arrange - Set up a results file path that should be written during --validate
         var resultsFile = Path.GetTempFileName() + ".trx";
@@ -201,7 +201,7 @@ public class CliSubsystemTests
     ///     Test that the full CLI pipeline with --log flag writes output to a log file.
     /// </summary>
     [TestMethod]
-    public void CliSubsystem_Run_LogFlag_WritesOutputToLogFile()
+    public void Cli_Run_LogFlag_WritesOutputToLogFile()
     {
         // Arrange - Set up a log file that should be written with version output
         var logFile = Path.GetTempFileName();

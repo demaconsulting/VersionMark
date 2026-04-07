@@ -26,13 +26,13 @@ namespace DemaConsulting.VersionMark.Tests.Configuration;
 ///     Subsystem tests for the Configuration subsystem (VersionMarkConfig and ToolConfig working together).
 /// </summary>
 [TestClass]
-public class ConfigurationSubsystemTests
+public class ConfigurationTests
 {
     /// <summary>
     ///     Test that reading a multi-tool configuration file produces all tools with usable commands and regexes.
     /// </summary>
     [TestMethod]
-    public void ConfigurationSubsystem_ReadFromFile_MultipleTools_AllToolsAccessible()
+    public void Configuration_ReadFromFile_MultipleTools_AllToolsAccessible()
     {
         // Arrange - Write a valid multi-tool config to a temp file
         var tempFile = Path.GetTempFileName();
@@ -73,7 +73,7 @@ public class ConfigurationSubsystemTests
     ///     Test that reading a configuration file with OS-specific overrides selects the correct command.
     /// </summary>
     [TestMethod]
-    public void ConfigurationSubsystem_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand()
+    public void Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand()
     {
         // Arrange - Write a config with OS-specific overrides to a temp file
         var tempFile = Path.GetTempFileName();
@@ -121,7 +121,7 @@ public class ConfigurationSubsystemTests
     ///     Test that reading a configuration with OS-specific regex overrides returns the appropriate regex.
     /// </summary>
     [TestMethod]
-    public void ConfigurationSubsystem_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex()
+    public void Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex()
     {
         // Arrange
         var tempFile = Path.GetTempFileName() + ".yaml";
@@ -168,7 +168,7 @@ public class ConfigurationSubsystemTests
     ///     Test that reading a configuration with an empty tools section throws an ArgumentException.
     /// </summary>
     [TestMethod]
-    public void ConfigurationSubsystem_ReadFromFile_EmptyTools_ThrowsArgumentException()
+    public void Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException()
     {
         // Arrange
         var tempFile = Path.GetTempFileName() + ".yaml";
@@ -191,7 +191,7 @@ public class ConfigurationSubsystemTests
     ///     Test that reading a configuration with invalid YAML throws an ArgumentException.
     /// </summary>
     [TestMethod]
-    public void ConfigurationSubsystem_ReadFromFile_InvalidYaml_ThrowsArgumentException()
+    public void Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException()
     {
         // Arrange
         var tempFile = Path.GetTempFileName() + ".yaml";
