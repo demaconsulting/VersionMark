@@ -10,7 +10,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_NonExistentFile_Fails
+          - VersionMarkConfig_Load_MissingFile_ReturnsNullConfig
 
       - id: VersionMark-Load-YamlParsing
         title: The tool shall report an error when the configuration file contains invalid YAML.
@@ -20,7 +20,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_InvalidYaml_Fails
+          - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig
 
       - id: VersionMark-Load-ToolsSection
         title: The tool shall report an error when the configuration file is missing a non-empty 'tools' section.
@@ -30,7 +30,8 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
+          - VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig
 
       - id: VersionMark-Load-ToolCommand
         title: The tool shall report an error when a tool is missing a non-empty 'command' field.
@@ -40,7 +41,8 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
+          - VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig
 
       - id: VersionMark-Load-ToolRegex
         title: The tool shall report an error when a tool is missing a non-empty 'regex' field.
@@ -50,7 +52,8 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
+          - VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig
 
       - id: VersionMark-Load-RegexValid
         title: The tool shall report an error when a regex value cannot be compiled.
@@ -60,7 +63,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_InvalidRegex_ReportsError
+          - VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig
 
       - id: VersionMark-Load-RegexVersion
         title: The tool shall report an error when a regex does not contain a named 'version' capture group.
@@ -70,7 +73,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_RegexWithoutVersionGroup_ReportsError
+          - VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig
 
       - id: VersionMark-Load-OsOverrides
         title: The tool shall report an error when an OS-specific command or regex override is empty.
@@ -81,7 +84,8 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_EmptyOsSpecificOverride_ReportsError
+          - VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig
 
       - id: VersionMark-Load-UnknownKeys
         title: The tool shall report unknown keys as non-fatal warnings that do not fail loading.
@@ -92,7 +96,8 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_UnknownKey_IsWarningNotError
+          - VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig
+          - VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig
 
       - id: VersionMark-Load-ErrorLocation
         title: The tool shall report all load findings with the filename and line/column location.
@@ -102,7 +107,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_Error_IncludesFileAndLineInfo
+          - VersionMarkConfig_Load_IssuesContainFilePath
 
       - id: VersionMark-Load-AllIssues
         title: The tool shall report all load issues in a single pass without stopping at the first error.
@@ -112,7 +117,7 @@ sections:
         tags:
           - configuration
         tests:
-          - ConfigurationLoadSubsystem_Run_MultipleErrors_ReportsAllErrorsInSinglePass
+          - VersionMarkConfig_Load_MultipleErrors_ReportsAll
 
       - id: VersionMark-Load-Method
         title: >-

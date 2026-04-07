@@ -27,13 +27,13 @@ namespace DemaConsulting.VersionMark.Tests.SelfTest;
 ///     Subsystem tests for the SelfTest subsystem (Validation and PathHelpers working together).
 /// </summary>
 [TestClass]
-public class SelfTestSubsystemTests
+public class SelfTestTests
 {
     /// <summary>
     ///     Test that PathHelpers prevents path traversal attacks within the self-test subsystem context.
     /// </summary>
     [TestMethod]
-    public void SelfTestSubsystem_PathHelpers_PathTraversal_ThrowsArgumentException()
+    public void SelfTest_PathHelpers_PathTraversal_ThrowsArgumentException()
     {
         // Arrange - Define a base directory and an attacker-controlled traversal path
         var baseDir = AppContext.BaseDirectory;
@@ -49,7 +49,7 @@ public class SelfTestSubsystemTests
     ///     Test that PathHelpers correctly combines valid paths within the self-test subsystem context.
     /// </summary>
     [TestMethod]
-    public void SelfTestSubsystem_PathHelpers_ValidRelativePath_ProducesExpectedPath()
+    public void SelfTest_PathHelpers_ValidRelativePath_ProducesExpectedPath()
     {
         // Arrange - Use the application base directory as the root
         var baseDir = AppContext.BaseDirectory;
@@ -70,7 +70,7 @@ public class SelfTestSubsystemTests
     ///     Test that the self-test subsystem can locate the main DLL in the base directory.
     /// </summary>
     [TestMethod]
-    public void SelfTestSubsystem_FindsDllInBaseDirectory()
+    public void SelfTest_FindsDllInBaseDirectory()
     {
         // Arrange
         var dllPath = PathHelpers.SafePathCombine(AppContext.BaseDirectory, "DemaConsulting.VersionMark.dll");
@@ -83,7 +83,7 @@ public class SelfTestSubsystemTests
     ///     Test that the self-validation pipeline writes results to a TRX file when --results is specified.
     /// </summary>
     [TestMethod]
-    public void SelfTestSubsystem_Run_WithResultsFlag_WritesResultsFile()
+    public void SelfTest_Run_WithResultsFlag_WritesResultsFile()
     {
         // Arrange - Set up a TRX results file path
         var resultsFile = Path.GetTempFileName() + ".trx";

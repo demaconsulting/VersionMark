@@ -63,7 +63,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/cli/cli.yaml"          # subsystem requirements
       - "docs/design/version-mark/cli/cli.md"               # subsystem design
-      - "test/**/Cli/CliSubsystemTests.cs"                  # subsystem tests
+      - "test/**/Cli/CliTests.cs"                            # subsystem tests
 
   - id: VersionMark-Cli-Program
     title: Review that VersionMark Cli Program Implementation is Correct
@@ -87,8 +87,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/configuration/configuration.yaml"          # subsystem requirements
       - "docs/design/version-mark/configuration/configuration.md"               # subsystem design
-      - "test/**/Configuration/ConfigurationSubsystemTests.cs"                  # subsystem tests
-      - "test/**/Configuration/ConfigurationLoadSubsystemTests.cs"              # load subsystem tests
+      - "test/**/Configuration/ConfigurationTests.cs"                            # subsystem tests
 
   - id: VersionMark-Configuration-VersionMarkConfig
     title: Review that VersionMark Configuration VersionMarkConfig Implementation is Correct
@@ -121,7 +120,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/capture/capture.yaml"  # subsystem requirements
       - "docs/design/version-mark/capture/capture.md"       # subsystem design
-      - "test/**/Capture/CaptureSubsystemTests.cs"          # subsystem tests
+      - "test/**/Capture/CaptureTests.cs"                    # subsystem tests
 
   - id: VersionMark-Capture-VersionInfo
     title: Review that VersionMark Capture VersionInfo Implementation is Correct
@@ -137,7 +136,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/publishing/publishing.yaml"  # subsystem requirements
       - "docs/design/version-mark/publishing/publishing.md"       # subsystem design
-      - "test/**/Publishing/PublishingSubsystemTests.cs"          # subsystem tests
+      - "test/**/Publishing/PublishingTests.cs"                    # subsystem tests
 
   - id: VersionMark-Publishing-MarkdownFormatter
     title: Review that VersionMark Publishing MarkdownFormatter Implementation is Correct
@@ -153,7 +152,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/self-test/self-test.yaml"   # subsystem requirements
       - "docs/design/version-mark/self-test/self-test.md"        # subsystem design
-      - "test/**/SelfTest/SelfTestSubsystemTests.cs"             # subsystem tests
+      - "test/**/SelfTest/SelfTestTests.cs"                       # subsystem tests
 
   - id: VersionMark-SelfTest-Validation
     title: Review that VersionMark SelfTest Validation Implementation is Correct
@@ -161,7 +160,7 @@ reviews:
       - "docs/reqstream/version-mark/self-test/validation.yaml"  # requirements
       - "docs/design/version-mark/self-test/validation.md"       # design
       - "src/**/SelfTest/Validation.cs"                          # implementation
-      - "test/**/SelfTest/SelfTestSubsystemTests.cs"             # subsystem tests (no separate unit test file)
+      - "test/**/SelfTest/SelfTestTests.cs"                      # subsystem tests (no separate unit test file)
 
   - id: VersionMark-SelfTest-PathHelpers
     title: Review that VersionMark SelfTest PathHelpers Implementation is Correct
