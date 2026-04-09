@@ -54,8 +54,9 @@ sections:
           RunLint resolves the config file path (defaulting to .versionmark.yaml),
           calls VersionMarkConfig.Load to validate the configuration in a single pass,
           and reports all discovered issues via result.ReportIssues. The application
-          banner is suppressed in lint mode so that only issue lines appear in the
-          output, enabling easy script integration.
+          banner is suppressed when lint is the dispatched action (i.e. --lint is
+          specified and neither --help nor --validate takes priority) so that only
+          issue lines appear in the output, enabling easy script integration.
         tests:
           - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
           - Program_Run_WithLintFlag_ValidConfig_SuppressesBanner

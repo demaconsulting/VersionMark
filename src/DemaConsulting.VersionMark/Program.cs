@@ -102,8 +102,9 @@ internal static class Program
             return;
         }
 
-        // Print application banner (suppressed in lint mode for clean issue-only output)
-        if (!context.Lint)
+        // Print application banner (suppressed only when lint is the dispatched action for clean issue-only output)
+        var isLintDispatched = context.Lint && !context.Help && !context.Validate;
+        if (!isLintDispatched)
         {
             PrintBanner(context);
         }

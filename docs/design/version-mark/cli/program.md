@@ -24,16 +24,16 @@ generate event-log entries. This satisfies requirements `VersionMark-CommandLine
 
 `Run` implements priority-ordered dispatch:
 
-| Priority | Condition              | Action                                              |
-|----------|------------------------|-----------------------------------------------------|
-| 1        | `context.Version`      | Print version string and return                     |
-| —        | Print banner           | Executed after priority 1, **skipped in lint mode** |
-| 2        | `context.Help`         | Print usage and return                              |
-| 3        | `context.Validate`     | Run self-validation and return                      |
-| 4        | `context.Lint`         | Run lint mode and return                            |
-| 5        | `context.Capture`      | Run capture mode and return                         |
-| 6        | `context.Publish`      | Run publish mode and return                         |
-| 7        | Default                | Run placeholder tool logic                          |
+| Priority | Condition          | Action                                                         |
+|----------|--------------------|----------------------------------------------------------------|
+| 1        | `context.Version`  | Print version string and return                                |
+| —        | Print banner       | Executed after priority 1; **skipped when lint is dispatched** |
+| 2        | `context.Help`     | Print usage and return                                         |
+| 3        | `context.Validate` | Run self-validation and return                                 |
+| 4        | `context.Lint`     | Run lint mode and return                                       |
+| 5        | `context.Capture`  | Run capture mode and return                                    |
+| 6        | `context.Publish`  | Run publish mode and return                                    |
+| 7        | Default            | Run placeholder tool logic                                     |
 
 This dispatch order satisfies requirements `VersionMark-CommandLine-Version`, `VersionMark-CommandLine-Help`,
 `VersionMark-CommandLine-Validate`, `VersionMark-CommandLine-Lint`, `VersionMark-Capture-Capture`, and
@@ -52,6 +52,7 @@ error handling to `context.WriteError`. These methods satisfy requirements
 `RunLint` is a private helper called from `Run`. It resolves the configuration file path,
 defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then calls
 `VersionMarkConfig.Load` to validate the configuration. It reports all discovered issues via
-`result.ReportIssues`. The application banner is suppressed when lint mode is active so that
+`result.ReportIssues`. The application banner is suppressed when lint is the dispatched action
+(i.e., `--lint` is specified and neither `--help` nor `--validate` takes priority) so that
 the output contains only the actual issue lines, making it easy to consume in scripts. This
 satisfies requirement `VersionMark-CommandLine-Lint`.
