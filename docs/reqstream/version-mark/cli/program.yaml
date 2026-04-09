@@ -53,8 +53,11 @@ sections:
         justification: |
           RunLint resolves the config file path and then delegates to Lint.Run,
           keeping the dispatch logic and the lint logic cleanly separated.
+          The application banner is suppressed in lint mode so that only issue
+          lines appear in the output, enabling easy script integration.
         tests:
           - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
+          - Program_Run_WithLintFlag_ValidConfig_SuppressesBanner
           - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
           - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
           - Program_Run_WithHelpFlag_IncludesLintInformation
