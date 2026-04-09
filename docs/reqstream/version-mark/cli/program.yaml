@@ -49,12 +49,13 @@ sections:
           - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
 
       - id: VersionMark-Program-RunLint
-        title: The Program class shall delegate the lint workflow to the Lint unit.
+        title: The Program class shall orchestrate the lint workflow.
         justification: |
-          RunLint resolves the config file path and then delegates to Lint.Run,
-          keeping the dispatch logic and the lint logic cleanly separated.
-          The application banner is suppressed in lint mode so that only issue
-          lines appear in the output, enabling easy script integration.
+          RunLint resolves the config file path (defaulting to .versionmark.yaml),
+          calls VersionMarkConfig.Load to validate the configuration in a single pass,
+          and reports all discovered issues via result.ReportIssues. The application
+          banner is suppressed in lint mode so that only issue lines appear in the
+          output, enabling easy script integration.
         tests:
           - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
           - Program_Run_WithLintFlag_ValidConfig_SuppressesBanner
