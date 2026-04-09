@@ -115,9 +115,12 @@ versionmark --lint [<config-file>]
 
 The lint command:
 
+- Suppresses the application banner so the output contains only issue lines
 - Reports **all** issues found in the configuration file, not just the first
 - Includes the filename and line/column number for each issue
-- Exits with code `0` if no issues are found, or `1` if any issues are detected
+- Exits with code `0` if no issues are found (producing no output) or when only warnings are
+  reported
+- Exits with code `1` when errors are detected
 - Checks for:
   - Missing `tools` section
   - Tools missing required `command` or `regex` fields

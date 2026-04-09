@@ -789,9 +789,9 @@ tools:
                 _dllPath,
                 "--lint", configFile);
 
-            // Assert - Verify success and lint output
+            // Assert - Verify success with no output (lint mode is silent when no issues)
             Assert.AreEqual(0, exitCode, $"Command failed with output: {output}");
-            Assert.Contains("No issues found", output);
+            Assert.IsTrue(string.IsNullOrEmpty(output), "Lint mode should produce no output when there are no issues");
         }
         finally
         {
