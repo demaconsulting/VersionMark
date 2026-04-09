@@ -102,8 +102,11 @@ internal static class Program
             return;
         }
 
-        // Print application banner
-        PrintBanner(context);
+        // Print application banner (suppressed in lint mode for clean issue-only output)
+        if (!context.Lint)
+        {
+            PrintBanner(context);
+        }
 
         // Priority 2: Help
         if (context.Help)
@@ -199,19 +202,12 @@ internal static class Program
     {
         // Use specified file, or default to .versionmark.yaml
         var configFile = context.LintFile ?? ".versionmark.yaml";
-        context.WriteLine($"Linting '{configFile}'...");
 
         // Load the configuration, which performs all validation in a single pass
         var result = VersionMarkConfig.Load(configFile);
 
         // Report all discovered issues to the context
         result.ReportIssues(context);
-
-        // Confirm success when no issues were found
-        if (result.Config != null && result.Issues.Count == 0)
-        {
-            context.WriteLine($"'{configFile}': No issues found");
-        }
     }
 
     /// <summary>

@@ -693,10 +693,10 @@ tools:
             // Act - Run lint on valid config
             Program.Run(context);
 
-            // Assert - Verify success
+            // Assert - Verify success with no output (lint mode is silent when no issues)
             Assert.AreEqual(0, context.ExitCode);
             var output = outWriter.ToString();
-            Assert.Contains("No issues found", output);
+            Assert.IsTrue(string.IsNullOrEmpty(output), "Lint mode should produce no output when there are no issues");
         }
         finally
         {
@@ -792,16 +792,65 @@ tools:
             // Act - Run lint without specifying a config file
             Program.Run(context);
 
-            // Assert - Verify it found and linted the default file
+            // Assert - Verify it found and linted the default file (exit code 0 means success)
             Assert.AreEqual(0, context.ExitCode);
-            var output = outWriter.ToString();
-            Assert.Contains(".versionmark.yaml", output);
+            Assert.IsTrue(string.IsNullOrEmpty(outWriter.ToString()),
+                "Lint mode should produce no output when there are no issues");
         }
         finally
         {
             Console.SetOut(originalOut);
             Console.SetError(originalError);
             Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that Run with lint flag suppresses the application banner.
+    /// </summary>
+    [TestMethod]
+    public void Program_Run_WithLintFlag_ValidConfig_SuppressesBanner()
+    {
+        // Arrange - Set up temp directory with a valid config file
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var configFile = PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml");
+
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(configFile, @"---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+");
+
+            using var outWriter = new StringWriter();
+            using var errWriter = new StringWriter();
+            Console.SetOut(outWriter);
+            Console.SetError(errWriter);
+
+            using var context = Context.Create(["--lint", configFile]);
+
+            // Act - Run lint on valid config
+            Program.Run(context);
+
+            // Assert - Verify the banner is not present in the output
+            Assert.AreEqual(0, context.ExitCode);
+            var output = outWriter.ToString();
+            Assert.DoesNotContain("VersionMark version", output, "Banner should be suppressed in lint mode");
+            Assert.DoesNotContain("Copyright", output, "Banner should be suppressed in lint mode");
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
             if (Directory.Exists(tempDir))
             {
                 Directory.Delete(tempDir, true);
