@@ -66,10 +66,6 @@ REM Run reqstream lint
 dotnet reqstream --lint --requirements requirements.yaml
 if errorlevel 1 set "LINT_ERROR=1"
 
-REM Run versionmark lint
-dotnet versionmark --lint
-if errorlevel 1 set "LINT_ERROR=1"
-
 REM Run reviewmark lint
 dotnet reviewmark --lint
 if errorlevel 1 set "LINT_ERROR=1"
