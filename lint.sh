@@ -58,6 +58,11 @@ if [ "$skip_dotnet_tools" != "1" ]; then
     dotnet reqstream --lint --requirements requirements.yaml || lint_error=1
 fi
 
+# Run versionmark lint
+if [ "$skip_dotnet_tools" != "1" ]; then
+    dotnet versionmark --lint || lint_error=1
+fi
+
 # Run reviewmark lint
 if [ "$skip_dotnet_tools" != "1" ]; then
     dotnet reviewmark --lint || lint_error=1

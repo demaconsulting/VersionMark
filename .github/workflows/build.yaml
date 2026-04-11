@@ -21,9 +21,6 @@ jobs:
       # === INSTALL DEPENDENCIES ===
       # This section installs all required dependencies for quality checks.
       # Downstream projects: Add any additional dependency installations here.
-      # Note: VersionMark version capture is not available here because this job
-      # builds VersionMark itself - capture is performed in integration-test and
-      # build-docs jobs after the tool is built and installed.
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -87,9 +84,6 @@ jobs:
 
       # === BUILD AND TEST ===
       # This section builds and tests the project.
-      # Note: VersionMark version capture is not available here because this job
-      # builds VersionMark itself - capture is performed in integration-test and
-      # build-docs jobs after the tool is built and installed.
       # Downstream projects: Add any additional build and test steps here.
 
       - name: Restore Dependencies
@@ -364,12 +358,6 @@ jobs:
           merge-multiple: true
         continue-on-error: true
 
-      - name: Download packages artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: packages-ubuntu-latest
-          path: packages
-
       # === INSTALL DEPENDENCIES ===
       # This section installs all required dependencies and tools for document generation.
       # Downstream projects: Add any additional dependency installations here.
@@ -387,15 +375,6 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Install VersionMark from package
-        shell: bash
-        run: |
-          echo "Installing VersionMark version ${{ inputs.version }}"
-          dotnet tool install --global \
-            --add-source packages \
-            --version ${{ inputs.version }} \
-            DemaConsulting.VersionMark
-
       - name: Restore Tools
         run: dotnet tool restore
 
@@ -408,7 +387,7 @@ jobs:
         run: |
           mkdir -p artifacts
           echo "Capturing tool versions..."
-          versionmark --capture --job-id "build-docs" \
+          dotnet versionmark --capture --job-id "build-docs" \
             --output "artifacts/versionmark-build-docs.json" -- \
             dotnet git node npm pandoc weasyprint sarifmark sonarmark reqstream buildmark reviewmark
           echo "✓ Tool versions captured"
@@ -424,7 +403,7 @@ jobs:
         run: dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx
 
       - name: Run VersionMark self-validation
-        run: versionmark --validate --results artifacts/versionmark-self-validation.trx
+        run: dotnet versionmark --validate --results artifacts/versionmark-self-validation.trx
 
       - name: Run SarifMark self-validation
         run: dotnet sarifmark --validate --results artifacts/sarifmark-self-validation.trx
@@ -523,7 +502,7 @@ jobs:
         shell: bash
         run: |
           echo "Publishing tool versions..."
-          versionmark --publish --report docs/build_notes/versions.md --report-depth 1 \
+          dotnet versionmark --publish --report docs/build_notes/versions.md --report-depth 1 \
             -- "artifacts/**/versionmark-*.json"
           echo "✓ Tool versions published"
 
