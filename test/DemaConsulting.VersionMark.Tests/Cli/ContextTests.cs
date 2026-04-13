@@ -163,6 +163,20 @@ public class ContextTests
     }
 
     /// <summary>
+    ///     Test creating a context with the legacy result flag (alias for --results).
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ResultFlag_SetsResultsFile()
+    {
+        // Arrange & Act - Create context with --result flag (legacy alias)
+        using var context = Context.Create(["--result", "test.trx"]);
+
+        // Assert - Verify results file is set
+        Assert.AreEqual("test.trx", context.ResultsFile);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
     ///     Test creating a context with the log flag.
     /// </summary>
     [TestMethod]
