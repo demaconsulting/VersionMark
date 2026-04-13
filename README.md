@@ -74,75 +74,35 @@ This consolidates versions from all jobs and generates a markdown report.
 
 ## Command-Line Options
 
-### Global Options
-
-| Option               | Description                                                  |
-| -------------------- | ------------------------------------------------------------ |
-| `-v`, `--version`    | Display version information                                  |
-| `-?`, `-h`, `--help` | Display help message                                         |
-| `--silent`           | Suppress console output                                      |
-| `--log <file>`       | Write output to log file                                     |
-
-### Lint Mode
-
-Validate a `.versionmark.yaml` configuration file for issues:
-
-```bash
-versionmark --lint [<config-file>]
+```text
+Usage: versionmark [options]
+       versionmark --lint [<config-file>]
+       versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]
+       versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
 ```
 
-| Option                  | Description                                                           |
-| ----------------------- | --------------------------------------------------------------------- |
-| `--lint [<config-file>]`| Check configuration file (default: `.versionmark.yaml`)               |
-
-Lint reports all issues with filename and line/column location. Exits with code 0 if no
-issues are found, or 1 if any issues are detected.
-
-**Example:**
-
-```bash
-# Lint the default config file
-versionmark --lint
-
-# Lint a specific config file
-versionmark --lint path/to/.versionmark.yaml
-```
-
-### Capture Mode
-
-Capture tool versions from the current environment:
-
-```bash
-versionmark --capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
-```
-
-| Option                    | Description                                                  |
-| ------------------------- | ------------------------------------------------------------ |
-| `--capture`               | Enable capture mode                                          |
-| `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job          |
-| `--output <file>`         | Output JSON file (default: `versionmark-<job-id>.json`)      |
-| `-- <tools...>`           | List of tool names to capture (default: all tools in config) |
-
-**Example:** Capture specific tools only:
-
-```bash
-versionmark --capture --job-id "windows-build" -- dotnet node npm
-```
-
-### Publish Mode
-
-Publish captured versions to markdown documentation:
-
-```bash
-versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
-```
-
-| Option                    | Description                                                  |
-| ------------------------- | ------------------------------------------------------------ |
-| `--publish`               | Enable publish mode                                          |
-| `--report <file>`         | **(Required)** Output markdown file path                     |
-| `--report-depth <depth>`  | Heading depth for markdown output (default: 2)               |
-| `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`) |
+| Option                    | Description                                                      |
+| ------------------------- | ---------------------------------------------------------------- |
+| **General**               |                                                                  |
+| `-v`, `--version`         | Display version information                                      |
+| `-?`, `-h`, `--help`      | Display help message                                             |
+| `--silent`                | Suppress console output                                          |
+| `--log <file>`            | Write output to log file                                         |
+| **Lint Mode**             |                                                                  |
+| `--lint [<config-file>]`  | Check configuration file (default: `.versionmark.yaml`)          |
+| **Capture Mode**          |                                                                  |
+| `--capture`               | Enable capture mode                                              |
+| `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job              |
+| `--output <file>`         | Output JSON file (default: `versionmark-<job-id>.json`)          |
+| `-- <tools...>`           | List of tool names to capture (default: all tools in config)     |
+| **Publish Mode**          |                                                                  |
+| `--publish`               | Enable publish mode                                              |
+| `--report <file>`         | **(Required)** Output markdown file path                         |
+| `--report-depth <depth>`  | Heading depth for markdown output (default: 2, min: 1, max: 6)   |
+| `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`)     |
+| **Self-Validation**       |                                                                  |
+| `--validate`              | Run self-validation tests                                        |
+| `--results <file>`        | Write validation results to file (`.trx` or `.xml`)              |
 
 ## Configuration File
 
