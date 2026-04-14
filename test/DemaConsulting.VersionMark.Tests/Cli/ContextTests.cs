@@ -468,17 +468,17 @@ public class ContextTests
     /// <summary>
     ///     Test creating a context with default report-depth.
     ///     What is tested: Default report-depth value when not specified
-    ///     What the assertions prove: The default report depth is 2
+    ///     What the assertions prove: The default report depth is 1 (matching the --depth default)
     /// </summary>
     [TestMethod]
-    public void Context_Create_NoReportDepth_DefaultsToTwo()
+    public void Context_Create_NoReportDepth_DefaultsToDepthOne()
     {
         // Arrange & Act - Create context without --report-depth
         using var context = Context.Create(["--publish", "--report", "output.md"]);
 
-        // Assert - Verify default report depth is 2
-        // What is proved: Report depth defaults to 2 when not specified
-        Assert.AreEqual(2, context.ReportDepth);
+        // Assert - Verify default report depth is 1 (the default --depth value)
+        // What is proved: Report depth defaults to the --depth value (1) when not specified
+        Assert.AreEqual(1, context.ReportDepth);
     }
 
     /// <summary>
@@ -505,6 +505,99 @@ public class ContextTests
         // Arrange & Act & Assert - Negative values are not valid heading depths
         Assert.ThrowsExactly<ArgumentException>(() =>
             Context.Create(["--publish", "--report", "output.md", "--report-depth", "-1"]));
+    }
+
+    /// <summary>
+    ///     Test creating a context with the depth parameter.
+    ///     What is tested: --depth parameter parsing captures the depth value
+    ///     What the assertions prove: The depth is correctly parsed as an integer
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_DepthParameter_SetsDepth()
+    {
+        // Arrange & Act - Create context with --depth flag
+        using var context = Context.Create(["--depth", "3"]);
+
+        // Assert - Verify depth is captured
+        // What is proved: --depth parameter value is correctly parsed as an integer
+        Assert.AreEqual(3, context.Depth);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with no depth parameter.
+    ///     What is tested: Default depth value when not specified
+    ///     What the assertions prove: The depth defaults to 1
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_NoDepth_DefaultsToOne()
+    {
+        // Arrange & Act - Create context without --depth
+        using var context = Context.Create([]);
+
+        // Assert - Verify default depth is 1
+        // What is proved: Depth defaults to 1 when not specified
+        Assert.AreEqual(1, context.Depth);
+    }
+
+    /// <summary>
+    ///     Test that --depth sets the default for --report-depth.
+    ///     What is tested: --depth value is used as default for ReportDepth when --report-depth not specified
+    ///     What the assertions prove: ReportDepth equals Depth when --report-depth is not given
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_DepthParameter_SetsDefaultReportDepth()
+    {
+        // Arrange & Act - Create context with --depth but no --report-depth
+        using var context = Context.Create(["--publish", "--report", "output.md", "--depth", "3"]);
+
+        // Assert - Verify report depth defaults to the depth value
+        // What is proved: --depth value is used as the default for ReportDepth
+        Assert.AreEqual(3, context.ReportDepth);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test that explicit --report-depth overrides --depth.
+    ///     What is tested: --report-depth takes precedence over --depth for ReportDepth
+    ///     What the assertions prove: ReportDepth equals the explicit --report-depth value, not --depth
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ExplicitReportDepthOverridesDepth()
+    {
+        // Arrange & Act - Create context with both --depth and --report-depth
+        using var context = Context.Create(["--publish", "--report", "output.md", "--depth", "2", "--report-depth", "4"]);
+
+        // Assert - Verify explicit --report-depth takes precedence over --depth
+        // What is proved: --report-depth value (4) overrides --depth value (2) for ReportDepth
+        Assert.AreEqual(4, context.ReportDepth);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test that --depth 0 throws ArgumentException.
+    ///     What is tested: Validation rejects a depth value less than 1
+    ///     What the assertions prove: ArgumentException is thrown for depth values less than 1
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_DepthZero_ThrowsArgumentException()
+    {
+        // Arrange & Act & Assert - Zero is not a valid heading depth
+        Assert.ThrowsExactly<ArgumentException>(() =>
+            Context.Create(["--depth", "0"]));
+    }
+
+    /// <summary>
+    ///     Test that a negative --depth throws ArgumentException.
+    ///     What is tested: Validation rejects negative depth values
+    ///     What the assertions prove: ArgumentException is thrown for negative depth values
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_DepthNegative_ThrowsArgumentException()
+    {
+        // Arrange & Act & Assert - Negative values are not valid heading depths
+        Assert.ThrowsExactly<ArgumentException>(() =>
+            Context.Create(["--depth", "-1"]));
     }
 
     /// <summary>

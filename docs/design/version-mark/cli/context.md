@@ -22,7 +22,8 @@ command-line state and output routing. It is constructed via the `Create` factor
 | `ToolNames`   | `string[]` | `[]`    | Tool names after `--` separator in capture|
 | `Publish`     | `bool`     | `false` | `--publish` flag                          |
 | `ReportFile`  | `string?`  | `null`  | `--report <file>`                         |
-| `ReportDepth` | `int`      | `2`     | `--report-depth <depth>`                  |
+| `Depth`       | `int`      | `1`     | `--depth <depth>` (heading depth, def: 1) |
+| `ReportDepth` | `int`      | `Depth` | `--report-depth <depth>` (def: `Depth`)   |
 | `GlobPatterns`| `string[]` | `[]`    | Patterns after `--` separator in publish  |
 | `ExitCode`    | `int`      | `0`/`1` | 0 for success, 1 if errors reported       |
 

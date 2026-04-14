@@ -88,7 +88,7 @@ Usage: versionmark [options]
 | `-?`, `-h`, `--help`      | Display help message                                             |
 | `--silent`                | Suppress console output                                          |
 | `--log <file>`            | Write output to log file                                         |
-| `--depth <depth>`         | Heading depth for self-validation and default for `--report-depth` (default: 1, min: 1) |
+| `--depth <depth>`         | Heading depth for validation and `--report-depth` (default: 1)   |
 | **Lint Mode**             |                                                                  |
 | `--lint [<config-file>]`  | Check configuration file (default: `.versionmark.yaml`)          |
 | **Capture Mode**          |                                                                  |

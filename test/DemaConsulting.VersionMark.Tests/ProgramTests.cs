@@ -579,7 +579,7 @@ tools:
                 Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
 
                 var reportContent = File.ReadAllText(reportFile);
-                Assert.Contains("## Tool Versions", reportContent);
+                Assert.Contains("# Tool Versions", reportContent);
                 Assert.Contains("dotnet", reportContent);
                 Assert.Contains("node", reportContent);
                 Assert.Contains("8.0.0", reportContent);

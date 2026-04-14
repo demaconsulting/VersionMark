@@ -101,9 +101,14 @@ internal sealed class Context : IDisposable
     public string? ReportFile { get; private init; }
 
     /// <summary>
+    ///     Gets the markdown header depth for the self-validation report and default for publish mode.
+    /// </summary>
+    public int Depth { get; private init; } = 1;
+
+    /// <summary>
     ///     Gets the report depth for markdown heading levels in publish mode.
     /// </summary>
-    public int ReportDepth { get; private init; } = 2;
+    public int ReportDepth { get; private init; } = 1;
 
     /// <summary>
     ///     Gets the list of glob patterns for JSON files in publish mode.
@@ -149,6 +154,7 @@ internal sealed class Context : IDisposable
             ToolNames = parser.ToolNames,
             Publish = parser.Publish,
             ReportFile = parser.ReportFile,
+            Depth = parser.Depth,
             ReportDepth = parser.ReportDepth,
             GlobPatterns = parser.GlobPatterns
         };
@@ -257,9 +263,19 @@ internal sealed class Context : IDisposable
         public string? ReportFile { get; private set; }
 
         /// <summary>
+        ///     Gets the markdown header depth for the self-validation report and default for publish mode.
+        /// </summary>
+        public int Depth { get; private set; } = 1;
+
+        /// <summary>
+        ///     Backing field for the explicitly-specified report depth.
+        /// </summary>
+        private int? _explicitReportDepth;
+
+        /// <summary>
         ///     Gets the report depth for markdown heading levels in publish mode.
         /// </summary>
-        public int ReportDepth { get; private set; } = 2;
+        public int ReportDepth => _explicitReportDepth ?? Depth;
 
         /// <summary>
         ///     Gets the list of glob patterns for JSON files in publish mode.
@@ -371,8 +387,17 @@ internal sealed class Context : IDisposable
                     return index + 1;
 
                 case "--report-depth":
-                    ReportDepth = GetRequiredIntArgument(arg, args, index, "a depth value");
-                    if (ReportDepth < 1)
+                    _explicitReportDepth = GetRequiredIntArgument(arg, args, index, "a depth value");
+                    if (_explicitReportDepth < 1)
+                    {
+                        throw new ArgumentException($"{arg} requires a positive integer value (minimum 1)", nameof(args));
+                    }
+
+                    return index + 1;
+
+                case "--depth":
+                    Depth = GetRequiredIntArgument(arg, args, index, "a depth value");
+                    if (Depth < 1)
                     {
                         throw new ArgumentException($"{arg} requires a positive integer value (minimum 1)", nameof(args));
                     }

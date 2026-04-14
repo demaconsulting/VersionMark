@@ -30,3 +30,13 @@ sections:
         tests:
           - VersionMark_LintPassesForValidConfig
           - VersionMark_LintReportsErrorsForInvalidConfig
+
+      - id: VersionMark-Validation-HeaderDepth
+        title: >-
+          The Validation class shall use the context Depth for the self-validation
+          report heading depth.
+        justification: |
+          The --depth argument allows callers to embed the self-validation report
+          at the appropriate heading level within a larger markdown document.
+        tests:
+          - SelfTest_Run_WithDepthTwo_WritesHashHashHeader
