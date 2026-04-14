@@ -508,6 +508,19 @@ public class ContextTests
     }
 
     /// <summary>
+    ///     Test that --report-depth 7 throws ArgumentException.
+    ///     What is tested: Validation rejects a depth value greater than 6
+    ///     What the assertions prove: ArgumentException is thrown for report-depth values greater than 6
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_ReportDepthSeven_ThrowsArgumentException()
+    {
+        // Arrange & Act & Assert - 7 exceeds the maximum Markdown heading level of 6
+        Assert.ThrowsExactly<ArgumentException>(() =>
+            Context.Create(["--publish", "--report", "output.md", "--report-depth", "7"]));
+    }
+
+    /// <summary>
     ///     Test creating a context with the depth parameter.
     ///     What is tested: --depth parameter parsing captures the depth value
     ///     What the assertions prove: The depth is correctly parsed as an integer
@@ -598,6 +611,19 @@ public class ContextTests
         // Arrange & Act & Assert - Negative values are not valid heading depths
         Assert.ThrowsExactly<ArgumentException>(() =>
             Context.Create(["--depth", "-1"]));
+    }
+
+    /// <summary>
+    ///     Test that --depth 7 throws ArgumentException.
+    ///     What is tested: Validation rejects a depth value greater than 6
+    ///     What the assertions prove: ArgumentException is thrown for depth values greater than 6
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_DepthSeven_ThrowsArgumentException()
+    {
+        // Arrange & Act & Assert - 7 exceeds the maximum Markdown heading level of 6
+        Assert.ThrowsExactly<ArgumentException>(() =>
+            Context.Create(["--depth", "7"]));
     }
 
     /// <summary>

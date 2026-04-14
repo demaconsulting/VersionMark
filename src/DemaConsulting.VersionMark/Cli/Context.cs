@@ -388,18 +388,18 @@ internal sealed class Context : IDisposable
 
                 case "--report-depth":
                     _explicitReportDepth = GetRequiredIntArgument(arg, args, index, "a depth value");
-                    if (_explicitReportDepth < 1)
+                    if (_explicitReportDepth is < 1 or > 6)
                     {
-                        throw new ArgumentException($"{arg} requires a positive integer value (minimum 1)", nameof(args));
+                        throw new ArgumentException($"{arg} requires an integer value between 1 and 6", nameof(args));
                     }
 
                     return index + 1;
 
                 case "--depth":
                     Depth = GetRequiredIntArgument(arg, args, index, "a depth value");
-                    if (Depth < 1)
+                    if (Depth is < 1 or > 6)
                     {
-                        throw new ArgumentException($"{arg} requires a positive integer value (minimum 1)", nameof(args));
+                        throw new ArgumentException($"{arg} requires an integer value between 1 and 6", nameof(args));
                     }
 
                     return index + 1;

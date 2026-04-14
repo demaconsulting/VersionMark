@@ -40,6 +40,10 @@ sections:
           - Context_Create_ExplicitReportDepthOverridesDepth
           - Context_Create_DepthZero_ThrowsArgumentException
           - Context_Create_DepthNegative_ThrowsArgumentException
+          - Context_Create_DepthSeven_ThrowsArgumentException
+          - Context_Create_ReportDepthZero_ThrowsArgumentException
+          - Context_Create_ReportDepthNegative_ThrowsArgumentException
+          - Context_Create_ReportDepthSeven_ThrowsArgumentException
 
       - id: VersionMark-Context-WriteLine
         title: The Context.WriteLine method shall write output respecting the silent flag.

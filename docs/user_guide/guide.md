@@ -95,7 +95,7 @@ This generates a markdown file consolidating versions from all jobs.
 | `-?`, `-h`, `--help`      | Display help message                                             |
 | `--silent`                | Suppress console output                                          |
 | `--log <file>`            | Write output to log file                                         |
-| `--depth <depth>`         | Heading depth for validation and `--report-depth` (default: 1)   |
+| `--depth <depth>`         | Heading depth for validation and publish mode (default: 1, 1-6)  |
 | **Lint Mode**             |                                                                  |
 | `--lint [<config-file>]`  | Check configuration file (default: `.versionmark.yaml`)          |
 | **Capture Mode**          |                                                                  |
@@ -106,7 +106,7 @@ This generates a markdown file consolidating versions from all jobs.
 | **Publish Mode**          |                                                                  |
 | `--publish`               | Enable publish mode                                              |
 | `--report <file>`         | **(Required)** Output markdown file path                         |
-| `--report-depth <depth>`  | Heading depth for markdown output (default: `--depth` value)     |
+| `--report-depth <depth>`  | Heading depth for markdown output (default: --depth value, 1-6)  |
 | `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`)     |
 | **Self-Validation**       |                                                                  |
 | `--validate`              | Run self-validation tests                                        |
