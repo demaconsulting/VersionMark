@@ -92,7 +92,7 @@ public class SelfTestTests
             using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
 
             // Act - Run self-validation with --results to write TRX output
-            Program.Run(context);
+            Validation.Run(context);
 
             // Assert - The TRX file should exist and contain XML content
             Assert.AreEqual(0, context.ExitCode);
@@ -128,7 +128,7 @@ public class SelfTestTests
             using var context = Context.Create(["--validate", "--depth", "2"]);
 
             // Act - Run self-validation with --depth 2
-            Program.Run(context);
+            Validation.Run(context);
 
             // Assert - Output should contain the ## heading for depth 2
             var output = writer.ToString();
