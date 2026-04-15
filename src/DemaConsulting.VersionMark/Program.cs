@@ -174,6 +174,7 @@ internal static class Program
         context.WriteLine("  -v, --version              Display version information");
         context.WriteLine("  -?, -h, --help             Display this help message");
         context.WriteLine("  --silent                   Suppress console output");
+        context.WriteLine("  --depth <depth>            Heading depth for self-validation and --report-depth default (default: 1, range: 1-6)");
         context.WriteLine("  --validate                 Run self-validation");
         context.WriteLine("  --results <file>           Write validation results to file (.trx or .xml)");
         context.WriteLine("  --log <file>               Write output to log file");
@@ -191,7 +192,7 @@ internal static class Program
         context.WriteLine("Publish Mode:");
         context.WriteLine("  --publish                  Generate markdown report from JSON files");
         context.WriteLine("  --report <file>            Output markdown file (required)");
-        context.WriteLine("  --report-depth <depth>     Heading depth for markdown (default: 2)");
+        context.WriteLine("  --report-depth <depth>     Heading depth for markdown (default: --depth value, range: 1-6)");
         context.WriteLine("  -- <patterns...>           Glob patterns for JSON files (default: versionmark-*.json)");
     }
 

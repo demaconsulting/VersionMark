@@ -27,13 +27,23 @@ sections:
           - Context_Create_PublishFlag_SetsPublishTrue
           - Context_Create_ReportParameter_SetsReportFile
           - Context_Create_ReportDepthParameter_SetsReportDepth
-          - Context_Create_NoReportDepth_DefaultsToTwo
+          - Context_Create_NoReportDepth_DefaultsToDepthOne
           - Context_Create_GlobPatternsAfterSeparator_CapturesPatterns
           - Context_Create_PublishWithoutReport_ParsesSuccessfully
           - Context_Create_NoGlobPatterns_EmptyArray
           - Context_Create_LintFlag_SetsLintTrue
           - Context_Create_LintFlag_WithFile_SetsLintFile
           - Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile
+          - Context_Create_DepthParameter_SetsDepth
+          - Context_Create_NoDepth_DefaultsToOne
+          - Context_Create_DepthParameter_SetsDefaultReportDepth
+          - Context_Create_ExplicitReportDepthOverridesDepth
+          - Context_Create_DepthZero_ThrowsArgumentException
+          - Context_Create_DepthNegative_ThrowsArgumentException
+          - Context_Create_DepthSeven_ThrowsArgumentException
+          - Context_Create_ReportDepthZero_ThrowsArgumentException
+          - Context_Create_ReportDepthNegative_ThrowsArgumentException
+          - Context_Create_ReportDepthSeven_ThrowsArgumentException
 
       - id: VersionMark-Context-WriteLine
         title: The Context.WriteLine method shall write output respecting the silent flag.

@@ -527,7 +527,7 @@ public class IntegrationTests
         var reportContent = File.ReadAllText(reportFile);
 
         // Verify markdown structure
-        Assert.Contains("## Tool Versions", reportContent);
+        Assert.Contains("# Tool Versions", reportContent);
 
         // Verify tools are present and sorted alphabetically
         Assert.Contains("dotnet", reportContent);

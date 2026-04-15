@@ -84,7 +84,8 @@ internal static class Validation
     /// <param name="context">The context for output.</param>
     private static void PrintValidationHeader(Context context)
     {
-        context.WriteLine("# DEMA Consulting VersionMark");
+        var headingPrefix = new string('#', context.Depth);
+        context.WriteLine($"{headingPrefix} DEMA Consulting VersionMark");
         context.WriteLine("");
         context.WriteLine("| Information         | Value                                              |");
         context.WriteLine("| :------------------ | :------------------------------------------------- |");

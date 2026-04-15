@@ -92,7 +92,7 @@ public class SelfTestTests
             using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
 
             // Act - Run self-validation with --results to write TRX output
-            Program.Run(context);
+            Validation.Run(context);
 
             // Assert - The TRX file should exist and contain XML content
             Assert.AreEqual(0, context.ExitCode);
@@ -108,6 +108,36 @@ public class SelfTestTests
             {
                 File.Delete(resultsFile);
             }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the self-validation pipeline writes a ## heading when --depth 2 is specified.
+    ///     What is tested: The --depth argument controls the heading level in the self-validation report
+    ///     What the assertions prove: Output contains "## DEMA Consulting VersionMark" with depth 2
+    /// </summary>
+    [TestMethod]
+    public void SelfTest_Run_WithDepthTwo_WritesHashHashHeader()
+    {
+        // Arrange - Redirect console output to capture the validation report
+        var originalOut = Console.Out;
+        using var writer = new System.IO.StringWriter();
+        Console.SetOut(writer);
+        try
+        {
+            using var context = Context.Create(["--validate", "--depth", "2"]);
+
+            // Act - Run self-validation with --depth 2
+            Validation.Run(context);
+
+            // Assert - Output should contain the ## heading for depth 2
+            var output = writer.ToString();
+            Assert.IsTrue(output.Contains("## DEMA Consulting VersionMark"),
+                "Self-validation report should use ## heading when --depth 2 is specified");
+        }
+        finally
+        {
+            Console.SetOut(originalOut);
         }
     }
 }

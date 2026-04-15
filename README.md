@@ -88,6 +88,7 @@ Usage: versionmark [options]
 | `-?`, `-h`, `--help`      | Display help message                                             |
 | `--silent`                | Suppress console output                                          |
 | `--log <file>`            | Write output to log file                                         |
+| `--depth <depth>`         | Heading depth for validation and publish mode (default: 1, 1-6)  |
 | **Lint Mode**             |                                                                  |
 | `--lint [<config-file>]`  | Check configuration file (default: `.versionmark.yaml`)          |
 | **Capture Mode**          |                                                                  |
@@ -98,7 +99,7 @@ Usage: versionmark [options]
 | **Publish Mode**          |                                                                  |
 | `--publish`               | Enable publish mode                                              |
 | `--report <file>`         | **(Required)** Output markdown file path                         |
-| `--report-depth <depth>`  | Heading depth for markdown output (default: 2, min: 1, max: 6)   |
+| `--report-depth <depth>`  | Heading depth for markdown output (default: --depth value, 1-6)  |
 | `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`)     |
 | **Self-Validation**       |                                                                  |
 | `--validate`              | Run self-validation tests                                        |
@@ -184,6 +185,12 @@ its current environment. Run with `--validate`:
 
 ```bash
 versionmark --validate
+```
+
+Use `--depth` to control the heading depth of the report (default: 1):
+
+```bash
+versionmark --validate --depth 2
 ```
 
 Example output:
