@@ -26,6 +26,18 @@ sections:
               - "ubuntu@VersionMark_CapturesVersions"
               - "ubuntu@VersionMark_GeneratesMarkdownReport"
 
+          - id: VersionMark-Platform-MacOS
+            title: The tool shall build and run on macOS platforms.
+            justification: |
+              DEMA Consulting tools must support macOS for developer workstations
+              and macOS CI/CD runners.
+            tags:
+              - platform
+            tests:
+              # Tests link to "macos" to ensure results come from macOS platform
+              - "macos@VersionMark_CapturesVersions"
+              - "macos@VersionMark_GeneratesMarkdownReport"
+
           - id: VersionMark-Platform-Net8
             title: The tool shall support .NET 8 runtime.
             justification: |

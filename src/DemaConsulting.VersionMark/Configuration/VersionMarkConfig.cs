@@ -82,6 +82,10 @@ public sealed record ToolConfig
     /// </summary>
     /// <param name="os">The operating system name, or null to use current OS.</param>
     /// <returns>The command to execute based on the specified OS.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown when no OS-specific override exists for <paramref name="os"/> and no default
+    ///     (empty-string) key is present in the <see cref="Command"/> dictionary.
+    /// </exception>
     public string GetEffectiveCommand(string? os = null)
     {
         os ??= GetCurrentOs();
@@ -101,6 +105,10 @@ public sealed record ToolConfig
     /// </summary>
     /// <param name="os">The operating system name, or null to use current OS.</param>
     /// <returns>The regex to use based on the specified OS.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown when no OS-specific override exists for <paramref name="os"/> and no default
+    ///     (empty-string) key is present in the <see cref="Regex"/> dictionary.
+    /// </exception>
     public string GetEffectiveRegex(string? os = null)
     {
         os ??= GetCurrentOs();

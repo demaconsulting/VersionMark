@@ -54,11 +54,20 @@ sections:
             tests:
               - Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException
 
-          - id: VersionMark-Configuration-ParseError
-            title: The tool shall report errors when configuration files cannot be read or parsed.
+          - id: VersionMark-Configuration-ReadError
+            title: The tool shall report errors when configuration files cannot be read.
             justification: |
-              Provides clear feedback to users when configuration files are missing,
-              inaccessible, or malformed.
+              Provides clear feedback to users when configuration files are missing
+              or inaccessible.
+            tags:
+              - configuration
+            tests:
+              - Configuration_ReadFromFile_MissingFile_ThrowsArgumentException
+
+          - id: VersionMark-Configuration-ParseError
+            title: The tool shall report errors when configuration files contain invalid YAML.
+            justification: |
+              Provides clear feedback to users when configuration files are malformed.
             tags:
               - configuration
             tests:

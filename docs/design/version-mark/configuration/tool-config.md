@@ -14,8 +14,9 @@ tool entry. It holds two dictionaries keyed by OS name:
 
 `GetEffectiveCommand` and `GetEffectiveRegex` resolve the active OS at runtime using
 `RuntimeInformation.IsOSPlatform` and then look up the OS-specific key first, falling back
-to the default (`""`) key. This satisfies requirements `VersionMark-Configuration-OsCommandOverride`
-and `VersionMark-Configuration-OsRegexOverride`.
+to the default (`""`) key. When no default (`""`) key is present either, an
+`InvalidOperationException` is thrown. This satisfies requirements `VersionMark-ToolConfig-EffectiveCommand`
+and `VersionMark-ToolConfig-EffectiveRegex`.
 
 ## YAML Parsing
 

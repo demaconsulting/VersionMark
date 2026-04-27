@@ -70,7 +70,7 @@ public class SelfTestTests
     ///     Test that the self-test subsystem can locate the main DLL in the base directory.
     /// </summary>
     [TestMethod]
-    public void SelfTest_FindsDllInBaseDirectory()
+    public void SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists()
     {
         // Arrange
         var dllPath = PathHelpers.SafePathCombine(AppContext.BaseDirectory, "DemaConsulting.VersionMark.dll");
@@ -101,6 +101,38 @@ public class SelfTestTests
             var content = File.ReadAllText(resultsFile);
             Assert.IsTrue(content.Contains("TestRun") || content.Contains("testsuites"),
                 "Results file should contain TRX or JUnit test result data");
+        }
+        finally
+        {
+            if (File.Exists(resultsFile))
+            {
+                File.Delete(resultsFile);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the self-validation pipeline writes JUnit XML results when --results specifies a .xml file.
+    /// </summary>
+    [TestMethod]
+    public void SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile()
+    {
+        // Arrange - Set up a JUnit XML results file path
+        var resultsFile = Path.GetTempFileName() + ".xml";
+        try
+        {
+            using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
+
+            // Act - Run self-validation with --results pointing to a .xml file
+            Validation.Run(context);
+
+            // Assert - The XML file should exist and contain JUnit content
+            Assert.AreEqual(0, context.ExitCode);
+            Assert.IsTrue(File.Exists(resultsFile),
+                "Self-validation should write JUnit results to the .xml file specified by --results");
+            var content = File.ReadAllText(resultsFile);
+            Assert.IsTrue(content.Contains("testsuites") || content.Contains("testsuite"),
+                "JUnit results file should contain testsuites element");
         }
         finally
         {

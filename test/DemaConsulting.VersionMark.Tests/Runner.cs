@@ -56,7 +56,7 @@ internal static class Runner
         using var process = Process.Start(startInfo) ??
                             throw new InvalidOperationException("Failed to start process");
 
-        // Read output asynchronously to avoid buffer overflow
+        // Read output asynchronously to prevent deadlock
         var outputTask = process.StandardOutput.ReadToEndAsync();
         var errorTask = process.StandardError.ReadToEndAsync();
 

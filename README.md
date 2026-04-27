@@ -24,6 +24,7 @@ used in different jobs and environments.
 - **Configurable**: Uses `.versionmark.yaml` config file to define tools and capture methods
 - **Multi-Platform Support**: Runs on Windows, Linux, and macOS
 - **Multi-Runtime Support**: Targets .NET 8, 9, and 10
+- **Self-Validation**: Runs built-in self-verification tests to confirm the tool is functioning correctly
 - **Continuous Compliance**: Compliance evidence generated automatically on every CI run, following
   the [Continuous Compliance][link-continuous-compliance] methodology
 
@@ -167,7 +168,7 @@ Capture mode creates a JSON file with the following structure:
 Publish mode generates a markdown list consolidating versions from all jobs:
 
 ```markdown
-## Tool Versions
+# Tool Versions
 
 - **dotnet**: 8.0.100
 - **gcc**: 11.4.0 (windows-net8)

@@ -21,6 +21,42 @@ a list of `LintIssue` records. YAML parse errors are captured as error-level iss
 source location. This satisfies requirements `VersionMark-Configuration-YamlConfig`,
 `VersionMark-Configuration-ValidateTools`, and `VersionMark-Configuration-ParseError`.
 
+### Error-Handling Strategy
+
+`Load` uses an accumulate-and-continue approach: rather than aborting on the first error,
+all warnings and errors are collected in a single `issues` list across the entire file.
+This allows a single validation pass to surface all problems.
+
+The `toolIssuesBefore` snapshot pattern isolates per-tool validation: `ValidateTool`
+records the list length before processing a tool entry and compares it after. When any
+new error-severity issue was added, `toolConfig` is set to `null` for that tool, ensuring
+a partially valid tool does not contribute broken entries to the result.
+
+The returned `VersionMarkLoadResult` carries a `null` `Config` property when any
+error-severity issue exists, so callers can distinguish a warnings-only load from a
+failure without iterating the issue list themselves.
+
+## ValidateTool Helper
+
+The private `ValidateTool` method processes a single tool's `YamlMappingNode`. It:
+
+1. Records the current issue count (`toolIssuesBefore`) as a snapshot.
+2. Iterates all key-value pairs, populating `commands` and `regexes` dictionaries.
+3. Reports unknown keys as warnings and empty values as errors.
+4. Calls `TryCompileRegex` for `regex` and OS-specific regex values to validate compilation
+   and the presence of the required `version` named capture group.
+5. Reports missing required `command` or `regex` fields after scanning all entries.
+6. Sets `toolConfig` to `null` when any new errors were added since the snapshot;
+   otherwise returns a `ToolConfig` constructed from the validated dictionaries.
+
+## TryCompileRegex Helper
+
+The private `TryCompileRegex` method attempts to compile a regex pattern with
+`RegexOptions.Multiline | RegexOptions.IgnoreCase` and a one-second timeout. If
+compilation fails (invalid pattern syntax), it appends an error-level `LintIssue` to
+the shared list and returns `null`. On success it returns the compiled `Regex` for
+group-name inspection by `ValidateTool`.
+
 ## ReadFromFile Method
 
 `ReadFromFile` is a backward-compatibility wrapper that delegates to `Load`. It throws

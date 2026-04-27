@@ -138,3 +138,22 @@ Configuration Subsystem design for full details.
 VersionMark targets .NET 8, .NET 9, and .NET 10. It runs on Windows, Linux, and macOS.
 OS-specific command execution uses `cmd.exe /c` on Windows and `/bin/sh -c` elsewhere.
 Platform-specific requirements are documented in `platform-requirements.yaml`.
+
+## Error Handling
+
+VersionMark uses a consistent error handling strategy across all operational modes:
+
+- **Exit codes**: The tool exits with code `0` on success and code `1` on any error condition.
+- **Error output**: Error messages are written to `stderr`. When the source location is known
+  (such as a configuration file lint issue), the message is prefixed with the filename and
+  position in the format `filename(line,column): error: <description>`.
+- **Error propagation**: Errors detected in any subsystem are surfaced to the Cli Subsystem
+  via `Context.WriteError`, which writes the message to `stderr` and sets the process exit
+  code to a non-zero value. See the CLI Subsystem design for details.
+
+## Command-Line Interface
+
+The table above lists the four primary mode-selection flags. The full command-line interface —
+including `--version`, `--help`, `--silent`, `--log`, `--job-id`, `--output`, `--results`,
+`--report-depth`, and `--depth` — is defined in the CLI Subsystem design (see
+`docs/design/version-mark/cli/`).

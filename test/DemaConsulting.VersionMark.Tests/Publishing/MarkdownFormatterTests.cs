@@ -72,7 +72,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The output displays only the version when all jobs have the same version
     /// </summary>
     [TestMethod]
-    public void MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs()
+    public void MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly()
     {
         // Arrange - Create multiple VersionInfos with the same version across jobs
         var versionInfos = new[]
@@ -295,13 +295,13 @@ public class MarkdownFormatterTests
 
     /// <summary>
     ///     Test that MarkdownFormatter sorts job IDs alphabetically when multiple jobs share a version.
-    ///     What is tested: Job IDs are sorted alphabetically when multiple jobs share a version
-    ///     What the assertions prove: Job IDs appear in alphabetical order
+    ///     What is tested: Job IDs in parentheses are sorted alphabetically within each version group
+    ///     What the assertions prove: Job IDs appear in alphabetical order within version groups
     /// </summary>
     [TestMethod]
     public void MarkdownFormatter_FormatVersions_SortsJobIdsAlphabetically()
     {
-        // Arrange - Create VersionInfos where multiple jobs have same version
+        // Arrange - Create VersionInfos where two jobs share a version and one job has a different version
         var versionInfos = new[]
         {
             new VersionInfo(
@@ -312,18 +312,16 @@ public class MarkdownFormatterTests
                 new Dictionary<string, string> { ["tool"] = "1.0.0" }),
             new VersionInfo(
                 "job-beta",
-                new Dictionary<string, string> { ["tool"] = "1.0.0" })
+                new Dictionary<string, string> { ["tool"] = "2.0.0" })
         };
 
         // Act - Format the version information
         var result = MarkdownFormatter.Format(versionInfos);
 
-        // Assert - Verify version is shown without job IDs (since all have same version)
-        // What is proved: When all jobs have the same version, just the version is displayed
-        Assert.Contains("- **tool**: 1.0.0", result);
-        Assert.DoesNotContain("job-zebra", result);
-        Assert.DoesNotContain("job-alpha", result);
-        Assert.DoesNotContain("job-beta", result);
+        // Assert - Verify job IDs for the shared version appear in alphabetical order
+        // What is proved: Job IDs within a version group are sorted alphabetically (job-alpha before job-zebra)
+        Assert.Contains("1.0.0 (job-alpha, job-zebra)", result);
+        Assert.Contains("2.0.0 (job-beta)", result);
     }
 
     /// <summary>
@@ -431,5 +429,57 @@ public class MarkdownFormatterTests
         Assert.Contains("1.0.0", toolLines[0]);
         Assert.Contains("2.0.0", toolLines[1]);
         Assert.Contains("3.0.0", toolLines[2]);
+    }
+
+    /// <summary>
+    ///     Test that Format throws ArgumentOutOfRangeException when reportDepth is zero or negative.
+    ///     What is tested: Boundary behavior for invalid reportDepth values
+    ///     What the assertions prove: An exception is thrown before any output is generated
+    /// </summary>
+    [TestMethod]
+    public void MarkdownFormatter_Format_WithZeroDepth_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange - Create a simple VersionInfo to use with the invalid depth
+        var versionInfos = new[]
+        {
+            new VersionInfo("job-1", new Dictionary<string, string> { ["tool"] = "1.0.0" })
+        };
+
+        // Act & Assert - Depth of zero should throw before generating any output
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+            () => MarkdownFormatter.Format(versionInfos, reportDepth: 0));
+
+        // A negative depth should also throw
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+            () => MarkdownFormatter.Format(versionInfos, reportDepth: -1));
+    }
+
+    /// <summary>
+    ///     Test that MarkdownFormatter handles partial tool coverage correctly.
+    ///     What is tested: A tool present in some jobs but not all is included in the output
+    ///     What the assertions prove: Tools from all contributing jobs appear; the version is shown without job IDs when only one job has it
+    /// </summary>
+    [TestMethod]
+    public void MarkdownFormatter_Format_WithPartialToolCoverage_ShowsAllContributingTools()
+    {
+        // Arrange - job-1 has dotnet only; job-2 has both dotnet and node
+        var versionInfos = new[]
+        {
+            new VersionInfo(
+                "job-1",
+                new Dictionary<string, string> { ["dotnet"] = "8.0.0" }),
+            new VersionInfo(
+                "job-2",
+                new Dictionary<string, string> { ["dotnet"] = "8.0.0", ["node"] = "20.0.0" })
+        };
+
+        // Act - Format the version information
+        var result = MarkdownFormatter.Format(versionInfos);
+
+        // Assert - Both tools should appear; node has only one contributing job so shows version only
+        // What is proved: Partial tool coverage does not suppress the tool or cause an error
+        Assert.Contains("dotnet", result);
+        Assert.Contains("node", result);
+        Assert.Contains("- **node**: 20.0.0", result);
     }
 }

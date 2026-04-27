@@ -16,6 +16,7 @@ sections:
           - ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand
           - ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand
           - ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand
+          - ToolConfig_GetEffectiveCommand_NoDefaultKey_ThrowsInvalidOperationException
 
       - id: VersionMark-ToolConfig-EffectiveRegex
         title: >-
@@ -31,3 +32,4 @@ sections:
           - ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex
           - ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex
           - ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex
+          - ToolConfig_GetEffectiveRegex_NoDefaultKey_ThrowsInvalidOperationException

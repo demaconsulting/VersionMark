@@ -21,7 +21,9 @@
 namespace DemaConsulting.VersionMark.SelfTest;
 
 /// <summary>
-///     Helper utilities for safe path operations.
+///     Helper utilities for safe path operations within the SelfTest subsystem.
+///     Protects against path-traversal attacks by ensuring combined paths remain
+///     within the intended base directory.
 /// </summary>
 internal static class PathHelpers
 {

@@ -194,7 +194,7 @@ public class CaptureTests
     public void Capture_Context_WithToolFilter_SetsToolNames()
     {
         // Arrange & Act - Create a context with --capture and tool names after --
-        using var context = Context.Create(["--capture", "--job-id", "x", "--", "dotnet", "git"]);
+        using var context = Context.Create(["--capture", "--job-id", "test-job", "--", "dotnet", "git"]);
 
         // Assert - The tool names should be stored
         Assert.AreEqual(2, context.ToolNames.Length,
@@ -368,6 +368,52 @@ public class CaptureTests
             finally
             {
                 Console.SetOut(originalOut);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the capture pipeline reports an error when .versionmark.yaml does not exist.
+    /// </summary>
+    [TestMethod]
+    public void Capture_Run_MissingConfig_ReportsError()
+    {
+        // Arrange - Create a temp directory with no .versionmark.yaml configuration file
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalError = Console.Error;
+            try
+            {
+                using var errWriter = new StringWriter();
+                Console.SetError(errWriter);
+                using var context = Context.Create(["--capture", "--job-id", "test-job"]);
+
+                // Act - Run capture without a .versionmark.yaml in the current directory
+                Program.Run(context);
+
+                // Assert - Non-zero exit code and an error message should be reported
+                Assert.AreEqual(1, context.ExitCode,
+                    "Capture without .versionmark.yaml should result in a non-zero exit code");
+                Assert.IsTrue(
+                    errWriter.ToString().Length > 0,
+                    "An error message should be written when the config file is missing");
+            }
+            finally
+            {
+                Console.SetError(originalError);
             }
         }
         finally

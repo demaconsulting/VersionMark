@@ -729,4 +729,46 @@ public class ContextTests
         Assert.IsTrue(context.Silent);
         Assert.AreEqual(0, context.ExitCode);
     }
+
+    /// <summary>
+    ///     Test creating a context with the capture flag.
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_CaptureFlag_SetsCaptureTrue()
+    {
+        // Arrange & Act - Create context with --capture flag
+        using var context = Context.Create(["--capture"]);
+
+        // Assert - Verify capture flag is set
+        Assert.IsTrue(context.Capture);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with the job-id parameter.
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_JobIdFlag_SetsJobId()
+    {
+        // Arrange & Act - Create context with --capture and --job-id parameter
+        using var context = Context.Create(["--capture", "--job-id", "test-job"]);
+
+        // Assert - Verify job ID is set
+        Assert.AreEqual("test-job", context.JobId);
+        Assert.AreEqual(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with the output parameter.
+    /// </summary>
+    [TestMethod]
+    public void Context_Create_OutputFlag_SetsOutputFile()
+    {
+        // Arrange & Act - Create context with --capture and --output parameter
+        using var context = Context.Create(["--capture", "--output", "output.json"]);
+
+        // Assert - Verify output file is set
+        Assert.AreEqual("output.json", context.OutputFile);
+        Assert.AreEqual(0, context.ExitCode);
+    }
 }

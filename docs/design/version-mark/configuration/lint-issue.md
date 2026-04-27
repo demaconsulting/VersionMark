@@ -43,3 +43,5 @@ properties:
 
 The `ReportIssues` method writes all issues to a `Context`, routing `LintSeverity.Error`
 issues to `context.WriteError` and `LintSeverity.Warning` issues to `context.WriteLine`.
+This method is `internal` and is called only within the library (by `RunLint` and
+`RunCapture` in `Program`).
