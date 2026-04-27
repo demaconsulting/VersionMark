@@ -199,7 +199,7 @@ spell-checking failure. Doing so defeats the purpose of spell-checking and reduc
 
 Before submitting a pull request, ensure all quality checks pass:
 
-### 1. Build, Test, and Validate
+### 1. Build and Test
 
 ```bash
 # Build the project
@@ -207,20 +207,18 @@ dotnet build --configuration Release
 
 # Run unit tests
 dotnet test --configuration Release
-
-# Run self-validation tests
-dotnet run --project src/DemaConsulting.VersionMark --configuration Release --framework net10.0 --no-build -- --validate
 ```
 
 All tests must pass with zero warnings.
 
 ### 2. Linting
 
-```bash
-# These commands run in CI - verify locally if tools are installed
-markdownlint-cli2 "**/*.md"
-cspell "**/*.{md,cs}"
-yamllint -c .yamllint.yaml .
+```pwsh
+# After making changes: applies dotnet format, markdown, and YAML fixes silently
+pwsh ./fix.ps1
+
+# Before submitting a pull request: all linters must pass
+pwsh ./lint.ps1
 ```
 
 ### 3. Code Coverage

@@ -27,7 +27,6 @@ rules:
   # Allow 'on:' in GitHub Actions workflows (not a boolean value)
   truthy:
     allowed-values: ['true', 'false', 'on', 'off']
-    check-keys: true
 
   # Allow longer lines for URLs and complex expressions
   line-length:
