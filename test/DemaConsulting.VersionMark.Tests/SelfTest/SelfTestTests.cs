@@ -86,7 +86,7 @@ public class SelfTestTests
     public void SelfTest_Run_WithResultsFlag_WritesResultsFile()
     {
         // Arrange - Set up a TRX results file path
-        var resultsFile = Path.GetTempFileName() + ".trx";
+        var resultsFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.trx");
         try
         {
             using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
@@ -118,7 +118,7 @@ public class SelfTestTests
     public void SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile()
     {
         // Arrange - Set up a JUnit XML results file path
-        var resultsFile = Path.GetTempFileName() + ".xml";
+        var resultsFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.xml");
         try
         {
             using var context = Context.Create(["--validate", "--silent", "--results", resultsFile]);
