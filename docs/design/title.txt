@@ -1,8 +1,8 @@
 ---
-title: VersionMark
+title: VersionMark Software Design
 subtitle: Design Documentation
 author: DEMA Consulting
-description: Design documentation for the VersionMark .NET tool for capturing and publishing tool version information
+description: Software design document for the VersionMark .NET tool for capturing and publishing tool version information
 lang: en-US
 keywords:
   - VersionMark
