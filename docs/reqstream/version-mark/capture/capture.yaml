@@ -116,13 +116,14 @@ sections:
               - Capture_Run_MissingConfig_ReportsError
 
           - id: VersionMark-Capture-CommandFailure
-            title: The tool shall record an empty version string for a tool when its configured command fails
+            title: The tool shall report an error and abort capture when a configured command fails
               or produces no regex match.
             justification: |
-              A failed or unmatched command should not abort the entire capture; recording
-              an empty version for that tool preserves partial results and lets users see
-              which tools could not be captured.
+              Fail-fast behavior ensures the user is immediately informed of capture failures
+              rather than silently continuing with missing version data, preventing incomplete
+              or misleading version reports.
             tags:
               - capture
             tests:
-              - Capture_FindVersions_ExecutesCommandAndExtractsVersion
+              - VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException
+              - VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException

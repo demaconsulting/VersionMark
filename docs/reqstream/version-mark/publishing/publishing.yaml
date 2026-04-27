@@ -77,11 +77,12 @@ sections:
               - Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError
 
           - id: VersionMark-Publish-ConflictDisplay
-            title: The tool shall display per-job version bullets when different jobs report different versions
-              for the same tool.
+            title: The tool shall display one bullet per distinct version with contributing job IDs
+              when different jobs report different versions for the same tool.
             justification: |
-              When version conflicts exist across jobs the user needs to see exactly which
-              jobs produced which versions to diagnose and resolve the inconsistency.
+              Grouping by distinct version with job attribution shows exactly which version
+              each job produced, enabling users to identify and resolve version inconsistencies
+              across their CI/CD jobs.
             tags:
               - publish
             tests:
