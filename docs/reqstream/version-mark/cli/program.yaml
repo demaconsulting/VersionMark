@@ -3,20 +3,18 @@ sections:
   - title: Program Unit Requirements
     requirements:
       - id: VersionMark-Program-Version
-        title: The Program class shall expose the tool version from assembly attributes.
+        title: The Program class shall expose the tool version.
         justification: |
-          The version string is sourced from the assembly's InformationalVersion attribute
-          and falls back to AssemblyVersion or "0.0.0". This ensures the displayed version
-          matches the published package version without hard-coding.
+          This ensures the displayed version matches the published package version.
         tests:
           - Program_Version_ReturnsNonEmptyString
 
       - id: VersionMark-Program-Dispatch
         title: >-
-          The Program.Run method shall dispatch to the appropriate operation based on
-          the context flags, in priority order.
+          The Program class shall execute the appropriate operation based on the
+          provided command-line arguments, in priority order.
         justification: |
-          A single central dispatch method ensures consistent flag priority ordering
+          Consistent flag priority ordering ensures predictable behavior
           across all invocations, whether from Main or from self-validation tests.
         tests:
           - Program_Run_WithVersionFlag_DisplaysVersionOnly
@@ -27,9 +25,8 @@ sections:
       - id: VersionMark-Program-RunCapture
         title: The Program class shall orchestrate the capture workflow.
         justification: |
-          RunCapture validates required arguments, loads configuration, executes tool
-          commands, and saves the result. Centralizing this orchestration in Program
-          keeps the subsystem boundary clear.
+          The capture workflow must validate required arguments and execute tool commands
+          to produce the JSON output used by the publish workflow.
         tests:
           - Program_Run_WithCaptureCommand_CapturesToolVersions
           - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
@@ -38,9 +35,8 @@ sections:
       - id: VersionMark-Program-RunPublish
         title: The Program class shall orchestrate the publish workflow.
         justification: |
-          RunPublish validates required arguments, globs for JSON files, loads version
-          data, formats a markdown report, and writes it. Centralizing this in Program
-          keeps the subsystem boundary clear.
+          The publish workflow must validate required arguments, collect version data
+          from capture files, and produce the markdown report.
         tests:
           - Program_Run_WithPublishCommandWithoutReport_ReturnsError
           - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
@@ -51,12 +47,9 @@ sections:
       - id: VersionMark-Program-RunLint
         title: The Program class shall orchestrate the lint workflow.
         justification: |
-          RunLint resolves the config file path (defaulting to .versionmark.yaml),
-          calls VersionMarkConfig.Load to validate the configuration in a single pass,
-          and reports all discovered issues via result.ReportIssues. The application
-          banner is suppressed when lint is the dispatched action (i.e. --lint is
-          specified and neither --help nor --validate takes priority) so that only
-          issue lines appear in the output, enabling easy script integration.
+          Lint mode must report all discovered configuration issues and suppress the
+          application banner so that only issue lines appear in the output, enabling
+          easy script integration.
         tests:
           - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
           - Program_Run_WithLintFlag_ValidConfig_SuppressesBanner

@@ -33,8 +33,8 @@ sections:
 
       - id: VersionMark-Validation-HeaderDepth
         title: >-
-          The Validation class shall use the context Depth for the self-validation
-          report heading depth.
+          The Validation class shall use the heading depth specified by the --depth
+          argument for the self-validation report.
         justification: |
           The --depth argument allows callers to embed the self-validation report
           at the appropriate heading level within a larger markdown document.

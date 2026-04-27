@@ -4,12 +4,12 @@ sections:
     requirements:
       - id: VersionMark-Context-Create
         title: >-
-          The Context.Create factory method shall parse command-line arguments into
-          a Context instance with typed properties for every supported flag.
+          The Context class shall parse command-line arguments into a Context instance
+          with accessible properties for every supported flag.
         justification: |
-          All argument parsing is centralized in the Create factory method, ensuring
+          All argument parsing is centralized in the Context class, ensuring
           consistent parsing behavior across all invocations and making the parsed
-          state available as typed properties throughout the program.
+          state available throughout the program.
         tests:
           - Context_Create_NoArguments_ReturnsDefaultContext
           - Context_Create_VersionFlag_SetsVersionTrue
