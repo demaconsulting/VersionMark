@@ -10,15 +10,14 @@ top-level exception translation.
 
 The static `Version` property reads the assembly's `AssemblyInformationalVersionAttribute`
 at runtime and falls back to `AssemblyVersion` or `"0.0.0"` if neither is available. This
-satisfies requirement `VersionMark-CommandLine-Version`.
+satisfies requirement `VersionMark-Program-Version`.
 
 ## Main Method
 
 `Main` creates a `Context` from the command-line arguments, calls `Run`, and returns
 `context.ExitCode`. `ArgumentException` and `InvalidOperationException` are caught and
 written to `Console.Error`, returning exit code 1. Unexpected exceptions are re-thrown to
-generate event-log entries. This satisfies requirements `VersionMark-CommandLine-ExitCode` and
-`VersionMark-CommandLine-ErrorOutput`.
+generate event-log entries. This satisfies requirement `VersionMark-Program-Dispatch`.
 
 ## Run Method
 
@@ -35,17 +34,14 @@ generate event-log entries. This satisfies requirements `VersionMark-CommandLine
 | 6        | `context.Publish`  | Run publish mode and return                                    |
 | 7        | Default            | Run placeholder tool logic                                     |
 
-This dispatch order satisfies requirements `VersionMark-CommandLine-Version`, `VersionMark-CommandLine-Help`,
-`VersionMark-CommandLine-Validate`, `VersionMark-CommandLine-Lint`, `VersionMark-Capture-Capture`, and
-`VersionMark-Publish-Publish`.
+This dispatch order satisfies requirement `VersionMark-Program-Dispatch`.
 
 ## Capture and Publish Orchestration
 
 `RunCapture` and `RunPublish` are private helpers called from `Run`. They validate required
 arguments, invoke configuration loading and version capture/report generation, and delegate
 error handling to `context.WriteError`. These methods satisfy requirements
-`VersionMark-Capture-JobId`, `VersionMark-Capture-Output`, `VersionMark-Publish-RequireReport`, and
-`VersionMark-Publish-GlobPattern`.
+`VersionMark-Program-RunCapture` and `VersionMark-Program-RunPublish`.
 
 ## RunLint
 
@@ -55,4 +51,4 @@ defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then calls
 `result.ReportIssues`. The application banner is suppressed when lint is the dispatched action
 (i.e., `--lint` is specified and neither `--help` nor `--validate` takes priority) so that
 the output contains only the actual issue lines, making it easy to consume in scripts. This
-satisfies requirement `VersionMark-CommandLine-Lint`.
+satisfies requirement `VersionMark-Program-RunLint`.

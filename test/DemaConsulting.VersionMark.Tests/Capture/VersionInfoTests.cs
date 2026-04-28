@@ -182,7 +182,7 @@ public class VersionInfoTests
         var nonExistentFile = Path.Combine(Path.GetTempPath(), "non-existent-file.json");
 
         // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentFile));
+        var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentFile));
         Assert.Contains("not found", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -199,7 +199,7 @@ public class VersionInfoTests
             File.WriteAllText(tempFile, "{ invalid json }");
 
             // Act & Assert
-            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
             Assert.Contains("parse", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
@@ -224,8 +224,8 @@ public class VersionInfoTests
             File.WriteAllText(tempFile, "");
 
             // Act & Assert
-            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
-            Assert.IsNotNull(exception);
+            var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            Assert.Contains("parse", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
@@ -247,7 +247,7 @@ public class VersionInfoTests
         var invalidPath = Path.Combine(Path.GetTempPath(), "non-existent-directory", "file.json");
 
         // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(() => versionInfo.SaveToFile(invalidPath));
+        var exception = Assert.ThrowsExactly<InvalidOperationException>(() => versionInfo.SaveToFile(invalidPath));
         Assert.Contains("Failed to save", exception.Message);
     }
 
@@ -293,7 +293,7 @@ public class VersionInfoTests
             File.WriteAllText(tempFile, "null");
 
             // Act & Assert
-            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
             Assert.Contains("deserialize", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
@@ -343,5 +343,30 @@ public class VersionInfoTests
                 File.Delete(tempFile);
             }
         }
+    }
+
+    /// <summary>
+    ///     Test VersionInfo record creation with specific job-id and version values.
+    /// </summary>
+    [TestMethod]
+    public void VersionInfo_Constructor_CreatesRecord()
+    {
+        // Arrange
+        var jobId = "job-123";
+        var versions = new Dictionary<string, string>
+        {
+            ["dotnet"] = "8.0.100",
+            ["git"] = "2.43.0"
+        };
+
+        // Act
+        var versionInfo = new VersionInfo(jobId, versions);
+
+        // Assert
+        Assert.IsNotNull(versionInfo);
+        Assert.AreEqual("job-123", versionInfo.JobId);
+        Assert.HasCount(2, versionInfo.Versions);
+        Assert.AreEqual("8.0.100", versionInfo.Versions["dotnet"]);
+        Assert.AreEqual("2.43.0", versionInfo.Versions["git"]);
     }
 }

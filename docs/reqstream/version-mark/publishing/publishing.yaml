@@ -33,6 +33,7 @@ sections:
               - publish
             tests:
               - Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel
+              - Publishing_Run_WithReportDepth_UsesCorrectDepth
 
           - id: VersionMark-Publish-RequireReport
             title: The tool shall require --report parameter when publish mode is enabled.
@@ -73,9 +74,21 @@ sections:
             tags:
               - publish
             tests:
-              - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
+              - Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError
 
-          - id: VersionMark-Publish-MultipleFiles
+          - id: VersionMark-Publish-ConflictDisplay
+            title: The tool shall display one bullet per distinct version with contributing job IDs
+              when different jobs report different versions for the same tool.
+            justification: |
+              Grouping by distinct version with job attribution shows exactly which version
+              each job produced, enabling users to identify and resolve version inconsistencies
+              across their CI/CD jobs.
+            tags:
+              - publish
+            tests:
+              - Publishing_Format_ConflictingVersions_ShowsJobIds
+
+          - id: VersionMark-Publish-FileError
             title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
             justification: |
               Provides clear feedback when input files are malformed or inaccessible,

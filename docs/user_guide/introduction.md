@@ -336,7 +336,7 @@ The publish command generates a markdown file with a bulleted list of tool versi
 ### Example 1: All Jobs Use Same Version
 
 ```markdown
-## Tool Versions
+# Tool Versions
 
 - **dotnet**: 8.0.100
 - **node**: 20.11.0
@@ -348,7 +348,7 @@ identifiers.
 ### Example 2: Different Versions Across Jobs
 
 ```markdown
-## Tool Versions
+# Tool Versions
 
 - **dotnet**: 8.0.100
 - **gcc**: 11.4.0 (windows-net8, windows-net9)
@@ -363,7 +363,7 @@ alphabetical order.
 
 ### Output Format Details
 
-- **Heading**: Controlled by `--report-depth` parameter (default: `##` for depth 2)
+- **Heading**: Controlled by `--report-depth` parameter (default: `#` for depth 1)
 - **Tool Order**: Tools are listed in alphabetical order (case-insensitive)
 - **Version Order**: When multiple versions exist, they are sorted alphabetically
 - **Job IDs**: Within each version group, job IDs are sorted alphabetically

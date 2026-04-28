@@ -103,5 +103,5 @@ This document describes the intent and structure of that code; any discrepancy b
 this document and the code should be resolved by updating this document to reflect the
 actual implementation, or by raising a defect against the code.
 
-[user-guide]: https://github.com/demaconsulting/VersionMark
-[requirements-doc]: https://github.com/demaconsulting/VersionMark
+[user-guide]: ../user_guide/introduction.md
+[requirements-doc]: ../requirements_doc/introduction.md

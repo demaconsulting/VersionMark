@@ -3,7 +3,7 @@ sections:
   - title: VersionInfo Unit Requirements
     requirements:
       - id: VersionMark-VersionInfo-Save
-        title: The VersionInfo class shall serialize captured version data to a JSON file.
+        title: The VersionInfo class shall save captured version data to a JSON file.
         justification: |
           Captured version data must be persisted between the capture job and the
           publish job. Writing to JSON provides a portable, human-readable format
@@ -15,10 +15,10 @@ sections:
           - VersionInfo_SpecialCharacters_SavesAndLoadsCorrectly
 
       - id: VersionMark-VersionInfo-Load
-        title: The VersionInfo class shall deserialize version data from a JSON file.
+        title: The VersionInfo class shall load version data from a JSON file.
         justification: |
           The publish mode must read the JSON files written by capture jobs.
-          Deserializing from JSON allows version data captured in any previous job
+          Loading from JSON allows version data captured in any previous job
           to be reconstructed and included in the report.
         tests:
           - VersionInfo_LoadFromFile_ReadsJsonFile

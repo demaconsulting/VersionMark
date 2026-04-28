@@ -30,7 +30,7 @@ command-line state and output routing. It is constructed via the `Create` factor
 This satisfies requirements `VersionMark-CommandLine-Context`, `VersionMark-CommandLine-Version`,
 `VersionMark-CommandLine-Help`, `VersionMark-CommandLine-Silent`, `VersionMark-CommandLine-Validate`,
 `VersionMark-CommandLine-Results`, `VersionMark-CommandLine-Log`, `VersionMark-CommandLine-ExitCode`,
-`VersionMark-CommandLine-Lint`.
+`VersionMark-CommandLine-Lint`, and `VersionMark-Context-Create`.
 
 ## ArgumentParser
 
@@ -44,7 +44,8 @@ glob patterns (publish mode). Unknown arguments throw `ArgumentException`, satis
 `WriteLine` writes to `Console.Out` unless `Silent` is set, and also writes to the log
 file if one was opened. `WriteError` additionally sets `_hasErrors = true` (making
 `ExitCode` return 1) and writes to `Console.Error` in red. This satisfies
-`VersionMark-CommandLine-Silent`, `VersionMark-CommandLine-ErrorOutput`, and `VersionMark-CommandLine-ExitCode`.
+`VersionMark-CommandLine-Silent`, `VersionMark-CommandLine-ErrorOutput`, `VersionMark-CommandLine-ExitCode`,
+`VersionMark-Context-WriteLine`, `VersionMark-Context-WriteError`, and `VersionMark-Context-WriteErrorExitCode`.
 
 ## Log File
 

@@ -118,13 +118,26 @@ public class ConfigurationTests
     }
 
     /// <summary>
-    ///     Test that reading a configuration with OS-specific regex overrides returns the appropriate regex.
+    ///     Test that reading a configuration from a missing file throws an ArgumentException.
+    /// </summary>
+    [TestMethod]
+    public void Configuration_ReadFromFile_MissingFile_ThrowsArgumentException()
+    {
+        // Arrange - Use a path that does not exist
+        var nonExistentFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.yaml");
+
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentException>(() => VersionMarkConfig.ReadFromFile(nonExistentFile));
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with an OS-specific regex override returns the appropriate regex.
     /// </summary>
     [TestMethod]
     public void Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex()
     {
         // Arrange
-        var tempFile = Path.GetTempFileName() + ".yaml";
+        var tempFile = Path.GetTempFileName();
         File.WriteAllText(tempFile, """
             tools:
               dotnet:
@@ -171,7 +184,7 @@ public class ConfigurationTests
     public void Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException()
     {
         // Arrange
-        var tempFile = Path.GetTempFileName() + ".yaml";
+        var tempFile = Path.GetTempFileName();
         File.WriteAllText(tempFile, """
             tools:
             """);
@@ -194,7 +207,7 @@ public class ConfigurationTests
     public void Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException()
     {
         // Arrange
-        var tempFile = Path.GetTempFileName() + ".yaml";
+        var tempFile = Path.GetTempFileName();
         File.WriteAllText(tempFile, "invalid: yaml: content: [[[");
 
         try

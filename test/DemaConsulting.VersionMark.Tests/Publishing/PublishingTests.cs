@@ -94,7 +94,7 @@ public class PublishingTests
     [TestMethod]
     public void Publishing_Format_ConflictingVersions_ShowsJobIds()
     {
-        // Arrange
+        // Arrange - Create two version infos with different versions for the same tool
         var versionInfoA = new VersionInfo("job-a", new Dictionary<string, string>
         {
             { "dotnet", "8.0.100" }
@@ -105,10 +105,10 @@ public class PublishingTests
         });
         var versionInfos = new[] { versionInfoA, versionInfoB };
 
-        // Act
+        // Act - Run the publishing pipeline with conflicting versions
         var report = MarkdownFormatter.Format(versionInfos);
 
-        // Assert
+        // Assert - Each job ID should appear in the report to attribute the conflicting versions
         StringAssert.Contains(report, "job-a");
         StringAssert.Contains(report, "job-b");
     }
@@ -119,17 +119,17 @@ public class PublishingTests
     [TestMethod]
     public void Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel()
     {
-        // Arrange
+        // Arrange - Create a simple version info to exercise the heading depth parameter
         var versionInfo = new VersionInfo("job-1", new Dictionary<string, string>
         {
             { "dotnet", "8.0.100" }
         });
         var versionInfos = new[] { versionInfo };
 
-        // Act
+        // Act - Format with a custom depth of 3 to produce "###" headings
         var report = MarkdownFormatter.Format(versionInfos, reportDepth: 3);
 
-        // Assert
+        // Assert - The heading prefix should match the requested depth
         StringAssert.Contains(report, "###");
     }
 
@@ -242,6 +242,97 @@ public class PublishingTests
             {
                 Console.SetError(originalError);
             }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the publishing pipeline reports an error when no JSON files match the glob pattern.
+    /// </summary>
+    [TestMethod]
+    public void Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError()
+    {
+        // Arrange - Create a temp directory with no JSON files matching the pattern
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalError = Console.Error;
+            try
+            {
+                using var errWriter = new StringWriter();
+                Console.SetError(errWriter);
+                using var context = Context.Create([
+                    "--publish", "--report", reportFile, "--", "versionmark-*.json"
+                ]);
+
+                // Act - Run the publish pipeline with a pattern that matches no files
+                Program.Run(context);
+
+                // Assert - An error should be reported and exit code should be non-zero
+                Assert.AreEqual(1, context.ExitCode,
+                    "Publishing with no matching files should result in a non-zero exit code");
+                Assert.IsTrue(
+                    errWriter.ToString().Length > 0,
+                    "An error message should be written when no files match the glob pattern");
+            }
+            finally
+            {
+                Console.SetError(originalError);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the --report-depth parameter is applied end-to-end through Context.Create and Program.Run.
+    /// </summary>
+    [TestMethod]
+    public void Publishing_Run_WithReportDepth_UsesCorrectDepth()
+    {
+        // Arrange - Create a temp directory with a JSON file and run with --report-depth 3
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            var versionInfo = new VersionInfo("job-depth", new Dictionary<string, string> { ["dotnet"] = "8.0.100" });
+            versionInfo.SaveToFile(PathHelpers.SafePathCombine(tempDir, "versionmark-depth-job.json"));
+            Directory.SetCurrentDirectory(tempDir);
+
+            using var context = Context.Create([
+                "--publish", "--report", reportFile, "--report-depth", "3", "--silent", "--", "versionmark-*.json"
+            ]);
+
+            // Act - Run the publish pipeline with --report-depth 3
+            Program.Run(context);
+
+            // Assert - The report heading should use depth-3 prefix "###"
+            Assert.AreEqual(0, context.ExitCode,
+                "Publishing with --report-depth should succeed");
+            Assert.IsTrue(File.Exists(reportFile),
+                "Report file should be created");
+            StringAssert.Contains(File.ReadAllText(reportFile), "###",
+                "Report heading should use the depth-3 heading prefix specified via --report-depth");
         }
         finally
         {

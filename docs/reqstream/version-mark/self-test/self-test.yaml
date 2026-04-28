@@ -13,7 +13,7 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTest_FindsDllInBaseDirectory
+              - SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Publish
@@ -24,7 +24,7 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTest_FindsDllInBaseDirectory
+              - SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Lint
@@ -37,7 +37,7 @@ sections:
             tags:
               - validation
             tests:
-              - SelfTest_FindsDllInBaseDirectory
+              - SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Results
@@ -49,3 +49,4 @@ sections:
               - validation
             tests:
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile

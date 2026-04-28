@@ -32,10 +32,18 @@ internal static class MarkdownFormatter
     ///     Formats a collection of VersionInfo records into a markdown string.
     /// </summary>
     /// <param name="versionInfos">The collection of VersionInfo records to format.</param>
-    /// <param name="reportDepth">The heading depth for the section title (default: 2).</param>
+    /// <param name="reportDepth">The heading depth for the section title (default: 2). Must be greater than zero.</param>
     /// <returns>A markdown-formatted string representing the version information.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="reportDepth"/> is zero or negative.</exception>
     public static string Format(IEnumerable<VersionInfo> versionInfos, int reportDepth = 2)
     {
+        // Validate the heading depth before generating any output
+        if (reportDepth <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reportDepth), reportDepth,
+                "Report depth must be greater than zero.");
+        }
+
         // Convert to list to allow multiple enumerations
         var versionList = versionInfos.ToList();
 
@@ -106,7 +114,8 @@ internal static class MarkdownFormatter
     }
 
     /// <summary>
-    ///     Formats version entries for a tool as multiple bullets when versions differ.
+    ///     Formats version entries for a tool as a single bullet when all versions are the same,
+    ///     or as multiple bullets (one per distinct version with contributing job IDs) when versions differ.
     /// </summary>
     /// <param name="markdown">The StringBuilder to append to.</param>
     /// <param name="tool">The tool name.</param>

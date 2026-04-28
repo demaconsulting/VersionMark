@@ -9,13 +9,14 @@ organizes all test execution internally.
 
 `Run` orchestrates the self-validation sequence:
 
-1. Calls `PrintValidationHeader` to emit a markdown table with tool version, machine
-   name, OS version, .NET runtime, and timestamp.
+1. Calls `PrintValidationHeader` to emit a markdown heading (using `context.Depth` to set
+   the heading level) followed by a table with tool version, machine name, OS version,
+   .NET runtime, and timestamp.
 2. Creates a `TestResults` collection named `"VersionMark Self-Validation"`.
 3. Calls `RunCaptureTest`, `RunPublishTest`, `RunLintValidTest`, and `RunLintInvalidTest`
    to execute the functional tests.
 4. Prints a summary of passed and failed tests, calling `context.WriteError` for the
-   failed count if any tests failed.
+   failed count if any tests failed (which also sets the process exit code to 1).
 5. If `context.ResultsFile` is set, calls `WriteResultsFile` to persist the results.
 
 ## RunCaptureTest
@@ -79,13 +80,26 @@ The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
 - `.xml` → `JUnitSerializer.Serialize`
 - Other → writes an error via `context.WriteError`
 
-The serialized content is written with `File.WriteAllText`. This satisfies
-`VersionMark-Validate-Results`.
+The method is only called when `context.ResultsFile` is non-null. The null check at the
+start of the method is a defensive guard that prevents errors if the call contract changes
+in the future.
+
+This satisfies requirement `VersionMark-Validation-WriteResults`.
 
 ## TemporaryDirectory
 
-`TemporaryDirectory` is a private nested class implementing `IDisposable`. It creates a
-uniquely-named subdirectory under `Path.GetTempPath()` using `PathHelpers.SafePathCombine`
-and a `Guid`-based name. On `Dispose`, it deletes the directory recursively, ignoring
-`IOException` and `UnauthorizedAccessException` to allow graceful cleanup even in
-constrained environments.
+`TemporaryDirectory` is a private nested class that implements `IDisposable`. It creates
+a uniquely named directory under `Path.GetTempPath()` using `PathHelpers.SafePathCombine`
+with a `Guid`-based name.
+
+**Constructor**: Creates the directory with `Directory.CreateDirectory`. Any
+`IOException`, `UnauthorizedAccessException`, or `ArgumentException` thrown during
+creation is caught and re-thrown as `InvalidOperationException` with a descriptive
+message, so callers receive a consistent exception type regardless of the underlying cause.
+
+**Dispose**: Deletes the directory tree with `Directory.Delete(path, recursive: true)`,
+silently suppressing `IOException` and `UnauthorizedAccessException` to avoid exceptions
+during finalization or test teardown.
+
+The serialized content is written with `File.WriteAllText`. This satisfies
+`VersionMark-Validate-Results`.

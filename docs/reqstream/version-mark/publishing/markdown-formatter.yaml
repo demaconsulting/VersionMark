@@ -4,7 +4,7 @@ sections:
     sections:
       - title: Markdown Formatter
         requirements:
-          - id: VersionMark-Formatter-JsonStructure
+          - id: VersionMark-Formatter-Structure
             title: The tool shall generate markdown output listing all tools in sorted order.
             justification: |
               Provides consistent, predictable output ordering that makes reports easier
@@ -14,19 +14,19 @@ sections:
             tests:
               - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
 
-          - id: VersionMark-Formatter-JsonJobId
+          - id: VersionMark-Formatter-JobId
             title: >-
-              The tool shall collapse versions into "All jobs" when the same version appears across
-              all input files.
+              The tool shall suppress job IDs and emit only the version string when the same
+              version appears across all input files for a tool.
             justification: |
               Reduces redundancy in reports when all jobs used the same version of a tool,
               improving readability and report conciseness.
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsAllJobs
+              - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly
 
-          - id: VersionMark-Formatter-JsonVersions
+          - id: VersionMark-Formatter-Versions
             title: >-
               The tool shall display individual job IDs with their versions when versions differ
               across input files.

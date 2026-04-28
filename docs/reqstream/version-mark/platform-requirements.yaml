@@ -1,14 +1,3 @@
-# Test links can include a source filter prefix (e.g. "windows@", "ubuntu@", "net8.0@") to restrict
-# which test results count as evidence for a requirement. This is critical for platform and framework
-# requirements - removing these filters invalidates the evidence-based proof.
-#
-# Source filter prefixes follow the general pattern "<source>@TestName":
-#   windows@TestName   - proves the test passed on a Windows platform
-#   ubuntu@TestName    - proves the test passed on a Linux (Ubuntu) platform
-#   dotnet8.x@TestName - proves the self-validation test ran with .NET 8.x runtime
-#   dotnet9.x@TestName - proves the self-validation test ran with .NET 9.x runtime
-#   dotnet10.x@TestName - proves the self-validation test ran with .NET 10.x runtime
-#
 ---
 sections:
   - title: VersionMark Requirements
@@ -36,6 +25,18 @@ sections:
               # Tests link to "ubuntu" to ensure results come from Linux platform
               - "ubuntu@VersionMark_CapturesVersions"
               - "ubuntu@VersionMark_GeneratesMarkdownReport"
+
+          - id: VersionMark-Platform-MacOS
+            title: The tool shall build and run on macOS platforms.
+            justification: |
+              DEMA Consulting tools must support macOS for developer workstations
+              and macOS CI/CD runners.
+            tags:
+              - platform
+            tests:
+              # Tests link to "macos" to ensure results come from macOS platform
+              - "macos@VersionMark_CapturesVersions"
+              - "macos@VersionMark_GeneratesMarkdownReport"
 
           - id: VersionMark-Platform-Net8
             title: The tool shall support .NET 8 runtime.

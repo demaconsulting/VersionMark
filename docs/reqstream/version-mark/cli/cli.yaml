@@ -5,7 +5,7 @@ sections:
       - title: Command-Line Interface
         requirements:
           - id: VersionMark-CommandLine-Context
-            title: The tool shall implement a Context class for command-line argument handling.
+            title: The tool shall parse and validate command-line arguments consistently across all invocations.
             justification: |
               Provides a standardized approach to command-line argument parsing and output
               handling across all DEMA Consulting DotNet Tools.

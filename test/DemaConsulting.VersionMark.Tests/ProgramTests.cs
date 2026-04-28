@@ -340,32 +340,49 @@ tools:
     [TestMethod]
     public void Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError()
     {
-        // Arrange - Set up context in current directory (no .versionmark.yaml expected here)
-        var originalOut = Console.Out;
-        var originalError = Console.Error;
+        // Arrange - Create an isolated temp directory with no .versionmark.yaml present
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
-            using var outWriter = new StringWriter();
-            using var errWriter = new StringWriter();
-            Console.SetOut(outWriter);
-            Console.SetError(errWriter);
-            using var context = Context.Create([
-                "--capture",
-                "--job-id", "test-job"
-            ]);
+            Directory.CreateDirectory(tempDir);
+            Directory.SetCurrentDirectory(tempDir);
 
-            // Act - Run capture command without available config file
-            Program.Run(context);
+            var originalOut = Console.Out;
+            var originalError = Console.Error;
+            try
+            {
+                using var outWriter = new StringWriter();
+                using var errWriter = new StringWriter();
+                Console.SetOut(outWriter);
+                Console.SetError(errWriter);
+                using var context = Context.Create([
+                    "--capture",
+                    "--job-id", "test-job"
+                ]);
 
-            // Assert - Verify error is reported on stderr and exit code indicates failure
-            var errorOutput = errWriter.ToString();
-            Assert.Contains("error:", errorOutput);
-            Assert.AreEqual(1, context.ExitCode);
+                // Act - Run capture command without available config file
+                Program.Run(context);
+
+                // Assert - Verify error is reported on stderr and exit code indicates failure
+                var errorOutput = errWriter.ToString();
+                Assert.Contains("error:", errorOutput);
+                Assert.AreEqual(1, context.ExitCode);
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+                Console.SetError(originalError);
+            }
         }
         finally
         {
-            Console.SetOut(originalOut);
-            Console.SetError(originalError);
+            // Restore original directory and clean up temp directory
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
         }
     }
 

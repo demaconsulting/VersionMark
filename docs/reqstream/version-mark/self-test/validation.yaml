@@ -33,10 +33,23 @@ sections:
 
       - id: VersionMark-Validation-HeaderDepth
         title: >-
-          The Validation class shall use the context Depth for the self-validation
-          report heading depth.
+          The Validation class shall use the heading depth specified by the --depth
+          argument for the self-validation report.
         justification: |
           The --depth argument allows callers to embed the self-validation report
           at the appropriate heading level within a larger markdown document.
         tests:
           - SelfTest_Run_WithDepthTwo_WritesHashHashHeader
+
+      - id: VersionMark-Validation-WriteResults
+        title: >-
+          The Validation class shall write self-validation results to a TRX or JUnit XML
+          file when a results file path is specified.
+        justification: |
+          Standard test result formats allow CI/CD systems and dashboards to consume
+          and display self-validation outcomes without custom tooling. Supporting both
+          TRX (.trx) and JUnit XML (.xml) ensures compatibility with MSTest-based and
+          JUnit-based CI pipelines.
+        tests:
+          - SelfTest_Run_WithResultsFlag_WritesResultsFile
+          - SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile

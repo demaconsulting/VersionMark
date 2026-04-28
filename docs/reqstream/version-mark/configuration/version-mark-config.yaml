@@ -8,14 +8,41 @@ sections:
           .versionmark.yaml file, validating structure and content.
         justification: |
           ReadFromFile is the single entry point for loading configuration. It validates
-          file existence, YAML structure, and presence of at least one tool definition,
-          providing clear errors when any check fails.
+          file existence, YAML structure, presence of at least one tool definition,
+          required command and regex field presence and non-emptiness, OS-specific
+          override validity, regex compilability, and the presence of a named 'version'
+          capture group, providing clear errors when any check fails.
         tests:
           - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
           - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
           - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
           - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
           - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+
+      - id: VersionMark-VersionMarkConfig-Load
+        title: >-
+          The VersionMarkConfig.Load method shall perform a full single-pass validation
+          of a .versionmark.yaml file and return both the parsed configuration and all
+          discovered issues.
+        justification: |
+          Load provides the primary API for lint-aware configuration loading. It validates
+          the file in a single pass, accumulating all warnings and errors rather than
+          failing on the first problem, and returns null config when any error-severity
+          issue is found.
+        tests:
+          - VersionMarkConfig_Load_ValidConfig_ReturnsConfig
+          - VersionMarkConfig_Load_MissingFile_ReturnsNullConfig
+          - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig
+          - VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig
+          - VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig
+          - VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig
+          - VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig
+          - VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig
+          - VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig
 
       - id: VersionMark-VersionMarkConfig-FindVersions
         title: >-

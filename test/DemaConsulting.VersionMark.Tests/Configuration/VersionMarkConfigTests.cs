@@ -171,7 +171,7 @@ public partial class VersionMarkConfigTests
         var nonExistentFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.yaml");
 
         // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() =>
+        var ex = Assert.ThrowsExactly<ArgumentException>(() =>
             VersionMarkConfig.ReadFromFile(nonExistentFile));
 
         Assert.Contains("Configuration file not found", ex.Message);
@@ -190,7 +190,7 @@ public partial class VersionMarkConfigTests
             File.WriteAllText(tempFile, "invalid: yaml: content: [[[");
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() =>
+            var ex = Assert.ThrowsExactly<ArgumentException>(() =>
                 VersionMarkConfig.ReadFromFile(tempFile));
 
             Assert.Contains("Failed to parse YAML file", ex.Message);
@@ -217,7 +217,7 @@ public partial class VersionMarkConfigTests
             File.WriteAllText(tempFile, "tools: {}");
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() =>
+            var ex = Assert.ThrowsExactly<ArgumentException>(() =>
                 VersionMarkConfig.ReadFromFile(tempFile));
 
             Assert.Contains("must contain at least one tool", ex.Message);
@@ -506,28 +506,35 @@ public partial class VersionMarkConfigTests
     }
 
     /// <summary>
-    ///     Test VersionInfo record creation.
+    ///     Test GetEffectiveCommand throws InvalidOperationException when no default key is present.
     /// </summary>
     [TestMethod]
-    public void VersionInfo_Constructor_CreatesRecord()
+    public void ToolConfig_GetEffectiveCommand_NoDefaultKey_ThrowsInvalidOperationException()
     {
-        // Arrange
-        var jobId = "job-123";
-        var versions = new Dictionary<string, string>
-        {
-            ["dotnet"] = "8.0.100",
-            ["git"] = "2.43.0"
-        };
+        // Arrange - a ToolConfig with only an OS-specific command and no default key
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { ["win"] = "tool.exe --version" },
+            new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
+        );
 
-        // Act
-        var versionInfo = new VersionInfo(jobId, versions);
+        // Act & Assert - requesting an OS with no matching key and no default should throw
+        Assert.ThrowsExactly<InvalidOperationException>(() => tool.GetEffectiveCommand("linux"));
+    }
 
-        // Assert
-        Assert.IsNotNull(versionInfo);
-        Assert.AreEqual("job-123", versionInfo.JobId);
-        Assert.HasCount(2, versionInfo.Versions);
-        Assert.AreEqual("8.0.100", versionInfo.Versions["dotnet"]);
-        Assert.AreEqual("2.43.0", versionInfo.Versions["git"]);
+    /// <summary>
+    ///     Test GetEffectiveRegex throws InvalidOperationException when no default key is present.
+    /// </summary>
+    [TestMethod]
+    public void ToolConfig_GetEffectiveRegex_NoDefaultKey_ThrowsInvalidOperationException()
+    {
+        // Arrange - a ToolConfig with only an OS-specific regex and no default key
+        var tool = new ToolConfig(
+            new Dictionary<string, string> { [string.Empty] = "tool --version" },
+            new Dictionary<string, string> { ["win"] = @"Windows: (?<version>\d+\.\d+\.\d+)" }
+        );
+
+        // Act & Assert - requesting an OS with no matching key and no default should throw
+        Assert.ThrowsExactly<InvalidOperationException>(() => tool.GetEffectiveRegex("linux"));
     }
 
     /// <summary>
@@ -607,7 +614,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() =>
+        var ex = Assert.ThrowsExactly<ArgumentException>(() =>
             config.FindVersions(s_nonexistentToolArray, "test-job"));
 
         Assert.Contains("Tool 'nonexistent' not found in configuration", ex.Message);
@@ -630,7 +637,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.Throws<InvalidOperationException>(() =>
+        var ex = Assert.ThrowsExactly<InvalidOperationException>(() =>
             config.FindVersions(s_invalidToolArray, "test-job"));
 
         Assert.Contains("Failed to run command", ex.Message);
@@ -653,7 +660,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.Throws<InvalidOperationException>(() =>
+        var ex = Assert.ThrowsExactly<InvalidOperationException>(() =>
             config.FindVersions(s_dotnetToolArray, "test-job"));
 
         Assert.Contains("Failed to extract version for tool 'dotnet'", ex.Message);
@@ -676,7 +683,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.Throws<InvalidOperationException>(() =>
+        var ex = Assert.ThrowsExactly<InvalidOperationException>(() =>
             config.FindVersions(s_dotnetToolArray, "test-job"));
 
         Assert.Contains("must contain a named 'version' capture group", ex.Message);

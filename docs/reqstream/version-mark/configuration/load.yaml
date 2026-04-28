@@ -149,17 +149,24 @@ sections:
           - VersionMarkConfig_Load_MultipleErrors_ReportsAll
           - VersionMarkConfig_Load_IssuesContainFilePath
 
-      - id: VersionMark-Load-LintIssue
+      - id: VersionMark-Load-LintIssue-Fields
         title: >-
-          The LintIssue record shall store file path, line, column, severity, and description,
-          and format them as "{FilePath}({Line},{Column}): {severity}: {Description}" with
-          severity in lowercase.
+          The LintIssue record shall store file path, line, column, severity, and description.
+        justification: |
+          Capturing all diagnostic fields in a single record allows callers to access
+          each attribute independently and produce custom diagnostic output as needed.
+        tests:
+          - LintIssue_Constructor_AllFields_AreStoredCorrectly
+
+      - id: VersionMark-Load-LintIssue-Format
+        title: >-
+          The LintIssue record shall format its fields as "{FilePath}({Line},{Column}): {severity}:
+          {Description}" with severity in lowercase.
         justification: |
           A consistent, editor-friendly format (identical to the MSBuild/GCC diagnostic
           convention) lets CI systems and editors parse the output automatically and
           navigate to the exact location of each issue.
         tests:
-          - LintIssue_Constructor_AllFields_AreStoredCorrectly
           - LintIssue_ToString_Error_ProducesLowercaseSeverity
           - LintIssue_ToString_Warning_ProducesLowercaseSeverity
 

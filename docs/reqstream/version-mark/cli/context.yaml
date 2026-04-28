@@ -4,12 +4,12 @@ sections:
     requirements:
       - id: VersionMark-Context-Create
         title: >-
-          The Context.Create factory method shall parse command-line arguments into
-          a Context instance with typed properties for every supported flag.
+          The Context class shall parse command-line arguments into a Context instance
+          with accessible properties for every supported flag.
         justification: |
-          All argument parsing is centralized in the Create factory method, ensuring
+          All argument parsing is centralized in the Context class, ensuring
           consistent parsing behavior across all invocations and making the parsed
-          state available as typed properties throughout the program.
+          state available throughout the program.
         tests:
           - Context_Create_NoArguments_ReturnsDefaultContext
           - Context_Create_VersionFlag_SetsVersionTrue
@@ -44,6 +44,9 @@ sections:
           - Context_Create_ReportDepthZero_ThrowsArgumentException
           - Context_Create_ReportDepthNegative_ThrowsArgumentException
           - Context_Create_ReportDepthSeven_ThrowsArgumentException
+          - Context_Create_CaptureFlag_SetsCaptureTrue
+          - Context_Create_JobIdFlag_SetsJobId
+          - Context_Create_OutputFlag_SetsOutputFile
 
       - id: VersionMark-Context-WriteLine
         title: The Context.WriteLine method shall write output respecting the silent flag.
@@ -56,13 +59,21 @@ sections:
           - Context_WriteLine_Silent_DoesNotWriteToConsole
 
       - id: VersionMark-Context-WriteError
-        title: The Context.WriteError method shall write to stderr and set the error exit code.
+        title: >-
+          The Context.WriteError method shall write error messages to stderr,
+          unless silent mode is active.
         justification: |
           Silent mode suppresses all console output, including error messages written to
-          stderr. However, the process must still exit with a non-zero code so that
-          calling scripts can detect failure automatically even when output is silenced.
+          stderr. The log file always receives error output regardless of silent mode.
         tests:
           - Context_WriteError_NotSilent_WritesToConsole
           - Context_WriteError_Silent_DoesNotWriteToConsole
-          - Context_WriteError_SetsErrorExitCode
           - Context_WriteError_WritesToLogFile
+
+      - id: VersionMark-Context-WriteErrorExitCode
+        title: The Context.WriteError method shall set the process exit code to a non-zero value.
+        justification: |
+          The process must exit with a non-zero code so that calling scripts can detect
+          failure automatically even when output is silenced.
+        tests:
+          - Context_WriteError_SetsErrorExitCode
