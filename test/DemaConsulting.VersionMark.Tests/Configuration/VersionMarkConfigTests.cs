@@ -670,7 +670,7 @@ public partial class VersionMarkConfigTests
         // Arrange - tool with only a "win" command; querying as "linux" should fail
         var tools = new Dictionary<string, ToolConfig>
         {
-            ["mytool"] = new ToolConfig(
+            ["tool"] = new ToolConfig(
                 new Dictionary<string, string> { ["win"] = "tool.exe --version" },
                 new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
             )
@@ -679,6 +679,6 @@ public partial class VersionMarkConfigTests
 
         // Act & Assert - no "linux" key and no default key → InvalidOperationException
         Assert.Throws<InvalidOperationException>(() =>
-            config.FindVersions(["mytool"], "test-job", "linux"));
+            config.FindVersions(["tool"], "test-job", "linux"));
     }
 }

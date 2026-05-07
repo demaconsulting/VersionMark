@@ -268,7 +268,8 @@ Each tool entry in the `tools` dictionary supports the following properties:
 | `regex-linux`    | No       | Regex override for Linux                                            |
 | `regex-macos`    | No       | Regex override for macOS                                            |
 
-\* Required unless OS-specific variants (`command-win`/`command-linux`/`command-macos` or `regex-win`/`regex-linux`/`regex-macos`) are provided instead.
+\* Required unless OS-specific variants (`command-win`/`command-linux`/`command-macos` or
+`regex-win`/`regex-linux`/`regex-macos`) are provided instead.
 
 ## OS-Specific Overrides
 

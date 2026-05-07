@@ -639,10 +639,10 @@ public class VersionMarkConfigLoadTests
             const string yaml = """
                 ---
                 tools:
-                  mytool:
-                    command-win: mytool.exe --version
-                    command-linux: mytool-linux --version
-                    command-macos: mytool-macos --version
+                  tool:
+                    command-win: tool.exe --version
+                    command-linux: tool-linux --version
+                    command-macos: tool-macos --version
                     regex: '(?<version>\d+\.\d+\.\d+)'
                 """;
             File.WriteAllText(tempFile, yaml);
@@ -673,8 +673,8 @@ public class VersionMarkConfigLoadTests
             const string yaml = """
                 ---
                 tools:
-                  mytool:
-                    command: mytool --version
+                  tool:
+                    command: tool --version
                     regex-win: '(?<version>\d+\.\d+\.\d+)'
                     regex-linux: '(?<version>\d+\.\d+\.\d+)'
                     regex-macos: '(?<version>\d+\.\d+\.\d+)'
@@ -707,10 +707,10 @@ public class VersionMarkConfigLoadTests
             const string yaml = """
                 ---
                 tools:
-                  mytool:
-                    command-win: mytool.exe --version
-                    command-linux: mytool-linux --version
-                    command-macos: mytool-macos --version
+                  tool:
+                    command-win: tool.exe --version
+                    command-linux: tool-linux --version
+                    command-macos: tool-macos --version
                     regex-win: '(?<version>\d+\.\d+\.\d+)'
                     regex-linux: '(?<version>\d+\.\d+\.\d+)'
                     regex-macos: '(?<version>\d+\.\d+\.\d+)'

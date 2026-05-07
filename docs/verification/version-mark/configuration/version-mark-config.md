@@ -58,7 +58,8 @@ The following test scenarios verify `VersionMarkConfig.Load`:
 - **`VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig`**:
   OS-specific regex without version group returns null.
 - **`VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`**: OS-specific invalid regex returns a null config.
-- **`VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`**: Tool with only OS-specific commands (no default command) is valid.
+- **`VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`**: Tool with only OS-specific commands
+  (no default command) is valid.
 - **`VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig`**: Tool with only OS-specific regex (no default regex) is valid.
 - **`VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig`**: Tool with only OS-specific commands and regex is valid.
 - **`VersionMarkConfig_Load_MultipleErrors_ReportsAll`**: Multiple errors are all reported in the issue list.
