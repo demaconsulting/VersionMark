@@ -21,7 +21,7 @@ sections:
 
       - id: VersionMark-VersionMarkConfig-Load
         title: >-
-          The VersionMarkConfig.Load method shall perform a full single-pass validation
+          The VersionMarkConfig.Load method shall perform a full validation
           of a .versionmark.yaml file and return both the parsed configuration and all
           discovered issues.
         justification: |

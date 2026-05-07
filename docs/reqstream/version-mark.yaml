@@ -8,6 +8,19 @@ sections:
           The primary purpose of VersionMark is to record which tool versions were
           present in each CI/CD job so that version differences across environments
           can be detected and reported.
+        children:
+          - VersionMark-Capture-Capture
+          - VersionMark-Capture-JobId
+          - VersionMark-Capture-Output
+          - VersionMark-Capture-DefaultOutput
+          - VersionMark-Capture-ToolFilter
+          - VersionMark-Capture-MultipleTools
+          - VersionMark-Capture-Config
+          - VersionMark-Capture-Command
+          - VersionMark-Capture-JsonOutput
+          - VersionMark-Capture-Display
+          - VersionMark-Capture-ConfigError
+          - VersionMark-Capture-CommandFailure
         tests:
           - IntegrationTest_CaptureCommand_CapturesToolVersions
 
@@ -17,6 +30,16 @@ sections:
           Teams need a human-readable summary of tool versions across all jobs.
           Publishing to markdown enables the report to be included in release
           documentation and artifact archives.
+        children:
+          - VersionMark-Publish-Publish
+          - VersionMark-Publish-Report
+          - VersionMark-Publish-ReportDepth
+          - VersionMark-Publish-RequireReport
+          - VersionMark-Publish-GlobPattern
+          - VersionMark-Publish-Consolidate
+          - VersionMark-Publish-ConflictReport
+          - VersionMark-Publish-ConflictDisplay
+          - VersionMark-Publish-FileError
         tests:
           - VersionMark_PublishCommand_GeneratesMarkdownReport
 
@@ -26,6 +49,18 @@ sections:
           Detecting configuration errors early, before a CI/CD run proceeds, reduces
           wasted build time and provides precise error locations so users can fix
           problems quickly.
+        children:
+          - VersionMark-Load-FileExistence
+          - VersionMark-Load-YamlParsing
+          - VersionMark-Load-ToolsSection
+          - VersionMark-Load-ToolCommand
+          - VersionMark-Load-ToolRegex
+          - VersionMark-Load-RegexValid
+          - VersionMark-Load-RegexVersion
+          - VersionMark-Load-OsOverrides
+          - VersionMark-Load-UnknownKeys
+          - VersionMark-Load-ErrorLocation
+          - VersionMark-Load-AllIssues
         tests:
           - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
           - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
@@ -36,5 +71,10 @@ sections:
           A built-in self-validation suite lets operators confirm that the installed
           tool is functioning correctly in the deployment environment without
           requiring external fixtures or test data.
+        children:
+          - VersionMark-Validate-Capture
+          - VersionMark-Validate-Publish
+          - VersionMark-Validate-Lint
+          - VersionMark-Validate-Results
         tests:
           - IntegrationTest_ValidateFlag_RunsValidation

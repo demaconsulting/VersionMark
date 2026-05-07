@@ -116,8 +116,9 @@ sections:
               - Capture_Run_MissingConfig_ReportsError
 
           - id: VersionMark-Capture-CommandFailure
-            title: The tool shall report an error and abort capture when a configured command fails
-              or produces no regex match.
+            title: >-
+              The tool shall abort capture and report an error when a configured command
+              fails or produces no regex match.
             justification: |
               Fail-fast behavior ensures the user is immediately informed of capture failures
               rather than silently continuing with missing version data, preventing incomplete

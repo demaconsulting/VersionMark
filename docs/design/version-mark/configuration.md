@@ -1,6 +1,6 @@
-# Configuration Subsystem
+## Configuration Subsystem
 
-## Overview
+### Overview
 
 The configuration subsystem reads and interprets the `.versionmark.yaml` file that defines
 which tools to capture and how to extract their versions, and reports any validation issues

@@ -27,13 +27,12 @@ namespace DemaConsulting.VersionMark.Tests;
 /// <summary>
 ///     Unit tests for the Program class.
 /// </summary>
-[TestClass]
 public class ProgramTests
 {
     /// <summary>
     ///     Test that Run with version flag displays version only.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithVersionFlag_DisplaysVersionOnly()
     {
         // Arrange - Redirect console output
@@ -49,7 +48,7 @@ public class ProgramTests
 
             // Assert - Verify version-only output
             var output = outWriter.ToString();
-            Assert.IsFalse(string.IsNullOrWhiteSpace(output), "Version string should be printed");
+            Assert.False(string.IsNullOrWhiteSpace(output), "Version string should be printed");
             Assert.DoesNotContain("Copyright", output);
             Assert.DoesNotContain("VersionMark version", output);
         }
@@ -62,7 +61,7 @@ public class ProgramTests
     /// <summary>
     ///     Test that Run with help flag displays usage information.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithHelpFlag_DisplaysUsageInformation()
     {
         // Arrange - Redirect console output
@@ -92,7 +91,7 @@ public class ProgramTests
     /// <summary>
     ///     Test that Run with validate flag runs validation.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithValidateFlag_RunsValidation()
     {
         // Arrange - Redirect console output
@@ -119,7 +118,7 @@ public class ProgramTests
     /// <summary>
     ///     Test that Run with no arguments displays default behavior.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_NoArguments_DisplaysDefaultBehavior()
     {
         // Arrange - Redirect console output
@@ -147,20 +146,20 @@ public class ProgramTests
     /// <summary>
     ///     Test that version property returns non-empty version string.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Version_ReturnsNonEmptyString()
     {
         // Arrange & Act - Get version property
         var version = Program.Version;
 
         // Assert - Verify version is non-empty
-        Assert.IsFalse(string.IsNullOrWhiteSpace(version));
+        Assert.False(string.IsNullOrWhiteSpace(version));
     }
 
     /// <summary>
     ///     Test that Run with capture command captures tool versions.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithCaptureCommand_CapturesToolVersions()
     {
         // Arrange - Set up unique temp directory with config file and redirect console output
@@ -205,15 +204,15 @@ tools:
                 Assert.Contains("Capturing tool versions", output);
                 Assert.Contains("test-job", output);
                 Assert.Contains("dotnet", output);
-                Assert.AreEqual(0, context.ExitCode);
+                Assert.Equal(0, context.ExitCode);
 
                 // Verify output file was created
-                Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
+                Assert.True(File.Exists(outputFile), "Output file was not created");
 
                 // Verify output file contains expected data
                 var versionInfo = VersionInfo.LoadFromFile(outputFile);
-                Assert.AreEqual("test-job", versionInfo.JobId);
-                Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"));
+                Assert.Equal("test-job", versionInfo.JobId);
+                Assert.True(versionInfo.Versions.ContainsKey("dotnet"));
             }
             finally
             {
@@ -236,7 +235,7 @@ tools:
     /// <summary>
     ///     Test that Run with capture command and no tool filter captures all configured tools.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithCaptureCommandNoToolFilter_CapturesAllConfiguredTools()
     {
         // Arrange - Set up unique temp directory with a two-tool config; do NOT specify tool names
@@ -278,13 +277,13 @@ tools:
                 Program.Run(context);
 
                 // Assert - All tools defined in configuration must be captured
-                Assert.AreEqual(0, context.ExitCode);
-                Assert.IsTrue(File.Exists(outputFile), "Output file was not created");
+                Assert.Equal(0, context.ExitCode);
+                Assert.True(File.Exists(outputFile), "Output file was not created");
 
                 var versionInfo = VersionInfo.LoadFromFile(outputFile);
-                Assert.AreEqual("test-job", versionInfo.JobId);
-                Assert.IsTrue(versionInfo.Versions.ContainsKey("dotnet"), "Expected 'dotnet' to be captured");
-                Assert.IsTrue(versionInfo.Versions.ContainsKey("git"), "Expected 'git' to be captured");
+                Assert.Equal("test-job", versionInfo.JobId);
+                Assert.True(versionInfo.Versions.ContainsKey("dotnet"), "Expected 'dotnet' to be captured");
+                Assert.True(versionInfo.Versions.ContainsKey("git"), "Expected 'git' to be captured");
             }
             finally
             {
@@ -305,7 +304,7 @@ tools:
     /// <summary>
     ///     Test that Run with capture command without job ID fails.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithCaptureCommandWithoutJobId_ReturnsError()
     {
         // Arrange - Set up context with capture flag but no job-id
@@ -325,7 +324,7 @@ tools:
             // Assert - Verify error message on stderr and non-zero exit code
             var errorOutput = errWriter.ToString();
             Assert.Contains("--job-id is required", errorOutput);
-            Assert.AreEqual(1, context.ExitCode);
+            Assert.Equal(1, context.ExitCode);
         }
         finally
         {
@@ -337,7 +336,7 @@ tools:
     /// <summary>
     ///     Test that Run with capture command with missing config file fails.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError()
     {
         // Arrange - Create an isolated temp directory with no .versionmark.yaml present
@@ -367,7 +366,7 @@ tools:
                 // Assert - Verify error is reported on stderr and exit code indicates failure
                 var errorOutput = errWriter.ToString();
                 Assert.Contains("error:", errorOutput);
-                Assert.AreEqual(1, context.ExitCode);
+                Assert.Equal(1, context.ExitCode);
             }
             finally
             {
@@ -391,7 +390,7 @@ tools:
     ///     What is tested: PUB-004 - --report parameter is required in publish mode
     ///     What the assertions prove: Program exits with error when --report is missing
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithPublishCommandWithoutReport_ReturnsError()
     {
         // Arrange - Set up context without --report parameter
@@ -412,7 +411,7 @@ tools:
             // What is proved: --publish without --report results in an error
             var errorOutput = errWriter.ToString();
             Assert.Contains("Error: --report is required for publish mode", errorOutput);
-            Assert.AreEqual(1, context.ExitCode);
+            Assert.Equal(1, context.ExitCode);
         }
         finally
         {
@@ -426,7 +425,7 @@ tools:
     ///     What is tested: PUB-007 - Error reported when no JSON files match glob patterns
     ///     What the assertions prove: Program exits with error when no files are found
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError()
     {
         // Arrange - Set up unique temp directory with no JSON files
@@ -460,7 +459,7 @@ tools:
                 // What is proved: No matching files results in an error
                 var errorOutput = errWriter.ToString();
                 Assert.Contains("Error: No JSON files found matching patterns:", errorOutput);
-                Assert.AreEqual(1, context.ExitCode);
+                Assert.Equal(1, context.ExitCode);
             }
             finally
             {
@@ -483,7 +482,7 @@ tools:
     ///     What is tested: PUB-008 - Error reported when JSON files cannot be parsed
     ///     What the assertions prove: Program exits with error when JSON is malformed
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithPublishCommandInvalidJson_ReturnsError()
     {
         // Arrange - Set up unique temp directory with invalid JSON file
@@ -520,7 +519,7 @@ tools:
                 // What is proved: Invalid JSON results in an error
                 var errorOutput = errWriter.ToString();
                 Assert.Contains("Error: Failed to parse JSON file", errorOutput);
-                Assert.AreEqual(1, context.ExitCode);
+                Assert.Equal(1, context.ExitCode);
             }
             finally
             {
@@ -543,7 +542,7 @@ tools:
     ///     What is tested: PUB-001, PUB-002, PUB-005, PUB-006, FMT-001 - Publish mode generates report
     ///     What the assertions prove: Valid JSON files are processed and markdown report is created
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithPublishCommand_GeneratesMarkdownReport()
     {
         // Arrange - Set up unique temp directory with multiple JSON files
@@ -592,8 +591,8 @@ tools:
 
                 // Assert - Verify report was created successfully
                 // What is proved: Publish mode generates a markdown report from JSON files
-                Assert.AreEqual(0, context.ExitCode);
-                Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
+                Assert.Equal(0, context.ExitCode);
+                Assert.True(File.Exists(reportFile), "Report file was not created");
 
                 var reportContent = File.ReadAllText(reportFile);
                 Assert.Contains("# Tool Versions", reportContent);
@@ -621,7 +620,7 @@ tools:
     ///     What is tested: PUB-003, FMT-005 - Report depth controls markdown heading levels
     ///     What the assertions prove: Custom report depth is applied to generated markdown
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels()
     {
         // Arrange - Set up unique temp directory with JSON file
@@ -657,8 +656,8 @@ tools:
 
                 // Assert - Verify report uses custom heading depth
                 // What is proved: --report-depth parameter controls markdown heading level
-                Assert.AreEqual(0, context.ExitCode);
-                Assert.IsTrue(File.Exists(reportFile), "Report file was not created");
+                Assert.Equal(0, context.ExitCode);
+                Assert.True(File.Exists(reportFile), "Report file was not created");
 
                 var reportContent = File.ReadAllText(reportFile);
                 Assert.Contains("### Tool Versions", reportContent);
@@ -681,7 +680,7 @@ tools:
     /// <summary>
     ///     Test that Run with lint flag passes for a valid config file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess()
     {
         // Arrange - Set up temp directory with a valid config file
@@ -711,9 +710,9 @@ tools:
             Program.Run(context);
 
             // Assert - Verify success with no output (lint mode is silent when no issues)
-            Assert.AreEqual(0, context.ExitCode);
+            Assert.Equal(0, context.ExitCode);
             var output = outWriter.ToString();
-            Assert.IsTrue(string.IsNullOrEmpty(output), "Lint mode should produce no output when there are no issues");
+            Assert.True(string.IsNullOrEmpty(output), "Lint mode should produce no output when there are no issues");
         }
         finally
         {
@@ -729,7 +728,7 @@ tools:
     /// <summary>
     ///     Test that Run with lint flag fails for an invalid config file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithLintFlag_InvalidConfig_ReturnsError()
     {
         // Arrange - Set up temp directory with an invalid config file
@@ -760,7 +759,7 @@ tools:
             Program.Run(context);
 
             // Assert - Verify error is reported
-            Assert.AreEqual(1, context.ExitCode);
+            Assert.Equal(1, context.ExitCode);
             var errorOutput = errWriter.ToString();
             Assert.Contains("error", errorOutput);
         }
@@ -778,7 +777,7 @@ tools:
     /// <summary>
     ///     Test that Run with lint flag without file uses default .versionmark.yaml.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile()
     {
         // Arrange - Set up temp directory with a default config file
@@ -810,8 +809,8 @@ tools:
             Program.Run(context);
 
             // Assert - Verify it found and linted the default file (exit code 0 means success)
-            Assert.AreEqual(0, context.ExitCode);
-            Assert.IsTrue(string.IsNullOrEmpty(outWriter.ToString()),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(string.IsNullOrEmpty(outWriter.ToString()),
                 "Lint mode should produce no output when there are no issues");
         }
         finally
@@ -829,7 +828,7 @@ tools:
     /// <summary>
     ///     Test that Run with lint flag suppresses the application banner.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithLintFlag_ValidConfig_SuppressesBanner()
     {
         // Arrange - Set up temp directory with a valid config file
@@ -859,10 +858,10 @@ tools:
             Program.Run(context);
 
             // Assert - Verify the banner is not present in the output
-            Assert.AreEqual(0, context.ExitCode);
+            Assert.Equal(0, context.ExitCode);
             var output = outWriter.ToString();
-            Assert.DoesNotContain("VersionMark version", output, "Banner should be suppressed in lint mode");
-            Assert.DoesNotContain("Copyright", output, "Banner should be suppressed in lint mode");
+            Assert.DoesNotContain("VersionMark version", output);
+            Assert.DoesNotContain("Copyright", output);
         }
         finally
         {
@@ -878,7 +877,7 @@ tools:
     /// <summary>
     ///     Test that Run with lint flag outputs lint information in help.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Program_Run_WithHelpFlag_IncludesLintInformation()
     {
         // Arrange - Redirect console output

@@ -18,4 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-[assembly: DoNotParallelize]
+using Xunit;
+
+[assembly: CollectionBehavior(DisableTestParallelization = true)]

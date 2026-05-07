@@ -28,13 +28,12 @@ namespace DemaConsulting.VersionMark.Tests.Publishing;
 /// <summary>
 ///     Subsystem tests for the Publishing subsystem (capture data to markdown report pipeline).
 /// </summary>
-[TestClass]
 public class PublishingTests
 {
     /// <summary>
     ///     Test that the publishing pipeline produces a valid markdown report from multiple captures.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport()
     {
         // Arrange - Create version infos representing captures from multiple CI jobs
@@ -58,17 +57,17 @@ public class PublishingTests
         var report = MarkdownFormatter.Format(versionInfos);
 
         // Assert - The report should contain version information for all tools
-        Assert.IsFalse(string.IsNullOrWhiteSpace(report),
+        Assert.False(string.IsNullOrWhiteSpace(report),
             "The publishing pipeline should produce a non-empty report");
-        Assert.Contains("dotnet", report, "Report should include the dotnet tool");
-        Assert.Contains("git", report, "Report should include the git tool");
-        Assert.Contains("8.0.100", report, "Report should include the dotnet version");
+        Assert.Contains("dotnet", report);
+        Assert.Contains("git", report);
+        Assert.Contains("8.0.100", report);
     }
 
     /// <summary>
     ///     Test that the publishing pipeline consolidates identical versions across jobs.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions()
     {
         // Arrange - Create version infos with the same dotnet version across all jobs
@@ -83,15 +82,14 @@ public class PublishingTests
         var report = MarkdownFormatter.Format(versionInfos);
 
         // Assert - The report should show a single consolidated version, not per-job versions
-        Assert.Contains("8.0.100", report, "Report should include the consolidated version");
-        Assert.DoesNotContain("job-1", report,
-            "Consolidated versions should not show individual job IDs");
+        Assert.Contains("8.0.100", report);
+        Assert.DoesNotContain("job-1", report);
     }
 
     /// <summary>
     ///     Test that the publishing pipeline shows individual job IDs when versions conflict across jobs.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Format_ConflictingVersions_ShowsJobIds()
     {
         // Arrange - Create two version infos with different versions for the same tool
@@ -109,14 +107,14 @@ public class PublishingTests
         var report = MarkdownFormatter.Format(versionInfos);
 
         // Assert - Each job ID should appear in the report to attribute the conflicting versions
-        StringAssert.Contains(report, "job-a");
-        StringAssert.Contains(report, "job-b");
+        Assert.Contains("job-a", report);
+        Assert.Contains("job-b", report);
     }
 
     /// <summary>
     ///     Test that the publishing pipeline uses the correct heading level when a custom report depth is specified.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel()
     {
         // Arrange - Create a simple version info to exercise the heading depth parameter
@@ -130,13 +128,13 @@ public class PublishingTests
         var report = MarkdownFormatter.Format(versionInfos, reportDepth: 3);
 
         // Assert - The heading prefix should match the requested depth
-        StringAssert.Contains(report, "###");
+        Assert.Contains("###", report);
     }
 
     /// <summary>
     ///     Test that the publishing pipeline requires the --report parameter and reports an error when it is missing.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Run_WithoutReport_ReportsError()
     {
         // Arrange - Create a publish context without --report
@@ -151,10 +149,8 @@ public class PublishingTests
             Program.Run(context);
 
             // Assert - An error should be reported and exit code should be non-zero
-            Assert.AreEqual(1, context.ExitCode,
-                "Publishing without --report should result in a non-zero exit code");
-            StringAssert.Contains(errWriter.ToString(), "--report",
-                "Error message should mention the missing --report parameter");
+            Assert.Equal(1, context.ExitCode);
+            Assert.Contains("--report", errWriter.ToString());
         }
         finally
         {
@@ -165,7 +161,7 @@ public class PublishingTests
     /// <summary>
     ///     Test that the publishing pipeline accepts glob patterns after -- and reads all matching files.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Run_WithGlobPattern_ReadsMatchingFiles()
     {
         // Arrange - Create a temp directory with JSON files and use a glob pattern to match them
@@ -187,12 +183,10 @@ public class PublishingTests
             Program.Run(context);
 
             // Assert - The report should have been generated from the matched file
-            Assert.AreEqual(0, context.ExitCode,
-                "Publishing with a valid glob pattern should succeed");
-            Assert.IsTrue(File.Exists(reportFile),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(File.Exists(reportFile),
                 "Report file should be created when glob pattern matches files");
-            StringAssert.Contains(File.ReadAllText(reportFile), "dotnet",
-                "Report should contain content from the matched JSON file");
+            Assert.Contains("dotnet", File.ReadAllText(reportFile));
         }
         finally
         {
@@ -207,7 +201,7 @@ public class PublishingTests
     /// <summary>
     ///     Test that the publishing pipeline reports an error when a JSON file is malformed.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Run_WithMalformedJsonFile_ReportsError()
     {
         // Arrange - Create a temp directory with a malformed JSON file
@@ -235,8 +229,7 @@ public class PublishingTests
                 Program.Run(context);
 
                 // Assert - An error should be reported
-                Assert.AreEqual(1, context.ExitCode,
-                    "Publishing with malformed JSON should result in a non-zero exit code");
+                Assert.Equal(1, context.ExitCode);
             }
             finally
             {
@@ -256,7 +249,7 @@ public class PublishingTests
     /// <summary>
     ///     Test that the publishing pipeline reports an error when no JSON files match the glob pattern.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError()
     {
         // Arrange - Create a temp directory with no JSON files matching the pattern
@@ -281,9 +274,8 @@ public class PublishingTests
                 Program.Run(context);
 
                 // Assert - An error should be reported and exit code should be non-zero
-                Assert.AreEqual(1, context.ExitCode,
-                    "Publishing with no matching files should result in a non-zero exit code");
-                Assert.IsTrue(
+                Assert.Equal(1, context.ExitCode);
+                Assert.True(
                     errWriter.ToString().Length > 0,
                     "An error message should be written when no files match the glob pattern");
             }
@@ -305,7 +297,7 @@ public class PublishingTests
     /// <summary>
     ///     Test that the --report-depth parameter is applied end-to-end through Context.Create and Program.Run.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Publishing_Run_WithReportDepth_UsesCorrectDepth()
     {
         // Arrange - Create a temp directory with a JSON file and run with --report-depth 3
@@ -327,12 +319,10 @@ public class PublishingTests
             Program.Run(context);
 
             // Assert - The report heading should use depth-3 prefix "###"
-            Assert.AreEqual(0, context.ExitCode,
-                "Publishing with --report-depth should succeed");
-            Assert.IsTrue(File.Exists(reportFile),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(File.Exists(reportFile),
                 "Report file should be created");
-            StringAssert.Contains(File.ReadAllText(reportFile), "###",
-                "Report heading should use the depth-3 heading prefix specified via --report-depth");
+            Assert.Contains("###", File.ReadAllText(reportFile));
         }
         finally
         {

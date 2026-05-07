@@ -126,7 +126,7 @@ Note the spaces after `///` for proper indentation in summary blocks.
 
 ### Test Framework
 
-We use MSTest v4 for unit and integration tests.
+We use xUnit v3 for unit and integration tests.
 
 ### Test Naming Convention
 
@@ -141,9 +141,9 @@ Examples:
 ### Writing Tests
 
 - Write tests that are clear and focused
-- Use modern MSTest v4 assertions:
-  - `Assert.HasCount(expectedCount, collection)`
-  - `Assert.IsEmpty(collection)`
+- Use xUnit assertions:
+  - `Assert.Equal(expected, actual)`
+  - `Assert.Empty(collection)`
   - `Assert.DoesNotContain(item, collection)`
 - Always clean up resources (use `try/finally` for console redirection)
 - Link tests to requirements in `requirements.yaml` when applicable

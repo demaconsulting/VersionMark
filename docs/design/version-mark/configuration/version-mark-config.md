@@ -1,12 +1,12 @@
-# VersionMarkConfig Unit
+### VersionMarkConfig Unit
 
-## Overview
+#### Overview
 
 The `VersionMarkConfig` record holds a `Dictionary<string, ToolConfig>` mapping tool names
 to their configurations. It is the top-level entry point for loading configuration from
 the `.versionmark.yaml` file.
 
-## Load Method
+#### Load Method
 
 `Load` is the primary entry point for loading configuration with integrated linting. It:
 
@@ -21,7 +21,7 @@ a list of `LintIssue` records. YAML parse errors are captured as error-level iss
 source location. This satisfies requirements `VersionMark-Configuration-YamlConfig`,
 `VersionMark-Configuration-ValidateTools`, and `VersionMark-Configuration-ParseError`.
 
-### Error-Handling Strategy
+##### Error-Handling Strategy
 
 `Load` uses an accumulate-and-continue approach: rather than aborting on the first error,
 all warnings and errors are collected in a single `issues` list across the entire file.
@@ -36,7 +36,7 @@ The returned `VersionMarkLoadResult` carries a `null` `Config` property when any
 error-severity issue exists, so callers can distinguish a warnings-only load from a
 failure without iterating the issue list themselves.
 
-## ValidateTool Helper
+#### ValidateTool Helper
 
 The private `ValidateTool` method processes a single tool's `YamlMappingNode`. It:
 
@@ -49,7 +49,7 @@ The private `ValidateTool` method processes a single tool's `YamlMappingNode`. I
 6. Sets `toolConfig` to `null` when any new errors were added since the snapshot;
    otherwise returns a `ToolConfig` constructed from the validated dictionaries.
 
-## TryCompileRegex Helper
+#### TryCompileRegex Helper
 
 The private `TryCompileRegex` method attempts to compile a regex pattern with
 `RegexOptions.Multiline | RegexOptions.IgnoreCase` and a one-second timeout. If
@@ -57,13 +57,13 @@ compilation fails (invalid pattern syntax), it appends an error-level `LintIssue
 the shared list and returns `null`. On success it returns the compiled `Regex` for
 group-name inspection by `ValidateTool`.
 
-## ReadFromFile Method
+#### ReadFromFile Method
 
 `ReadFromFile` is a backward-compatibility wrapper that delegates to `Load`. It throws
 `ArgumentException` if any error-level lint issues are present. Use `Load` directly when
 you need access to lint issues.
 
-## FindVersions Method
+#### FindVersions Method
 
 `FindVersions` accepts a list of tool names and a job ID. For each named tool it:
 
@@ -76,14 +76,14 @@ you need access to lint issues.
 The method returns a `VersionInfo` record. This satisfies requirements
 `VersionMark-Capture-Command` and `VersionMark-Capture-MultipleTools`.
 
-## RunCommand Helper
+#### RunCommand Helper
 
 `RunCommand` runs the command through the OS shell (`cmd.exe /c` on Windows, `/bin/sh -c`
 on other platforms) using `Process.Start` with redirected stdout and stderr. Output and
 error streams are read asynchronously to prevent pipe-deadlock. A non-zero exit code
 raises `InvalidOperationException`. This satisfies `VersionMark-Capture-Command`.
 
-## ExtractVersion Helper
+#### ExtractVersion Helper
 
 `ExtractVersion` compiles the regex with `Multiline | IgnoreCase` and a 1-second timeout,
 matches against the command output, and returns the value of the named `version` capture

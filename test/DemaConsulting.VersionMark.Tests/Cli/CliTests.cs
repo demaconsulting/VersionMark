@@ -25,13 +25,12 @@ namespace DemaConsulting.VersionMark.Tests.Cli;
 /// <summary>
 ///     Subsystem tests for the Cli subsystem (Program and Context working together).
 /// </summary>
-[TestClass]
 public class CliTests
 {
     /// <summary>
     ///     Test that the full CLI pipeline with --version flag exits cleanly.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_VersionFlag_ExitsCleanly()
     {
         // Arrange - Create a context with --version via the full CLI pipeline
@@ -41,13 +40,13 @@ public class CliTests
         Program.Run(context);
 
         // Assert - The CLI subsystem should exit with code 0
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test that the full CLI pipeline with --silent flag suppresses standard output.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_SilentWithVersionFlag_SuppressesOutput()
     {
         // Arrange - Redirect console output to capture what the CLI writes
@@ -62,8 +61,8 @@ public class CliTests
             Program.Run(context);
 
             // Assert - Silent mode should suppress all standard output
-            Assert.AreEqual(0, context.ExitCode);
-            Assert.IsTrue(string.IsNullOrEmpty(outWriter.ToString()),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(string.IsNullOrEmpty(outWriter.ToString()),
                 "Silent flag should suppress version output through the full CLI pipeline");
         }
         finally
@@ -75,7 +74,7 @@ public class CliTests
     /// <summary>
     ///     Test that the full CLI pipeline with --help flag displays usage information.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_HelpFlag_DisplaysUsageInformation()
     {
         // Arrange
@@ -91,10 +90,10 @@ public class CliTests
             Program.Run(context);
 
             // Assert
-            Assert.AreEqual(0, context.ExitCode);
+            Assert.Equal(0, context.ExitCode);
             var text = output.ToString();
-            Assert.IsTrue(text.Length > 0);
-            Assert.IsTrue(text.Contains("--capture"));
+            Assert.True(text.Length > 0);
+            Assert.Contains("--capture", text);
         }
         finally
         {
@@ -105,7 +104,7 @@ public class CliTests
     /// <summary>
     ///     Test that the full CLI pipeline with --validate flag runs self-validation.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_ValidateFlag_RunsValidation()
     {
         // Arrange
@@ -115,19 +114,19 @@ public class CliTests
         Program.Run(context);
 
         // Assert
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test that the full CLI pipeline rejects unknown arguments by throwing ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_InvalidArgs_ThrowsArgumentException()
     {
         // Arrange - No setup required; unknown flags are rejected by Context.Create
 
         // Act & Assert - Context.Create itself throws for unrecognized flags
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
         {
             using var context = Context.Create(["--unknown-flag-xyz"]);
             Program.Run(context);
@@ -137,7 +136,7 @@ public class CliTests
     /// <summary>
     ///     Test that the full CLI pipeline with --lint flag succeeds for a valid config file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_LintFlag_ValidConfig_Succeeds()
     {
         // Arrange
@@ -157,7 +156,7 @@ public class CliTests
             Program.Run(context);
 
             // Assert
-            Assert.AreEqual(0, context.ExitCode);
+            Assert.Equal(0, context.ExitCode);
         }
         finally
         {
@@ -168,7 +167,7 @@ public class CliTests
     /// <summary>
     ///     Test that the full CLI pipeline with --results flag writes validation results to a file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_ResultsFlag_WritesResultsFile()
     {
         // Arrange - Set up a results file path that should be written during --validate
@@ -181,11 +180,11 @@ public class CliTests
             Program.Run(context);
 
             // Assert - The results file should exist and contain TRX content
-            Assert.AreEqual(0, context.ExitCode);
-            Assert.IsTrue(File.Exists(resultsFile),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(File.Exists(resultsFile),
                 "Results file should be written when --results flag is specified");
             var content = File.ReadAllText(resultsFile);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(content),
+            Assert.False(string.IsNullOrWhiteSpace(content),
                 "Results file should contain test result data");
         }
         finally
@@ -200,7 +199,7 @@ public class CliTests
     /// <summary>
     ///     Test that the full CLI pipeline with --log flag writes output to a log file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Cli_Run_LogFlag_WritesOutputToLogFile()
     {
         // Arrange - Set up a log file that should be written with version output
@@ -214,12 +213,12 @@ public class CliTests
                 Program.Run(context);
 
                 // Assert - Exit code should be zero
-                Assert.AreEqual(0, context.ExitCode);
+                Assert.Equal(0, context.ExitCode);
             }
 
             // Assert - The log file should contain the version output (after context is disposed)
             logContent = File.ReadAllText(logFile);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(logContent),
+            Assert.False(string.IsNullOrWhiteSpace(logContent),
                 "Log file should contain output when --log flag is specified");
         }
         finally

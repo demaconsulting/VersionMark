@@ -25,13 +25,12 @@ namespace DemaConsulting.VersionMark.Tests.Configuration;
 /// <summary>
 ///     Subsystem tests for the Configuration subsystem (VersionMarkConfig and ToolConfig working together).
 /// </summary>
-[TestClass]
 public class ConfigurationTests
 {
     /// <summary>
     ///     Test that reading a multi-tool configuration file produces all tools with usable commands and regexes.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Configuration_ReadFromFile_MultipleTools_AllToolsAccessible()
     {
         // Arrange - Write a valid multi-tool config to a temp file
@@ -54,13 +53,13 @@ public class ConfigurationTests
             var config = VersionMarkConfig.ReadFromFile(tempFile);
 
             // Assert - Both tools should be accessible with valid commands and regexes
-            Assert.IsNotNull(config);
-            Assert.HasCount(2, config.Tools);
-            Assert.IsTrue(config.Tools.ContainsKey("dotnet"), "dotnet tool should be present");
-            Assert.IsTrue(config.Tools.ContainsKey("git"), "git tool should be present");
-            Assert.IsFalse(string.IsNullOrEmpty(config.Tools["dotnet"].GetEffectiveCommand()),
+            Assert.NotNull(config);
+            Assert.Equal(2, config.Tools.Count);
+            Assert.True(config.Tools.ContainsKey("dotnet"), "dotnet tool should be present");
+            Assert.True(config.Tools.ContainsKey("git"), "git tool should be present");
+            Assert.False(string.IsNullOrEmpty(config.Tools["dotnet"].GetEffectiveCommand()),
                 "dotnet command should be accessible");
-            Assert.IsFalse(string.IsNullOrEmpty(config.Tools["git"].GetEffectiveRegex()),
+            Assert.False(string.IsNullOrEmpty(config.Tools["git"].GetEffectiveRegex()),
                 "git regex should be accessible");
         }
         finally
@@ -72,7 +71,7 @@ public class ConfigurationTests
     /// <summary>
     ///     Test that reading a configuration file with OS-specific overrides selects the correct command.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand()
     {
         // Arrange - Write a config with OS-specific overrides to a temp file
@@ -97,18 +96,15 @@ public class ConfigurationTests
             // Assert - The effective command should match the OS-specific override for the current platform
             if (OperatingSystem.IsWindows())
             {
-                Assert.AreEqual("dotnet.exe --version", effectiveCommand,
-                    "On Windows the Windows override should be selected");
+                Assert.Equal("dotnet.exe --version", effectiveCommand);
             }
             else if (OperatingSystem.IsLinux())
             {
-                Assert.AreEqual("dotnet-linux --version", effectiveCommand,
-                    "On Linux the Linux override should be selected");
+                Assert.Equal("dotnet-linux --version", effectiveCommand);
             }
             else
             {
-                Assert.AreEqual("dotnet --version", effectiveCommand,
-                    "On other platforms the default command should be selected");
+                Assert.Equal("dotnet --version", effectiveCommand);
             }
         }
         finally
@@ -120,20 +116,20 @@ public class ConfigurationTests
     /// <summary>
     ///     Test that reading a configuration from a missing file throws an ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Configuration_ReadFromFile_MissingFile_ThrowsArgumentException()
     {
         // Arrange - Use a path that does not exist
         var nonExistentFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.yaml");
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentException>(() => VersionMarkConfig.ReadFromFile(nonExistentFile));
+        Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(nonExistentFile));
     }
 
     /// <summary>
     ///     Test that reading a configuration with an OS-specific regex override returns the appropriate regex.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex()
     {
         // Arrange
@@ -157,18 +153,15 @@ public class ConfigurationTests
             // Assert - The effective regex should match the OS-specific override for the current platform
             if (OperatingSystem.IsWindows())
             {
-                Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)-win", effectiveRegex,
-                    "On Windows the Windows regex override should be selected");
+                Assert.Equal(@"(?<version>\d+\.\d+\.\d+)-win", effectiveRegex);
             }
             else if (OperatingSystem.IsLinux())
             {
-                Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)-linux", effectiveRegex,
-                    "On Linux the Linux regex override should be selected");
+                Assert.Equal(@"(?<version>\d+\.\d+\.\d+)-linux", effectiveRegex);
             }
             else
             {
-                Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", effectiveRegex,
-                    "On other platforms the default regex should be selected");
+                Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", effectiveRegex);
             }
         }
         finally
@@ -180,7 +173,7 @@ public class ConfigurationTests
     /// <summary>
     ///     Test that reading a configuration with an empty tools section throws an ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException()
     {
         // Arrange
@@ -192,7 +185,7 @@ public class ConfigurationTests
         try
         {
             // Act & Assert
-            Assert.ThrowsExactly<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
         }
         finally
         {
@@ -203,7 +196,7 @@ public class ConfigurationTests
     /// <summary>
     ///     Test that reading a configuration with invalid YAML throws an ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException()
     {
         // Arrange
@@ -213,7 +206,7 @@ public class ConfigurationTests
         try
         {
             // Act & Assert
-            Assert.ThrowsExactly<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
         }
         finally
         {

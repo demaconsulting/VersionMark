@@ -80,8 +80,8 @@ Cli Subsystem → Configuration Subsystem (VersionMarkConfig.Load)
    defaulting to `.versionmark.yaml`.
 2. `RunLint` delegates to `VersionMarkConfig.Load`, which validates the YAML structure and
    returns a `VersionMarkLoadResult` containing all `LintIssue` records found.
-3. `RunLint` calls `result.ReportIssues` to write all issues to the context, then confirms
-   success when no issues were found.
+3. `RunLint` calls `result.ReportIssues` to write all issues to the context, then exits
+   silently with exit code 0 when no issues are found.
 
 ### Validate Mode
 
@@ -105,7 +105,7 @@ that the tool is functioning correctly after installation:
 | `VersionMark_LintPassesForValidConfig` | Lint mode passes for a valid `.versionmark.yaml` configuration |
 | `VersionMark_LintReportsErrorsForInvalidConfig` | Lint mode reports errors for an invalid configuration |
 
-These test names appear in requirements files (e.g., `system.yaml`,
+These test names appear in requirements files (e.g., `version-mark.yaml`,
 `platform-requirements.yaml`) as traceability evidence. When `--validate` is run in CI,
 each matrix job runs on a specific platform/runtime and produces a TRX results file whose
 filename and CI job context (e.g., `artifacts/validation-windows-latest-dotnet8.x.trx`)

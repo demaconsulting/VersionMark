@@ -1,6 +1,6 @@
-# VersionInfo Unit
+### VersionInfo Unit
 
-## Overview
+#### Overview
 
 The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two properties:
 
@@ -13,7 +13,7 @@ The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two prop
 produces it by executing commands and saving to JSON; publish reads it back and passes it
 to `MarkdownFormatter`.
 
-## SaveToFile Method
+#### SaveToFile Method
 
 `SaveToFile` serializes the record to indented JSON using `JsonSerializer.Serialize` with
 `WriteIndented = true` and writes it to the specified path using UTF-8 encoding.
@@ -22,7 +22,7 @@ Non-`InvalidOperationException` errors are wrapped and re-thrown as
 `VersionMark-VersionInfo-Save`. The default output filename (`versionmark-<job-id>.json`)
 is determined by the CLI layer and contributes to satisfying `VersionMark-Capture-DefaultOutput`.
 
-## LoadFromFile Method
+#### LoadFromFile Method
 
 `LoadFromFile` is the symmetric counterpart to `SaveToFile`. It:
 
@@ -36,7 +36,7 @@ non-`ArgumentException` errors are wrapped similarly. This satisfies
 `VersionMark-VersionInfo-Load`, `VersionMark-VersionInfo-Error`,
 `VersionMark-Publish-Consolidate`, and `VersionMark-Publish-FileError`.
 
-## JSON Schema
+#### JSON Schema
 
 The JSON file produced by `SaveToFile` has this structure:
 

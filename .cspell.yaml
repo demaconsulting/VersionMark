@@ -19,7 +19,7 @@ words:
   - Dema
   - fileassert
   - msbuild
-  - mstest
+  - opencover
   - pandoc
   - reqstream
   - reviewmark
@@ -29,6 +29,8 @@ words:
   - versionmark
   - weasyprint
   - Weasy
+  - xunit
+  - Xunit
   - yamlfix
 
 # Exclude common build artifacts, dependencies, and vendored third-party code
@@ -39,6 +41,7 @@ ignorePaths:
   - "**/thirdparty/**"
   - "**/third-party/**"
   - "**/3rd-party/**"
+  - "**/generated/**"
   - "**/AGENT_REPORT_*.md"
   - "**/.agent-logs/**"
   - "**/bin/**"

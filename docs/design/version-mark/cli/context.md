@@ -1,11 +1,11 @@
-# Context Unit
+### Context Unit
 
-## Overview
+#### Overview
 
 The `Context` class (`Context.cs`) is a sealed, disposable container for all parsed
 command-line state and output routing. It is constructed via the `Create` factory method.
 
-## Properties
+#### Properties
 
 | Property      | Type       | Default | Description                               |
 |---------------|------------|---------|-------------------------------------------|
@@ -32,14 +32,14 @@ This satisfies requirements `VersionMark-CommandLine-Context`, `VersionMark-Comm
 `VersionMark-CommandLine-Results`, `VersionMark-CommandLine-Log`, `VersionMark-CommandLine-ExitCode`,
 `VersionMark-CommandLine-Lint`, and `VersionMark-Context-Create`.
 
-## ArgumentParser
+#### ArgumentParser
 
 The private `ArgumentParser` class performs the actual token-by-token parsing. It handles
 the `--` separator, which switches subsequent tokens to either tool names (capture mode) or
 glob patterns (publish mode). Unknown arguments throw `ArgumentException`, satisfying
 `VersionMark-CommandLine-InvalidArgs`.
 
-## WriteLine and WriteError
+#### WriteLine and WriteError
 
 `WriteLine` writes to `Console.Out` unless `Silent` is set, and also writes to the log
 file if one was opened. `WriteError` additionally sets `_hasErrors = true` (making
@@ -47,7 +47,7 @@ file if one was opened. `WriteError` additionally sets `_hasErrors = true` (maki
 `VersionMark-CommandLine-Silent`, `VersionMark-CommandLine-ErrorOutput`, `VersionMark-CommandLine-ExitCode`,
 `VersionMark-Context-WriteLine`, `VersionMark-Context-WriteError`, and `VersionMark-Context-WriteErrorExitCode`.
 
-## Log File
+#### Log File
 
 The `OpenLogFile` method opens a `StreamWriter` with `AutoFlush = true`. If opening fails,
 an `InvalidOperationException` is thrown with contextual information. The writer is

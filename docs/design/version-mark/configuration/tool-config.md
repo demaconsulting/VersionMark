@@ -1,6 +1,6 @@
-# ToolConfig Unit
+### ToolConfig Unit
 
-## Overview
+#### Overview
 
 The `ToolConfig` record (`VersionMarkConfig.cs`) represents the configuration for a single
 tool entry. It holds two dictionaries keyed by OS name:
@@ -10,7 +10,7 @@ tool entry. It holds two dictionaries keyed by OS name:
 | `Command`  | `""` (default), `"win"`, `"linux"`, `"macos"`   | Shell command to run               |
 | `Regex`    | `""` (default), `"win"`, `"linux"`, `"macos"`   | Regex pattern with `version` group |
 
-## OS-Specific Overrides
+#### OS-Specific Overrides
 
 `GetEffectiveCommand` and `GetEffectiveRegex` resolve the active OS at runtime using
 `RuntimeInformation.IsOSPlatform` and then look up the OS-specific key first, falling back
@@ -18,7 +18,7 @@ to the default (`""`) key. When no default (`""`) key is present either, an
 `InvalidOperationException` is thrown. This satisfies requirements `VersionMark-ToolConfig-EffectiveCommand`
 and `VersionMark-ToolConfig-EffectiveRegex`.
 
-## YAML Parsing
+#### YAML Parsing
 
 Tool YAML parsing is performed by the private `VersionMarkConfig.ValidateTool` method.
 It reads a `YamlMappingNode` and populates the command and regex dictionaries. Known keys

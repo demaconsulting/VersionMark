@@ -29,8 +29,8 @@ This document covers the design of five subsystems within VersionMark:
   together provide built-in verification of the tool's core functionality
 
 This document does not cover installation, end-user usage patterns, or the CI/CD pipeline
-configuration. Those topics are addressed in the [User Guide][user-guide] and the
-[Requirements document][requirements-doc].
+configuration. Those topics are addressed in the *VersionMark User Guide* and the
+*VersionMark Requirements Document*.
 
 ## Software Structure
 
@@ -102,6 +102,3 @@ The source code in `src/DemaConsulting.VersionMark/` is the authoritative implem
 This document describes the intent and structure of that code; any discrepancy between
 this document and the code should be resolved by updating this document to reflect the
 actual implementation, or by raising a defect against the code.
-
-[user-guide]: ../user_guide/introduction.md
-[requirements-doc]: ../requirements_doc/introduction.md

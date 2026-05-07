@@ -5,23 +5,23 @@
 # Requirements are verified through tests and documented in docs/requirements_doc/ and docs/requirements_report/.
 
 includes:
-  - docs/reqstream/version-mark/version-mark.yaml
+  - docs/reqstream/version-mark.yaml
   - docs/reqstream/version-mark/platform-requirements.yaml
-  - docs/reqstream/version-mark/cli/cli.yaml
+  - docs/reqstream/version-mark/cli.yaml
   - docs/reqstream/version-mark/cli/program.yaml
   - docs/reqstream/version-mark/cli/context.yaml
-  - docs/reqstream/version-mark/capture/capture.yaml
+  - docs/reqstream/version-mark/capture.yaml
   - docs/reqstream/version-mark/capture/version-info.yaml
-  - docs/reqstream/version-mark/publishing/publishing.yaml
+  - docs/reqstream/version-mark/publishing.yaml
   - docs/reqstream/version-mark/publishing/markdown-formatter.yaml
-  - docs/reqstream/version-mark/configuration/configuration.yaml
+  - docs/reqstream/version-mark/configuration.yaml
   - docs/reqstream/version-mark/configuration/version-mark-config.yaml
   - docs/reqstream/version-mark/configuration/tool-config.yaml
   - docs/reqstream/version-mark/configuration/load.yaml
-  - docs/reqstream/version-mark/self-test/self-test.yaml
+  - docs/reqstream/version-mark/self-test.yaml
   - docs/reqstream/version-mark/self-test/validation.yaml
   - docs/reqstream/version-mark/self-test/path-helpers.yaml
-  - docs/reqstream/ots/mstest.yaml
+  - docs/reqstream/ots/xunit.yaml
   - docs/reqstream/ots/reqstream.yaml
   - docs/reqstream/ots/buildmark.yaml
   - docs/reqstream/ots/sarifmark.yaml

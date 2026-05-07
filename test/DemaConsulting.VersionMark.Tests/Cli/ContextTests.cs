@@ -25,161 +25,160 @@ namespace DemaConsulting.VersionMark.Tests.Cli;
 /// <summary>
 ///     Unit tests for the Context class.
 /// </summary>
-[TestClass]
 public class ContextTests
 {
     /// <summary>
     ///     Test creating a context with no arguments.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_NoArguments_ReturnsDefaultContext()
     {
         // Arrange & Act - Create context with no arguments
         using var context = Context.Create([]);
 
         // Assert - Verify default context state
-        Assert.IsFalse(context.Version);
-        Assert.IsFalse(context.Help);
-        Assert.IsFalse(context.Silent);
-        Assert.IsFalse(context.Validate);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.False(context.Version);
+        Assert.False(context.Help);
+        Assert.False(context.Silent);
+        Assert.False(context.Validate);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the version flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_VersionFlag_SetsVersionTrue()
     {
         // Arrange & Act - Create context with --version flag
         using var context = Context.Create(["--version"]);
 
         // Assert - Verify version flag is set
-        Assert.IsTrue(context.Version);
-        Assert.IsFalse(context.Help);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Version);
+        Assert.False(context.Help);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the short version flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ShortVersionFlag_SetsVersionTrue()
     {
         // Arrange & Act - Create context with -v flag
         using var context = Context.Create(["-v"]);
 
         // Assert - Verify version flag is set
-        Assert.IsTrue(context.Version);
-        Assert.IsFalse(context.Help);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Version);
+        Assert.False(context.Help);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the help flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_HelpFlag_SetsHelpTrue()
     {
         // Arrange & Act - Create context with --help flag
         using var context = Context.Create(["--help"]);
 
         // Assert - Verify help flag is set
-        Assert.IsFalse(context.Version);
-        Assert.IsTrue(context.Help);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.False(context.Version);
+        Assert.True(context.Help);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the short help flag -h.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ShortHelpFlag_H_SetsHelpTrue()
     {
         // Arrange & Act - Create context with -h flag
         using var context = Context.Create(["-h"]);
 
         // Assert - Verify help flag is set
-        Assert.IsFalse(context.Version);
-        Assert.IsTrue(context.Help);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.False(context.Version);
+        Assert.True(context.Help);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the short help flag -?.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ShortHelpFlag_Question_SetsHelpTrue()
     {
         // Arrange & Act - Create context with -? flag
         using var context = Context.Create(["-?"]);
 
         // Assert - Verify help flag is set
-        Assert.IsFalse(context.Version);
-        Assert.IsTrue(context.Help);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.False(context.Version);
+        Assert.True(context.Help);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the silent flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_SilentFlag_SetsSilentTrue()
     {
         // Arrange & Act - Create context with --silent flag
         using var context = Context.Create(["--silent"]);
 
         // Assert - Verify silent flag is set
-        Assert.IsTrue(context.Silent);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Silent);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the validate flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ValidateFlag_SetsValidateTrue()
     {
         // Arrange & Act - Create context with --validate flag
         using var context = Context.Create(["--validate"]);
 
         // Assert - Verify validate flag is set
-        Assert.IsTrue(context.Validate);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Validate);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the results flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ResultsFlag_SetsResultsFile()
     {
         // Arrange & Act - Create context with --results flag
         using var context = Context.Create(["--results", "test.trx"]);
 
         // Assert - Verify results file is set
-        Assert.AreEqual("test.trx", context.ResultsFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal("test.trx", context.ResultsFile);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the legacy result flag (alias for --results).
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ResultFlag_SetsResultsFile()
     {
         // Arrange & Act - Create context with --result flag (legacy alias)
         using var context = Context.Create(["--result", "test.trx"]);
 
         // Assert - Verify results file is set
-        Assert.AreEqual("test.trx", context.ResultsFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal("test.trx", context.ResultsFile);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the log flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_LogFlag_OpensLogFile()
     {
         var logFile = Path.GetTempFileName();
@@ -188,11 +187,11 @@ public class ContextTests
             using (var context = Context.Create(["--log", logFile]))
             {
                 context.WriteLine("Test message");
-                Assert.AreEqual(0, context.ExitCode);
+                Assert.Equal(0, context.ExitCode);
             }
 
             // Verify log file was written
-            Assert.IsTrue(File.Exists(logFile));
+            Assert.True(File.Exists(logFile));
             var logContent = File.ReadAllText(logFile);
             Assert.Contains("Test message", logContent);
         }
@@ -208,11 +207,11 @@ public class ContextTests
     /// <summary>
     ///     Test creating a context with an unknown argument throws exception.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_UnknownArgument_ThrowsArgumentException()
     {
         // Arrange & Act - Create context with unknown argument
-        var exception = Assert.ThrowsExactly<ArgumentException>(() => Context.Create(["--unknown"]));
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--unknown"]));
 
         // Assert - Verify exception is thrown with correct message
         Assert.Contains("Unsupported argument", exception.Message);
@@ -221,7 +220,7 @@ public class ContextTests
     /// <summary>
     ///     Test WriteLine writes to console output when not silent.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_WriteLine_NotSilent_WritesToConsole()
     {
         // Arrange - Redirect console output
@@ -248,7 +247,7 @@ public class ContextTests
     /// <summary>
     ///     Test WriteLine does not write to console when silent.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_WriteLine_Silent_DoesNotWriteToConsole()
     {
         // Arrange - Redirect console output
@@ -277,7 +276,7 @@ public class ContextTests
     ///     What is tested: WriteError is suppressed when Silent flag is set
     ///     What the assertions prove: WriteError respects the Silent flag
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_WriteError_Silent_DoesNotWriteToConsole()
     {
         // Arrange - Redirect console error output
@@ -306,7 +305,7 @@ public class ContextTests
     ///     What is tested: WriteError marks the context as having errors
     ///     What the assertions prove: ExitCode is 1 after WriteError is called
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_WriteError_SetsErrorExitCode()
     {
         // Arrange - Create context with silent flag to avoid console output
@@ -316,7 +315,7 @@ public class ContextTests
         context.WriteError("Error message");
 
         // Assert - Verify exit code is 1
-        Assert.AreEqual(1, context.ExitCode);
+        Assert.Equal(1, context.ExitCode);
     }
 
     /// <summary>
@@ -324,7 +323,7 @@ public class ContextTests
     ///     What is tested: WriteError writes to Console.Error (stderr) when not silent
     ///     What the assertions prove: Error messages go to stderr, not stdout
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_WriteError_NotSilent_WritesToConsole()
     {
         // Arrange - Redirect console error output
@@ -353,7 +352,7 @@ public class ContextTests
     ///     What is tested: WriteError writes to log file alongside stderr
     ///     What the assertions prove: Error messages are recorded in the log file
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_WriteError_WritesToLogFile()
     {
         var logFile = Path.GetTempFileName();
@@ -370,7 +369,7 @@ public class ContextTests
             }
 
             // Assert - Verify error was written to log file
-            Assert.IsTrue(File.Exists(logFile));
+            Assert.True(File.Exists(logFile));
             var logContent = File.ReadAllText(logFile);
             Assert.Contains("Error message", logContent);
         }
@@ -389,11 +388,11 @@ public class ContextTests
     ///     What is tested: --log flag requires a filename argument
     ///     What the assertions prove: Missing value for --log raises ArgumentException
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_LogFlag_WithoutValue_ThrowsArgumentException()
     {
         // Arrange & Act - Create context with --log flag but no value
-        var exception = Assert.ThrowsExactly<ArgumentException>(() => Context.Create(["--log"]));
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--log"]));
 
         // Assert - Verify exception is thrown
         Assert.Contains("--log", exception.Message);
@@ -404,11 +403,11 @@ public class ContextTests
     ///     What is tested: --results flag requires a filename argument
     ///     What the assertions prove: Missing value for --results raises ArgumentException
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException()
     {
         // Arrange & Act - Create context with --results flag but no value
-        var exception = Assert.ThrowsExactly<ArgumentException>(() => Context.Create(["--results"]));
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--results"]));
 
         // Assert - Verify exception is thrown
         Assert.Contains("--results", exception.Message);
@@ -419,7 +418,7 @@ public class ContextTests
     ///     What is tested: --publish flag parsing sets Publish property to true
     ///     What the assertions prove: The Publish flag is correctly parsed and stored
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_PublishFlag_SetsPublishTrue()
     {
         // Arrange & Act - Create context with --publish and --report flags
@@ -427,8 +426,8 @@ public class ContextTests
 
         // Assert - Verify publish mode is enabled
         // What is proved: --publish flag is correctly recognized and sets Publish property
-        Assert.IsTrue(context.Publish);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Publish);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -436,7 +435,7 @@ public class ContextTests
     ///     What is tested: --report parameter parsing captures the output file path
     ///     What the assertions prove: The report file path is correctly parsed and stored
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ReportParameter_SetsReportFile()
     {
         // Arrange & Act - Create context with --publish and --report flags
@@ -444,8 +443,8 @@ public class ContextTests
 
         // Assert - Verify report file path is captured
         // What is proved: --report parameter value is correctly captured
-        Assert.AreEqual("output.md", context.ReportFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal("output.md", context.ReportFile);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -453,7 +452,7 @@ public class ContextTests
     ///     What is tested: --report-depth parameter parsing captures the depth value
     ///     What the assertions prove: The report depth is correctly parsed as an integer
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ReportDepthParameter_SetsReportDepth()
     {
         // Arrange & Act - Create context with --publish, --report, and --report-depth flags
@@ -461,8 +460,8 @@ public class ContextTests
 
         // Assert - Verify report depth is captured
         // What is proved: --report-depth parameter value is correctly parsed as an integer
-        Assert.AreEqual(3, context.ReportDepth);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal(3, context.ReportDepth);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -470,7 +469,7 @@ public class ContextTests
     ///     What is tested: Default report-depth value when not specified
     ///     What the assertions prove: The default report depth is 1 (matching the --depth default)
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_NoReportDepth_DefaultsToDepthOne()
     {
         // Arrange & Act - Create context without --report-depth
@@ -478,7 +477,7 @@ public class ContextTests
 
         // Assert - Verify default report depth is 1 (the default --depth value)
         // What is proved: Report depth defaults to the --depth value (1) when not specified
-        Assert.AreEqual(1, context.ReportDepth);
+        Assert.Equal(1, context.ReportDepth);
     }
 
     /// <summary>
@@ -486,11 +485,11 @@ public class ContextTests
     ///     What is tested: Validation rejects a depth value less than 1
     ///     What the assertions prove: ArgumentException is thrown for report-depth values less than 1
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ReportDepthZero_ThrowsArgumentException()
     {
         // Arrange & Act & Assert - Zero is not a valid heading depth
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             Context.Create(["--publish", "--report", "output.md", "--report-depth", "0"]));
     }
 
@@ -499,11 +498,11 @@ public class ContextTests
     ///     What is tested: Validation rejects negative depth values
     ///     What the assertions prove: ArgumentException is thrown for negative report-depth values
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ReportDepthNegative_ThrowsArgumentException()
     {
         // Arrange & Act & Assert - Negative values are not valid heading depths
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             Context.Create(["--publish", "--report", "output.md", "--report-depth", "-1"]));
     }
 
@@ -512,11 +511,11 @@ public class ContextTests
     ///     What is tested: Validation rejects a depth value greater than 6
     ///     What the assertions prove: ArgumentException is thrown for report-depth values greater than 6
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ReportDepthSeven_ThrowsArgumentException()
     {
         // Arrange & Act & Assert - 7 exceeds the maximum Markdown heading level of 6
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             Context.Create(["--publish", "--report", "output.md", "--report-depth", "7"]));
     }
 
@@ -525,7 +524,7 @@ public class ContextTests
     ///     What is tested: --depth parameter parsing captures the depth value
     ///     What the assertions prove: The depth is correctly parsed as an integer
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_DepthParameter_SetsDepth()
     {
         // Arrange & Act - Create context with --depth flag
@@ -533,8 +532,8 @@ public class ContextTests
 
         // Assert - Verify depth is captured
         // What is proved: --depth parameter value is correctly parsed as an integer
-        Assert.AreEqual(3, context.Depth);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal(3, context.Depth);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -542,7 +541,7 @@ public class ContextTests
     ///     What is tested: Default depth value when not specified
     ///     What the assertions prove: The depth defaults to 1
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_NoDepth_DefaultsToOne()
     {
         // Arrange & Act - Create context without --depth
@@ -550,7 +549,7 @@ public class ContextTests
 
         // Assert - Verify default depth is 1
         // What is proved: Depth defaults to 1 when not specified
-        Assert.AreEqual(1, context.Depth);
+        Assert.Equal(1, context.Depth);
     }
 
     /// <summary>
@@ -558,7 +557,7 @@ public class ContextTests
     ///     What is tested: --depth value is used as default for ReportDepth when --report-depth not specified
     ///     What the assertions prove: ReportDepth equals Depth when --report-depth is not given
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_DepthParameter_SetsDefaultReportDepth()
     {
         // Arrange & Act - Create context with --depth but no --report-depth
@@ -566,8 +565,8 @@ public class ContextTests
 
         // Assert - Verify report depth defaults to the depth value
         // What is proved: --depth value is used as the default for ReportDepth
-        Assert.AreEqual(3, context.ReportDepth);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal(3, context.ReportDepth);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -575,7 +574,7 @@ public class ContextTests
     ///     What is tested: --report-depth takes precedence over --depth for ReportDepth
     ///     What the assertions prove: ReportDepth equals the explicit --report-depth value, not --depth
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_ExplicitReportDepthOverridesDepth()
     {
         // Arrange & Act - Create context with both --depth and --report-depth
@@ -583,8 +582,8 @@ public class ContextTests
 
         // Assert - Verify explicit --report-depth takes precedence over --depth
         // What is proved: --report-depth value (4) overrides --depth value (2) for ReportDepth
-        Assert.AreEqual(4, context.ReportDepth);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal(4, context.ReportDepth);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -592,11 +591,11 @@ public class ContextTests
     ///     What is tested: Validation rejects a depth value less than 1
     ///     What the assertions prove: ArgumentException is thrown for depth values less than 1
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_DepthZero_ThrowsArgumentException()
     {
         // Arrange & Act & Assert - Zero is not a valid heading depth
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             Context.Create(["--depth", "0"]));
     }
 
@@ -605,11 +604,11 @@ public class ContextTests
     ///     What is tested: Validation rejects negative depth values
     ///     What the assertions prove: ArgumentException is thrown for negative depth values
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_DepthNegative_ThrowsArgumentException()
     {
         // Arrange & Act & Assert - Negative values are not valid heading depths
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             Context.Create(["--depth", "-1"]));
     }
 
@@ -618,11 +617,11 @@ public class ContextTests
     ///     What is tested: Validation rejects a depth value greater than 6
     ///     What the assertions prove: ArgumentException is thrown for depth values greater than 6
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_DepthSeven_ThrowsArgumentException()
     {
         // Arrange & Act & Assert - 7 exceeds the maximum Markdown heading level of 6
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        Assert.Throws<ArgumentException>(() =>
             Context.Create(["--depth", "7"]));
     }
 
@@ -631,7 +630,7 @@ public class ContextTests
     ///     What is tested: Glob patterns after -- are captured in GlobPatterns array
     ///     What the assertions prove: Multiple glob patterns are correctly parsed and stored
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_GlobPatternsAfterSeparator_CapturesPatterns()
     {
         // Arrange & Act - Create context with glob patterns after --
@@ -645,9 +644,9 @@ public class ContextTests
 
         // Assert - Verify glob patterns are captured
         // What is proved: Arguments after -- are correctly captured in GlobPatterns array
-        Assert.HasCount(2, context.GlobPatterns);
-        Assert.AreEqual("versionmark-*.json", context.GlobPatterns[0]);
-        Assert.AreEqual("results/*.json", context.GlobPatterns[1]);
+        Assert.Equal(2, context.GlobPatterns.Length);
+        Assert.Equal("versionmark-*.json", context.GlobPatterns[0]);
+        Assert.Equal("results/*.json", context.GlobPatterns[1]);
     }
 
     /// <summary>
@@ -655,7 +654,7 @@ public class ContextTests
     ///     What is tested: --publish flag can be parsed without --report in Context.Create
     ///     What the assertions prove: Context parsing accepts --publish without --report (error checked later)
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_PublishWithoutReport_ParsesSuccessfully()
     {
         // Arrange & Act - Create context with --publish but no --report
@@ -663,9 +662,9 @@ public class ContextTests
 
         // Assert - Verify publish mode is enabled (validation happens in Program.Run)
         // What is proved: --publish flag is parsed successfully without --report
-        Assert.IsTrue(context.Publish);
-        Assert.IsNull(context.ReportFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Publish);
+        Assert.Null(context.ReportFile);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
@@ -673,7 +672,7 @@ public class ContextTests
     ///     What is tested: GlobPatterns array when none provided after --
     ///     What the assertions prove: GlobPatterns is empty array when not specified
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_NoGlobPatterns_EmptyArray()
     {
         // Arrange & Act - Create context without glob patterns
@@ -681,94 +680,94 @@ public class ContextTests
 
         // Assert - Verify glob patterns array is empty (default applied in Program.RunPublish)
         // What is proved: When no glob patterns specified, GlobPatterns is an empty array
-        Assert.HasCount(0, context.GlobPatterns);
+        Assert.Empty(context.GlobPatterns);
     }
 
     /// <summary>
     ///     Test creating a context with the lint flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_LintFlag_SetsLintTrue()
     {
         // Arrange & Act - Create context with --lint flag
         using var context = Context.Create(["--lint"]);
 
         // Assert - Verify lint flag is set
-        Assert.IsTrue(context.Lint);
-        Assert.IsNull(context.LintFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Lint);
+        Assert.Null(context.LintFile);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the lint flag and a config file argument.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_LintFlag_WithFile_SetsLintFile()
     {
         // Arrange & Act - Create context with --lint and a file argument
         using var context = Context.Create(["--lint", "custom.yaml"]);
 
         // Assert - Verify lint flag and file are set
-        Assert.IsTrue(context.Lint);
-        Assert.AreEqual("custom.yaml", context.LintFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Lint);
+        Assert.Equal("custom.yaml", context.LintFile);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test that lint flag without a file does not consume the next flag argument.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile()
     {
         // Arrange & Act - Create context with --lint followed by another flag
         using var context = Context.Create(["--lint", "--silent"]);
 
         // Assert - Verify lint flag is set and silent is also set, LintFile is null
-        Assert.IsTrue(context.Lint);
-        Assert.IsNull(context.LintFile);
-        Assert.IsTrue(context.Silent);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Lint);
+        Assert.Null(context.LintFile);
+        Assert.True(context.Silent);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the capture flag.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_CaptureFlag_SetsCaptureTrue()
     {
         // Arrange & Act - Create context with --capture flag
         using var context = Context.Create(["--capture"]);
 
         // Assert - Verify capture flag is set
-        Assert.IsTrue(context.Capture);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.True(context.Capture);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the job-id parameter.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_JobIdFlag_SetsJobId()
     {
         // Arrange & Act - Create context with --capture and --job-id parameter
         using var context = Context.Create(["--capture", "--job-id", "test-job"]);
 
         // Assert - Verify job ID is set
-        Assert.AreEqual("test-job", context.JobId);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal("test-job", context.JobId);
+        Assert.Equal(0, context.ExitCode);
     }
 
     /// <summary>
     ///     Test creating a context with the output parameter.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void Context_Create_OutputFlag_SetsOutputFile()
     {
         // Arrange & Act - Create context with --capture and --output parameter
         using var context = Context.Create(["--capture", "--output", "output.json"]);
 
         // Assert - Verify output file is set
-        Assert.AreEqual("output.json", context.OutputFile);
-        Assert.AreEqual(0, context.ExitCode);
+        Assert.Equal("output.json", context.OutputFile);
+        Assert.Equal(0, context.ExitCode);
     }
 }

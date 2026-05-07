@@ -1,6 +1,6 @@
-# Publishing Subsystem
+## Publishing Subsystem
 
-## Overview
+### Overview
 
 The publish subsystem is responsible for generating a human-readable markdown version
 report from captured JSON files. It reads the version data produced by the capture
@@ -9,7 +9,7 @@ subsystem and consolidates identical versions across jobs, flagging any conflict
 The publish subsystem consists of a single unit: `MarkdownFormatter`, which converts
 a collection of `VersionInfo` records into a markdown string.
 
-## MarkdownFormatter.Format Interface
+### MarkdownFormatter.Format Interface
 
 `MarkdownFormatter.Format` is an `internal static` method with the signature:
 
@@ -27,7 +27,7 @@ public static string Format(IEnumerable<VersionInfo> versionInfos, int reportDep
 `reportDepth` must be greater than zero. A value of `0` or less causes
 `ArgumentOutOfRangeException` to be thrown.
 
-## Normal-Operation Walkthrough
+### Normal-Operation Walkthrough
 
 The `--publish` command follows this pipeline in `Program.RunPublish`:
 
@@ -41,7 +41,7 @@ The `--publish` command follows this pipeline in `Program.RunPublish`:
    together with `context.ReportDepth`.
 7. Write the returned markdown string to the file specified by `--report`.
 
-## Error Handling
+### Error Handling
 
 - **`--report` not specified**: `context.WriteError` with mention of `--report`; exit 1
 - **No files match the glob patterns**: `context.WriteError` listing the patterns; exit 1
@@ -50,7 +50,7 @@ The `--publish` command follows this pipeline in `Program.RunPublish`:
 - **`reportDepth <= 0`**: `ArgumentOutOfRangeException` thrown by
   `MarkdownFormatter.Format`
 
-## reportDepth Configuration and Conflict-Display Logic
+### reportDepth Configuration and Conflict-Display Logic
 
 `context.ReportDepth` is populated from the `--report-depth` CLI argument
 (default: the value of `--depth`, which itself defaults to `1`).
