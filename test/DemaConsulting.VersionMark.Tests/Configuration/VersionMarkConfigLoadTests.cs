@@ -627,6 +627,110 @@ public class VersionMarkConfigLoadTests
     }
 
     /// <summary>
+    ///     Test that a tool with only OS-specific commands is valid.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            const string yaml = """
+                ---
+                tools:
+                  mytool:
+                    command-win: mytool.exe --version
+                    command-linux: mytool-linux --version
+                    command-macos: mytool-macos --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                """;
+            File.WriteAllText(tempFile, yaml);
+
+            // Act
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
+
+            // Assert
+            Assert.NotNull(config);
+            Assert.DoesNotContain(issues, i => i.Severity == LintSeverity.Error);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that a tool with only OS-specific regex is valid.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            const string yaml = """
+                ---
+                tools:
+                  mytool:
+                    command: mytool --version
+                    regex-win: '(?<version>\d+\.\d+\.\d+)'
+                    regex-linux: '(?<version>\d+\.\d+\.\d+)'
+                    regex-macos: '(?<version>\d+\.\d+\.\d+)'
+                """;
+            File.WriteAllText(tempFile, yaml);
+
+            // Act
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
+
+            // Assert
+            Assert.NotNull(config);
+            Assert.DoesNotContain(issues, i => i.Severity == LintSeverity.Error);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that a tool with only OS-specific commands and regex is valid.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig()
+    {
+        // Arrange
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            const string yaml = """
+                ---
+                tools:
+                  mytool:
+                    command-win: mytool.exe --version
+                    command-linux: mytool-linux --version
+                    command-macos: mytool-macos --version
+                    regex-win: '(?<version>\d+\.\d+\.\d+)'
+                    regex-linux: '(?<version>\d+\.\d+\.\d+)'
+                    regex-macos: '(?<version>\d+\.\d+\.\d+)'
+                """;
+            File.WriteAllText(tempFile, yaml);
+
+            // Act
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
+
+            // Assert
+            Assert.NotNull(config);
+            Assert.DoesNotContain(issues, i => i.Severity == LintSeverity.Error);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
     ///     Test that an unreadable file (permission denied) returns null config with an error issue.
     /// </summary>
     [Fact]

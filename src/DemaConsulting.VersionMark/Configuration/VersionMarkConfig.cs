@@ -382,6 +382,7 @@ public sealed record VersionMarkConfig
             // Validate OS-specific command overrides
             else if (key is "command-win" or "command-linux" or "command-macos")
             {
+                hasCommand = true;
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must not be empty"));
@@ -421,6 +422,7 @@ public sealed record VersionMarkConfig
             // Validate OS-specific regex overrides
             else if (key is "regex-win" or "regex-linux" or "regex-macos")
             {
+                hasRegex = true;
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must not be empty"));
@@ -447,12 +449,12 @@ public sealed record VersionMarkConfig
         // Report missing required fields after scanning all entries
         if (!hasCommand)
         {
-            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'command' field"));
+            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'command' or OS-specific command field"));
         }
 
         if (!hasRegex)
         {
-            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'regex' field"));
+            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'regex' or OS-specific regex field"));
         }
 
         // Only produce a ToolConfig when no new errors were added for this tool
