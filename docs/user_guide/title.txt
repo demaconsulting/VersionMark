@@ -1,13 +1,13 @@
 ---
 title: VersionMark User Guide
-subtitle: A .NET Reference Implementation for CLI Tools
+subtitle: User Guide
 author: DEMA Consulting
-description: A .NET Reference Implementation for CLI Tools
+description: User guide for the VersionMark .NET tool for capturing and publishing tool version information
 lang: en-US
 keywords:
   - VersionMark
   - .NET
   - Command-Line Tool
   - Documentation
-  - Best Practices
+  - Version Capture
 ---
