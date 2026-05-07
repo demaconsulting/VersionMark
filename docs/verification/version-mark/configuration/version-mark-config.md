@@ -31,6 +31,10 @@ The following test scenarios verify `VersionMarkConfig.FindVersions`:
   No regex match throws InvalidOperationException.
 - **`VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`**:
   Missing version group throws InvalidOperationException.
+- **`VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`**:
+  Tool with only an OS-specific command succeeds when the matching OS is specified.
+- **`VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`**:
+  Tool with only an OS-specific command throws when a non-matching OS is specified.
 
 #### Test Scenarios — Load
 
@@ -78,7 +82,9 @@ The following list maps `VersionMarkConfig` unit requirements to test scenarios:
   `VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException`,
   `VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException`,
   `VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException`,
-  `VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`
+  `VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`,
+  `VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`,
+  `VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`
 - **`VersionMark-VersionMarkConfig-Load`**: All `VersionMarkConfig_Load_*` test scenarios above
 - **`VersionMark-Load-Method`**: `VersionMarkConfig_Load_ValidConfig_ReturnsConfig`
 - **`VersionMark-Load-FileExistence`**: `VersionMarkConfig_Load_MissingFile_ReturnsNullConfig`

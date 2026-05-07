@@ -508,8 +508,12 @@ public sealed record VersionMarkConfig
     /// </summary>
     /// <param name="toolNames">List of tool names to query.</param>
     /// <param name="jobId">Job ID for this version capture.</param>
+    /// <param name="os">
+    ///     The operating system name to use for command and regex selection, or <see langword="null"/>
+    ///     to use the current OS. Accepted values: <c>"win"</c>, <c>"linux"</c>, <c>"macos"</c>.
+    /// </param>
     /// <returns>VersionInfo record containing the job ID and tool versions.</returns>
-    public VersionInfo FindVersions(IEnumerable<string> toolNames, string jobId)
+    public VersionInfo FindVersions(IEnumerable<string> toolNames, string jobId, string? os = null)
     {
         var versions = new Dictionary<string, string>();
 
@@ -520,8 +524,8 @@ public sealed record VersionMarkConfig
                 throw new ArgumentException($"Tool '{toolName}' not found in configuration");
             }
 
-            var command = toolConfig.GetEffectiveCommand();
-            var regex = toolConfig.GetEffectiveRegex();
+            var command = toolConfig.GetEffectiveCommand(os);
+            var regex = toolConfig.GetEffectiveRegex(os);
 
             var output = RunCommand(command);
             var version = ExtractVersion(output, regex, toolName);

@@ -65,16 +65,22 @@ you need access to lint issues.
 
 #### FindVersions Method
 
-`FindVersions` accepts a list of tool names and a job ID. For each named tool it:
+`FindVersions` accepts a list of tool names, a job ID, and an optional OS name. For each
+named tool it:
 
 1. Looks up the `ToolConfig` (throws `ArgumentException` for unknown tools).
-2. Calls `GetEffectiveCommand` and `GetEffectiveRegex` for the current OS.
+2. Calls `GetEffectiveCommand(os)` and `GetEffectiveRegex(os)` for the specified OS
+   (or the current OS when `os` is `null`).
 3. Calls the private `RunCommand` helper to execute the command in a shell.
 4. Calls the private `ExtractVersion` helper to apply the regex.
 5. Stores the result in a `versions` dictionary.
 
-The method returns a `VersionInfo` record. This satisfies requirements
-`VersionMark-Capture-Command` and `VersionMark-Capture-MultipleTools`.
+The optional `os` parameter (`null` by default) enables callers to override OS detection,
+which is particularly useful for unit testing cross-OS scenarios without depending on the
+actual runtime platform. Passing an OS name for which no tool command or regex is defined
+(and no default entry exists) raises `InvalidOperationException`. The method returns a
+`VersionInfo` record. This satisfies requirements `VersionMark-Capture-Command` and
+`VersionMark-Capture-MultipleTools`.
 
 #### RunCommand Helper
 

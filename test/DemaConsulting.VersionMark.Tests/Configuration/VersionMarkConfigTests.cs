@@ -687,4 +687,52 @@ public partial class VersionMarkConfigTests
 
         Assert.Contains("must contain a named 'version' capture group", ex.Message);
     }
+
+    /// <summary>
+    ///     Test FindVersions with explicit OS and matching OS-only command returns version info.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo()
+    {
+        // Arrange - tool with only a "linux" command; pass "linux" explicitly so the test
+        // is deterministic regardless of the actual runtime OS
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["dotnet"] = new ToolConfig(
+                new Dictionary<string, string> { ["linux"] = "dotnet --version" },
+                new Dictionary<string, string> { ["linux"] = @"(?<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act - pass "linux" explicitly to select the OS-only command
+        var versionInfo = config.FindVersions(s_dotnetToolArray, "test-job", "linux");
+
+        // Assert
+        Assert.NotNull(versionInfo);
+        Assert.Single(versionInfo.Versions);
+        Assert.True(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
+        Assert.Matches(VersionRegex(), dotnetVersion);
+    }
+
+    /// <summary>
+    ///     Test FindVersions with explicit OS and no matching OS-only command throws InvalidOperationException.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException()
+    {
+        // Arrange - tool with only a "win" command; querying as "linux" should fail
+        var tools = new Dictionary<string, ToolConfig>
+        {
+            ["mytool"] = new ToolConfig(
+                new Dictionary<string, string> { ["win"] = "tool.exe --version" },
+                new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
+            )
+        };
+        var config = new VersionMarkConfig(tools);
+
+        // Act & Assert - no "linux" key and no default key → InvalidOperationException
+        Assert.Throws<InvalidOperationException>(() =>
+            config.FindVersions(["mytool"], "test-job", "linux"));
+    }
 }
