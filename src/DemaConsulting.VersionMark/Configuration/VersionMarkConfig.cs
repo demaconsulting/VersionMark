@@ -80,16 +80,14 @@ public sealed record ToolConfig
     /// <summary>
     ///     Gets the effective command for the specified operating system.
     /// </summary>
-    /// <param name="os">The operating system name, or null to use current OS.</param>
+    /// <param name="os">The operating system name (e.g. "win", "linux", "macos").</param>
     /// <returns>The command to execute based on the specified OS.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown when no OS-specific override exists for <paramref name="os"/> and no default
     ///     (empty-string) key is present in the <see cref="Command"/> dictionary.
     /// </exception>
-    public string GetEffectiveCommand(string? os = null)
+    public string GetEffectiveCommand(string os)
     {
-        os ??= GetCurrentOs();
-
         if (Command.TryGetValue(os, out var osCommand))
         {
             return osCommand;
@@ -103,16 +101,14 @@ public sealed record ToolConfig
     /// <summary>
     ///     Gets the effective regex for the specified operating system.
     /// </summary>
-    /// <param name="os">The operating system name, or null to use current OS.</param>
+    /// <param name="os">The operating system name (e.g. "win", "linux", "macos").</param>
     /// <returns>The regex to use based on the specified OS.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown when no OS-specific override exists for <paramref name="os"/> and no default
     ///     (empty-string) key is present in the <see cref="Regex"/> dictionary.
     /// </exception>
-    public string GetEffectiveRegex(string? os = null)
+    public string GetEffectiveRegex(string os)
     {
-        os ??= GetCurrentOs();
-
         if (Regex.TryGetValue(os, out var osRegex))
         {
             return osRegex;

@@ -57,9 +57,9 @@ public class ConfigurationTests
             Assert.Equal(2, config.Tools.Count);
             Assert.True(config.Tools.ContainsKey("dotnet"), "dotnet tool should be present");
             Assert.True(config.Tools.ContainsKey("git"), "git tool should be present");
-            Assert.False(string.IsNullOrEmpty(config.Tools["dotnet"].GetEffectiveCommand()),
+            Assert.False(string.IsNullOrEmpty(config.Tools["dotnet"].GetEffectiveCommand(ToolConfig.GetCurrentOs())),
                 "dotnet command should be accessible");
-            Assert.False(string.IsNullOrEmpty(config.Tools["git"].GetEffectiveRegex()),
+            Assert.False(string.IsNullOrEmpty(config.Tools["git"].GetEffectiveRegex(ToolConfig.GetCurrentOs())),
                 "git regex should be accessible");
         }
         finally
@@ -91,7 +91,7 @@ public class ConfigurationTests
 
             // Act - Read the config and get the effective command for the current OS
             var config = VersionMarkConfig.ReadFromFile(tempFile);
-            var effectiveCommand = config.Tools["dotnet"].GetEffectiveCommand();
+            var effectiveCommand = config.Tools["dotnet"].GetEffectiveCommand(ToolConfig.GetCurrentOs());
 
             // Assert - The effective command should match the OS-specific override for the current platform
             if (OperatingSystem.IsWindows())
@@ -148,7 +148,7 @@ public class ConfigurationTests
             // Act
             var config = VersionMarkConfig.ReadFromFile(tempFile);
             var tool = config.Tools["dotnet"];
-            var effectiveRegex = tool.GetEffectiveRegex();
+            var effectiveRegex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
 
             // Assert - The effective regex should match the OS-specific override for the current platform
             if (OperatingSystem.IsWindows())

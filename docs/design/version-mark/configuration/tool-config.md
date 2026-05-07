@@ -12,9 +12,11 @@ tool entry. It holds two dictionaries keyed by OS name:
 
 #### OS-Specific Overrides
 
-`GetEffectiveCommand` and `GetEffectiveRegex` resolve the active OS at runtime using
-`RuntimeInformation.IsOSPlatform` and then look up the OS-specific key first, falling back
-to the default (`""`) key. When no default (`""`) key is present either, an
+`GetEffectiveCommand(string os)` and `GetEffectiveRegex(string os)` both take a concrete,
+already-resolved OS string — they do not accept `null` and do not call `GetCurrentOs`
+internally. The caller is responsible for resolving the OS once (e.g. `os ?? ToolConfig.GetCurrentOs()`
+in `FindVersions`) and passing the resulting string. Each method looks up the OS-specific key
+first, falling back to the default (`""`) key. When no default (`""`) key is present either, an
 `InvalidOperationException` is thrown. This satisfies requirements `VersionMark-ToolConfig-EffectiveCommand`
 and `VersionMark-ToolConfig-EffectiveRegex`.
 

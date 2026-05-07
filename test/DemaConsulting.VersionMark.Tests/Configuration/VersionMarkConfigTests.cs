@@ -243,7 +243,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var command = tool.GetEffectiveCommand();
+        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
 
         // Assert
         Assert.Equal("tool --version", command);
@@ -262,7 +262,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var regex = tool.GetEffectiveRegex();
+        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
 
         // Assert
         Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
@@ -335,7 +335,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var command = tool.GetEffectiveCommand();
+        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
 
         // Assert
         // On Windows, should return Windows override; otherwise default
@@ -366,7 +366,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var command = tool.GetEffectiveCommand();
+        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
 
         // Assert
         // On Linux, should return Linux override; otherwise default
@@ -397,7 +397,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var command = tool.GetEffectiveCommand();
+        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
 
         // Assert
         // On macOS, should return macOS override; otherwise default
@@ -428,7 +428,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var regex = tool.GetEffectiveRegex();
+        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
 
         // Assert
         // On Windows, should return Windows override; otherwise default
@@ -459,7 +459,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var regex = tool.GetEffectiveRegex();
+        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
 
         // Assert
         // On Linux, should return Linux override; otherwise default
@@ -490,7 +490,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var regex = tool.GetEffectiveRegex();
+        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
 
         // Assert
         // On macOS, should return macOS override; otherwise default
