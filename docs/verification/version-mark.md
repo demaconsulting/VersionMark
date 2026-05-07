@@ -17,7 +17,7 @@ The verification strategy is organized around five subsystems:
 ## Verification Approach
 
 Each subsystem is verified through a combination of integration tests (at the subsystem
-level) and unit tests (at the unit level). All tests are implemented using MSTest and
+level) and unit tests (at the unit level). All tests are implemented using xUnit and
 are located under `test/DemaConsulting.VersionMark.Tests/`.
 
 Tests are executed using `dotnet test` across multiple operating systems (Windows, Linux,

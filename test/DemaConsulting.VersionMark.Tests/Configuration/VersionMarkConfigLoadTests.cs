@@ -635,10 +635,7 @@ public class VersionMarkConfigLoadTests
     public void VersionMarkConfig_Load_UnreadableFile_ReturnsError()
     {
         // Skip on non-Unix platforms where Unix file permissions are not supported
-        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
-        {
-            return;
-        }
+        Assert.SkipUnless(OperatingSystem.IsLinux() || OperatingSystem.IsMacOS(), "Requires Unix file permissions");
 
         // Arrange - Create a temp file and remove all read permissions
         var tempFile = Path.GetTempFileName();

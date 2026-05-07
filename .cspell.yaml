@@ -19,7 +19,6 @@ words:
   - Dema
   - fileassert
   - msbuild
-  - mstest
   - opencover
   - pandoc
   - reqstream

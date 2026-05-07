@@ -29,7 +29,7 @@ It also covers verification evidence for the following Off-The-Shelf (OTS) compo
 
 - **BuildMark** - build notes generation tool
 - **FileAssert** - file content assertion tool
-- **MSTest** - unit testing framework
+- **xUnit** - unit testing framework
 - **Pandoc** - document conversion tool
 - **ReqStream** - requirements traceability tool
 - **ReviewMark** - code review enforcement tool

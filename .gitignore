@@ -54,7 +54,7 @@ _ReSharper*/
 *.snupkg
 **/packages/*
 
-# MSTest test Results
+# Test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 

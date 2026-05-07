@@ -36,14 +36,12 @@ Tests use a temporary directory for results files. No external mocks are require
 
 The following list maps SelfTest subsystem requirements to test scenarios:
 
-- **`VersionMark-Validate-Capture`**: `SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists`,
-  `SelfTest_Run_WithResultsFlag_WritesResultsFile`
-- **`VersionMark-Validate-Publish`**: `SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists`,
-  `SelfTest_Run_WithResultsFlag_WritesResultsFile`
-- **`VersionMark-Validate-Lint`**: `SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists`,
-  `SelfTest_Run_WithResultsFlag_WritesResultsFile`
+- **`VersionMark-Validate-Capture`**: `SelfTest_Run_WithResultsFlag_WritesResultsFile`
+- **`VersionMark-Validate-Publish`**: `SelfTest_Run_WithResultsFlag_WritesResultsFile`
+- **`VersionMark-Validate-Lint`**: `SelfTest_Run_WithResultsFlag_WritesResultsFile`
 - **`VersionMark-Validate-Results`**: `SelfTest_Run_WithResultsFlag_WritesResultsFile`,
   `SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile`
 - **`VersionMark-PathHelpers-SafeCombine`**: `SelfTest_PathHelpers_PathTraversal_ThrowsArgumentException`,
-  `SelfTest_PathHelpers_ValidRelativePath_ProducesExpectedPath`
+  `SelfTest_PathHelpers_ValidRelativePath_ProducesExpectedPath`,
+  `SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists`
 - **`VersionMark-Validation-HeaderDepth`**: `SelfTest_Run_WithDepthTwo_WritesHashHashHeader`

@@ -117,8 +117,8 @@ sections:
 
           - id: VersionMark-Capture-CommandFailure
             title: >-
-              The tool shall record an empty version string for a tool when its configured
-              command fails or produces no regex match.
+              The tool shall abort capture and report an error when a configured command
+              fails or produces no regex match.
             justification: |
               Fail-fast behavior ensures the user is immediately informed of capture failures
               rather than silently continuing with missing version data, preventing incomplete
