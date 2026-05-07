@@ -543,17 +543,21 @@ public sealed record VersionMarkConfig
     /// <exception cref="InvalidOperationException">Thrown when the command fails to execute.</exception>
     /// <remarks>
     ///     Commands are delegated to the OS shell (<c>cmd.exe /c</c> on Windows, <c>/bin/sh -c</c>
-    ///     elsewhere) via <c>Arguments</c> (string-based) so the command is passed verbatim to the
-    ///     shell. Using <c>ArgumentList</c> would cause .NET to re-quote and escape embedded quotes,
-    ///     breaking commands like <c>"path with spaces\tool" --version</c>. This supports
-    ///     <c>.cmd</c>/<c>.bat</c> files on Windows and shell features (pipes, redirects, built-ins)
-    ///     on all platforms.
+    ///     elsewhere). On Windows, <c>Arguments</c> (string-based) is used so the command is passed
+    ///     verbatim to <c>cmd.exe</c> — <c>ArgumentList</c> would re-quote embedded quotes, breaking
+    ///     commands like <c>"%VAR%\tool" --version</c>. On Unix, <c>ArgumentList</c> is used so that
+    ///     <c>/bin/sh</c> receives <c>-c</c> and the full command string as separate argv entries, as
+    ///     required by the shell. This supports <c>.cmd</c>/<c>.bat</c> files on Windows and shell
+    ///     features (pipes, redirects, built-ins) on all platforms.
     /// </remarks>
     private static string RunCommand(string command)
     {
-        // Pass the command verbatim to the shell via Arguments (not ArgumentList) so that embedded
-        // quotes are not re-escaped. ArgumentList applies CommandLineToArgvW-style quoting which
-        // cmd.exe does not correctly reverse, causing failures for quoted executable paths.
+        // On Windows, pass the command via Arguments (string-based) so cmd.exe receives it verbatim.
+        // ArgumentList applies CommandLineToArgvW-style quoting which cmd.exe does not correctly
+        // reverse, breaking quoted executable paths such as "%VAR%\tool" --version.
+        // On Unix, use ArgumentList so that /bin/sh receives -c and the full command string as
+        // separate argv entries — if Arguments were used, .NET would split on spaces and sh would
+        // receive multiple tokens instead of a single command string.
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         try
@@ -561,12 +565,27 @@ public sealed record VersionMarkConfig
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = isWindows ? "cmd.exe" : "/bin/sh",
-                Arguments = isWindows ? $"/c {command}" : $"-c {command}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
+
+            if (isWindows)
+            {
+                // Wrap the entire command in outer quotes so cmd.exe always applies its
+                // "strip first and last quote" rule (condition 2), leaving the inner
+                // command — including any embedded quoted paths or arguments — intact.
+                // Without the outer quotes, a command such as
+                //   "%VAR%\tool" --arg "value"
+                // would cause cmd.exe to misparse the quote boundaries.
+                processStartInfo.Arguments = $"/c \"{command}\"";
+            }
+            else
+            {
+                processStartInfo.ArgumentList.Add("-c");
+                processStartInfo.ArgumentList.Add(command);
+            }
 
             using var process = Process.Start(processStartInfo);
             if (process == null)

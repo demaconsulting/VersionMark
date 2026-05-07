@@ -299,6 +299,82 @@ The tool uses OS-specific overrides when running on the corresponding platform. 
 is specified for the current platform, it falls back to the default `command` and `regex`
 values.
 
+## Commands with Spaces in Paths
+
+When a tool's executable is installed at a path that contains spaces, the path must be
+enclosed in double quotes so the shell treats it as a single token.
+
+### Windows: Environment Variable Paths
+
+Many Windows tools are installed at paths exposed via environment variables. Use the variable
+directly inside double quotes:
+
+```yaml
+tools:
+  # LLVM tools installed via LLVM_PATH environment variable
+  clang-format:
+    command-win: '"%LLVM_PATH%\bin\clang-format" --version'
+    regex: 'clang-format version (?<version>.*)'
+
+  # Visual Studio's cl.exe via VSINSTALLDIR
+  msvc:
+    command-win: '"%VSINSTALLDIR%VC\Tools\MSVC\14.39.33519\bin\Hostx64\x64\cl.exe"'
+    regex: 'Version (?<version>[\d.]+)'
+```
+
+> **Note:** The entire value is single-quoted in YAML so that the inner double quotes are
+> preserved literally. VersionMark passes the command verbatim to `cmd.exe /c`, so `%VAR%`
+> expansion and quoted-path handling work exactly as they do in a normal Command Prompt.
+
+### Windows: Absolute Paths with Spaces
+
+If you know the exact path, quote just the executable portion:
+
+```yaml
+tools:
+  cmake:
+    command-win: '"C:\Program Files\CMake\bin\cmake.exe" --version'
+    command: cmake --version
+    regex: 'cmake version (?<version>\d+\.\d+\.\d+)'
+```
+
+### Windows: Quoted Path with Quoted Arguments
+
+When both the executable path **and** an argument value contain spaces, quote each part
+independently:
+
+```yaml
+tools:
+  custom-tool:
+    command-win: '"C:\Program Files\My Tool\tool.exe" --output "C:\My Output\result.txt"'
+    regex: 'version (?<version>\d+\.\d+\.\d+)'
+```
+
+### Unix/macOS: Paths with Spaces
+
+On Unix-like systems use `$VAR` syntax and the same double-quoting convention:
+
+```yaml
+tools:
+  custom-sdk:
+    command-linux: '"$CUSTOM_SDK_PATH/bin/tool" --version'
+    command-macos: '"$CUSTOM_SDK_PATH/bin/tool" --version'
+    regex: 'tool version (?<version>\d+\.\d+\.\d+)'
+```
+
+### Common Cross-Platform Pattern
+
+For a tool that needs quoting on all platforms, use the default `command` with each platform's
+variable syntax, plus OS-specific overrides where the path format differs:
+
+```yaml
+tools:
+  clang-format:
+    command: '"$LLVM_PATH/bin/clang-format" --version'
+    command-win: '"%LLVM_PATH%\bin\clang-format" --version'
+    regex: 'clang-format version (?<version>.*)'
+```
+
 ## Regular Expression Tips
 
 The regex must contain a named 'version' capture group using .NET syntax `(?<version>...)` that
@@ -591,6 +667,28 @@ tools:
 ```
 
 # Troubleshooting
+
+## Tool Path Contains Spaces (Windows)
+
+If the tool executable is at a path with spaces and you see an error like:
+
+```text
+Error: Failed to run command '"C:\Program Files\...\tool"': '"C:\Program Files\...\tool"'
+is not recognized as an internal or external command
+```
+
+The path must be double-quoted inside the command string. In YAML, single-quote the entire
+value so the inner double quotes are preserved:
+
+```yaml
+# WRONG — spaces in path cause the shell to split the executable name
+command-win: '%LLVM_PATH%\bin\clang-format --version'
+
+# CORRECT — double-quote the executable path
+command-win: '"%LLVM_PATH%\bin\clang-format" --version'
+```
+
+See [Commands with Spaces in Paths](#commands-with-spaces-in-paths) for more examples.
 
 ## Tool Not Found
 
