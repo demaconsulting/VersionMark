@@ -543,13 +543,17 @@ public sealed record VersionMarkConfig
     /// <exception cref="InvalidOperationException">Thrown when the command fails to execute.</exception>
     /// <remarks>
     ///     Commands are delegated to the OS shell (<c>cmd.exe /c</c> on Windows, <c>/bin/sh -c</c>
-    ///     elsewhere) via <c>ArgumentList</c> to avoid escaping issues. This supports <c>.cmd</c>/<c>.bat</c>
-    ///     files on Windows and shell features (pipes, redirects, built-ins) on all platforms.
+    ///     elsewhere) via <c>Arguments</c> (string-based) so the command is passed verbatim to the
+    ///     shell. Using <c>ArgumentList</c> would cause .NET to re-quote and escape embedded quotes,
+    ///     breaking commands like <c>"path with spaces\tool" --version</c>. This supports
+    ///     <c>.cmd</c>/<c>.bat</c> files on Windows and shell features (pipes, redirects, built-ins)
+    ///     on all platforms.
     /// </remarks>
     private static string RunCommand(string command)
     {
-        // To support .cmd/.bat files on Windows and shell features on all platforms,
-        // we run commands through the appropriate shell using ArgumentList to avoid escaping issues
+        // Pass the command verbatim to the shell via Arguments (not ArgumentList) so that embedded
+        // quotes are not re-escaped. ArgumentList applies CommandLineToArgvW-style quoting which
+        // cmd.exe does not correctly reverse, causing failures for quoted executable paths.
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         try
@@ -557,13 +561,12 @@ public sealed record VersionMarkConfig
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = isWindows ? "cmd.exe" : "/bin/sh",
+                Arguments = isWindows ? $"/c {command}" : $"-c {command}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-            processStartInfo.ArgumentList.Add(isWindows ? "/c" : "-c");
-            processStartInfo.ArgumentList.Add(command);
 
             using var process = Process.Start(processStartInfo);
             if (process == null)
