@@ -323,8 +323,8 @@ tools:
 ```
 
 > **Note:** The entire value is single-quoted in YAML so that the inner double quotes are
-> preserved literally. VersionMark passes the command verbatim to `cmd.exe /c`, so `%VAR%`
-> expansion and quoted-path handling work exactly as they do in a normal Command Prompt.
+> preserved literally. VersionMark executes the command via `cmd.exe` as `/c "{command}"`,
+> preserving inner quoted paths and arguments while still allowing normal `%VAR%` expansion.
 
 ### Windows: Absolute Paths with Spaces
 

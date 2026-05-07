@@ -510,6 +510,59 @@ public partial class VersionMarkConfigTests
     }
 
     /// <summary>
+    ///     Test FindVersions on Windows with a double-quoted executable path and quoted argument.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_FindVersions_WindowsQuotedExecutablePathAndArgument_ReturnsVersionInfo()
+    {
+        // Arrange
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "Requires Windows cmd.exe behavior");
+
+        var tempDirectory = Path.Combine(Path.GetTempPath(), $"VersionMark Quoted Path {Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDirectory);
+        var scriptPath = Path.Combine(tempDirectory, "emit-version.cmd");
+
+        try
+        {
+            File.WriteAllText(
+                scriptPath,
+                "@echo off" + Environment.NewLine +
+                "echo tool version 1.2.3 arg=%~1");
+
+            var tools = new Dictionary<string, ToolConfig>
+            {
+                ["quoted-tool"] = new ToolConfig(
+                    new Dictionary<string, string>
+                    {
+                        [string.Empty] = $"\"{scriptPath}\" \"value with spaces\""
+                    },
+                    new Dictionary<string, string>
+                    {
+                        [string.Empty] = @"tool version (?<version>\d+\.\d+\.\d+) arg=value with spaces"
+                    }
+                )
+            };
+            var config = new VersionMarkConfig(tools);
+
+            // Act
+            var versionInfo = config.FindVersions(["quoted-tool"], "test-job");
+
+            // Assert
+            Assert.NotNull(versionInfo);
+            Assert.Single(versionInfo.Versions);
+            Assert.True(versionInfo.Versions.TryGetValue("quoted-tool", out var version));
+            Assert.Equal("1.2.3", version);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, true);
+            }
+        }
+    }
+
+    /// <summary>
     ///     Test FindVersions with multiple tools.
     /// </summary>
     [Fact]
