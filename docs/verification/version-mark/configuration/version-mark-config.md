@@ -31,6 +31,10 @@ The following test scenarios verify `VersionMarkConfig.FindVersions`:
   No regex match throws InvalidOperationException.
 - **`VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`**:
   Missing version group throws InvalidOperationException.
+- **`VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`**:
+  Tool with only an OS-specific command succeeds when the matching OS is specified.
+- **`VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`**:
+  Tool with only an OS-specific command throws when a non-matching OS is specified.
 
 #### Test Scenarios — Load
 
@@ -54,6 +58,10 @@ The following test scenarios verify `VersionMarkConfig.Load`:
 - **`VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig`**:
   OS-specific regex without version group returns null.
 - **`VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`**: OS-specific invalid regex returns a null config.
+- **`VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`**: Tool with only OS-specific commands
+  (no default command) is valid.
+- **`VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig`**: Tool with only OS-specific regex (no default regex) is valid.
+- **`VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig`**: Tool with only OS-specific commands and regex is valid.
 - **`VersionMarkConfig_Load_MultipleErrors_ReportsAll`**: Multiple errors are all reported in the issue list.
 - **`VersionMarkConfig_Load_IssuesContainFilePath`**: Issue records include the config file path.
 
@@ -75,7 +83,9 @@ The following list maps `VersionMarkConfig` unit requirements to test scenarios:
   `VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException`,
   `VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException`,
   `VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException`,
-  `VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`
+  `VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`,
+  `VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`,
+  `VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`
 - **`VersionMark-VersionMarkConfig-Load`**: All `VersionMarkConfig_Load_*` test scenarios above
 - **`VersionMark-Load-Method`**: `VersionMarkConfig_Load_ValidConfig_ReturnsConfig`
 - **`VersionMark-Load-FileExistence`**: `VersionMarkConfig_Load_MissingFile_ReturnsNullConfig`
@@ -91,7 +101,10 @@ The following list maps `VersionMarkConfig` unit requirements to test scenarios:
 - **`VersionMark-Load-OsOverrides`**: `VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig`,
   `VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig`,
   `VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`
+  `VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`,
+  `VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`,
+  `VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig`,
+  `VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig`
 - **`VersionMark-Load-UnknownKeys`**: `VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig`,
   `VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig`
 - **`VersionMark-Load-ErrorLocation`**: `VersionMarkConfig_Load_IssuesContainFilePath`

@@ -57,7 +57,7 @@ public sealed record ToolConfig
     ///     Gets the current operating system name.
     /// </summary>
     /// <returns>The OS name: "win", "linux", "macos", or empty string if unknown.</returns>
-    private static string GetCurrentOs()
+    internal static string GetCurrentOs()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -80,16 +80,14 @@ public sealed record ToolConfig
     /// <summary>
     ///     Gets the effective command for the specified operating system.
     /// </summary>
-    /// <param name="os">The operating system name, or null to use current OS.</param>
+    /// <param name="os">The operating system name (e.g. "win", "linux", "macos").</param>
     /// <returns>The command to execute based on the specified OS.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown when no OS-specific override exists for <paramref name="os"/> and no default
     ///     (empty-string) key is present in the <see cref="Command"/> dictionary.
     /// </exception>
-    public string GetEffectiveCommand(string? os = null)
+    public string GetEffectiveCommand(string os)
     {
-        os ??= GetCurrentOs();
-
         if (Command.TryGetValue(os, out var osCommand))
         {
             return osCommand;
@@ -103,16 +101,14 @@ public sealed record ToolConfig
     /// <summary>
     ///     Gets the effective regex for the specified operating system.
     /// </summary>
-    /// <param name="os">The operating system name, or null to use current OS.</param>
+    /// <param name="os">The operating system name (e.g. "win", "linux", "macos").</param>
     /// <returns>The regex to use based on the specified OS.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown when no OS-specific override exists for <paramref name="os"/> and no default
     ///     (empty-string) key is present in the <see cref="Regex"/> dictionary.
     /// </exception>
-    public string GetEffectiveRegex(string? os = null)
+    public string GetEffectiveRegex(string os)
     {
-        os ??= GetCurrentOs();
-
         if (Regex.TryGetValue(os, out var osRegex))
         {
             return osRegex;
@@ -382,6 +378,7 @@ public sealed record VersionMarkConfig
             // Validate OS-specific command overrides
             else if (key is "command-win" or "command-linux" or "command-macos")
             {
+                hasCommand = true;
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must not be empty"));
@@ -421,6 +418,7 @@ public sealed record VersionMarkConfig
             // Validate OS-specific regex overrides
             else if (key is "regex-win" or "regex-linux" or "regex-macos")
             {
+                hasRegex = true;
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     issues.Add(CreateIssue(filePath, entryValueNode, LintSeverity.Error, $"Tool '{toolName}' '{key}' must not be empty"));
@@ -447,12 +445,12 @@ public sealed record VersionMarkConfig
         // Report missing required fields after scanning all entries
         if (!hasCommand)
         {
-            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'command' field"));
+            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'command' or OS-specific command field"));
         }
 
         if (!hasRegex)
         {
-            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'regex' field"));
+            issues.Add(CreateIssue(filePath, toolNode, LintSeverity.Error, $"Tool '{toolName}' must have a 'regex' or OS-specific regex field"));
         }
 
         // Only produce a ToolConfig when no new errors were added for this tool
@@ -506,9 +504,16 @@ public sealed record VersionMarkConfig
     /// </summary>
     /// <param name="toolNames">List of tool names to query.</param>
     /// <param name="jobId">Job ID for this version capture.</param>
+    /// <param name="os">
+    ///     The operating system name to use for command and regex selection, or <see langword="null"/>
+    ///     to use the current OS. Accepted values: <c>"win"</c>, <c>"linux"</c>, <c>"macos"</c>.
+    /// </param>
     /// <returns>VersionInfo record containing the job ID and tool versions.</returns>
-    public VersionInfo FindVersions(IEnumerable<string> toolNames, string jobId)
+    public VersionInfo FindVersions(IEnumerable<string> toolNames, string jobId, string? os = null)
     {
+        // Resolve OS once, up front, so every tool uses the same consistent platform
+        var resolvedOs = os ?? ToolConfig.GetCurrentOs();
+
         var versions = new Dictionary<string, string>();
 
         foreach (var toolName in toolNames)
@@ -518,8 +523,8 @@ public sealed record VersionMarkConfig
                 throw new ArgumentException($"Tool '{toolName}' not found in configuration");
             }
 
-            var command = toolConfig.GetEffectiveCommand();
-            var regex = toolConfig.GetEffectiveRegex();
+            var command = toolConfig.GetEffectiveCommand(resolvedOs);
+            var regex = toolConfig.GetEffectiveRegex(resolvedOs);
 
             var output = RunCommand(command);
             var version = ExtractVersion(output, regex, toolName);

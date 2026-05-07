@@ -259,14 +259,17 @@ Each tool entry in the `tools` dictionary supports the following properties:
 
 | Property         | Required | Description                                                         |
 | ---------------- | -------- | ------------------------------------------------------------------- |
-| `command`        | Yes      | Shell command to execute to get version information                 |
-| `regex`          | Yes      | Regular expression with named 'version' group: `(?<version>...)`    |
+| `command`        | Yes*     | Shell command to execute to get version information                 |
+| `regex`          | Yes*     | Regular expression with named 'version' group: `(?<version>...)`    |
 | `command-win`    | No       | Command override for Windows                                        |
 | `command-linux`  | No       | Command override for Linux                                          |
 | `command-macos`  | No       | Command override for macOS                                          |
 | `regex-win`      | No       | Regex override for Windows                                          |
 | `regex-linux`    | No       | Regex override for Linux                                            |
 | `regex-macos`    | No       | Regex override for macOS                                            |
+
+\* Required unless OS-specific variants (`command-win`/`command-linux`/`command-macos` or
+`regex-win`/`regex-linux`/`regex-macos`) are provided instead.
 
 ## OS-Specific Overrides
 

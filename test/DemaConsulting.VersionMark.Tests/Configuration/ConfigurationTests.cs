@@ -57,9 +57,9 @@ public class ConfigurationTests
             Assert.Equal(2, config.Tools.Count);
             Assert.True(config.Tools.ContainsKey("dotnet"), "dotnet tool should be present");
             Assert.True(config.Tools.ContainsKey("git"), "git tool should be present");
-            Assert.False(string.IsNullOrEmpty(config.Tools["dotnet"].GetEffectiveCommand()),
+            Assert.False(string.IsNullOrEmpty(config.Tools["dotnet"].GetEffectiveCommand("linux")),
                 "dotnet command should be accessible");
-            Assert.False(string.IsNullOrEmpty(config.Tools["git"].GetEffectiveRegex()),
+            Assert.False(string.IsNullOrEmpty(config.Tools["git"].GetEffectiveRegex("linux")),
                 "git regex should be accessible");
         }
         finally
@@ -89,23 +89,14 @@ public class ConfigurationTests
                 """;
             File.WriteAllText(tempFile, yaml);
 
-            // Act - Read the config and get the effective command for the current OS
+            // Act - Read the config and get the effective command for each OS
             var config = VersionMarkConfig.ReadFromFile(tempFile);
-            var effectiveCommand = config.Tools["dotnet"].GetEffectiveCommand();
+            var dotnet = config.Tools["dotnet"];
 
-            // Assert - The effective command should match the OS-specific override for the current platform
-            if (OperatingSystem.IsWindows())
-            {
-                Assert.Equal("dotnet.exe --version", effectiveCommand);
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                Assert.Equal("dotnet-linux --version", effectiveCommand);
-            }
-            else
-            {
-                Assert.Equal("dotnet --version", effectiveCommand);
-            }
+            // Assert - Each OS should return the appropriate override or default
+            Assert.Equal("dotnet.exe --version", dotnet.GetEffectiveCommand("win"));
+            Assert.Equal("dotnet-linux --version", dotnet.GetEffectiveCommand("linux"));
+            Assert.Equal("dotnet --version", dotnet.GetEffectiveCommand("macos"));
         }
         finally
         {
@@ -148,21 +139,11 @@ public class ConfigurationTests
             // Act
             var config = VersionMarkConfig.ReadFromFile(tempFile);
             var tool = config.Tools["dotnet"];
-            var effectiveRegex = tool.GetEffectiveRegex();
 
-            // Assert - The effective regex should match the OS-specific override for the current platform
-            if (OperatingSystem.IsWindows())
-            {
-                Assert.Equal(@"(?<version>\d+\.\d+\.\d+)-win", effectiveRegex);
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                Assert.Equal(@"(?<version>\d+\.\d+\.\d+)-linux", effectiveRegex);
-            }
-            else
-            {
-                Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", effectiveRegex);
-            }
+            // Assert - Each OS should return the appropriate override or default
+            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)-win", tool.GetEffectiveRegex("win"));
+            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)-linux", tool.GetEffectiveRegex("linux"));
+            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
         }
         finally
         {

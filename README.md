@@ -137,8 +137,9 @@ tools:
 
 Each tool in the `tools` dictionary has the following properties:
 
-- **command**: Shell command to execute to get version information
-- **regex**: Regular expression with a named 'version' capture group using .NET syntax `(?<version>...)`
+- **command**: Shell command to execute to get version information (required unless OS-specific variants are provided)
+- **regex**: Regular expression with a named 'version' capture group using .NET syntax
+  `(?<version>...)` (required unless OS-specific variants are provided)
 - **command-win**: (Optional) Command override for Windows
 - **command-linux**: (Optional) Command override for Linux
 - **command-macos**: (Optional) Command override for macOS
