@@ -57,7 +57,7 @@ public sealed record ToolConfig
     ///     Gets the current operating system name.
     /// </summary>
     /// <returns>The OS name: "win", "linux", "macos", or empty string if unknown.</returns>
-    private static string GetCurrentOs()
+    internal static string GetCurrentOs()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -515,6 +515,9 @@ public sealed record VersionMarkConfig
     /// <returns>VersionInfo record containing the job ID and tool versions.</returns>
     public VersionInfo FindVersions(IEnumerable<string> toolNames, string jobId, string? os = null)
     {
+        // Resolve OS once, up front, so every tool uses the same consistent platform
+        var resolvedOs = os ?? ToolConfig.GetCurrentOs();
+
         var versions = new Dictionary<string, string>();
 
         foreach (var toolName in toolNames)
@@ -524,8 +527,8 @@ public sealed record VersionMarkConfig
                 throw new ArgumentException($"Tool '{toolName}' not found in configuration");
             }
 
-            var command = toolConfig.GetEffectiveCommand(os);
-            var regex = toolConfig.GetEffectiveRegex(os);
+            var command = toolConfig.GetEffectiveCommand(resolvedOs);
+            var regex = toolConfig.GetEffectiveRegex(resolvedOs);
 
             var output = RunCommand(command);
             var version = ExtractVersion(output, regex, toolName);

@@ -65,12 +65,13 @@ you need access to lint issues.
 
 #### FindVersions Method
 
-`FindVersions` accepts a list of tool names, a job ID, and an optional OS name. For each
-named tool it:
+`FindVersions` accepts a list of tool names, a job ID, and an optional OS name. It resolves
+the OS once up-front — `os ?? ToolConfig.GetCurrentOs()` — so that all tools use the same
+consistent platform for the entire call. For each named tool it:
 
 1. Looks up the `ToolConfig` (throws `ArgumentException` for unknown tools).
-2. Calls `GetEffectiveCommand(os)` and `GetEffectiveRegex(os)` for the specified OS
-   (or the current OS when `os` is `null`).
+2. Calls `GetEffectiveCommand(resolvedOs)` and `GetEffectiveRegex(resolvedOs)` using the
+   already-resolved OS string.
 3. Calls the private `RunCommand` helper to execute the command in a shell.
 4. Calls the private `ExtractVersion` helper to apply the regex.
 5. Stores the result in a `versions` dictionary.
