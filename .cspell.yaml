@@ -18,7 +18,10 @@ words:
   - compilability
   - Dema
   - fileassert
+  - Hostx
+  - misparse
   - msbuild
+  - msvc
   - opencover
   - pandoc
   - reqstream
@@ -27,6 +30,7 @@ words:
   - SARIF
   - sonarmark
   - versionmark
+  - VSINSTALLDIR
   - weasyprint
   - Weasy
   - xunit
