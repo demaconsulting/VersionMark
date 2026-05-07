@@ -243,7 +243,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
+        var command = tool.GetEffectiveCommand("linux");
 
         // Assert
         Assert.Equal("tool --version", command);
@@ -262,7 +262,7 @@ public partial class VersionMarkConfigTests
         );
 
         // Act
-        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
+        var regex = tool.GetEffectiveRegex("linux");
 
         // Assert
         Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
@@ -319,7 +319,7 @@ public partial class VersionMarkConfigTests
     }
 
     /// <summary>
-    ///     Test GetEffectiveCommand on Windows returns Windows override when available.
+    ///     Test GetEffectiveCommand returns Windows override when "win" OS is specified.
     /// </summary>
     [Fact]
     public void ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand()
@@ -334,23 +334,14 @@ public partial class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
-        // Act
-        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
-
-        // Assert
-        // On Windows, should return Windows override; otherwise default
-        if (OperatingSystem.IsWindows())
-        {
-            Assert.Equal("tool.exe --version", command);
-        }
-        else
-        {
-            Assert.Equal("tool --version", command);
-        }
+        // Act & Assert
+        Assert.Equal("tool.exe --version", tool.GetEffectiveCommand("win"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("linux"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("macos"));
     }
 
     /// <summary>
-    ///     Test GetEffectiveCommand on Linux returns Linux override when available.
+    ///     Test GetEffectiveCommand returns Linux override when "linux" OS is specified.
     /// </summary>
     [Fact]
     public void ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand()
@@ -365,23 +356,14 @@ public partial class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
-        // Act
-        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
-
-        // Assert
-        // On Linux, should return Linux override; otherwise default
-        if (OperatingSystem.IsLinux())
-        {
-            Assert.Equal("tool-linux --version", command);
-        }
-        else
-        {
-            Assert.Equal("tool --version", command);
-        }
+        // Act & Assert
+        Assert.Equal("tool-linux --version", tool.GetEffectiveCommand("linux"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("win"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("macos"));
     }
 
     /// <summary>
-    ///     Test GetEffectiveCommand on macOS returns macOS override when available.
+    ///     Test GetEffectiveCommand returns macOS override when "macos" OS is specified.
     /// </summary>
     [Fact]
     public void ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand()
@@ -396,23 +378,14 @@ public partial class VersionMarkConfigTests
             new Dictionary<string, string> { [string.Empty] = @"(?<version>\d+\.\d+\.\d+)" }
         );
 
-        // Act
-        var command = tool.GetEffectiveCommand(ToolConfig.GetCurrentOs());
-
-        // Assert
-        // On macOS, should return macOS override; otherwise default
-        if (OperatingSystem.IsMacOS())
-        {
-            Assert.Equal("tool-macos --version", command);
-        }
-        else
-        {
-            Assert.Equal("tool --version", command);
-        }
+        // Act & Assert
+        Assert.Equal("tool-macos --version", tool.GetEffectiveCommand("macos"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("win"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("linux"));
     }
 
     /// <summary>
-    ///     Test GetEffectiveRegex on Windows returns Windows override when available.
+    ///     Test GetEffectiveRegex returns Windows override when "win" OS is specified.
     /// </summary>
     [Fact]
     public void ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex()
@@ -427,23 +400,14 @@ public partial class VersionMarkConfigTests
             }
         );
 
-        // Act
-        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
-
-        // Assert
-        // On Windows, should return Windows override; otherwise default
-        if (OperatingSystem.IsWindows())
-        {
-            Assert.Equal(@"Windows: (?<version>\d+\.\d+\.\d+)", regex);
-        }
-        else
-        {
-            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
-        }
+        // Act & Assert
+        Assert.Equal(@"Windows: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
     }
 
     /// <summary>
-    ///     Test GetEffectiveRegex on Linux returns Linux override when available.
+    ///     Test GetEffectiveRegex returns Linux override when "linux" OS is specified.
     /// </summary>
     [Fact]
     public void ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex()
@@ -458,23 +422,14 @@ public partial class VersionMarkConfigTests
             }
         );
 
-        // Act
-        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
-
-        // Assert
-        // On Linux, should return Linux override; otherwise default
-        if (OperatingSystem.IsLinux())
-        {
-            Assert.Equal(@"Linux: (?<version>\d+\.\d+\.\d+)", regex);
-        }
-        else
-        {
-            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
-        }
+        // Act & Assert
+        Assert.Equal(@"Linux: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
     }
 
     /// <summary>
-    ///     Test GetEffectiveRegex on macOS returns macOS override when available.
+    ///     Test GetEffectiveRegex returns macOS override when "macos" OS is specified.
     /// </summary>
     [Fact]
     public void ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex()
@@ -489,19 +444,10 @@ public partial class VersionMarkConfigTests
             }
         );
 
-        // Act
-        var regex = tool.GetEffectiveRegex(ToolConfig.GetCurrentOs());
-
-        // Assert
-        // On macOS, should return macOS override; otherwise default
-        if (OperatingSystem.IsMacOS())
-        {
-            Assert.Equal(@"macOS: (?<version>\d+\.\d+\.\d+)", regex);
-        }
-        else
-        {
-            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
-        }
+        // Act & Assert
+        Assert.Equal(@"macOS: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
     }
 
     /// <summary>
