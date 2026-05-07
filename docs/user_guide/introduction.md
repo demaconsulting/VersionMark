@@ -593,15 +593,16 @@ tools:
 
 If a tool command fails because the tool is not installed:
 
-- VersionMark will report an error for that tool
-- The capture will continue for other tools
-- Tools that failed to capture will be absent from the published report; errors during
-  capture are reported to stderr at the time the capture command runs
+- VersionMark aborts capture immediately and reports an error to stderr
+- No JSON output file is created for that job
+- Install the missing tool (or remove it from configuration), then re-run capture
 
 ## Version Not Matched
 
 If the regex doesn't match the command output:
 
+- VersionMark aborts capture immediately and reports an error to stderr
+- No JSON output file is created for that job
 - Check the actual output of the command manually
 - Adjust the regex to match the format
 - Use online regex testers to validate your pattern
