@@ -110,7 +110,7 @@ sections:
           - VersionMarkConfig_Load_IssuesContainFilePath
 
       - id: VersionMark-Load-AllIssues
-        title: The tool shall report all load issues in a single pass without stopping at the first error.
+        title: The tool shall report all load issues discovered in one invocation without stopping at the first error.
         justification: |
           Reporting all issues at once lets users fix everything in one edit cycle
           rather than repeatedly re-running to discover each subsequent problem.

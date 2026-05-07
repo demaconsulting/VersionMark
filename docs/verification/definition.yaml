@@ -1,0 +1,43 @@
+---
+resource-path:
+  - docs/verification
+  - docs/verification/version-mark
+  - docs/verification/version-mark/cli
+  - docs/verification/version-mark/configuration
+  - docs/verification/version-mark/capture
+  - docs/verification/version-mark/publishing
+  - docs/verification/version-mark/self-test
+  - docs/verification/ots
+  - docs/template
+
+input-files:
+  - docs/verification/title.txt
+  - docs/verification/introduction.md
+  - docs/verification/version-mark.md
+  - docs/verification/version-mark/cli.md
+  - docs/verification/version-mark/cli/program.md
+  - docs/verification/version-mark/cli/context.md
+  - docs/verification/version-mark/configuration.md
+  - docs/verification/version-mark/configuration/version-mark-config.md
+  - docs/verification/version-mark/configuration/tool-config.md
+  - docs/verification/version-mark/configuration/lint-issue.md
+  - docs/verification/version-mark/capture.md
+  - docs/verification/version-mark/capture/version-info.md
+  - docs/verification/version-mark/publishing.md
+  - docs/verification/version-mark/publishing/markdown-formatter.md
+  - docs/verification/version-mark/self-test.md
+  - docs/verification/version-mark/self-test/validation.md
+  - docs/verification/version-mark/self-test/path-helpers.md
+  - docs/verification/ots.md
+  - docs/verification/ots/buildmark.md
+  - docs/verification/ots/fileassert.md
+  - docs/verification/ots/xunit.md
+  - docs/verification/ots/pandoc.md
+  - docs/verification/ots/reqstream.md
+  - docs/verification/ots/reviewmark.md
+  - docs/verification/ots/sarifmark.md
+  - docs/verification/ots/sonarmark.md
+  - docs/verification/ots/weasyprint.md
+template: template.html
+table-of-contents: true
+number-sections: true

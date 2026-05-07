@@ -26,13 +26,12 @@ namespace DemaConsulting.VersionMark.Tests.SelfTest;
 /// <summary>
 ///     Subsystem tests for the SelfTest subsystem (Validation and PathHelpers working together).
 /// </summary>
-[TestClass]
 public class SelfTestTests
 {
     /// <summary>
     ///     Test that PathHelpers prevents path traversal attacks within the self-test subsystem context.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SelfTest_PathHelpers_PathTraversal_ThrowsArgumentException()
     {
         // Arrange - Define a base directory and an attacker-controlled traversal path
@@ -40,15 +39,14 @@ public class SelfTestTests
         const string traversalPath = "../../../etc/passwd";
 
         // Act & Assert - The self-test subsystem path helper should reject traversal attempts
-        Assert.ThrowsExactly<ArgumentException>(() =>
-            PathHelpers.SafePathCombine(baseDir, traversalPath),
-            "PathHelpers should reject path traversal attempts that escape the base directory");
+        Assert.Throws<ArgumentException>(() =>
+            PathHelpers.SafePathCombine(baseDir, traversalPath));
     }
 
     /// <summary>
     ///     Test that PathHelpers correctly combines valid paths within the self-test subsystem context.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SelfTest_PathHelpers_ValidRelativePath_ProducesExpectedPath()
     {
         // Arrange - Use the application base directory as the root
@@ -59,9 +57,9 @@ public class SelfTestTests
         var result = PathHelpers.SafePathCombine(baseDir, relativePath);
 
         // Assert - The combined path should be under the base directory
-        Assert.IsFalse(string.IsNullOrEmpty(result),
+        Assert.False(string.IsNullOrEmpty(result),
             "Valid path combination should produce a non-empty result");
-        Assert.IsTrue(result.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase) ||
+        Assert.True(result.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase) ||
                       Path.GetFullPath(result).StartsWith(Path.GetFullPath(baseDir), StringComparison.OrdinalIgnoreCase),
             "Combined path should be rooted within the base directory");
     }
@@ -69,20 +67,20 @@ public class SelfTestTests
     /// <summary>
     ///     Test that the self-test subsystem can locate the main DLL in the base directory.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists()
     {
         // Arrange
         var dllPath = PathHelpers.SafePathCombine(AppContext.BaseDirectory, "DemaConsulting.VersionMark.dll");
 
         // Act & Assert
-        Assert.IsTrue(File.Exists(dllPath));
+        Assert.True(File.Exists(dllPath));
     }
 
     /// <summary>
     ///     Test that the self-validation pipeline writes results to a TRX file when --results is specified.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SelfTest_Run_WithResultsFlag_WritesResultsFile()
     {
         // Arrange - Set up a TRX results file path
@@ -95,11 +93,11 @@ public class SelfTestTests
             Validation.Run(context);
 
             // Assert - The TRX file should exist and contain XML content
-            Assert.AreEqual(0, context.ExitCode);
-            Assert.IsTrue(File.Exists(resultsFile),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(File.Exists(resultsFile),
                 "Self-validation should write results to the file specified by --results");
             var content = File.ReadAllText(resultsFile);
-            Assert.IsTrue(content.Contains("TestRun") || content.Contains("testsuites"),
+            Assert.True(content.Contains("TestRun") || content.Contains("testsuites"),
                 "Results file should contain TRX or JUnit test result data");
         }
         finally
@@ -114,7 +112,7 @@ public class SelfTestTests
     /// <summary>
     ///     Test that the self-validation pipeline writes JUnit XML results when --results specifies a .xml file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile()
     {
         // Arrange - Set up a JUnit XML results file path
@@ -127,11 +125,11 @@ public class SelfTestTests
             Validation.Run(context);
 
             // Assert - The XML file should exist and contain JUnit content
-            Assert.AreEqual(0, context.ExitCode);
-            Assert.IsTrue(File.Exists(resultsFile),
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(File.Exists(resultsFile),
                 "Self-validation should write JUnit results to the .xml file specified by --results");
             var content = File.ReadAllText(resultsFile);
-            Assert.IsTrue(content.Contains("testsuites") || content.Contains("testsuite"),
+            Assert.True(content.Contains("testsuites") || content.Contains("testsuite"),
                 "JUnit results file should contain testsuites element");
         }
         finally
@@ -148,7 +146,7 @@ public class SelfTestTests
     ///     What is tested: The --depth argument controls the heading level in the self-validation report
     ///     What the assertions prove: Output contains "## DEMA Consulting VersionMark" with depth 2
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void SelfTest_Run_WithDepthTwo_WritesHashHashHeader()
     {
         // Arrange - Redirect console output to capture the validation report
@@ -164,7 +162,7 @@ public class SelfTestTests
 
             // Assert - Output should contain the ## heading for depth 2
             var output = writer.ToString();
-            Assert.IsTrue(output.Contains("## DEMA Consulting VersionMark"),
+            Assert.True(output.Contains("## DEMA Consulting VersionMark"),
                 "Self-validation report should use ## heading when --depth 2 is specified");
         }
         finally

@@ -25,13 +25,12 @@ namespace DemaConsulting.VersionMark.Tests.Capture;
 /// <summary>
 ///     Unit tests for the VersionInfo class.
 /// </summary>
-[TestClass]
 public class VersionInfoTests
 {
     /// <summary>
     ///     Test creating a VersionInfo with constructor.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_Constructor_CreatesVersionInfo()
     {
         // Arrange
@@ -46,17 +45,17 @@ public class VersionInfoTests
         var versionInfo = new VersionInfo(jobId, versions);
 
         // Assert
-        Assert.IsNotNull(versionInfo);
-        Assert.AreEqual(jobId, versionInfo.JobId);
-        Assert.HasCount(2, versionInfo.Versions);
-        Assert.AreEqual("8.0.0", versionInfo.Versions["dotnet"]);
-        Assert.AreEqual("2.40.0", versionInfo.Versions["git"]);
+        Assert.NotNull(versionInfo);
+        Assert.Equal(jobId, versionInfo.JobId);
+        Assert.Equal(2, versionInfo.Versions.Count);
+        Assert.Equal("8.0.0", versionInfo.Versions["dotnet"]);
+        Assert.Equal("2.40.0", versionInfo.Versions["git"]);
     }
 
     /// <summary>
     ///     Test SaveToFile creates a JSON file with expected content.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_SaveToFile_CreatesJsonFile()
     {
         // Arrange
@@ -75,14 +74,14 @@ public class VersionInfoTests
             versionInfo.SaveToFile(tempFile);
 
             // Assert
-            Assert.IsTrue(File.Exists(tempFile));
+            Assert.True(File.Exists(tempFile));
 
             // Verify by loading and comparing
             var loaded = VersionInfo.LoadFromFile(tempFile);
-            Assert.AreEqual("job-456", loaded.JobId);
-            Assert.HasCount(2, loaded.Versions);
-            Assert.AreEqual("18.0.0", loaded.Versions["node"]);
-            Assert.AreEqual("9.0.0", loaded.Versions["npm"]);
+            Assert.Equal("job-456", loaded.JobId);
+            Assert.Equal(2, loaded.Versions.Count);
+            Assert.Equal("18.0.0", loaded.Versions["node"]);
+            Assert.Equal("9.0.0", loaded.Versions["npm"]);
         }
         finally
         {
@@ -96,7 +95,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test LoadFromFile reads a JSON file and creates VersionInfo.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_LoadFromFile_ReadsJsonFile()
     {
         // Arrange
@@ -116,11 +115,11 @@ public class VersionInfoTests
             var versionInfo = VersionInfo.LoadFromFile(tempFile);
 
             // Assert
-            Assert.IsNotNull(versionInfo);
-            Assert.AreEqual("job-789", versionInfo.JobId);
-            Assert.HasCount(2, versionInfo.Versions);
-            Assert.AreEqual("3.11.0", versionInfo.Versions["python"]);
-            Assert.AreEqual("23.0.0", versionInfo.Versions["pip"]);
+            Assert.NotNull(versionInfo);
+            Assert.Equal("job-789", versionInfo.JobId);
+            Assert.Equal(2, versionInfo.Versions.Count);
+            Assert.Equal("3.11.0", versionInfo.Versions["python"]);
+            Assert.Equal("23.0.0", versionInfo.Versions["pip"]);
         }
         finally
         {
@@ -134,7 +133,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test SaveToFile and LoadFromFile round-trip preserves data.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_SaveAndLoad_RoundTripPreservesData()
     {
         // Arrange
@@ -155,12 +154,12 @@ public class VersionInfoTests
             var loaded = VersionInfo.LoadFromFile(tempFile);
 
             // Assert
-            Assert.AreEqual(original.JobId, loaded.JobId);
-            Assert.HasCount(original.Versions.Count, loaded.Versions);
+            Assert.Equal(original.JobId, loaded.JobId);
+            Assert.Equal(original.Versions.Count, loaded.Versions.Count);
             foreach (var kvp in original.Versions)
             {
-                Assert.IsTrue(loaded.Versions.TryGetValue(kvp.Key, out var value));
-                Assert.AreEqual(kvp.Value, value);
+                Assert.True(loaded.Versions.TryGetValue(kvp.Key, out var value));
+                Assert.Equal(kvp.Value, value);
             }
         }
         finally
@@ -175,21 +174,21 @@ public class VersionInfoTests
     /// <summary>
     ///     Test LoadFromFile throws ArgumentException when file does not exist.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_LoadFromFile_NonExistentFile_ThrowsArgumentException()
     {
         // Arrange
         var nonExistentFile = Path.Combine(Path.GetTempPath(), "non-existent-file.json");
 
         // Act & Assert
-        var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentFile));
+        var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(nonExistentFile));
         Assert.Contains("not found", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
     ///     Test LoadFromFile throws ArgumentException for invalid JSON.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_LoadFromFile_InvalidJson_ThrowsArgumentException()
     {
         // Arrange
@@ -199,7 +198,7 @@ public class VersionInfoTests
             File.WriteAllText(tempFile, "{ invalid json }");
 
             // Act & Assert
-            var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
             Assert.Contains("parse", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
@@ -214,7 +213,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test LoadFromFile throws ArgumentException for empty JSON file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_LoadFromFile_EmptyJson_ThrowsArgumentException()
     {
         // Arrange
@@ -224,7 +223,7 @@ public class VersionInfoTests
             File.WriteAllText(tempFile, "");
 
             // Act & Assert
-            var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
             Assert.Contains("parse", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
@@ -239,7 +238,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test SaveToFile to invalid path throws InvalidOperationException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_SaveToFile_InvalidPath_ThrowsInvalidOperationException()
     {
         // Arrange
@@ -247,14 +246,14 @@ public class VersionInfoTests
         var invalidPath = Path.Combine(Path.GetTempPath(), "non-existent-directory", "file.json");
 
         // Act & Assert
-        var exception = Assert.ThrowsExactly<InvalidOperationException>(() => versionInfo.SaveToFile(invalidPath));
+        var exception = Assert.Throws<InvalidOperationException>(() => versionInfo.SaveToFile(invalidPath));
         Assert.Contains("Failed to save", exception.Message);
     }
 
     /// <summary>
     ///     Test VersionInfo with empty versions dictionary.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_EmptyVersions_SavesAndLoadsCorrectly()
     {
         // Arrange
@@ -268,8 +267,8 @@ public class VersionInfoTests
             var loaded = VersionInfo.LoadFromFile(tempFile);
 
             // Assert
-            Assert.AreEqual(original.JobId, loaded.JobId);
-            Assert.IsEmpty(loaded.Versions);
+            Assert.Equal(original.JobId, loaded.JobId);
+            Assert.Empty(loaded.Versions);
         }
         finally
         {
@@ -283,7 +282,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test LoadFromFile throws ArgumentException when JSON deserializes to null (e.g., literal "null").
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_LoadFromFile_NullJson_ThrowsArgumentException()
     {
         // Arrange
@@ -293,7 +292,7 @@ public class VersionInfoTests
             File.WriteAllText(tempFile, "null");
 
             // Act & Assert
-            var exception = Assert.ThrowsExactly<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
+            var exception = Assert.Throws<ArgumentException>(() => VersionInfo.LoadFromFile(tempFile));
             Assert.Contains("deserialize", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
         finally
@@ -308,7 +307,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test VersionInfo with special characters in values.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_SpecialCharacters_SavesAndLoadsCorrectly()
     {
         // Arrange
@@ -329,11 +328,11 @@ public class VersionInfoTests
             var loaded = VersionInfo.LoadFromFile(tempFile);
 
             // Assert
-            Assert.AreEqual(original.JobId, loaded.JobId);
-            Assert.HasCount(original.Versions.Count, loaded.Versions);
+            Assert.Equal(original.JobId, loaded.JobId);
+            Assert.Equal(original.Versions.Count, loaded.Versions.Count);
             foreach (var kvp in original.Versions)
             {
-                Assert.AreEqual(kvp.Value, loaded.Versions[kvp.Key]);
+                Assert.Equal(kvp.Value, loaded.Versions[kvp.Key]);
             }
         }
         finally
@@ -348,7 +347,7 @@ public class VersionInfoTests
     /// <summary>
     ///     Test VersionInfo record creation with specific job-id and version values.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionInfo_Constructor_CreatesRecord()
     {
         // Arrange
@@ -363,10 +362,10 @@ public class VersionInfoTests
         var versionInfo = new VersionInfo(jobId, versions);
 
         // Assert
-        Assert.IsNotNull(versionInfo);
-        Assert.AreEqual("job-123", versionInfo.JobId);
-        Assert.HasCount(2, versionInfo.Versions);
-        Assert.AreEqual("8.0.100", versionInfo.Versions["dotnet"]);
-        Assert.AreEqual("2.43.0", versionInfo.Versions["git"]);
+        Assert.NotNull(versionInfo);
+        Assert.Equal("job-123", versionInfo.JobId);
+        Assert.Equal(2, versionInfo.Versions.Count);
+        Assert.Equal("8.0.100", versionInfo.Versions["dotnet"]);
+        Assert.Equal("2.43.0", versionInfo.Versions["git"]);
     }
 }

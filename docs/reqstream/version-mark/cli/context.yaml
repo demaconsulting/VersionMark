@@ -52,8 +52,7 @@ sections:
         title: The Context.WriteLine method shall write output respecting the silent flag.
         justification: |
           Silent mode suppresses console output so automated scripts can run the tool
-          without cluttering their log. The log file always receives output regardless
-          of silent mode.
+          without cluttering their log.
         tests:
           - Context_WriteLine_NotSilent_WritesToConsole
           - Context_WriteLine_Silent_DoesNotWriteToConsole
@@ -61,7 +60,8 @@ sections:
       - id: VersionMark-Context-WriteError
         title: >-
           The Context.WriteError method shall write error messages to stderr,
-          unless silent mode is active.
+          unless silent mode is active, and shall write error messages to the log file
+          when one is open.
         justification: |
           Silent mode suppresses all console output, including error messages written to
           stderr. The log file always receives error output regardless of silent mode.

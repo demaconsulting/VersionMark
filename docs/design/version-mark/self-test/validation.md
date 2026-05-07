@@ -1,11 +1,11 @@
-# Validation Unit
+### Validation Unit
 
-## Overview
+#### Overview
 
 The `Validation` class (`Validation.cs`) exposes a single public method, `Run`, and
 organizes all test execution internally.
 
-## Run Method
+#### Run Method
 
 `Run` orchestrates the self-validation sequence:
 
@@ -19,7 +19,7 @@ organizes all test execution internally.
    failed count if any tests failed (which also sets the process exit code to 1).
 5. If `context.ResultsFile` is set, calls `WriteResultsFile` to persist the results.
 
-## RunCaptureTest
+#### RunCaptureTest
 
 `RunCaptureTest` verifies the capture mode end-to-end:
 
@@ -33,7 +33,7 @@ organizes all test execution internally.
 
 The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Validation-Capture`.
 
-## RunPublishTest
+#### RunPublishTest
 
 `RunPublishTest` verifies the publish mode end-to-end:
 
@@ -47,7 +47,7 @@ The test name is `VersionMark_CapturesVersions`, satisfying `VersionMark-Validat
 
 The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-Validation-Publish`.
 
-## RunLintValidTest
+#### RunLintValidTest
 
 `RunLintValidTest` verifies that lint mode exits successfully for a valid configuration file:
 
@@ -59,7 +59,7 @@ The test name is `VersionMark_GeneratesMarkdownReport`, satisfying `VersionMark-
 
 The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark-Validation-Lint`.
 
-## RunLintInvalidTest
+#### RunLintInvalidTest
 
 `RunLintInvalidTest` verifies that lint mode reports errors for an invalid configuration file:
 
@@ -72,7 +72,7 @@ The test name is `VersionMark_LintPassesForValidConfig`, satisfying `VersionMark
 The test name is `VersionMark_LintReportsErrorsForInvalidConfig`, satisfying
 `VersionMark-Validation-Lint`.
 
-## WriteResultsFile
+#### WriteResultsFile
 
 `WriteResultsFile` inspects the file extension of `context.ResultsFile`:
 
@@ -86,7 +86,7 @@ in the future.
 
 This satisfies requirement `VersionMark-Validation-WriteResults`.
 
-## TemporaryDirectory
+#### TemporaryDirectory
 
 `TemporaryDirectory` is a private nested class that implements `IDisposable`. It creates
 a uniquely named directory under `Path.GetTempPath()` using `PathHelpers.SafePathCombine`

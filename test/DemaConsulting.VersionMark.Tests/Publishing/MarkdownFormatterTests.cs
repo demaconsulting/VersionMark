@@ -26,7 +26,6 @@ namespace DemaConsulting.VersionMark.Tests.Publishing;
 /// <summary>
 ///     Unit tests for the MarkdownFormatter class.
 /// </summary>
-[TestClass]
 public class MarkdownFormatterTests
 {
     /// <summary>
@@ -34,7 +33,7 @@ public class MarkdownFormatterTests
     ///     What is tested: FMT-001 - Tools are sorted in case-insensitive alphabetical order
     ///     What the assertions prove: The output lists tools in the correct alphabetical sequence
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_SortsToolsAlphabetically()
     {
         // Arrange - Create VersionInfo with tools in non-alphabetical order
@@ -59,7 +58,7 @@ public class MarkdownFormatterTests
         var lines = result.Split('\n', StringSplitOptions.RemoveEmptyEntries);
         var toolLines = lines.Where(l => l.StartsWith("- **")).ToArray();
 
-        Assert.HasCount(4, toolLines);
+        Assert.Equal(4, toolLines.Length);
         Assert.Contains("- **dotnet**:", toolLines[0]);
         Assert.Contains("- **node**:", toolLines[1]);
         Assert.Contains("- **python**:", toolLines[2]);
@@ -71,7 +70,7 @@ public class MarkdownFormatterTests
     ///     What is tested: FMT-002 - Versions that are the same across all jobs show just the version
     ///     What the assertions prove: The output displays only the version when all jobs have the same version
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly()
     {
         // Arrange - Create multiple VersionInfos with the same version across jobs
@@ -119,7 +118,7 @@ public class MarkdownFormatterTests
     ///     What is tested: FMT-003, FMT-004 - Different versions show job IDs in parentheses
     ///     What the assertions prove: The output displays job IDs in parentheses when versions differ
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs()
     {
         // Arrange - Create VersionInfos with different versions across jobs
@@ -168,7 +167,7 @@ public class MarkdownFormatterTests
     ///     What is tested: FMT-005 - The report-depth parameter controls markdown heading levels
     ///     What the assertions prove: The output heading level matches the specified depth
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel()
     {
         // Arrange - Create simple VersionInfo
@@ -208,7 +207,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Edge case - empty input list
     ///     What the assertions prove: The formatter produces valid output with just the header
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_EmptyList_ProducesHeaderOnly()
     {
         // Arrange - Create empty VersionInfo list
@@ -228,7 +227,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Edge case - single job shows just the version
     ///     What the assertions prove: Single job is treated as uniform (shows version only)
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_SingleJob_ShowsAllJobs()
     {
         // Arrange - Create single VersionInfo
@@ -258,7 +257,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Some tools uniform, some tools different versions across jobs
     ///     What the assertions prove: The formatter correctly handles both uniform and varying versions
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_MixedVersions_HandlesCorrectly()
     {
         // Arrange - Create VersionInfos with some tools uniform, some different
@@ -298,7 +297,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Job IDs in parentheses are sorted alphabetically within each version group
     ///     What the assertions prove: Job IDs appear in alphabetical order within version groups
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_SortsJobIdsAlphabetically()
     {
         // Arrange - Create VersionInfos where two jobs share a version and one job has a different version
@@ -329,7 +328,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Version strings with hyphens, plus signs, and other special characters
     ///     What the assertions prove: Special characters in versions are preserved in output
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_WithSpecialCharacters_PreservesVersions()
     {
         // Arrange - Create VersionInfo with special version strings
@@ -360,7 +359,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Tool names with different cases are sorted case-insensitively
     ///     What the assertions prove: Sorting is case-insensitive (Dotnet comes before node)
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_CaseInsensitiveSorting()
     {
         // Arrange - Create VersionInfo with mixed-case tool names
@@ -385,7 +384,7 @@ public class MarkdownFormatterTests
         var lines = result.Split('\n', StringSplitOptions.RemoveEmptyEntries);
         var toolLines = lines.Where(l => l.StartsWith("- **")).ToArray();
 
-        Assert.HasCount(4, toolLines);
+        Assert.Equal(4, toolLines.Length);
         Assert.Contains("- **dotnet**:", toolLines[0]);
         Assert.Contains("- **Node**:", toolLines[1]);
         Assert.Contains("- **PYTHON**:", toolLines[2]);
@@ -397,7 +396,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Multiple different versions are displayed in sorted order
     ///     What the assertions prove: Version groups are sorted alphabetically
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_FormatVersions_SortsVersionsAlphabetically()
     {
         // Arrange - Create VersionInfos with multiple different versions
@@ -423,7 +422,7 @@ public class MarkdownFormatterTests
         var toolLines = lines.Where(l => l.StartsWith("- **tool**:")).ToArray();
 
         // Should have 3 separate bullets for the 3 different versions
-        Assert.HasCount(3, toolLines);
+        Assert.Equal(3, toolLines.Length);
 
         // Verify they appear in sorted order: 1.0.0, 2.0.0, 3.0.0
         Assert.Contains("1.0.0", toolLines[0]);
@@ -436,7 +435,7 @@ public class MarkdownFormatterTests
     ///     What is tested: Boundary behavior for invalid reportDepth values
     ///     What the assertions prove: An exception is thrown before any output is generated
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_Format_WithZeroDepth_ThrowsArgumentOutOfRangeException()
     {
         // Arrange - Create a simple VersionInfo to use with the invalid depth
@@ -446,11 +445,11 @@ public class MarkdownFormatterTests
         };
 
         // Act & Assert - Depth of zero should throw before generating any output
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+        Assert.Throws<ArgumentOutOfRangeException>(
             () => MarkdownFormatter.Format(versionInfos, reportDepth: 0));
 
         // A negative depth should also throw
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+        Assert.Throws<ArgumentOutOfRangeException>(
             () => MarkdownFormatter.Format(versionInfos, reportDepth: -1));
     }
 
@@ -459,7 +458,7 @@ public class MarkdownFormatterTests
     ///     What is tested: A tool present in some jobs but not all is included in the output
     ///     What the assertions prove: Tools from all contributing jobs appear; the version is shown without job IDs when only one job has it
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void MarkdownFormatter_Format_WithPartialToolCoverage_ShowsAllContributingTools()
     {
         // Arrange - job-1 has dotnet only; job-2 has both dotnet and node

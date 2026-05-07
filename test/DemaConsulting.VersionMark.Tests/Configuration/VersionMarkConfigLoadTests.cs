@@ -26,13 +26,12 @@ namespace DemaConsulting.VersionMark.Tests.Configuration;
 /// <summary>
 ///     Unit tests for the <see cref="VersionMarkConfig.Load"/> method.
 /// </summary>
-[TestClass]
 public class VersionMarkConfigLoadTests
 {
     /// <summary>
     ///     Test that a valid configuration file returns a non-null config with no errors.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_ValidConfig_ReturnsConfig()
     {
         // Arrange - Create a well-formed .versionmark.yaml config file
@@ -52,8 +51,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be returned with no error issues
-            Assert.IsNotNull(config);
-            Assert.IsFalse(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.NotNull(config);
+            Assert.DoesNotContain(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -64,7 +63,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a non-existent file returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_MissingFile_ReturnsNullConfig()
     {
         // Arrange - Use a path that does not exist
@@ -74,14 +73,14 @@ public class VersionMarkConfigLoadTests
         var (config, issues) = VersionMarkConfig.Load(nonExistentFile);
 
         // Assert - Config should be null and issues should contain an error
-        Assert.IsNull(config);
-        Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+        Assert.Null(config);
+        Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
     }
 
     /// <summary>
     ///     Test that a file containing invalid YAML returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig()
     {
         // Arrange - Write syntactically broken YAML to a temp file
@@ -99,8 +98,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null and issues should contain a parse error
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -111,7 +110,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a config without a 'tools' section returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file that has no 'tools' key at the root
@@ -128,8 +127,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because 'tools' is required
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -140,7 +139,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a config with an empty 'tools' section returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file that has a 'tools' mapping with no entries
@@ -157,8 +156,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because at least one tool is required
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -169,7 +168,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a tool without a 'command' field returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file where the tool entry has no 'command' key
@@ -188,8 +187,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because 'command' is required
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -200,7 +199,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a tool with an empty 'command' field returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file where the tool has an empty 'command' value
@@ -220,8 +219,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because an empty command is invalid
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -232,7 +231,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a tool without a 'regex' field returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file where the tool entry has no 'regex' key
@@ -251,8 +250,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because 'regex' is required
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -263,7 +262,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a tool with an empty 'regex' field returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file where the tool has an empty 'regex' value
@@ -283,8 +282,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because an empty regex is invalid
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -295,7 +294,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a tool with an invalid 'regex' value returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file with a syntactically broken regex (unclosed group)
@@ -315,8 +314,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because the regex is invalid
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -327,7 +326,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that a tool with a regex missing the 'version' group returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file with a valid regex that lacks the required 'version' named group
@@ -347,8 +346,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because the 'version' capture group is required
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -359,7 +358,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an unknown top-level key produces a warning but config is still returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig()
     {
         // Arrange - Write a YAML file with a valid tool plus an unknown top-level key
@@ -380,9 +379,9 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be returned; unknown keys produce warnings, not errors
-            Assert.IsNotNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Warning));
-            Assert.IsFalse(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.NotNull(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Warning);
+            Assert.DoesNotContain(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -393,7 +392,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an unknown tool key produces a warning but config is still returned.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig()
     {
         // Arrange - Write a YAML file with a valid tool plus an unknown key inside the tool
@@ -414,9 +413,9 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be returned; unknown tool keys produce warnings, not errors
-            Assert.IsNotNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Warning));
-            Assert.IsFalse(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.NotNull(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Warning);
+            Assert.DoesNotContain(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -427,7 +426,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an empty OS-specific command override returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file with an empty command-win override
@@ -448,8 +447,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because empty OS-specific overrides are not allowed
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -460,7 +459,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an empty OS-specific regex override returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file with an empty regex-linux override
@@ -481,8 +480,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because empty OS-specific regex overrides are not allowed
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -493,7 +492,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an OS-specific regex missing the 'version' group returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file with an OS-specific regex that has no 'version' named group
@@ -514,8 +513,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because the 'version' group is required in all regexes
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -526,7 +525,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an OS-specific regex that is invalid returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig()
     {
         // Arrange - Write a YAML file with a broken OS-specific regex (unclosed group)
@@ -547,8 +546,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null because the OS-specific regex cannot be compiled
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {
@@ -559,7 +558,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that multiple errors in different tools are all reported in a single Load call.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_MultipleErrors_ReportsAll()
     {
         // Arrange - Write a config where tool1 is missing 'regex' and tool2 is missing 'command'
@@ -580,11 +579,11 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null and issues should reference both tool1 and tool2
-            Assert.IsNull(config);
-            Assert.IsTrue(
+            Assert.Null(config);
+            Assert.True(
                 issues.Any(i => i.Severity == LintSeverity.Error && i.Description.Contains("tool1")),
                 "Issues should contain an error mentioning tool1 (missing regex)");
-            Assert.IsTrue(
+            Assert.True(
                 issues.Any(i => i.Severity == LintSeverity.Error && i.Description.Contains("tool2")),
                 "Issues should contain an error mentioning tool2 (missing command)");
         }
@@ -597,7 +596,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that all issues include the file path of the configuration file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_Load_IssuesContainFilePath()
     {
         // Arrange - Write a config with a missing required field to force an error issue
@@ -616,8 +615,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - All issues should reference the path of the config file that was loaded
-            Assert.IsNull(config);
-            Assert.IsTrue(
+            Assert.Null(config);
+            Assert.True(
                 issues.Any(i => i.FilePath == tempFile),
                 "At least one issue should contain the config file path");
         }
@@ -630,7 +629,7 @@ public class VersionMarkConfigLoadTests
     /// <summary>
     ///     Test that an unreadable file (permission denied) returns null config with an error issue.
     /// </summary>
-    [TestMethod]
+    [Fact]
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("osx")]
     public void VersionMarkConfig_Load_UnreadableFile_ReturnsError()
@@ -638,7 +637,6 @@ public class VersionMarkConfigLoadTests
         // Skip on non-Unix platforms where Unix file permissions are not supported
         if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
         {
-            Assert.Inconclusive("Unix file permissions not supported on this platform");
             return;
         }
 
@@ -653,8 +651,8 @@ public class VersionMarkConfigLoadTests
             var (config, issues) = VersionMarkConfig.Load(tempFile);
 
             // Assert - Config should be null and issues should contain an I/O error
-            Assert.IsNull(config);
-            Assert.IsTrue(issues.Any(i => i.Severity == LintSeverity.Error));
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
         }
         finally
         {

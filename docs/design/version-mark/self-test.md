@@ -1,6 +1,6 @@
-# SelfTest Subsystem
+## SelfTest Subsystem
 
-## Overview
+### Overview
 
 The SelfTest subsystem provides built-in verification of the tool's core functionality
 and safe path construction for use within that verification. It consists of two units:
@@ -11,27 +11,27 @@ The validation subsystem is invoked when the `--validate` flag is passed and can
 results to a TRX or JUnit XML file when `--results` is also provided. This satisfies
 requirements `VersionMark-CommandLine-Validate` and `VersionMark-CommandLine-Results`.
 
-## Units
+### Units
 
-### Validation
+#### Validation
 
 The `Validation` class (`Validation.cs`) is the self-validation test runner. It exposes a
 single public method, `Run`, which orchestrates all internal self-tests against the tool's
 core modes (capture, publish, lint), collects results, prints a summary, and optionally
 writes a structured results file.
 
-See [validation.md](validation.md) for the full unit design.
+See *Validation Unit Design* for the full unit design.
 
-### PathHelpers
+#### PathHelpers
 
 The `PathHelpers` class (`PathHelpers.cs`) provides a single static method,
 `SafePathCombine`, used internally by `Validation` when constructing paths inside temporary
 directories. It protects against path-traversal attacks by ensuring the resolved combined
 path stays within the intended base directory.
 
-See [path-helpers.md](path-helpers.md) for the full unit design.
+See *PathHelpers Unit Design* for the full unit design.
 
-## Subsystem Interactions
+### Subsystem Interactions
 
 `Validation.Run` creates temporary directories via the private `TemporaryDirectory` helper
 class and uses `PathHelpers.SafePathCombine` for all path construction within those

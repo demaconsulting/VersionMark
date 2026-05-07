@@ -1,0 +1,13 @@
+---
+title: VersionMark Verification Design Document
+subtitle: Tool Version Capture and Publication Tool
+author: DEMA Consulting
+description: Verification design document for VersionMark
+lang: en-US
+keywords:
+  - VersionMark
+  - .NET
+  - Command-Line Tool
+  - Verification
+  - Verification Design Document
+---

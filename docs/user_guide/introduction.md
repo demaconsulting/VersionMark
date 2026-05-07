@@ -595,7 +595,8 @@ If a tool command fails because the tool is not installed:
 
 - VersionMark will report an error for that tool
 - The capture will continue for other tools
-- The published output will note which tools failed to capture
+- Tools that failed to capture will be absent from the published report; errors during
+  capture are reported to stderr at the time the capture command runs
 
 ## Version Not Matched
 

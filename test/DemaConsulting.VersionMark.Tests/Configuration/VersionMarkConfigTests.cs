@@ -27,7 +27,6 @@ namespace DemaConsulting.VersionMark.Tests.Configuration;
 /// <summary>
 ///     Unit tests for the VersionMarkConfig class.
 /// </summary>
-[TestClass]
 public partial class VersionMarkConfigTests
 {
     private static readonly string[] s_dotnetToolArray = ["dotnet"];
@@ -41,7 +40,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test internal constructor creates config with tools.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_InternalConstructor_CreatesConfig()
     {
         // Arrange
@@ -57,15 +56,15 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Assert
-        Assert.IsNotNull(config);
-        Assert.HasCount(1, config.Tools);
-        Assert.IsTrue(config.Tools.ContainsKey("dotnet"));
+        Assert.NotNull(config);
+        Assert.Single(config.Tools);
+        Assert.True(config.Tools.ContainsKey("dotnet"));
     }
 
     /// <summary>
     ///     Test reading a valid YAML configuration file.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig()
     {
         // Arrange
@@ -88,20 +87,20 @@ public partial class VersionMarkConfigTests
             var config = VersionMarkConfig.ReadFromFile(tempFile);
 
             // Assert
-            Assert.IsNotNull(config);
-            Assert.HasCount(2, config.Tools);
-            Assert.IsTrue(config.Tools.TryGetValue("tool1", out var tool1));
-            Assert.IsTrue(config.Tools.TryGetValue("tool2", out var tool2));
+            Assert.NotNull(config);
+            Assert.Equal(2, config.Tools.Count);
+            Assert.True(config.Tools.TryGetValue("tool1", out var tool1));
+            Assert.True(config.Tools.TryGetValue("tool2", out var tool2));
 
             // Check tool1
-            Assert.AreEqual("tool1 --version", tool1.Command[string.Empty]);
-            Assert.AreEqual(@"Tool1\s+(?<version>[\d\.]+)", tool1.Regex[string.Empty]);
+            Assert.Equal("tool1 --version", tool1.Command[string.Empty]);
+            Assert.Equal(@"Tool1\s+(?<version>[\d\.]+)", tool1.Regex[string.Empty]);
 
             // Check tool2
-            Assert.AreEqual("tool2 version --client", tool2.Command[string.Empty]);
-            Assert.AreEqual("tool2.cmd version --client", tool2.Command["win"]);
-            Assert.AreEqual(@"Tool2:""v(?<version>[\d\.]+)""", tool2.Regex[string.Empty]);
-            Assert.AreEqual(@"Tool2 Version: v(?<version>[\d\.]+)", tool2.Regex["linux"]);
+            Assert.Equal("tool2 version --client", tool2.Command[string.Empty]);
+            Assert.Equal("tool2.cmd version --client", tool2.Command["win"]);
+            Assert.Equal(@"Tool2:""v(?<version>[\d\.]+)""", tool2.Regex[string.Empty]);
+            Assert.Equal(@"Tool2 Version: v(?<version>[\d\.]+)", tool2.Regex["linux"]);
         }
         finally
         {
@@ -115,7 +114,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test reading configuration with all OS overrides.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig()
     {
         // Arrange
@@ -139,18 +138,18 @@ public partial class VersionMarkConfigTests
             var config = VersionMarkConfig.ReadFromFile(tempFile);
 
             // Assert
-            Assert.IsNotNull(config);
-            Assert.HasCount(1, config.Tools);
-            Assert.IsTrue(config.Tools.TryGetValue("gcc", out var gcc));
+            Assert.NotNull(config);
+            Assert.Single(config.Tools);
+            Assert.True(config.Tools.TryGetValue("gcc", out var gcc));
 
-            Assert.AreEqual("gcc --version", gcc.Command[string.Empty]);
-            Assert.AreEqual("gcc.exe --version", gcc.Command["win"]);
-            Assert.AreEqual("gcc-13 --version", gcc.Command["linux"]);
-            Assert.AreEqual("gcc-14 --version", gcc.Command["macos"]);
-            Assert.AreEqual(@"gcc.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex[string.Empty]);
-            Assert.AreEqual(@"gcc\.exe.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["win"]);
-            Assert.AreEqual(@"gcc-13.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["linux"]);
-            Assert.AreEqual(@"gcc-14.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["macos"]);
+            Assert.Equal("gcc --version", gcc.Command[string.Empty]);
+            Assert.Equal("gcc.exe --version", gcc.Command["win"]);
+            Assert.Equal("gcc-13 --version", gcc.Command["linux"]);
+            Assert.Equal("gcc-14 --version", gcc.Command["macos"]);
+            Assert.Equal(@"gcc.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex[string.Empty]);
+            Assert.Equal(@"gcc\.exe.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["win"]);
+            Assert.Equal(@"gcc-13.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["linux"]);
+            Assert.Equal(@"gcc-14.*?(?<version>\d+\.\d+\.\d+)", gcc.Regex["macos"]);
         }
         finally
         {
@@ -164,14 +163,14 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test reading from non-existent file throws ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException()
     {
         // Arrange
         var nonExistentFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.yaml");
 
         // Act & Assert
-        var ex = Assert.ThrowsExactly<ArgumentException>(() =>
+        var ex = Assert.Throws<ArgumentException>(() =>
             VersionMarkConfig.ReadFromFile(nonExistentFile));
 
         Assert.Contains("Configuration file not found", ex.Message);
@@ -180,7 +179,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test reading invalid YAML throws ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException()
     {
         // Arrange
@@ -190,7 +189,7 @@ public partial class VersionMarkConfigTests
             File.WriteAllText(tempFile, "invalid: yaml: content: [[[");
 
             // Act & Assert
-            var ex = Assert.ThrowsExactly<ArgumentException>(() =>
+            var ex = Assert.Throws<ArgumentException>(() =>
                 VersionMarkConfig.ReadFromFile(tempFile));
 
             Assert.Contains("Failed to parse YAML file", ex.Message);
@@ -207,7 +206,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test reading YAML with no tools throws ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException()
     {
         // Arrange
@@ -217,7 +216,7 @@ public partial class VersionMarkConfigTests
             File.WriteAllText(tempFile, "tools: {}");
 
             // Act & Assert
-            var ex = Assert.ThrowsExactly<ArgumentException>(() =>
+            var ex = Assert.Throws<ArgumentException>(() =>
                 VersionMarkConfig.ReadFromFile(tempFile));
 
             Assert.Contains("must contain at least one tool", ex.Message);
@@ -234,7 +233,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test GetEffectiveCommand returns default command when no OS override exists.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveCommand_NoOverride_ReturnsDefaultCommand()
     {
         // Arrange
@@ -247,13 +246,13 @@ public partial class VersionMarkConfigTests
         var command = tool.GetEffectiveCommand();
 
         // Assert
-        Assert.AreEqual("tool --version", command);
+        Assert.Equal("tool --version", command);
     }
 
     /// <summary>
     ///     Test GetEffectiveRegex returns default regex when no OS override exists.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveRegex_NoOverride_ReturnsDefaultRegex()
     {
         // Arrange
@@ -266,13 +265,13 @@ public partial class VersionMarkConfigTests
         var regex = tool.GetEffectiveRegex();
 
         // Assert
-        Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
     }
 
     /// <summary>
     ///     Test GetEffectiveCommand with explicit OS parameter.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveCommand_WithExplicitOs_ReturnsCorrectCommand()
     {
         // Arrange
@@ -288,16 +287,16 @@ public partial class VersionMarkConfigTests
         );
 
         // Act & Assert
-        Assert.AreEqual("tool.exe --version", tool.GetEffectiveCommand("win"));
-        Assert.AreEqual("tool-linux --version", tool.GetEffectiveCommand("linux"));
-        Assert.AreEqual("tool-macos --version", tool.GetEffectiveCommand("macos"));
-        Assert.AreEqual("tool --version", tool.GetEffectiveCommand("unknown"));
+        Assert.Equal("tool.exe --version", tool.GetEffectiveCommand("win"));
+        Assert.Equal("tool-linux --version", tool.GetEffectiveCommand("linux"));
+        Assert.Equal("tool-macos --version", tool.GetEffectiveCommand("macos"));
+        Assert.Equal("tool --version", tool.GetEffectiveCommand("unknown"));
     }
 
     /// <summary>
     ///     Test GetEffectiveRegex with explicit OS parameter.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveRegex_WithExplicitOs_ReturnsCorrectRegex()
     {
         // Arrange
@@ -313,16 +312,16 @@ public partial class VersionMarkConfigTests
         );
 
         // Act & Assert
-        Assert.AreEqual(@"Windows: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
-        Assert.AreEqual(@"Linux: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
-        Assert.AreEqual(@"macOS: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
-        Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("unknown"));
+        Assert.Equal(@"Windows: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("win"));
+        Assert.Equal(@"Linux: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("linux"));
+        Assert.Equal(@"macOS: (?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("macos"));
+        Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", tool.GetEffectiveRegex("unknown"));
     }
 
     /// <summary>
     ///     Test GetEffectiveCommand on Windows returns Windows override when available.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveCommand_WindowsOverride_ReturnsWindowsCommand()
     {
         // Arrange
@@ -342,18 +341,18 @@ public partial class VersionMarkConfigTests
         // On Windows, should return Windows override; otherwise default
         if (OperatingSystem.IsWindows())
         {
-            Assert.AreEqual("tool.exe --version", command);
+            Assert.Equal("tool.exe --version", command);
         }
         else
         {
-            Assert.AreEqual("tool --version", command);
+            Assert.Equal("tool --version", command);
         }
     }
 
     /// <summary>
     ///     Test GetEffectiveCommand on Linux returns Linux override when available.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveCommand_LinuxOverride_ReturnsLinuxCommand()
     {
         // Arrange
@@ -373,18 +372,18 @@ public partial class VersionMarkConfigTests
         // On Linux, should return Linux override; otherwise default
         if (OperatingSystem.IsLinux())
         {
-            Assert.AreEqual("tool-linux --version", command);
+            Assert.Equal("tool-linux --version", command);
         }
         else
         {
-            Assert.AreEqual("tool --version", command);
+            Assert.Equal("tool --version", command);
         }
     }
 
     /// <summary>
     ///     Test GetEffectiveCommand on macOS returns macOS override when available.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveCommand_MacOsOverride_ReturnsMacOsCommand()
     {
         // Arrange
@@ -404,18 +403,18 @@ public partial class VersionMarkConfigTests
         // On macOS, should return macOS override; otherwise default
         if (OperatingSystem.IsMacOS())
         {
-            Assert.AreEqual("tool-macos --version", command);
+            Assert.Equal("tool-macos --version", command);
         }
         else
         {
-            Assert.AreEqual("tool --version", command);
+            Assert.Equal("tool --version", command);
         }
     }
 
     /// <summary>
     ///     Test GetEffectiveRegex on Windows returns Windows override when available.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveRegex_WindowsOverride_ReturnsWindowsRegex()
     {
         // Arrange
@@ -435,18 +434,18 @@ public partial class VersionMarkConfigTests
         // On Windows, should return Windows override; otherwise default
         if (OperatingSystem.IsWindows())
         {
-            Assert.AreEqual(@"Windows: (?<version>\d+\.\d+\.\d+)", regex);
+            Assert.Equal(@"Windows: (?<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
+            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
     /// <summary>
     ///     Test GetEffectiveRegex on Linux returns Linux override when available.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveRegex_LinuxOverride_ReturnsLinuxRegex()
     {
         // Arrange
@@ -466,18 +465,18 @@ public partial class VersionMarkConfigTests
         // On Linux, should return Linux override; otherwise default
         if (OperatingSystem.IsLinux())
         {
-            Assert.AreEqual(@"Linux: (?<version>\d+\.\d+\.\d+)", regex);
+            Assert.Equal(@"Linux: (?<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
+            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
     /// <summary>
     ///     Test GetEffectiveRegex on macOS returns macOS override when available.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveRegex_MacOsOverride_ReturnsMacOsRegex()
     {
         // Arrange
@@ -497,18 +496,18 @@ public partial class VersionMarkConfigTests
         // On macOS, should return macOS override; otherwise default
         if (OperatingSystem.IsMacOS())
         {
-            Assert.AreEqual(@"macOS: (?<version>\d+\.\d+\.\d+)", regex);
+            Assert.Equal(@"macOS: (?<version>\d+\.\d+\.\d+)", regex);
         }
         else
         {
-            Assert.AreEqual(@"(?<version>\d+\.\d+\.\d+)", regex);
+            Assert.Equal(@"(?<version>\d+\.\d+\.\d+)", regex);
         }
     }
 
     /// <summary>
     ///     Test GetEffectiveCommand throws InvalidOperationException when no default key is present.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveCommand_NoDefaultKey_ThrowsInvalidOperationException()
     {
         // Arrange - a ToolConfig with only an OS-specific command and no default key
@@ -518,13 +517,13 @@ public partial class VersionMarkConfigTests
         );
 
         // Act & Assert - requesting an OS with no matching key and no default should throw
-        Assert.ThrowsExactly<InvalidOperationException>(() => tool.GetEffectiveCommand("linux"));
+        Assert.Throws<InvalidOperationException>(() => tool.GetEffectiveCommand("linux"));
     }
 
     /// <summary>
     ///     Test GetEffectiveRegex throws InvalidOperationException when no default key is present.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void ToolConfig_GetEffectiveRegex_NoDefaultKey_ThrowsInvalidOperationException()
     {
         // Arrange - a ToolConfig with only an OS-specific regex and no default key
@@ -534,13 +533,13 @@ public partial class VersionMarkConfigTests
         );
 
         // Act & Assert - requesting an OS with no matching key and no default should throw
-        Assert.ThrowsExactly<InvalidOperationException>(() => tool.GetEffectiveRegex("linux"));
+        Assert.Throws<InvalidOperationException>(() => tool.GetEffectiveRegex("linux"));
     }
 
     /// <summary>
     ///     Test FindVersions with dotnet command.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo()
     {
         // Arrange
@@ -557,17 +556,17 @@ public partial class VersionMarkConfigTests
         var versionInfo = config.FindVersions(s_dotnetToolArray, "test-job");
 
         // Assert
-        Assert.IsNotNull(versionInfo);
-        Assert.AreEqual("test-job", versionInfo.JobId);
-        Assert.HasCount(1, versionInfo.Versions);
-        Assert.IsTrue(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
-        Assert.IsTrue(VersionRegex().IsMatch(dotnetVersion));
+        Assert.NotNull(versionInfo);
+        Assert.Equal("test-job", versionInfo.JobId);
+        Assert.Single(versionInfo.Versions);
+        Assert.True(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
+        Assert.Matches(VersionRegex(), dotnetVersion);
     }
 
     /// <summary>
     ///     Test FindVersions with multiple tools.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions()
     {
         // Arrange
@@ -588,19 +587,19 @@ public partial class VersionMarkConfigTests
         var versionInfo = config.FindVersions(s_dotnetGitToolArray, "test-job");
 
         // Assert
-        Assert.IsNotNull(versionInfo);
-        Assert.AreEqual("test-job", versionInfo.JobId);
-        Assert.HasCount(2, versionInfo.Versions);
-        Assert.IsTrue(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
-        Assert.IsTrue(versionInfo.Versions.TryGetValue("git", out var gitVersion));
-        Assert.IsTrue(VersionRegex().IsMatch(dotnetVersion));
-        Assert.IsTrue(VersionRegex().IsMatch(gitVersion));
+        Assert.NotNull(versionInfo);
+        Assert.Equal("test-job", versionInfo.JobId);
+        Assert.Equal(2, versionInfo.Versions.Count);
+        Assert.True(versionInfo.Versions.TryGetValue("dotnet", out var dotnetVersion));
+        Assert.True(versionInfo.Versions.TryGetValue("git", out var gitVersion));
+        Assert.Matches(VersionRegex(), dotnetVersion);
+        Assert.Matches(VersionRegex(), gitVersion);
     }
 
     /// <summary>
     ///     Test FindVersions with non-existent tool throws ArgumentException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException()
     {
         // Arrange
@@ -614,7 +613,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.ThrowsExactly<ArgumentException>(() =>
+        var ex = Assert.Throws<ArgumentException>(() =>
             config.FindVersions(s_nonexistentToolArray, "test-job"));
 
         Assert.Contains("Tool 'nonexistent' not found in configuration", ex.Message);
@@ -623,7 +622,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test FindVersions with invalid command throws InvalidOperationException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException()
     {
         // Arrange
@@ -637,7 +636,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.ThrowsExactly<InvalidOperationException>(() =>
+        var ex = Assert.Throws<InvalidOperationException>(() =>
             config.FindVersions(s_invalidToolArray, "test-job"));
 
         Assert.Contains("Failed to run command", ex.Message);
@@ -646,7 +645,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test FindVersions with regex that doesn't match throws InvalidOperationException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException()
     {
         // Arrange
@@ -660,7 +659,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.ThrowsExactly<InvalidOperationException>(() =>
+        var ex = Assert.Throws<InvalidOperationException>(() =>
             config.FindVersions(s_dotnetToolArray, "test-job"));
 
         Assert.Contains("Failed to extract version for tool 'dotnet'", ex.Message);
@@ -669,7 +668,7 @@ public partial class VersionMarkConfigTests
     /// <summary>
     ///     Test FindVersions with regex without version group throws InvalidOperationException.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException()
     {
         // Arrange
@@ -683,7 +682,7 @@ public partial class VersionMarkConfigTests
         var config = new VersionMarkConfig(tools);
 
         // Act & Assert
-        var ex = Assert.ThrowsExactly<InvalidOperationException>(() =>
+        var ex = Assert.Throws<InvalidOperationException>(() =>
             config.FindVersions(s_dotnetToolArray, "test-job"));
 
         Assert.Contains("must contain a named 'version' capture group", ex.Message);

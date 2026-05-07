@@ -1,19 +1,22 @@
 ---
 # ReviewMark Configuration File
 # This file defines which files require review, where the evidence store is located,
-# and how files are grouped into named review-sets following software unit boundaries.
+# and how files are grouped into named review-sets following hierarchical scope principles.
 
 # Patterns identifying all files that require review.
 # Processed in order; prefix a pattern with '!' to exclude.
 needs-review:
-  - "README.md"                  # Project readme
-  - "**/*.cs"                    # All C# source and test files
-  - "requirements.yaml"          # Root requirements file
-  - "docs/reqstream/**/*.yaml"   # Requirements files
-  - "docs/user_guide/**/*.md"    # User guide documents
-  - "docs/design/**/*.md"        # Design documents
-  - "!**/obj/**"                 # Exclude build output
-  - "!**/bin/**"                 # Exclude build output
+  - "README.md"                   # Root README file
+  - "requirements.yaml"           # Root requirements file
+  - "**/*.cs"                     # All C# source and test files
+  - "docs/reqstream/**/*.yaml"    # Requirements files
+  - "docs/design/**/*.md"         # Design documentation files
+  - "docs/verification/**/*.md"   # Verification documentation files
+  - "docs/user_guide/**/*.md"     # User guide documentation
+  - "!**/obj/**"                  # Exclude build output
+  - "!**/bin/**"                  # Exclude build output
+  - "!node_modules/**"            # Exclude npm dependencies
+  - "!**/.venv/**"                # Exclude Python virtual environment
 
 # Evidence source: review data and index.json are located in the 'reviews' branch
 # of this repository, accessed through the GitHub public HTTPS raw content access.
@@ -23,23 +26,24 @@ evidence-source:
 
 # Review sets following standardized patterns for hierarchical compliance coverage
 reviews:
-  # Purpose Review (only one per repository)
+  # Purpose
   - id: Purpose
     title: Review that Advertised Features Match System Design
     paths:
       - "README.md"
       - "docs/user_guide/**/*.md"
-      - "docs/reqstream/version-mark/version-mark.yaml"     # system requirements
+      - "docs/reqstream/version-mark.yaml"                    # system requirements
       - "docs/design/introduction.md"                        # design introduction and architecture
-      - "docs/design/version-mark/version-mark.md"          # system design
+      - "docs/design/version-mark.md"          # system design
 
-  # System-level reviews
+  # VersionMark - Specials
   - id: VersionMark-Architecture
     title: Review that VersionMark Architecture Satisfies Requirements
     paths:
-      - "docs/reqstream/version-mark/version-mark.yaml"     # system requirements
+      - "docs/reqstream/version-mark.yaml"                   # system requirements
       - "docs/design/introduction.md"                        # design introduction and architecture
-      - "docs/design/version-mark/version-mark.md"          # system design
+      - "docs/design/version-mark.md"          # system design
+      - "docs/verification/version-mark.md"                  # system verification
       - "test/**/IntegrationTests.cs"                        # integration tests
       - "test/**/AssemblyInfo.cs"                            # test infrastructure
       - "test/**/Runner.cs"                                  # test infrastructure
@@ -47,10 +51,12 @@ reviews:
   - id: VersionMark-Design
     title: Review that VersionMark Design is Consistent and Complete
     paths:
-      - "docs/reqstream/version-mark/version-mark.yaml"          # system requirements
+      - "docs/reqstream/version-mark.yaml"          # system requirements
       - "docs/reqstream/version-mark/platform-requirements.yaml"  # platform requirements
       - "docs/design/introduction.md"                             # design introduction
       - "docs/design/version-mark/**/*.md"                       # all system design documents
+      - "docs/verification/introduction.md"                       # verification introduction
+      - "docs/verification/ots.md"                                # OTS verification overview
 
   - id: VersionMark-AllRequirements
     title: Review that All VersionMark Requirements are Complete
@@ -58,12 +64,13 @@ reviews:
       - "requirements.yaml"                                  # root requirements file
       - "docs/reqstream/**/*.yaml"                           # all requirements files
 
-  # Cli Subsystem
+  # VersionMark - Cli
   - id: VersionMark-Cli
     title: Review that VersionMark Cli Satisfies Subsystem Requirements
     paths:
-      - "docs/reqstream/version-mark/cli/cli.yaml"          # subsystem requirements
-      - "docs/design/version-mark/cli/cli.md"               # subsystem design
+      - "docs/reqstream/version-mark/cli.yaml"          # subsystem requirements
+      - "docs/design/version-mark/cli.md"               # subsystem design
+      - "docs/verification/version-mark/cli.md"              # subsystem verification
       - "test/**/Cli/CliTests.cs"                            # subsystem tests
 
   - id: VersionMark-Cli-Program
@@ -71,6 +78,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/cli/program.yaml"      # requirements
       - "docs/design/version-mark/cli/program.md"           # design
+      - "docs/verification/version-mark/cli/program.md"      # verification
       - "src/**/Program.cs"                                  # implementation
       - "test/**/ProgramTests.cs"                            # unit tests
 
@@ -79,15 +87,17 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/cli/context.yaml"      # requirements
       - "docs/design/version-mark/cli/context.md"           # design
+      - "docs/verification/version-mark/cli/context.md"      # verification
       - "src/**/Cli/Context.cs"                              # implementation
       - "test/**/Cli/ContextTests.cs"                        # unit tests
 
-  # Configuration Subsystem
+  # VersionMark - Configuration
   - id: VersionMark-Configuration
     title: Review that VersionMark Configuration Satisfies Subsystem Requirements
     paths:
-      - "docs/reqstream/version-mark/configuration/configuration.yaml"          # subsystem requirements
-      - "docs/design/version-mark/configuration/configuration.md"               # subsystem design
+      - "docs/reqstream/version-mark/configuration.yaml"          # subsystem requirements
+      - "docs/design/version-mark/configuration.md"               # subsystem design
+      - "docs/verification/version-mark/configuration.md"                        # subsystem verification
       - "test/**/Configuration/ConfigurationTests.cs"                            # subsystem tests
 
   - id: VersionMark-Configuration-VersionMarkConfig
@@ -95,6 +105,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/configuration/version-mark-config.yaml"    # requirements
       - "docs/design/version-mark/configuration/version-mark-config.md"         # design
+      - "docs/verification/version-mark/configuration/version-mark-config.md"   # verification
       - "src/**/Configuration/VersionMarkConfig.cs"                             # implementation
       - "test/**/Configuration/VersionMarkConfigTests.cs"                       # unit tests
       - "test/**/Configuration/VersionMarkConfigLoadTests.cs"                   # Load method unit tests
@@ -104,6 +115,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/configuration/tool-config.yaml"            # requirements
       - "docs/design/version-mark/configuration/tool-config.md"                 # design
+      - "docs/verification/version-mark/configuration/tool-config.md"           # verification
       - "src/**/Configuration/VersionMarkConfig.cs"                             # implementation
       - "test/**/Configuration/VersionMarkConfigTests.cs"                       # unit tests
 
@@ -112,15 +124,17 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/configuration/load.yaml"                   # requirements
       - "docs/design/version-mark/configuration/lint-issue.md"                  # design
+      - "docs/verification/version-mark/configuration/lint-issue.md"            # verification
       - "src/**/Configuration/LintIssue.cs"                                     # implementation
       - "test/**/Configuration/LintIssueTests.cs"                               # unit tests
 
-  # Capture Subsystem
+  # VersionMark - Capture
   - id: VersionMark-Capture
     title: Review that VersionMark Capture Satisfies Subsystem Requirements
     paths:
-      - "docs/reqstream/version-mark/capture/capture.yaml"  # subsystem requirements
-      - "docs/design/version-mark/capture/capture.md"       # subsystem design
+      - "docs/reqstream/version-mark/capture.yaml"  # subsystem requirements
+      - "docs/design/version-mark/capture.md"       # subsystem design
+      - "docs/verification/version-mark/capture.md"          # subsystem verification
       - "test/**/Capture/CaptureTests.cs"                    # subsystem tests
 
   - id: VersionMark-Capture-VersionInfo
@@ -128,15 +142,17 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/capture/version-info.yaml"  # requirements
       - "docs/design/version-mark/capture/version-info.md"        # design
+      - "docs/verification/version-mark/capture/version-info.md"  # verification
       - "src/**/Capture/VersionInfo.cs"                           # implementation
       - "test/**/Capture/VersionInfoTests.cs"                     # unit tests
 
-  # Publishing Subsystem
+  # VersionMark - Publishing
   - id: VersionMark-Publishing
     title: Review that VersionMark Publishing Satisfies Subsystem Requirements
     paths:
-      - "docs/reqstream/version-mark/publishing/publishing.yaml"  # subsystem requirements
-      - "docs/design/version-mark/publishing/publishing.md"       # subsystem design
+      - "docs/reqstream/version-mark/publishing.yaml"  # subsystem requirements
+      - "docs/design/version-mark/publishing.md"       # subsystem design
+      - "docs/verification/version-mark/publishing.md"             # subsystem verification
       - "test/**/Publishing/PublishingTests.cs"                    # subsystem tests
 
   - id: VersionMark-Publishing-MarkdownFormatter
@@ -144,15 +160,17 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/publishing/markdown-formatter.yaml"  # requirements
       - "docs/design/version-mark/publishing/markdown-formatter.md"       # design
+      - "docs/verification/version-mark/publishing/markdown-formatter.md"  # verification
       - "src/**/Publishing/MarkdownFormatter.cs"                          # implementation
       - "test/**/Publishing/MarkdownFormatterTests.cs"                    # unit tests
 
-  # SelfTest Subsystem
+  # VersionMark - SelfTest
   - id: VersionMark-SelfTest
     title: Review that VersionMark SelfTest Satisfies Subsystem Requirements
     paths:
-      - "docs/reqstream/version-mark/self-test/self-test.yaml"   # subsystem requirements
-      - "docs/design/version-mark/self-test/self-test.md"        # subsystem design
+      - "docs/reqstream/version-mark/self-test.yaml"   # subsystem requirements
+      - "docs/design/version-mark/self-test.md"        # subsystem design
+      - "docs/verification/version-mark/self-test.md"             # subsystem verification
       - "test/**/SelfTest/SelfTestTests.cs"                       # subsystem tests
 
   - id: VersionMark-SelfTest-Validation
@@ -160,6 +178,7 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/self-test/validation.yaml"  # requirements
       - "docs/design/version-mark/self-test/validation.md"       # design
+      - "docs/verification/version-mark/self-test/validation.md"  # verification
       - "src/**/SelfTest/Validation.cs"                          # implementation
       - "test/**/SelfTest/SelfTestTests.cs"                      # subsystem tests (no separate unit test file)
 
@@ -168,5 +187,61 @@ reviews:
     paths:
       - "docs/reqstream/version-mark/self-test/path-helpers.yaml"  # requirements
       - "docs/design/version-mark/self-test/path-helpers.md"       # design
+      - "docs/verification/version-mark/self-test/path-helpers.md"  # verification
       - "src/**/SelfTest/PathHelpers.cs"                           # implementation
       - "test/**/SelfTest/PathHelpersTests.cs"                     # unit tests
+
+  # OTS Items
+  - id: OTS-BuildMark
+    title: Review of BuildMark OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/buildmark.yaml"
+      - "docs/verification/ots/buildmark.md"
+
+  - id: OTS-FileAssert
+    title: Review of FileAssert OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/fileassert.yaml"
+      - "docs/verification/ots/fileassert.md"
+
+  - id: OTS-xUnit
+    title: Review of xUnit OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/xunit.yaml"
+      - "docs/verification/ots/xunit.md"
+
+  - id: OTS-Pandoc
+    title: Review of Pandoc OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/pandoc.yaml"
+      - "docs/verification/ots/pandoc.md"
+
+  - id: OTS-ReqStream
+    title: Review of ReqStream OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/reqstream.yaml"
+      - "docs/verification/ots/reqstream.md"
+
+  - id: OTS-ReviewMark
+    title: Review of ReviewMark OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/reviewmark.yaml"
+      - "docs/verification/ots/reviewmark.md"
+
+  - id: OTS-SarifMark
+    title: Review of SarifMark OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/sarifmark.yaml"
+      - "docs/verification/ots/sarifmark.md"
+
+  - id: OTS-SonarMark
+    title: Review of SonarMark OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/sonarmark.yaml"
+      - "docs/verification/ots/sonarmark.md"
+
+  - id: OTS-WeasyPrint
+    title: Review of WeasyPrint OTS verification evidence
+    paths:
+      - "docs/reqstream/ots/weasyprint.yaml"
+      - "docs/verification/ots/weasyprint.md"

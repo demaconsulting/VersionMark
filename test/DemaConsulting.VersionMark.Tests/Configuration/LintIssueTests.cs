@@ -26,13 +26,12 @@ namespace DemaConsulting.VersionMark.Tests.Configuration;
 /// <summary>
 ///     Unit tests for the <see cref="LintIssue"/> record and the <see cref="VersionMarkLoadResult"/> record.
 /// </summary>
-[TestClass]
 public class LintIssueTests
 {
     /// <summary>
     ///     Test that <see cref="LintIssue"/> properties are stored correctly.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LintIssue_Constructor_AllFields_AreStoredCorrectly()
     {
         // Arrange & Act
@@ -44,17 +43,17 @@ public class LintIssueTests
             Description: "Missing required field");
 
         // Assert
-        Assert.AreEqual("config.yaml", issue.FilePath);
-        Assert.AreEqual(3L, issue.Line);
-        Assert.AreEqual(5L, issue.Column);
-        Assert.AreEqual(LintSeverity.Error, issue.Severity);
-        Assert.AreEqual("Missing required field", issue.Description);
+        Assert.Equal("config.yaml", issue.FilePath);
+        Assert.Equal(3L, issue.Line);
+        Assert.Equal(5L, issue.Column);
+        Assert.Equal(LintSeverity.Error, issue.Severity);
+        Assert.Equal("Missing required field", issue.Description);
     }
 
     /// <summary>
     ///     Test that <see cref="LintIssue.ToString"/> produces the expected format with lowercase severity for an error.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LintIssue_ToString_Error_ProducesLowercaseSeverity()
     {
         // Arrange
@@ -69,13 +68,13 @@ public class LintIssueTests
         var result = issue.ToString();
 
         // Assert - severity must be lowercase 'error', not 'Error'
-        Assert.AreEqual("config.yaml(10,2): error: tool 'dotnet' is missing required field 'command'", result);
+        Assert.Equal("config.yaml(10,2): error: tool 'dotnet' is missing required field 'command'", result);
     }
 
     /// <summary>
     ///     Test that <see cref="LintIssue.ToString"/> produces the expected format with lowercase severity for a warning.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void LintIssue_ToString_Warning_ProducesLowercaseSeverity()
     {
         // Arrange
@@ -90,13 +89,13 @@ public class LintIssueTests
         var result = issue.ToString();
 
         // Assert - severity must be lowercase 'warning', not 'Warning'
-        Assert.AreEqual("my.versionmark.yaml(4,1): warning: unknown key 'extra-field'", result);
+        Assert.Equal("my.versionmark.yaml(4,1): warning: unknown key 'extra-field'", result);
     }
 
     /// <summary>
     ///     Test that <see cref="VersionMarkLoadResult"/> properties are stored correctly.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkLoadResult_Constructor_AllFields_AreStoredCorrectly()
     {
         // Arrange
@@ -107,15 +106,15 @@ public class LintIssueTests
         var loadResult = new VersionMarkLoadResult(null, issues);
 
         // Assert
-        Assert.IsNull(loadResult.Config);
-        Assert.HasCount(1, loadResult.Issues);
-        Assert.AreSame(issue, loadResult.Issues[0]);
+        Assert.Null(loadResult.Config);
+        Assert.Single(loadResult.Issues);
+        Assert.Same(issue, loadResult.Issues[0]);
     }
 
     /// <summary>
     ///     Test that <see cref="VersionMarkLoadResult.ReportIssues"/> routes errors to <c>context.WriteError</c>.
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkLoadResult_ReportIssues_Error_WritesToErrorStream()
     {
         // Arrange
@@ -134,9 +133,9 @@ public class LintIssueTests
 
             // Assert - errors must be routed to the error stream
             var errorOutput = errWriter.ToString();
-            StringAssert.Contains(errorOutput, "error:");
-            StringAssert.Contains(errorOutput, "missing command");
-            Assert.AreEqual(1, context.ExitCode, "ExitCode should be non-zero after reporting an error");
+            Assert.Contains("error:", errorOutput);
+            Assert.Contains("missing command", errorOutput);
+            Assert.Equal(1, context.ExitCode);
         }
         finally
         {
@@ -147,7 +146,7 @@ public class LintIssueTests
     /// <summary>
     ///     Test that <see cref="VersionMarkLoadResult.ReportIssues"/> routes warnings to standard output (not errors).
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void VersionMarkLoadResult_ReportIssues_Warning_WritesToStdOut()
     {
         // Arrange
@@ -168,9 +167,9 @@ public class LintIssueTests
             loadResult.ReportIssues(context);
 
             // Assert - warnings should go to stdout only and must not set the error exit code
-            Assert.AreEqual(0, context.ExitCode, "ExitCode should remain zero for warnings only");
-            StringAssert.Contains(stdout.ToString(), "config.yaml(5,3): warning: unknown key 'x'");
-            Assert.AreEqual(string.Empty, stderr.ToString(), "Warnings should not be written to stderr");
+            Assert.Equal(0, context.ExitCode);
+            Assert.Contains("config.yaml(5,3): warning: unknown key 'x'", stdout.ToString());
+            Assert.Equal(string.Empty, stderr.ToString());
         }
         finally
         {

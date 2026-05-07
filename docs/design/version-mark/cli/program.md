@@ -1,25 +1,25 @@
-# Program Unit
+### Program Unit
 
-## Overview
+#### Overview
 
 The `Program` class (`Program.cs`) is the top-level entry point for the tool. It owns the
 `Main` method, constructs the `Context`, dispatches to the appropriate mode, and handles
 top-level exception translation.
 
-## Version Property
+#### Version Property
 
 The static `Version` property reads the assembly's `AssemblyInformationalVersionAttribute`
 at runtime and falls back to `AssemblyVersion` or `"0.0.0"` if neither is available. This
 satisfies requirement `VersionMark-Program-Version`.
 
-## Main Method
+#### Main Method
 
 `Main` creates a `Context` from the command-line arguments, calls `Run`, and returns
 `context.ExitCode`. `ArgumentException` and `InvalidOperationException` are caught and
 written to `Console.Error`, returning exit code 1. Unexpected exceptions are re-thrown to
 generate event-log entries. This satisfies requirement `VersionMark-Program-Dispatch`.
 
-## Run Method
+#### Run Method
 
 `Run` implements priority-ordered dispatch:
 
@@ -36,14 +36,14 @@ generate event-log entries. This satisfies requirement `VersionMark-Program-Disp
 
 This dispatch order satisfies requirement `VersionMark-Program-Dispatch`.
 
-## Capture and Publish Orchestration
+#### Capture and Publish Orchestration
 
 `RunCapture` and `RunPublish` are private helpers called from `Run`. They validate required
 arguments, invoke configuration loading and version capture/report generation, and delegate
 error handling to `context.WriteError`. These methods satisfy requirements
 `VersionMark-Program-RunCapture` and `VersionMark-Program-RunPublish`.
 
-## RunLint
+#### RunLint
 
 `RunLint` is a private helper called from `Run`. It resolves the configuration file path,
 defaulting to `.versionmark.yaml` when `context.LintFile` is `null`, then calls
