@@ -24,8 +24,7 @@ using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.Configuration;
 using DemaConsulting.VersionMark.Publishing;
 using DemaConsulting.VersionMark.SelfTest;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using DemaConsulting.VersionMark.Utilities;
 
 namespace DemaConsulting.VersionMark;
 
@@ -299,7 +298,7 @@ internal static class Program
             context.WriteLine($"Searching for JSON files with patterns: {string.Join(", ", globPatterns)}");
 
             // Find matching JSON files using glob patterns
-            var jsonFiles = FindMatchingFiles(globPatterns);
+            var jsonFiles = GlobMatcher.FindMatchingFiles(globPatterns);
 
             // Check if any files were found
             if (jsonFiles.Count == 0)
@@ -328,112 +327,6 @@ internal static class Program
         {
             context.WriteError($"Error: {ex.Message}");
         }
-    }
-
-    /// <summary>
-    ///     Finds files matching the specified glob patterns.
-    /// </summary>
-    /// <param name="globPatterns">Array of glob patterns to match.</param>
-    /// <returns>List of matching file paths.</returns>
-    private static List<string> FindMatchingFiles(string[] globPatterns)
-    {
-        var files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var relativePatterns = new List<string>();
-
-        foreach (var pattern in globPatterns)
-        {
-            if (Path.IsPathRooted(pattern))
-            {
-                // Handle absolute path by extracting the root directory and relative pattern
-                var (rootDir, relativePattern) = SplitAbsolutePattern(pattern);
-                if (Directory.Exists(rootDir))
-                {
-                    var matcher = new Matcher();
-                    matcher.AddInclude(relativePattern);
-                    var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(rootDir)));
-                    foreach (var file in result.Files)
-                    {
-                        files.Add(Path.GetFullPath(Path.Combine(rootDir, file.Path)));
-                    }
-                }
-            }
-            else
-            {
-                relativePatterns.Add(pattern);
-            }
-        }
-
-        // Handle all relative patterns together against the current directory
-        if (relativePatterns.Count > 0)
-        {
-            var matcher = new Matcher();
-            foreach (var pattern in relativePatterns)
-            {
-                matcher.AddInclude(pattern);
-            }
-
-            var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Directory.GetCurrentDirectory())));
-            foreach (var file in result.Files)
-            {
-                files.Add(Path.GetFullPath(file.Path));
-            }
-        }
-
-        return files.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
-    }
-
-    /// <summary>
-    ///     Splits an absolute glob pattern into a root directory and a relative pattern.
-    /// </summary>
-    /// <param name="absolutePattern">The absolute glob pattern to split.</param>
-    /// <returns>A tuple of (rootDirectory, relativePattern).</returns>
-    private static (string rootDir, string relativePattern) SplitAbsolutePattern(string absolutePattern)
-    {
-        var pathRoot = Path.GetPathRoot(absolutePattern) ?? string.Empty;
-
-        // Find the index of the first wildcard character in the pattern
-        // Microsoft.Extensions.FileSystemGlobbing supports *, **, ?, and [abc] ranges
-        var wildcardIndex = absolutePattern.IndexOfAny(['*', '?', '[']);
-
-        if (wildcardIndex < 0)
-        {
-            // No wildcard - treat as a specific file path
-            return (
-                Path.GetDirectoryName(absolutePattern) ?? pathRoot,
-                Path.GetFileName(absolutePattern));
-        }
-
-        // Find the last directory separator before the first wildcard.
-        // LastIndexOfAny with a start index searches backwards from that position toward the start,
-        // so this finds the rightmost separator that precedes the wildcard character.
-        var lastSepIndex = absolutePattern.LastIndexOfAny(
-            [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
-            wildcardIndex);
-
-        if (lastSepIndex < 0)
-        {
-            // No separator before wildcard - use the path root
-            return (pathRoot, absolutePattern[pathRoot.Length..]);
-        }
-
-        var rootDir = absolutePattern[..lastSepIndex];
-        var relativePattern = absolutePattern[(lastSepIndex + 1)..];
-
-        // Handle empty root (Unix paths like /file.json where separator is the very first char)
-        if (string.IsNullOrEmpty(rootDir))
-        {
-            return (pathRoot, relativePattern);
-        }
-
-        // Ensure drive/volume root includes trailing separator.
-        // On Windows, splitting "C:\*.json" at the backslash yields rootDir = "C:" (no trailing
-        // backslash), but DirectoryInfo requires "C:\" to refer to the drive root.
-        if (rootDir == pathRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-        {
-            return (pathRoot, relativePattern);
-        }
-
-        return (rootDir, relativePattern);
     }
 
     /// <summary>

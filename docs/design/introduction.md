@@ -15,7 +15,7 @@ The purpose of this document is to:
 
 ## Scope
 
-This document covers the design of five subsystems within VersionMark:
+This document covers the design of six subsystems within VersionMark:
 
 - The **Cli Subsystem**: the `Program` entry point and `Context` class
   that handle argument parsing, output routing, and program flow control
@@ -27,6 +27,7 @@ This document covers the design of five subsystems within VersionMark:
   version report from captured data
 - The **SelfTest Subsystem**: the `Validation` class and `PathHelpers` utility that
   together provide built-in verification of the tool's core functionality
+- The **Utilities Subsystem**: the `GlobMatcher` class that provides glob-pattern file matching for use by other subsystems
 
 This document does not cover installation, end-user usage patterns, or the CI/CD pipeline
 configuration. Those topics are addressed in the *VersionMark User Guide* and the
@@ -50,9 +51,11 @@ VersionMark (System)                        Version capture/publish tool
 │   └── VersionInfo (Unit)                  JSON version data record
 ├── Publishing (Subsystem)                  Markdown report publishing
 │   └── MarkdownFormatter (Unit)            Version report formatter
-└── SelfTest (Subsystem)                    Built-in self-validation
-    ├── Validation (Unit)                   Self-validation runner
-    └── PathHelpers (Unit)                  Safe path combination
+├── SelfTest (Subsystem)                    Built-in self-validation
+│   ├── Validation (Unit)                   Self-validation runner
+│   └── PathHelpers (Unit)                  Safe path combination
+└── Utilities (Subsystem)                   General-purpose helper utilities
+    └── GlobMatcher (Unit)                  Glob-pattern file matching
 ```
 
 Each unit is described in detail in its own chapter within this document.
@@ -74,9 +77,11 @@ src/DemaConsulting.VersionMark/
 │   └── VersionInfo.cs                      — captured version data record
 ├── Publishing/
 │   └── MarkdownFormatter.cs                — markdown report generation
-└── SelfTest/
-    ├── Validation.cs                        — self-validation test runner
-    └── PathHelpers.cs                       — safe path utilities
+├── SelfTest/
+│   ├── Validation.cs                        — self-validation test runner
+│   └── PathHelpers.cs                       — safe path utilities
+└── Utilities/
+    └── GlobMatcher.cs                       — glob-pattern file matching
 ```
 
 The test project mirrors the same layout under `test/DemaConsulting.VersionMark.Tests/`.

@@ -191,6 +191,24 @@ reviews:
       - "src/**/SelfTest/PathHelpers.cs"                           # implementation
       - "test/**/SelfTest/PathHelpersTests.cs"                     # unit tests
 
+  # VersionMark - Utilities
+  - id: VersionMark-Utilities
+    title: Review that VersionMark Utilities Satisfies Subsystem Requirements
+    paths:
+      - "docs/reqstream/version-mark/utilities.yaml"
+      - "docs/design/version-mark/utilities.md"
+      - "docs/verification/version-mark/utilities.md"
+      - "test/**/Utilities/GlobMatcherTests.cs"    # subsystem tests (no separate subsystem test file needed)
+
+  - id: VersionMark-Utilities-GlobMatcher
+    title: Review that VersionMark Utilities GlobMatcher Implementation is Correct
+    paths:
+      - "docs/reqstream/version-mark/utilities/glob-matcher.yaml"
+      - "docs/design/version-mark/utilities/glob-matcher.md"
+      - "docs/verification/version-mark/utilities/glob-matcher.md"
+      - "src/**/Utilities/GlobMatcher.cs"
+      - "test/**/Utilities/GlobMatcherTests.cs"
+
   # OTS Items
   - id: OTS-BuildMark
     title: Review of BuildMark OTS verification evidence
