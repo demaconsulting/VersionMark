@@ -392,7 +392,8 @@ internal static class Program
         var pathRoot = Path.GetPathRoot(absolutePattern) ?? string.Empty;
 
         // Find the index of the first wildcard character in the pattern
-        var wildcardIndex = absolutePattern.IndexOfAny(['*', '?', '[', '{']);
+        // Microsoft.Extensions.FileSystemGlobbing supports *, **, ?, and [abc] ranges
+        var wildcardIndex = absolutePattern.IndexOfAny(['*', '?', '[']);
 
         if (wildcardIndex < 0)
         {
@@ -402,7 +403,9 @@ internal static class Program
                 Path.GetFileName(absolutePattern));
         }
 
-        // Find the last directory separator before the first wildcard
+        // Find the last directory separator before the first wildcard.
+        // LastIndexOfAny with a start index searches backwards from that position toward the start,
+        // so this finds the rightmost separator that precedes the wildcard character.
         var lastSepIndex = absolutePattern.LastIndexOfAny(
             [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
             wildcardIndex);
@@ -422,7 +425,9 @@ internal static class Program
             return (pathRoot, relativePattern);
         }
 
-        // Ensure drive/volume root includes trailing separator (e.g., "C:" → "C:\")
+        // Ensure drive/volume root includes trailing separator.
+        // On Windows, splitting "C:\*.json" at the backslash yields rootDir = "C:" (no trailing
+        // backslash), but DirectoryInfo requires "C:\" to refer to the drive root.
         if (rootDir == pathRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
         {
             return (pathRoot, relativePattern);
