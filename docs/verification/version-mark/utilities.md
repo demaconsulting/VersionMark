@@ -3,16 +3,16 @@
 ### Overview
 
 The Utilities subsystem provides general-purpose helper classes for use within VersionMark.
-It currently consists of one unit: `GlobMatcher` (the glob-pattern file matcher).
+It consists of two units: `GlobMatcher` (the glob-pattern file matcher) and `PathHelpers`
+(the safe path combination utility).
 
-Unit-level verification for `GlobMatcher` is in the chapter that follows.
+Unit-level verification for `GlobMatcher` and `PathHelpers` is in the chapters that follow.
 
 ### Verification Approach
 
-Unit tests invoke `GlobMatcher` directly with various pattern and file-system inputs and
-assert on the returned file list. Tests use temporary directories for file-system
-scenarios, ensuring isolation and repeatability across platforms. No external mocks are
-required.
+Unit tests invoke `GlobMatcher` and `PathHelpers` directly with various inputs and assert
+on the returned results. Tests use temporary directories for file-system scenarios,
+ensuring isolation and repeatability across platforms. No external mocks are required.
 
 ### Test Scenarios
 
@@ -34,6 +34,24 @@ The following test scenarios verify Utilities subsystem requirements:
   Pattern with wildcard is split at the last separator before the wildcard.
 - **`GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator`**:
   Pattern without wildcard is split at the last separator.
+- **`PathHelpers_SafePathCombine_ValidPaths_CombinesCorrectly`**: A simple relative path is combined with the base path.
+- **`PathHelpers_SafePathCombine_PathTraversalWithDoubleDots_ThrowsArgumentException`**:
+  A path beginning with `../` throws ArgumentException.
+- **`PathHelpers_SafePathCombine_DoubleDotsInMiddle_ThrowsArgumentException`**:
+  A path containing `..` in the middle throws ArgumentException.
+- **`PathHelpers_SafePathCombine_AbsolutePath_ThrowsArgumentException`**:
+  A rooted absolute path throws ArgumentException.
+- **`PathHelpers_SafePathCombine_CurrentDirectoryReference_CombinesCorrectly`**:
+  A path containing `.` (current directory) combines correctly.
+- **`PathHelpers_SafePathCombine_NestedPaths_CombinesCorrectly`**: A nested relative path combines correctly.
+- **`PathHelpers_SafePathCombine_EmptyRelativePath_ReturnsBasePath`**:
+  An empty relative path returns the base path unchanged.
+- **`PathHelpers_SafePathCombine_DotDotAsNamePrefix_CombinesCorrectly`**:
+  A filename that starts with `..` but is not a traversal combines correctly.
+- **`PathHelpers_SafePathCombine_NullBasePath_ThrowsArgumentNullException`**:
+  A null base path throws ArgumentNullException.
+- **`PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException`**:
+  A null relative path throws ArgumentNullException.
 
 ### Dependencies
 
@@ -49,3 +67,13 @@ The following list maps Utilities subsystem requirements to test scenarios:
   `GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles`,
   `GlobMatcher_FindMatchingFiles_EmptyPatterns_ReturnsEmptyList`,
   `GlobMatcher_FindMatchingFiles_PatternMatchingNoFiles_ReturnsEmptyList`
+- **`VersionMark-Utilities-SafePath`**: `PathHelpers_SafePathCombine_ValidPaths_CombinesCorrectly`,
+  `PathHelpers_SafePathCombine_PathTraversalWithDoubleDots_ThrowsArgumentException`,
+  `PathHelpers_SafePathCombine_DoubleDotsInMiddle_ThrowsArgumentException`,
+  `PathHelpers_SafePathCombine_AbsolutePath_ThrowsArgumentException`,
+  `PathHelpers_SafePathCombine_CurrentDirectoryReference_CombinesCorrectly`,
+  `PathHelpers_SafePathCombine_NestedPaths_CombinesCorrectly`,
+  `PathHelpers_SafePathCombine_EmptyRelativePath_ReturnsBasePath`,
+  `PathHelpers_SafePathCombine_DotDotAsNamePrefix_CombinesCorrectly`,
+  `PathHelpers_SafePathCombine_NullBasePath_ThrowsArgumentNullException`,
+  `PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException`

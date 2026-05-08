@@ -43,5 +43,6 @@ the base directory.
 - **No logging or error accumulation**: `SafePathCombine` is a pure utility method that throws
   on invalid input; it does not interact with the `Context` or any output mechanism.
 
-`PathHelpers` is used by `Validation` when constructing paths inside temporary directories
-for self-validation tests. This satisfies requirement `VersionMark-PathHelpers-SafeCombine`.
+`PathHelpers` is used by `SelfTest.Validation` when constructing paths inside temporary
+directories for self-validation tests. This satisfies requirement
+`VersionMark-PathHelpers-SafeCombine`.

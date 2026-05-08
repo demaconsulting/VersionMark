@@ -3,10 +3,12 @@
 ### Overview
 
 The Utilities subsystem provides general-purpose helper classes used by other subsystems
-within VersionMark. It currently consists of one unit: `GlobMatcher`, which implements
-glob-pattern file matching for the Publish mode.
+within VersionMark. It consists of two units: `GlobMatcher`, which implements glob-pattern
+file matching for the Publish mode, and `PathHelpers`, which provides safe path combination
+to protect against path-traversal attacks.
 
-This subsystem satisfies requirement `VersionMark-Utilities-GlobMatch`.
+This subsystem satisfies requirements `VersionMark-Utilities-GlobMatch` and
+`VersionMark-Utilities-SafePath`.
 
 ### Units
 
@@ -19,9 +21,20 @@ an absolute glob pattern into its root directory and relative pattern components
 
 See *GlobMatcher Unit Design* for the full unit design.
 
+#### PathHelpers
+
+The `PathHelpers` class (`PathHelpers.cs`) provides a single static method,
+`SafePathCombine`, which safely combines a base path and a relative path while
+preventing path-traversal attacks. It is used by `SelfTest.Validation` when
+constructing paths inside temporary directories.
+
+See *PathHelpers Unit Design* for the full unit design.
+
 ### Subsystem Interactions
 
 `GlobMatcher.FindMatchingFiles` is called by the Cli Subsystem (`Program.RunPublish`) to
 resolve the glob patterns supplied on the command line into a concrete list of JSON capture
-files. The Utilities subsystem has no dependencies on other VersionMark subsystems; it
-depends only on `Microsoft.Extensions.FileSystemGlobbing` for pattern evaluation.
+files. `PathHelpers.SafePathCombine` is called by the SelfTest subsystem (`Validation.Run`)
+when constructing paths inside temporary directories. The Utilities subsystem has no
+dependencies on other VersionMark subsystems; it depends only on
+`Microsoft.Extensions.FileSystemGlobbing` for pattern evaluation.

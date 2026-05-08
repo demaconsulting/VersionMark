@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace DemaConsulting.VersionMark.SelfTest;
+namespace DemaConsulting.VersionMark.Utilities;
 
 /// <summary>
-///     Helper utilities for safe path operations within the SelfTest subsystem.
+///     Helper utilities for safe path operations.
 ///     Protects against path-traversal attacks by ensuring combined paths remain
 ///     within the intended base directory.
 /// </summary>

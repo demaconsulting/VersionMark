@@ -13,3 +13,12 @@ sections:
             children:
               - VersionMark-GlobMatcher-FindFiles
               - VersionMark-GlobMatcher-AbsolutePaths
+
+          - id: VersionMark-Utilities-SafePath
+            title: The Utilities subsystem shall provide safe path combination.
+            justification: |
+              Centralizing safe path combination in a dedicated subsystem makes the
+              path-traversal protection reusable across all subsystems that construct
+              file paths from partially-trusted input.
+            children:
+              - VersionMark-PathHelpers-SafeCombine

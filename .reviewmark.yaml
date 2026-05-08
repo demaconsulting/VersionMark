@@ -182,15 +182,6 @@ reviews:
       - "src/**/SelfTest/Validation.cs"                          # implementation
       - "test/**/SelfTest/SelfTestTests.cs"                      # subsystem tests (no separate unit test file)
 
-  - id: VersionMark-SelfTest-PathHelpers
-    title: Review that VersionMark SelfTest PathHelpers Implementation is Correct
-    paths:
-      - "docs/reqstream/version-mark/self-test/path-helpers.yaml"  # requirements
-      - "docs/design/version-mark/self-test/path-helpers.md"       # design
-      - "docs/verification/version-mark/self-test/path-helpers.md"  # verification
-      - "src/**/SelfTest/PathHelpers.cs"                           # implementation
-      - "test/**/SelfTest/PathHelpersTests.cs"                     # unit tests
-
   # VersionMark - Utilities
   - id: VersionMark-Utilities
     title: Review that VersionMark Utilities Satisfies Subsystem Requirements
@@ -199,6 +190,7 @@ reviews:
       - "docs/design/version-mark/utilities.md"
       - "docs/verification/version-mark/utilities.md"
       - "test/**/Utilities/GlobMatcherTests.cs"    # subsystem tests (no separate subsystem test file needed)
+      - "test/**/Utilities/PathHelpersTests.cs"    # subsystem tests
 
   - id: VersionMark-Utilities-GlobMatcher
     title: Review that VersionMark Utilities GlobMatcher Implementation is Correct
@@ -208,6 +200,15 @@ reviews:
       - "docs/verification/version-mark/utilities/glob-matcher.md"
       - "src/**/Utilities/GlobMatcher.cs"
       - "test/**/Utilities/GlobMatcherTests.cs"
+
+  - id: VersionMark-Utilities-PathHelpers
+    title: Review that VersionMark Utilities PathHelpers Implementation is Correct
+    paths:
+      - "docs/reqstream/version-mark/utilities/path-helpers.yaml"  # requirements
+      - "docs/design/version-mark/utilities/path-helpers.md"       # design
+      - "docs/verification/version-mark/utilities/path-helpers.md"  # verification
+      - "src/**/Utilities/PathHelpers.cs"                          # implementation
+      - "test/**/Utilities/PathHelpersTests.cs"                    # unit tests
 
   # OTS Items
   - id: OTS-BuildMark

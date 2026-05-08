@@ -5,7 +5,7 @@
 The `PathHelpers` unit provides a `SafePathCombine` method that combines a base path and
 a relative path while preventing path traversal attacks. It rejects relative paths that
 contain `..` components that would escape the base directory, as well as absolute paths.
-Tests are in `SelfTest/PathHelpersTests.cs`.
+Tests are in `Utilities/PathHelpersTests.cs`.
 
 #### Test Scenarios
 
