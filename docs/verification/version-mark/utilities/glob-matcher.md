@@ -27,7 +27,8 @@ The following test scenarios verify `GlobMatcher`:
 - **`GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator`**:
   A pattern without a wildcard is split at the final separator.
 - **`GlobMatcher_SplitAbsolutePattern_ForwardSlashRootPattern_SplitsToRootAndRelative`**:
-  A root-relative forward-slash pattern (e.g. `/*.json`) splits to `/` root and relative pattern on all platforms.
+  A root-relative forward-slash pattern (e.g. `/*.json`) splits to the platform path root (`/` on Unix,
+  `\` on Windows) and relative pattern on all platforms.
 - **`GlobMatcher_SplitAbsolutePattern_WindowsDriveRootPattern_SplitsToDriveRootAndRelative`**:
   A Windows drive-root pattern (e.g. `C:\*.json`) splits to `C:\` root and relative pattern (Windows only).
 

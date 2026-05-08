@@ -36,11 +36,17 @@ internal static class GlobMatcher
     ///     directory).</param>
     /// <returns>
     ///     Sorted list of full file paths matching any of the supplied patterns.
-    ///     The list is case-insensitively sorted and contains no duplicates.
+    ///     Deduplication and sort use the file-system-appropriate comparer (ordinal
+    ///     ignore-case on Windows, ordinal on case-sensitive systems).
     /// </returns>
     internal static List<string> FindMatchingFiles(string[] globPatterns)
     {
-        var files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        // Use a comparer that matches the underlying file-system's case-sensitivity so that
+        // deduplication is correct: case-insensitive on Windows, case-sensitive elsewhere.
+        var fsComparer = OperatingSystem.IsWindows()
+            ? StringComparer.OrdinalIgnoreCase
+            : StringComparer.Ordinal;
+        var files = new HashSet<string>(fsComparer);
         var relativePatterns = new List<string>();
 
         foreach (var pattern in globPatterns)
@@ -82,7 +88,7 @@ internal static class GlobMatcher
             }
         }
 
-        return files.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+        return files.OrderBy(f => f, fsComparer).ToList();
     }
 
     /// <summary>
