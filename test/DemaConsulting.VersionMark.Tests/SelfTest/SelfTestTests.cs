@@ -25,7 +25,7 @@ using DemaConsulting.VersionMark.Utilities;
 namespace DemaConsulting.VersionMark.Tests.SelfTest;
 
 /// <summary>
-///     Subsystem tests for the SelfTest subsystem (Validation and PathHelpers working together).
+///     Subsystem tests for the SelfTest subsystem.
 /// </summary>
 public class SelfTestTests
 {

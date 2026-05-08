@@ -229,4 +229,42 @@ public class GlobMatcherTests
         Assert.Equal(tempDir, rootDir);
         Assert.Equal("file.json", relativePattern);
     }
+
+    /// <summary>
+    ///     Test that SplitAbsolutePattern correctly handles a Unix root-level pattern like /*.json,
+    ///     returning "/" as the root directory and "*.json" as the relative pattern.
+    /// </summary>
+    [Fact]
+    public void GlobMatcher_SplitAbsolutePattern_UnixRootPattern_SplitsToRootAndRelative()
+    {
+        // Arrange
+        Assert.SkipUnless(!OperatingSystem.IsWindows(), "Unix root paths are not applicable on Windows");
+        const string pattern = "/*.json";
+
+        // Act
+        var (rootDir, relativePattern) = GlobMatcher.SplitAbsolutePattern(pattern);
+
+        // Assert
+        Assert.Equal("/", rootDir);
+        Assert.Equal("*.json", relativePattern);
+    }
+
+    /// <summary>
+    ///     Test that SplitAbsolutePattern correctly handles a Windows drive-root pattern like C:\*.json,
+    ///     returning "C:\" as the root directory and "*.json" as the relative pattern.
+    /// </summary>
+    [Fact]
+    public void GlobMatcher_SplitAbsolutePattern_WindowsDriveRootPattern_SplitsToDriveRootAndRelative()
+    {
+        // Arrange
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "Windows drive-root paths are only applicable on Windows");
+        const string pattern = @"C:\*.json";
+
+        // Act
+        var (rootDir, relativePattern) = GlobMatcher.SplitAbsolutePattern(pattern);
+
+        // Assert
+        Assert.Equal(@"C:\", rootDir);
+        Assert.Equal("*.json", relativePattern);
+    }
 }

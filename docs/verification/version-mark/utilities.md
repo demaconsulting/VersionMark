@@ -34,6 +34,10 @@ The following test scenarios verify Utilities subsystem requirements:
   Pattern with wildcard is split at the last separator before the wildcard.
 - **`GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator`**:
   Pattern without wildcard is split at the last separator.
+- **`GlobMatcher_SplitAbsolutePattern_UnixRootPattern_SplitsToRootAndRelative`**:
+  Unix root-level pattern (e.g. `/*.json`) splits to `/` root and relative pattern (non-Windows only).
+- **`GlobMatcher_SplitAbsolutePattern_WindowsDriveRootPattern_SplitsToDriveRootAndRelative`**:
+  Windows drive-root pattern (e.g. `C:\*.json`) splits to `C:\` root and relative pattern (Windows only).
 - **`PathHelpers_SafePathCombine_ValidPaths_CombinesCorrectly`**: A simple relative path is combined with the base path.
 - **`PathHelpers_SafePathCombine_PathTraversalWithDoubleDots_ThrowsArgumentException`**:
   A path beginning with `../` throws ArgumentException.

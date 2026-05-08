@@ -13,7 +13,7 @@ The verification strategy is organized around six subsystems:
 - **Capture** - tool version capture and JSON serialization
 - **Publishing** - markdown report generation
 - **SelfTest** - built-in self-validation
-- **Utilities** - glob-pattern file matching
+- **Utilities** - glob-pattern file matching and safe path combination
 
 ## Verification Approach
 

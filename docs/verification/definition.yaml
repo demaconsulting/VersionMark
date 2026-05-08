@@ -27,7 +27,9 @@ input-files:
   - docs/verification/version-mark/publishing/markdown-formatter.md
   - docs/verification/version-mark/self-test.md
   - docs/verification/version-mark/self-test/validation.md
-  - docs/verification/version-mark/self-test/path-helpers.md
+  - docs/verification/version-mark/utilities.md
+  - docs/verification/version-mark/utilities/glob-matcher.md
+  - docs/verification/version-mark/utilities/path-helpers.md
   - docs/verification/ots.md
   - docs/verification/ots/buildmark.md
   - docs/verification/ots/fileassert.md

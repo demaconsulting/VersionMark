@@ -26,6 +26,10 @@ The following test scenarios verify `GlobMatcher`:
   A pattern with a wildcard is split at the last separator before the wildcard.
 - **`GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator`**:
   A pattern without a wildcard is split at the final separator.
+- **`GlobMatcher_SplitAbsolutePattern_UnixRootPattern_SplitsToRootAndRelative`**:
+  A Unix root-level pattern (e.g. `/*.json`) splits to `/` root and relative pattern (non-Windows only).
+- **`GlobMatcher_SplitAbsolutePattern_WindowsDriveRootPattern_SplitsToDriveRootAndRelative`**:
+  A Windows drive-root pattern (e.g. `C:\*.json`) splits to `C:\` root and relative pattern (Windows only).
 
 #### Dependencies
 
@@ -44,4 +48,6 @@ The following list maps `GlobMatcher` unit requirements to test scenarios:
   `GlobMatcher_FindMatchingFiles_SingleFileAbsolutePath_ReturnsSingleFile`,
   `GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles`,
   `GlobMatcher_SplitAbsolutePattern_PatternWithWildcard_SplitsCorrectly`,
-  `GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator`
+  `GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator`,
+  `GlobMatcher_SplitAbsolutePattern_UnixRootPattern_SplitsToRootAndRelative`,
+  `GlobMatcher_SplitAbsolutePattern_WindowsDriveRootPattern_SplitsToDriveRootAndRelative`
