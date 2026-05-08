@@ -337,22 +337,98 @@ internal static class Program
     /// <returns>List of matching file paths.</returns>
     private static List<string> FindMatchingFiles(string[] globPatterns)
     {
-        var matcher = new Matcher();
+        var files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var relativePatterns = new List<string>();
 
-        // Add all glob patterns to the matcher
         foreach (var pattern in globPatterns)
         {
-            matcher.AddInclude(pattern);
+            if (Path.IsPathRooted(pattern))
+            {
+                // Handle absolute path by extracting the root directory and relative pattern
+                var (rootDir, relativePattern) = SplitAbsolutePattern(pattern);
+                if (Directory.Exists(rootDir))
+                {
+                    var matcher = new Matcher();
+                    matcher.AddInclude(relativePattern);
+                    var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(rootDir)));
+                    foreach (var file in result.Files)
+                    {
+                        files.Add(Path.GetFullPath(Path.Combine(rootDir, file.Path)));
+                    }
+                }
+            }
+            else
+            {
+                relativePatterns.Add(pattern);
+            }
         }
 
-        // Execute the match against the current directory
-        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Directory.GetCurrentDirectory())));
+        // Handle all relative patterns together against the current directory
+        if (relativePatterns.Count > 0)
+        {
+            var matcher = new Matcher();
+            foreach (var pattern in relativePatterns)
+            {
+                matcher.AddInclude(pattern);
+            }
 
-        // Return the full paths of matched files
-        return result.Files
-            .Select(f => Path.GetFullPath(f.Path))
-            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Directory.GetCurrentDirectory())));
+            foreach (var file in result.Files)
+            {
+                files.Add(Path.GetFullPath(file.Path));
+            }
+        }
+
+        return files.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    /// <summary>
+    ///     Splits an absolute glob pattern into a root directory and a relative pattern.
+    /// </summary>
+    /// <param name="absolutePattern">The absolute glob pattern to split.</param>
+    /// <returns>A tuple of (rootDirectory, relativePattern).</returns>
+    private static (string rootDir, string relativePattern) SplitAbsolutePattern(string absolutePattern)
+    {
+        var pathRoot = Path.GetPathRoot(absolutePattern) ?? string.Empty;
+
+        // Find the index of the first wildcard character in the pattern
+        var wildcardIndex = absolutePattern.IndexOfAny(['*', '?', '[', '{']);
+
+        if (wildcardIndex < 0)
+        {
+            // No wildcard - treat as a specific file path
+            return (
+                Path.GetDirectoryName(absolutePattern) ?? pathRoot,
+                Path.GetFileName(absolutePattern));
+        }
+
+        // Find the last directory separator before the first wildcard
+        var lastSepIndex = absolutePattern.LastIndexOfAny(
+            [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
+            wildcardIndex);
+
+        if (lastSepIndex < 0)
+        {
+            // No separator before wildcard - use the path root
+            return (pathRoot, absolutePattern[pathRoot.Length..]);
+        }
+
+        var rootDir = absolutePattern[..lastSepIndex];
+        var relativePattern = absolutePattern[(lastSepIndex + 1)..];
+
+        // Handle empty root (Unix paths like /file.json where separator is the very first char)
+        if (string.IsNullOrEmpty(rootDir))
+        {
+            return (pathRoot, relativePattern);
+        }
+
+        // Ensure drive/volume root includes trailing separator (e.g., "C:" → "C:\")
+        if (rootDir == pathRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+        {
+            return (pathRoot, relativePattern);
+        }
+
+        return (rootDir, relativePattern);
     }
 
     /// <summary>
