@@ -231,14 +231,14 @@ public class GlobMatcherTests
     }
 
     /// <summary>
-    ///     Test that SplitAbsolutePattern correctly handles a Unix root-level pattern like /*.json,
-    ///     returning "/" as the root directory and "*.json" as the relative pattern.
+    ///     Test that SplitAbsolutePattern correctly handles a root-relative pattern using a forward slash
+    ///     (e.g. /*.json), returning the path root as the directory and "*.json" as the relative pattern.
+    ///     This covers the empty-rootDir fallback branch and runs on all platforms.
     /// </summary>
     [Fact]
-    public void GlobMatcher_SplitAbsolutePattern_UnixRootPattern_SplitsToRootAndRelative()
+    public void GlobMatcher_SplitAbsolutePattern_ForwardSlashRootPattern_SplitsToRootAndRelative()
     {
         // Arrange
-        Assert.SkipUnless(!OperatingSystem.IsWindows(), "Unix root paths are not applicable on Windows");
         const string pattern = "/*.json";
 
         // Act
