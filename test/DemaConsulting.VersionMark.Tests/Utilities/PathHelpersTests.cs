@@ -18,9 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using DemaConsulting.VersionMark.SelfTest;
+using DemaConsulting.VersionMark.Utilities;
 
-namespace DemaConsulting.VersionMark.Tests.SelfTest;
+namespace DemaConsulting.VersionMark.Tests.Utilities;
 
 /// <summary>
 ///     Tests for the PathHelpers class.

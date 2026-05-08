@@ -19,7 +19,7 @@
 // SOFTWARE.
 
 using DemaConsulting.VersionMark.Capture;
-using DemaConsulting.VersionMark.SelfTest;
+using DemaConsulting.VersionMark.Utilities;
 
 namespace DemaConsulting.VersionMark.Tests;
 

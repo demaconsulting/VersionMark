@@ -1,0 +1,24 @@
+---
+sections:
+  - title: VersionMark Requirements
+    sections:
+      - title: Utilities
+        requirements:
+          - id: VersionMark-Utilities-GlobMatch
+            title: The Utilities subsystem shall provide glob-pattern file matching.
+            justification: |
+              Centralizing glob-pattern file matching in a dedicated subsystem separates
+              the matching concern from the CLI dispatch logic, making both easier to test
+              and maintain independently.
+            children:
+              - VersionMark-GlobMatcher-FindFiles
+              - VersionMark-GlobMatcher-AbsolutePaths
+
+          - id: VersionMark-Utilities-SafePath
+            title: The Utilities subsystem shall provide safe path combination.
+            justification: |
+              Centralizing safe path combination in a dedicated subsystem makes the
+              path-traversal protection reusable across all subsystems that construct
+              file paths from partially-trusted input.
+            children:
+              - VersionMark-PathHelpers-SafeCombine

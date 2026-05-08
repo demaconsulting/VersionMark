@@ -21,7 +21,7 @@
 using DemaConsulting.VersionMark.Capture;
 using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.Publishing;
-using DemaConsulting.VersionMark.SelfTest;
+using DemaConsulting.VersionMark.Utilities;
 
 namespace DemaConsulting.VersionMark.Tests.Publishing;
 
@@ -186,6 +186,50 @@ public class PublishingTests
             Assert.Equal(0, context.ExitCode);
             Assert.True(File.Exists(reportFile),
                 "Report file should be created when glob pattern matches files");
+            Assert.Contains("dotnet", File.ReadAllText(reportFile));
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the publishing pipeline accepts absolute glob patterns and reads all matching files.
+    /// </summary>
+    [Fact]
+    public void Publishing_Run_WithAbsoluteGlobPattern_ReadsMatchingFiles()
+    {
+        // Arrange - Create a temp directory with JSON files and use an absolute glob pattern to match them
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var reportFile = PathHelpers.SafePathCombine(tempDir, "report.md");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            var versionInfo = new VersionInfo("job-abs", new Dictionary<string, string> { ["dotnet"] = "8.0.100" });
+            versionInfo.SaveToFile(PathHelpers.SafePathCombine(tempDir, "versionmark-abs-job.json"));
+
+            // Use a different working directory to confirm the absolute pattern is not relative to cwd
+            Directory.SetCurrentDirectory(Path.GetTempPath());
+
+            // Build an absolute glob pattern pointing directly into tempDir
+            var absolutePattern = PathHelpers.SafePathCombine(tempDir, "versionmark-*.json");
+            using var context = Context.Create([
+                "--publish", "--report", reportFile, "--silent", "--", absolutePattern
+            ]);
+
+            // Act - Run the publish pipeline with an absolute glob pattern
+            Program.Run(context);
+
+            // Assert - The report should have been generated from the matched file
+            Assert.Equal(0, context.ExitCode);
+            Assert.True(File.Exists(reportFile),
+                "Report file should be created when absolute glob pattern matches files");
             Assert.Contains("dotnet", File.ReadAllText(reportFile));
         }
         finally

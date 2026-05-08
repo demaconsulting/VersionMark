@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using DemaConsulting.TestResults.IO;
 using DemaConsulting.VersionMark.Capture;
 using DemaConsulting.VersionMark.Cli;
+using DemaConsulting.VersionMark.Utilities;
 
 namespace DemaConsulting.VersionMark.SelfTest;
 

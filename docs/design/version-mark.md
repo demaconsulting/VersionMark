@@ -59,15 +59,18 @@ Cli Subsystem → Configuration Subsystem → (shell)
 ### Publish Mode
 
 ```text
-Cli Subsystem → Capture Subsystem (VersionInfo.LoadFromFile) → Publishing Subsystem
-                                                                       ↓
-                                                             markdown report file
+Cli Subsystem → Utilities Subsystem (GlobMatcher.FindMatchingFiles)
+                       ↓
+             Capture Subsystem (VersionInfo.LoadFromFile) → Publishing Subsystem
+                                                                   ↓
+                                                         markdown report file
 ```
 
 1. The Cli Subsystem (Program) parses arguments and calls `RunPublish`.
-2. `RunPublish` resolves glob patterns, then uses the Capture Subsystem to load each
-   JSON file via `VersionInfo.LoadFromFile`.
-3. The Publishing Subsystem (`MarkdownFormatter.Format`) converts the loaded records into
+2. `RunPublish` uses `GlobMatcher.FindMatchingFiles` (Utilities Subsystem) to resolve glob
+   patterns into a concrete list of JSON file paths.
+3. The Capture Subsystem loads each JSON file via `VersionInfo.LoadFromFile`.
+4. The Publishing Subsystem (`MarkdownFormatter.Format`) converts the loaded records into
    a markdown string, which is written to the report file.
 
 ### Lint Mode

@@ -6,13 +6,14 @@ This section documents the verification design for the VersionMark system. Versi
 a .NET global tool that captures tool version information from CI/CD job environments and
 publishes consolidated version reports as markdown.
 
-The verification strategy is organized around five subsystems:
+The verification strategy is organized around six subsystems:
 
 - **Cli** - command-line argument parsing and program dispatch
 - **Configuration** - YAML configuration loading and validation
 - **Capture** - tool version capture and JSON serialization
 - **Publishing** - markdown report generation
 - **SelfTest** - built-in self-validation
+- **Utilities** - glob-pattern file matching and safe path combination
 
 ## Verification Approach
 

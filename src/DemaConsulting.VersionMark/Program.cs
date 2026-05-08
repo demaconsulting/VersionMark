@@ -24,8 +24,7 @@ using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.Configuration;
 using DemaConsulting.VersionMark.Publishing;
 using DemaConsulting.VersionMark.SelfTest;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using DemaConsulting.VersionMark.Utilities;
 
 namespace DemaConsulting.VersionMark;
 
@@ -299,7 +298,7 @@ internal static class Program
             context.WriteLine($"Searching for JSON files with patterns: {string.Join(", ", globPatterns)}");
 
             // Find matching JSON files using glob patterns
-            var jsonFiles = FindMatchingFiles(globPatterns);
+            var jsonFiles = GlobMatcher.FindMatchingFiles(globPatterns);
 
             // Check if any files were found
             if (jsonFiles.Count == 0)
@@ -328,31 +327,6 @@ internal static class Program
         {
             context.WriteError($"Error: {ex.Message}");
         }
-    }
-
-    /// <summary>
-    ///     Finds files matching the specified glob patterns.
-    /// </summary>
-    /// <param name="globPatterns">Array of glob patterns to match.</param>
-    /// <returns>List of matching file paths.</returns>
-    private static List<string> FindMatchingFiles(string[] globPatterns)
-    {
-        var matcher = new Matcher();
-
-        // Add all glob patterns to the matcher
-        foreach (var pattern in globPatterns)
-        {
-            matcher.AddInclude(pattern);
-        }
-
-        // Execute the match against the current directory
-        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Directory.GetCurrentDirectory())));
-
-        // Return the full paths of matched files
-        return result.Files
-            .Select(f => Path.GetFullPath(f.Path))
-            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
-            .ToList();
     }
 
     /// <summary>

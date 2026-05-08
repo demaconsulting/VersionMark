@@ -15,7 +15,7 @@ The purpose of this document is to:
 
 ## Scope
 
-This document covers the design of five subsystems within VersionMark:
+This document covers the design of six subsystems within VersionMark:
 
 - The **Cli Subsystem**: the `Program` entry point and `Context` class
   that handle argument parsing, output routing, and program flow control
@@ -25,8 +25,10 @@ This document covers the design of five subsystems within VersionMark:
   captured version data to and from JSON
 - The **Publishing Subsystem**: the `MarkdownFormatter` class that generates the markdown
   version report from captured data
-- The **SelfTest Subsystem**: the `Validation` class and `PathHelpers` utility that
-  together provide built-in verification of the tool's core functionality
+- The **SelfTest Subsystem**: the `Validation` class that provides built-in verification
+  of the tool's core functionality
+- The **Utilities Subsystem**: the `GlobMatcher` class that provides glob-pattern file matching
+  and the `PathHelpers` class that provides safe path combination for use by other subsystems
 
 This document does not cover installation, end-user usage patterns, or the CI/CD pipeline
 configuration. Those topics are addressed in the *VersionMark User Guide* and the
@@ -50,8 +52,10 @@ VersionMark (System)                        Version capture/publish tool
 │   └── VersionInfo (Unit)                  JSON version data record
 ├── Publishing (Subsystem)                  Markdown report publishing
 │   └── MarkdownFormatter (Unit)            Version report formatter
-└── SelfTest (Subsystem)                    Built-in self-validation
-    ├── Validation (Unit)                   Self-validation runner
+├── SelfTest (Subsystem)                    Built-in self-validation
+│   └── Validation (Unit)                   Self-validation runner
+└── Utilities (Subsystem)                   General-purpose helper utilities
+    ├── GlobMatcher (Unit)                  Glob-pattern file matching
     └── PathHelpers (Unit)                  Safe path combination
 ```
 
@@ -74,8 +78,10 @@ src/DemaConsulting.VersionMark/
 │   └── VersionInfo.cs                      — captured version data record
 ├── Publishing/
 │   └── MarkdownFormatter.cs                — markdown report generation
-└── SelfTest/
-    ├── Validation.cs                        — self-validation test runner
+├── SelfTest/
+│   └── Validation.cs                        — self-validation test runner
+└── Utilities/
+    ├── GlobMatcher.cs                       — glob-pattern file matching
     └── PathHelpers.cs                       — safe path utilities
 ```
 
