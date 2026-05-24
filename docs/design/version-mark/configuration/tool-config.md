@@ -1,32 +1,53 @@
-### ToolConfig Unit
+### ToolConfig
 
-#### Overview
+#### Purpose
 
-The `ToolConfig` record (`VersionMarkConfig.cs`) represents the configuration for a single
-tool entry. It holds two dictionaries keyed by OS name:
+`ToolConfig` (`VersionMarkConfig.cs`) represents the configuration for a single tool
+entry in a `.versionmark.yaml` file. It holds per-OS command and regex dictionaries,
+and provides helper methods to resolve the effective command and regex for a given
+operating system, applying OS-specific overrides where present and falling back to the
+default entry.
 
-| Dictionary | Key values                                      | Purpose                            |
-|------------|-------------------------------------------------|------------------------------------|
-| `Command`  | `""` (default), `"win"`, `"linux"`, `"macos"`   | Shell command to run               |
-| `Regex`    | `""` (default), `"win"`, `"linux"`, `"macos"`   | Regex pattern with `version` group |
+#### Data Model
 
-#### OS-Specific Overrides
+| Dictionary | Key values                                     | Purpose                             |
+|------------|------------------------------------------------|-------------------------------------|
+| `Command`  | `""` (default), `"win"`, `"linux"`, `"macos"` | Shell command to execute            |
+| `Regex`    | `""` (default), `"win"`, `"linux"`, `"macos"` | Regex pattern with `version` group  |
 
-`GetEffectiveCommand(string os)` and `GetEffectiveRegex(string os)` both take a concrete,
-already-resolved OS string — they do not accept `null` and do not call `GetCurrentOs`
-internally. The caller is responsible for resolving the OS once (e.g. `os ?? ToolConfig.GetCurrentOs()`
-in `FindVersions`) and passing the resulting string. Each method looks up the OS-specific key
-first, falling back to the default (`""`) key. When no default (`""`) key is present either, an
-`InvalidOperationException` is thrown. This satisfies requirements `VersionMark-ToolConfig-EffectiveCommand`
-and `VersionMark-ToolConfig-EffectiveRegex`.
+Both dictionaries are populated by `VersionMarkConfig.ValidateTool` during YAML parsing.
+The empty-string key `""` holds the default (OS-independent) value.
 
-#### YAML Parsing
+#### Key Methods
 
-Tool YAML parsing is performed by the private `VersionMarkConfig.ValidateTool` method.
-It reads a `YamlMappingNode` and populates the command and regex dictionaries. Known keys
-are `command`, `command-win`, `command-linux`, `command-macos`, `regex`, `regex-win`,
-`regex-linux`, and `regex-macos`. Unknown keys produce a warning lint issue but do not
-prevent loading. At least one `command` (either the default `command` or an OS-specific
-`command-win`/`command-linux`/`command-macos`) and at least one `regex` (either the default
-`regex` or an OS-specific `regex-win`/`regex-linux`/`regex-macos`) are required; their
-complete absence produces an error lint issue. This satisfies `VersionMark-Configuration-ToolDefinition`.
+**`GetEffectiveCommand(string os)`** — Returns the command for the specified OS string.
+Looks up the OS-specific key first; if absent, falls back to the default `""` key. Throws
+`InvalidOperationException` if neither key is present.
+
+**`GetEffectiveRegex(string os)`** — Identical lookup logic to `GetEffectiveCommand`, but
+applied to the `Regex` dictionary.
+
+**`GetCurrentOs()` (static)** — Returns the lowercase OS identifier string: `"win"` on
+Windows, `"linux"` on Linux, `"macos"` on macOS. Used by callers that need to resolve the
+OS once before calling `GetEffectiveCommand` / `GetEffectiveRegex`.
+
+#### Error Handling
+
+| Condition                                  | Behavior                                    |
+|--------------------------------------------|---------------------------------------------|
+| No matching OS key and no default `""` key | `InvalidOperationException` thrown          |
+| Missing required `command` field in YAML   | Error `LintIssue` added by `ValidateTool`   |
+| Missing required `regex` field in YAML     | Error `LintIssue` added by `ValidateTool`   |
+| Unknown YAML key for a tool entry          | Warning `LintIssue` added by `ValidateTool` |
+| Empty value for a known YAML key           | Error `LintIssue` added by `ValidateTool`   |
+
+#### Dependencies
+
+- `System.Runtime.InteropServices.RuntimeInformation` (BCL) — OS detection in
+  `GetCurrentOs`.
+
+#### Callers
+
+- `VersionMarkConfig.ValidateTool` — constructs `ToolConfig` instances from parsed YAML.
+- `VersionMarkConfig.FindVersions` — calls `GetEffectiveCommand` and `GetEffectiveRegex`
+  with the already-resolved OS string.

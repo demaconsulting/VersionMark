@@ -22,7 +22,8 @@ sections:
       - id: VersionMark-VersionMarkConfig-Load
         title: >-
           The VersionMarkConfig.Load method shall perform a full validation
-          of a .versionmark.yaml file and return both the parsed configuration and all
+          of a .versionmark.yaml file and return both the parsed configuration and
+          all
           discovered issues.
         justification: |
           Load provides the primary API for lint-aware configuration loading. It validates

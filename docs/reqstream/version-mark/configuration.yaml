@@ -15,7 +15,8 @@ sections:
               - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-ToolDefinition
-            title: The tool shall support tool definitions with command and regex properties.
+            title: The tool shall support tool definitions with command and regex
+              properties.
             justification: |
               Enables users to specify how to execute and parse version information for
               each tool.
@@ -25,7 +26,8 @@ sections:
               - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 
           - id: VersionMark-Configuration-OsCommandOverride
-            title: The tool shall support OS-specific command overrides using -win, -linux, and -macos suffixes.
+            title: The tool shall support OS-specific command overrides using -win,
+              -linux, and -macos suffixes.
             justification: |
               Different operating systems may require different commands or command
               variations to capture tool versions.
@@ -35,7 +37,8 @@ sections:
               - Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand
 
           - id: VersionMark-Configuration-OsRegexOverride
-            title: The tool shall support OS-specific regex overrides using -win, -linux, and -macos suffixes.
+            title: The tool shall support OS-specific regex overrides using -win,
+              -linux, and -macos suffixes.
             justification: |
               Different operating systems may produce different output formats requiring
               different regular expressions for version extraction.
@@ -45,7 +48,8 @@ sections:
               - Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex
 
           - id: VersionMark-Configuration-ValidateTools
-            title: The tool shall validate that configuration files contain at least one tool definition.
+            title: The tool shall validate that configuration files contain at least
+              one tool definition.
             justification: |
               Prevents misconfiguration by ensuring the configuration file has actionable
               content.
@@ -55,7 +59,8 @@ sections:
               - Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException
 
           - id: VersionMark-Configuration-ReadError
-            title: The tool shall report errors when configuration files cannot be read.
+            title: The tool shall report errors when configuration files cannot be
+              read.
             justification: |
               Provides clear feedback to users when configuration files are missing
               or inaccessible.
@@ -65,7 +70,8 @@ sections:
               - Configuration_ReadFromFile_MissingFile_ThrowsArgumentException
 
           - id: VersionMark-Configuration-ParseError
-            title: The tool shall report errors when configuration files contain invalid YAML.
+            title: The tool shall report errors when configuration files contain invalid
+              YAML.
             justification: |
               Provides clear feedback to users when configuration files are malformed.
             tags:

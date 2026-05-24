@@ -38,7 +38,8 @@ sections:
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
 
           - id: VersionMark-Validate-Results
-            title: The tool shall write self-validation results to a file in TRX or JUnit XML format.
+            title: The tool shall write self-validation results to a file in TRX or
+              JUnit XML format.
             justification: |
               Standard test result formats allow CI/CD systems and dashboards to consume
               and display self-validation outcomes without custom tooling.

@@ -1,111 +1,166 @@
-### VersionMarkConfig Unit Verification
+### VersionMarkConfig
 
-#### Overview
+#### Verification Approach
 
 The `VersionMarkConfig` unit is the top-level configuration container. It reads and
 validates `.versionmark.yaml` files and provides `FindVersions` to execute tool commands
 and extract version strings. Tests are split across two files:
 `Configuration/VersionMarkConfigTests.cs` (covering `ReadFromFile` and `FindVersions`)
-and `Configuration/VersionMarkConfigLoadTests.cs` (covering the `Load` method).
+and `Configuration/VersionMarkConfigLoadTests.cs` (covering the `Load` method). Tests
+write temporary YAML files to disk and call the relevant method, then assert on the returned
+configuration object or exception. No external mocks are required.
 
-#### Test Scenarios — ReadFromFile
+#### Test Environment
 
-The following test scenarios verify `VersionMarkConfig.ReadFromFile`:
+N/A - standard test environment. Tests write temporary YAML files to disk during setup and
+clean them up afterwards. No additional environment configuration is required.
 
-- **`VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig`**: Valid file returns a populated config object.
-- **`VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig`**: File with all OS overrides returns config.
-- **`VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException`**: Non-existent file throws ArgumentException.
-- **`VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException`**: Invalid YAML throws ArgumentException.
-- **`VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException`**: No tools section throws ArgumentException.
+#### Acceptance Criteria
 
-#### Test Scenarios — FindVersions
+- All unit tests for `VersionMarkConfig` pass with zero failures across all supported OS
+  and .NET version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+- Every requirement for the `VersionMarkConfig` unit is covered by at least one named test
+  scenario.
 
-The following test scenarios verify `VersionMarkConfig.FindVersions`:
+#### Test Scenarios
 
-- **`VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo`**: `dotnet --version` executes and returns version.
-- **`VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions`**: Multiple tools returns all version entries.
-- **`VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException`**: Tool not in config throws ArgumentException.
-- **`VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException`**:
-  Invalid command throws InvalidOperationException.
-- **`VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException`**:
-  No regex match throws InvalidOperationException.
-- **`VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`**:
-  Missing version group throws InvalidOperationException.
-- **`VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`**:
-  Tool with only an OS-specific command succeeds when the matching OS is specified.
-- **`VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`**:
-  Tool with only an OS-specific command throws when a non-matching OS is specified.
+**VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig**: A valid YAML file returns a
+populated config object. This scenario is tested by
+`VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig`.
 
-#### Test Scenarios — Load
+**VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig**: A file with all OS
+overrides returns a config with the correct override values. This scenario is tested by
+`VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig`.
 
-The following test scenarios verify `VersionMarkConfig.Load`:
+**VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException**: A path to a
+non-existent file throws `ArgumentException`. This scenario is tested by
+`VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException`.
 
-- **`VersionMarkConfig_Load_ValidConfig_ReturnsConfig`**: Valid config returns a config with no issues.
-- **`VersionMarkConfig_Load_MissingFile_ReturnsNullConfig`**: Missing file returns a null config with an issue.
-- **`VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig`**: Invalid YAML returns a null config with an issue.
-- **`VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig`**: Missing tools section returns a null config.
-- **`VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig`**: Empty tools section returns a null config.
-- **`VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig`**: Missing command returns a null config with an issue.
-- **`VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig`**: Empty command returns a null config with an issue.
-- **`VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig`**: Missing regex returns a null config with an issue.
-- **`VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig`**: Empty regex returns a null config with an issue.
-- **`VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig`**: Invalid regex returns a null config with an issue.
-- **`VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig`**: Regex without version group returns a null config.
-- **`VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig`**: Unknown top-level key is tolerated; config is returned.
-- **`VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig`**: Unknown tool-level key is tolerated; config is returned.
-- **`VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig`**: Empty OS-specific command returns a null config.
-- **`VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig`**: Empty OS-specific regex returns a null config.
-- **`VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig`**:
-  OS-specific regex without version group returns null.
-- **`VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`**: OS-specific invalid regex returns a null config.
-- **`VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`**: Tool with only OS-specific commands
-  (no default command) is valid.
-- **`VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig`**: Tool with only OS-specific regex (no default regex) is valid.
-- **`VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig`**: Tool with only OS-specific commands and regex is valid.
-- **`VersionMarkConfig_Load_MultipleErrors_ReportsAll`**: Multiple errors are all reported in the issue list.
-- **`VersionMarkConfig_Load_IssuesContainFilePath`**: Issue records include the config file path.
+**VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException**: A file containing
+invalid YAML throws `ArgumentException`. This scenario is tested by
+`VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException`.
 
-#### Dependencies
+**VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException**: A YAML file with no
+tools section throws `ArgumentException`. This scenario is tested by
+`VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException`.
 
-No external mocks are required. Tests write temporary YAML files to disk.
+**VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo**: `dotnet --version`
+executes and returns a `VersionInfo` entry. This scenario is tested by
+`VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo`.
 
-#### Requirements Coverage
+**VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions**: Multiple tools in
+the config return all version entries. This scenario is tested by
+`VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions`.
 
-The following list maps `VersionMarkConfig` unit requirements to test scenarios:
+**VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException**: A tool name
+not present in the config throws `ArgumentException`. This scenario is tested by
+`VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException`.
 
-- **`VersionMark-VersionMarkConfig-ReadFromFile`**: `VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig`,
-  `VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig`,
-  `VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException`,
-  `VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException`,
-  `VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException`
-- **`VersionMark-VersionMarkConfig-FindVersions`**: `VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo`,
-  `VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions`,
-  `VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException`,
-  `VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException`,
-  `VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException`,
-  `VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`,
-  `VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`,
-  `VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`
-- **`VersionMark-VersionMarkConfig-Load`**: All `VersionMarkConfig_Load_*` test scenarios above
-- **`VersionMark-Load-Method`**: `VersionMarkConfig_Load_ValidConfig_ReturnsConfig`
-- **`VersionMark-Load-FileExistence`**: `VersionMarkConfig_Load_MissingFile_ReturnsNullConfig`
-- **`VersionMark-Load-YamlParsing`**: `VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig`
-- **`VersionMark-Load-ToolsSection`**: `VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig`
-- **`VersionMark-Load-ToolCommand`**: `VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig`
-- **`VersionMark-Load-ToolRegex`**: `VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig`
-- **`VersionMark-Load-RegexValid`**: `VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig`
-- **`VersionMark-Load-RegexVersion`**: `VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig`
-- **`VersionMark-Load-OsOverrides`**: `VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`,
-  `VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`,
-  `VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig`,
-  `VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig`
-- **`VersionMark-Load-UnknownKeys`**: `VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig`,
-  `VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig`
-- **`VersionMark-Load-ErrorLocation`**: `VersionMarkConfig_Load_IssuesContainFilePath`
-- **`VersionMark-Load-AllIssues`**: `VersionMarkConfig_Load_MultipleErrors_ReportsAll`
+**VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException**: An
+invalid command throws `InvalidOperationException`. This scenario is tested by
+`VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException`.
+
+**VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException**: A regex
+that does not match the command output throws `InvalidOperationException`. This scenario
+is tested by `VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException`.
+
+**VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException**: A
+regex without a named version group throws `InvalidOperationException`. This scenario is
+tested by
+`VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException`.
+
+**VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo**: A tool
+with only an OS-specific command succeeds when the matching OS is specified. This scenario
+is tested by
+`VersionMarkConfig_FindVersions_OsOnlyCommand_MatchingOs_ReturnsVersionInfo`.
+
+**VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException**: A
+tool with only an OS-specific command throws `InvalidOperationException` when a
+non-matching OS is specified. This scenario is tested by
+`VersionMarkConfig_FindVersions_OsOnlyCommand_WrongOs_ThrowsInvalidOperationException`.
+
+**VersionMarkConfig_Load_ValidConfig_ReturnsConfig**: A valid config file returns a config
+with no issues. This scenario is tested by `VersionMarkConfig_Load_ValidConfig_ReturnsConfig`.
+
+**VersionMarkConfig_Load_MissingFile_ReturnsNullConfig**: A missing file returns a null
+config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_MissingFile_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig**: Invalid YAML returns a null
+config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig**: A missing tools section
+returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig**: An empty tools section
+returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig**: A missing command field
+returns a null config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig**: An empty command field returns
+a null config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig**: A missing regex field returns
+a null config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig**: An empty regex field returns a
+null config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig**: An invalid regex returns a null
+config with an issue. This scenario is tested by
+`VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig**: A regex without a
+version capture group returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig**: An unknown top-level key is
+tolerated and the config is returned. This scenario is tested by
+`VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig`.
+
+**VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig**: An unknown tool-level key is
+tolerated and the config is returned. This scenario is tested by
+`VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig`.
+
+**VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig**: An empty OS-specific
+command field returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_OsSpecificEmptyCommand_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig**: An empty OS-specific
+regex field returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig**: An
+OS-specific regex without a version group returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_OsSpecificRegexMissingVersionGroup_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig**: An OS-specific invalid
+regex returns a null config. This scenario is tested by
+`VersionMarkConfig_Load_OsSpecificInvalidRegex_ReturnsNullConfig`.
+
+**VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig**: A tool with only OS-specific
+commands (no default command) is valid and returns a config. This scenario is tested by
+`VersionMarkConfig_Load_OsOnlyCommand_ReturnsConfig`.
+
+**VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig**: A tool with only OS-specific regex
+(no default regex) is valid and returns a config. This scenario is tested by
+`VersionMarkConfig_Load_OsOnlyRegex_ReturnsConfig`.
+
+**VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig**: A tool with only
+OS-specific commands and regex (no defaults) is valid and returns a config. This scenario
+is tested by `VersionMarkConfig_Load_OsOnlyCommandAndRegex_ReturnsConfig`.
+
+**VersionMarkConfig_Load_MultipleErrors_ReportsAll**: Multiple validation errors are all
+reported in the issue list. This scenario is tested by
+`VersionMarkConfig_Load_MultipleErrors_ReportsAll`.
+
+**VersionMarkConfig_Load_IssuesContainFilePath**: Issue records include the config file
+path. This scenario is tested by `VersionMarkConfig_Load_IssuesContainFilePath`.

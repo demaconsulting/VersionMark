@@ -2,7 +2,8 @@
 # VersionMark Requirements
 #
 # This file defines the requirements for the VersionMark tool.
-# Requirements are verified through tests and documented in docs/requirements_doc/ and docs/requirements_report/.
+# Requirements are verified through tests and documented in
+# docs/requirements_doc/ and docs/requirements_report/.
 
 includes:
   - docs/reqstream/version-mark.yaml

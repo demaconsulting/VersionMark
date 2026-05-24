@@ -14,10 +14,6 @@
 #   Only modify this file to add project-specific operations at the designated
 #   [PROJECT-SPECIFIC] extension points, or to update tool versions as needed.
 
-# ==============================================================================
-# HELPER FUNCTIONS
-# ==============================================================================
-
 function Get-VenvActivateScript {
     if (Test-Path ".venv/Scripts/Activate.ps1") { return ".venv/Scripts/Activate.ps1" }  # Windows
     if (Test-Path ".venv/bin/Activate.ps1") { return ".venv/bin/Activate.ps1" }          # Linux/macOS
@@ -58,7 +54,7 @@ function Normalize-YamlLineEndings {
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
     Get-ChildItem -Recurse -Include "*.yaml", "*.yml" |
-        Where-Object { $_.FullName -notmatch '[/\\](\.git|node_modules|\.venv|thirdparty|third-party|3rd-party|\.agent-logs)[/\\]' } |
+        Where-Object { $_.FullName -notmatch '[/\\](\.git|node_modules|\.venv|thirdparty|third-party|3rd-party|\.agent-logs|generated)[/\\]' } |
         ForEach-Object {
             $raw = [System.IO.File]::ReadAllText($_.FullName)
             $fixed = $raw.Replace("`r`n", "`n")
@@ -67,12 +63,6 @@ function Normalize-YamlLineEndings {
             }
         }
 }
-
-# ==============================================================================
-# AUTO-FIX
-# Applies all auto-fixers with progress output. Never fails — applies what it can and
-# exits 0 so agents do not react to any output as a problem to solve.
-# ==============================================================================
 
 # --- YAML Auto-Fix ---
 Write-Host "Fixing: YAML..."

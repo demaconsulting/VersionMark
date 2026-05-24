@@ -27,7 +27,8 @@ sections:
           - VersionInfo_SpecialCharacters_SavesAndLoadsCorrectly
 
       - id: VersionMark-VersionInfo-Error
-        title: The VersionInfo class shall report errors when JSON files cannot be read or parsed.
+        title: The VersionInfo class shall report errors when JSON files cannot be
+          read or parsed.
         justification: |
           Providing clear errors when a file is missing or malformed prevents silent
           data loss and guides users to the source of the problem quickly.

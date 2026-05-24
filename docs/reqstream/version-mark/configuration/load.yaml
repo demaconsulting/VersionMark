@@ -3,7 +3,8 @@ sections:
   - title: VersionMark Load Requirements
     requirements:
       - id: VersionMark-Load-FileExistence
-        title: The tool shall report an error when the configuration file does not exist.
+        title: The tool shall report an error when the configuration file does not
+          exist.
         justification: |
           Users may specify an incorrect path; an immediate, clear error message
           avoids silent failures and directs the user to fix the file path.
@@ -13,7 +14,8 @@ sections:
           - VersionMarkConfig_Load_MissingFile_ReturnsNullConfig
 
       - id: VersionMark-Load-YamlParsing
-        title: The tool shall report an error when the configuration file contains invalid YAML.
+        title: The tool shall report an error when the configuration file contains
+          invalid YAML.
         justification: |
           Malformed YAML cannot be interpreted. Reporting a parse error with its
           location lets users quickly find and fix the syntax issue.
@@ -23,7 +25,8 @@ sections:
           - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig
 
       - id: VersionMark-Load-ToolsSection
-        title: The tool shall report an error when the configuration file is missing a non-empty 'tools' section.
+        title: The tool shall report an error when the configuration file is missing
+          a non-empty 'tools' section.
         justification: |
           A configuration without any tool definitions cannot perform any useful
           capture or publish operations.
@@ -34,7 +37,8 @@ sections:
           - VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig
 
       - id: VersionMark-Load-ToolCommand
-        title: The tool shall report an error when a tool is missing a non-empty 'command' field.
+        title: The tool shall report an error when a tool is missing a non-empty 'command'
+          field.
         justification: |
           The 'command' field defines how to invoke the tool to obtain version
           information. Without it the tool cannot function at runtime.
@@ -45,7 +49,8 @@ sections:
           - VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig
 
       - id: VersionMark-Load-ToolRegex
-        title: The tool shall report an error when a tool is missing a non-empty 'regex' field.
+        title: The tool shall report an error when a tool is missing a non-empty 'regex'
+          field.
         justification: |
           The 'regex' field is used to extract the version string from command output.
           Without it the tool cannot parse a version at runtime.
@@ -66,7 +71,8 @@ sections:
           - VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig
 
       - id: VersionMark-Load-RegexVersion
-        title: The tool shall report an error when a regex does not contain a named 'version' capture group.
+        title: The tool shall report an error when a regex does not contain a named
+          'version' capture group.
         justification: |
           The capture group named 'version' is the mechanism by which the tool
           extracts the version string. Its absence causes silent data loss at runtime.
@@ -76,7 +82,8 @@ sections:
           - VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig
 
       - id: VersionMark-Load-OsOverrides
-        title: The tool shall report an error when an OS-specific command or regex override is empty.
+        title: The tool shall report an error when an OS-specific command or regex
+          override is empty.
         justification: |
           An empty OS-specific override will be used at runtime on the corresponding
           platform, causing a capture failure. Detecting it during load prevents
@@ -88,7 +95,8 @@ sections:
           - VersionMarkConfig_Load_OsSpecificEmptyRegex_ReturnsNullConfig
 
       - id: VersionMark-Load-UnknownKeys
-        title: The tool shall report unknown keys as non-fatal warnings that do not fail loading.
+        title: The tool shall report unknown keys as non-fatal warnings that do not
+          fail loading.
         justification: |
           Unknown keys may be typos or forward-compatible extensions. Treating them
           as warnings alerts users without blocking valid configurations from
@@ -100,7 +108,8 @@ sections:
           - VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig
 
       - id: VersionMark-Load-ErrorLocation
-        title: The tool shall report all load findings with the filename and line/column location.
+        title: The tool shall report all load findings with the filename and line/column
+          location.
         justification: |
           Precise locations (file, line, column) allow users to jump directly to the
           problem in their editor, dramatically reducing the time needed to fix issues.
@@ -110,7 +119,8 @@ sections:
           - VersionMarkConfig_Load_IssuesContainFilePath
 
       - id: VersionMark-Load-AllIssues
-        title: The tool shall report all load issues discovered in one invocation without stopping at the first error.
+        title: The tool shall report all load issues discovered in one invocation
+          without stopping at the first error.
         justification: |
           Reporting all issues at once lets users fix everything in one edit cycle
           rather than repeatedly re-running to discover each subsequent problem.
@@ -121,8 +131,10 @@ sections:
 
       - id: VersionMark-Load-Method
         title: >-
-          The VersionMarkConfig.Load method shall validate a .versionmark.yaml configuration file
-          and return issues with file, line, and column location alongside the loaded configuration.
+          The VersionMarkConfig.Load method shall validate a .versionmark.yaml configuration
+          file
+          and return issues with file, line, and column location alongside the loaded
+          configuration.
         justification: |
           Centralizing all load and validation checks in a single Load method ensures a consistent
           validation pass and allows all issues to be reported in one run rather than
@@ -151,7 +163,8 @@ sections:
 
       - id: VersionMark-Load-LintIssue-Fields
         title: >-
-          The LintIssue record shall store file path, line, column, severity, and description.
+          The LintIssue record shall store file path, line, column, severity, and
+          description.
         justification: |
           Capturing all diagnostic fields in a single record allows callers to access
           each attribute independently and produce custom diagnostic output as needed.
@@ -160,7 +173,8 @@ sections:
 
       - id: VersionMark-Load-LintIssue-Format
         title: >-
-          The LintIssue record shall format its fields as "{FilePath}({Line},{Column}): {severity}:
+          The LintIssue record shall format its fields as "{FilePath}({Line},{Column}):
+          {severity}:
           {Description}" with severity in lowercase.
         justification: |
           A consistent, editor-friendly format (identical to the MSBuild/GCC diagnostic
@@ -172,7 +186,8 @@ sections:
 
       - id: VersionMark-Load-VersionMarkLoadResult
         title: >-
-          The VersionMarkLoadResult record shall bundle the loaded configuration and all
+          The VersionMarkLoadResult record shall bundle the loaded configuration and
+          all
           validation issues, routing errors to the error stream and warnings to standard
           output when ReportIssues is called.
         justification: |

@@ -3,7 +3,8 @@ sections:
   - title: GlobMatcher Unit Requirements
     requirements:
       - id: VersionMark-GlobMatcher-FindFiles
-        title: The GlobMatcher class shall find files matching relative glob patterns relative to the current directory.
+        title: The GlobMatcher class shall find files matching relative glob patterns
+          relative to the current directory.
         justification: |
           Publish mode accepts glob patterns supplied on the command line, which are
           typically relative to the working directory. GlobMatcher must evaluate these

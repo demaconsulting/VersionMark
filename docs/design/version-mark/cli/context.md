@@ -1,54 +1,73 @@
-### Context Unit
+### Context
 
-#### Overview
+#### Purpose
 
-The `Context` class (`Context.cs`) is a sealed, disposable container for all parsed
-command-line state and output routing. It is constructed via the `Create` factory method.
+`Context` (`Context.cs`) is a sealed, disposable container for all parsed command-line
+state and output routing. It is constructed via the `Create` factory method, which
+tokenizes the argument array and populates the relevant flag and value properties. All
+other subsystems receive a `Context` instance from `Program` and use it to query parsed
+flags and to write output or errors.
 
-#### Properties
+#### Data Model
 
-| Property      | Type       | Default | Description                               |
-|---------------|------------|---------|-------------------------------------------|
-| `Version`     | `bool`     | `false` | `-v` / `--version` flag                   |
-| `Help`        | `bool`     | `false` | `-?`, `-h`, `--help` flag                 |
-| `Silent`      | `bool`     | `false` | `--silent` flag                           |
-| `Validate`    | `bool`     | `false` | `--validate` flag                         |
-| `ResultsFile` | `string?`  | `null`  | `--results <file>`                        |
-| `Lint`        | `bool`     | `false` | `--lint` flag                             |
-| `LintFile`    | `string?`  | `null`  | Optional file argument for `--lint`       |
-| `Capture`     | `bool`     | `false` | `--capture` flag                          |
-| `JobId`       | `string?`  | `null`  | `--job-id <id>`                           |
-| `OutputFile`  | `string?`  | `null`  | `--output <file>`                         |
-| `ToolNames`   | `string[]` | `[]`    | Tool names after `--` separator in capture|
-| `Publish`     | `bool`     | `false` | `--publish` flag                          |
-| `ReportFile`  | `string?`  | `null`  | `--report <file>`                         |
-| `Depth`       | `int`      | `1`     | `--depth <depth>` (heading depth, def: 1) |
-| `ReportDepth` | `int`      | `Depth` | `--report-depth <depth>` (def: `Depth`)   |
-| `GlobPatterns`| `string[]` | `[]`    | Patterns after `--` separator in publish  |
-| `ExitCode`    | `int`      | `0`/`1` | 0 for success, 1 if errors reported       |
+| Property       | Type       | Default     | Description                                        |
+|----------------|------------|-------------|----------------------------------------------------|
+| `Version`      | `bool`     | `false`     | `-v` / `--version` flag                            |
+| `Help`         | `bool`     | `false`     | `-?`, `-h`, `--help` flag                          |
+| `Silent`       | `bool`     | `false`     | `--silent` flag                                    |
+| `Validate`     | `bool`     | `false`     | `--validate` flag                                  |
+| `ResultsFile`  | `string?`  | `null`      | `--results <file>`                                 |
+| `Lint`         | `bool`     | `false`     | `--lint` flag                                      |
+| `LintFile`     | `string?`  | `null`      | Optional file argument for `--lint`                |
+| `Capture`      | `bool`     | `false`     | `--capture` flag                                   |
+| `JobId`        | `string?`  | `null`      | `--job-id <id>`                                    |
+| `OutputFile`   | `string?`  | `null`      | `--output <file>`                                  |
+| `ToolNames`    | `string[]` | `[]`        | Tool names after `--` separator in capture mode    |
+| `Publish`      | `bool`     | `false`     | `--publish` flag                                   |
+| `ReportFile`   | `string?`  | `null`      | `--report <file>`                                  |
+| `Depth`        | `int`      | `1`         | `--depth <depth>` (heading depth, default: 1)      |
+| `ReportDepth`  | `int`      | `Depth`     | `--report-depth <depth>` (defaults to `Depth`)     |
+| `GlobPatterns` | `string[]` | `[]`        | Patterns after `--` separator in publish mode      |
+| `ExitCode`     | `int`      | `0` / `1`   | 0 for success; 1 if any errors have been reported  |
 
-This satisfies requirements `VersionMark-CommandLine-Context`, `VersionMark-CommandLine-Version`,
-`VersionMark-CommandLine-Help`, `VersionMark-CommandLine-Silent`, `VersionMark-CommandLine-Validate`,
-`VersionMark-CommandLine-Results`, `VersionMark-CommandLine-Log`, `VersionMark-CommandLine-ExitCode`,
-`VersionMark-CommandLine-Lint`, and `VersionMark-Context-Create`.
+The private `_hasErrors` field, set by `WriteError`, controls whether `ExitCode` returns 1.
+An optional `StreamWriter` opened by `OpenLogFile` is disposed when `Context` is disposed.
 
-#### ArgumentParser
+#### Key Methods
 
-The private `ArgumentParser` class performs the actual token-by-token parsing. It handles
-the `--` separator, which switches subsequent tokens to either tool names (capture mode) or
-glob patterns (publish mode). Unknown arguments throw `ArgumentException`, satisfying
-`VersionMark-CommandLine-InvalidArgs`.
+**`Create(string[] args)` (static factory)** — Constructs a `Context` by delegating to the
+private `ArgumentParser` class, which performs token-by-token parsing. The `--` separator
+switches subsequent tokens to either tool names (capture mode) or glob patterns (publish
+mode). Returns the populated `Context`.
 
-#### WriteLine and WriteError
+**`OpenLogFile(string path)`** — Opens a `StreamWriter` with `AutoFlush = true` to `path`.
+Subsequent `WriteLine` and `WriteError` calls also write to this stream. If opening fails,
+`InvalidOperationException` is thrown with contextual information.
 
-`WriteLine` writes to `Console.Out` unless `Silent` is set, and also writes to the log
-file if one was opened. `WriteError` additionally sets `_hasErrors = true` (making
-`ExitCode` return 1) and writes to `Console.Error` in red. This satisfies
-`VersionMark-CommandLine-Silent`, `VersionMark-CommandLine-ErrorOutput`, `VersionMark-CommandLine-ExitCode`,
-`VersionMark-Context-WriteLine`, `VersionMark-Context-WriteError`, and `VersionMark-Context-WriteErrorExitCode`.
+**`WriteLine(string message)`** — Writes to `Console.Out` unless `Silent` is set, and
+also writes to the log file if one was opened.
 
-#### Log File
+**`WriteError(string message)`** — Writes to `Console.Error` in red, sets `_hasErrors =
+true` (making `ExitCode` return 1), and also writes to the log file if one was opened.
 
-The `OpenLogFile` method opens a `StreamWriter` with `AutoFlush = true`. If opening fails,
-an `InvalidOperationException` is thrown with contextual information. The writer is
-disposed when `Context` is disposed, satisfying `VersionMark-CommandLine-Log`.
+#### Error Handling
+
+| Condition                         | Behavior                                               |
+|-----------------------------------|--------------------------------------------------------|
+| Unknown argument token            | `ArgumentParser` throws `ArgumentException`            |
+| Log file cannot be opened         | `OpenLogFile` throws `InvalidOperationException`       |
+
+#### Dependencies
+
+- `System.Console` (BCL) — output to stdout and stderr.
+- `System.IO.StreamWriter` (BCL) — log file output.
+
+#### Callers
+
+- `Program.Main` — constructs `Context` via `Context.Create` and passes it to `Program.Run`.
+- `Program.Run`, `Program.RunCapture`, `Program.RunPublish`, `Program.RunLint` — query
+  flags and call `WriteLine` / `WriteError`.
+- `Validation.Run` and test helpers — construct a fresh `Context` for each self-validation
+  test.
+- `VersionMarkLoadResult.ReportIssues` — calls `context.WriteLine` and `context.WriteError`
+  to report lint issues.

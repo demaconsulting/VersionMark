@@ -1,63 +1,59 @@
-### MarkdownFormatter Unit
+### MarkdownFormatter
 
-#### Overview
+#### Purpose
 
-The `MarkdownFormatter` class (`MarkdownFormatter.cs`) provides the `Format` static method
-that converts a collection of `VersionInfo` records into a markdown string. This satisfies
-requirements `VersionMark-Formatter-Structure`, `VersionMark-Formatter-JobId`,
-`VersionMark-Formatter-Versions`, `VersionMark-Formatter-MarkdownList`, and
-`VersionMark-Formatter-MarkdownConsolidation`.
+`MarkdownFormatter` (`MarkdownFormatter.cs`) converts a collection of `VersionInfo` records
+into a markdown string. It consolidates version data across multiple CI/CD jobs: when all
+jobs report the same version for a tool, a single bullet is emitted; when versions differ,
+one bullet per distinct version is emitted with contributing job IDs. The result is written
+to a file by `Program.RunPublish`.
 
-#### Format Method
+#### Data Model
 
-`Format` accepts an `IEnumerable<VersionInfo>` and an optional `reportDepth` (default 2),
-and returns a markdown string.
+`MarkdownFormatter` is a static class with no instance state. It uses a
+`Dictionary<string, List<(string JobId, string Version)>>` internally to accumulate
+per-tool version observations before generating output.
 
-The method delegates to two helpers:
+#### Key Methods
 
-1. **`BuildToolVersionsDictionary`**: iterates all `VersionInfo` records and builds a
-   `Dictionary<string, List<(string JobId, string Version)>>` mapping each tool name to
-   the list of `(jobId, version)` pairs seen across all input files.
-2. **`GenerateMarkdown`**: writes the heading, sorts tools alphabetically, and calls
-   `FormatVersionEntries` for each tool.
+**`Format(IEnumerable<VersionInfo> versionInfos, int reportDepth = 2)` (static)** —
+Accepts a sequence of `VersionInfo` records and returns a complete markdown string. The
+`Tool Versions` section heading level is controlled by `reportDepth` (e.g., `reportDepth =
+2` produces `## Tool Versions`). Delegates to `BuildToolVersionsDictionary` and
+`GenerateMarkdown`.
 
-#### Output Structure
+**`BuildToolVersionsDictionary(IEnumerable<VersionInfo> versionInfos)` (private static)**
+— Iterates all records and builds a `Dictionary<string, List<(string JobId, string
+Version)>>` mapping each tool name to its observed `(jobId, version)` pairs.
 
-The markdown output begins with a `Tool Versions` section heading whose level is
-controlled by `reportDepth`. For example, with `reportDepth = 2` the heading is
-`## Tool Versions`; with `reportDepth = 3` it is `### Tool Versions`.
+**`GenerateMarkdown(Dictionary<...>, int reportDepth)` (private static)** — Writes the
+heading using `new string('#', reportDepth)`, sorts tool names alphabetically, then calls
+`FormatVersionEntries` for each tool.
 
-Each tool is then listed as one or more markdown bullet items below the heading.
+**`FormatVersionEntries(List<(string, string)> entries)` (private static)** — Applies the
+consolidation rule:
 
-#### Version Consolidation Logic
-
-`FormatVersionEntries` implements the consolidation rule:
-
-- If all `(jobId, version)` pairs for a tool share the **same** version, a single bullet
-  is emitted: `- **tool**: version` (no job IDs shown). This satisfies
-  `VersionMark-Formatter-JobId`.
-- If versions **differ**, one bullet per distinct version is emitted with the contributing
-  job IDs in parentheses: `- **tool**: version (job1, job2)`. This satisfies
-  `VersionMark-Formatter-Versions` and `VersionMark-Formatter-MarkdownList`.
-
-Both cases use bold tool names. In the multi-version case, each unique version appears on
-its own line with the alphabetically-sorted job IDs that produced it enclosed in
-parentheses.
-
-#### Heading Depth
-
-The heading prefix is constructed as `new string('#', reportDepth)`, so `reportDepth = 2`
-yields `## Tool Versions`, `reportDepth = 1` yields `# Tool Versions`, and so on. This
-satisfies `VersionMark-Formatter-MarkdownConsolidation`.
-
-`reportDepth` must be greater than zero. Passing `0` or a negative value causes
-`ArgumentOutOfRangeException` to be thrown before any output is generated.
+- If all entries share the same version: emit `- **tool**: version` (no job IDs).
+- If versions differ: emit one `- **tool**: version (job1, job2)` per distinct version
+  with alphabetically sorted contributing job IDs.
 
 #### Error Handling
 
-| Input condition                  | Behavior                                          |
-|----------------------------------|---------------------------------------------------|
-| `reportDepth <= 0`               | `ArgumentOutOfRangeException` thrown              |
-| `versionInfos` is empty          | Returns valid markdown with heading but no bullets|
-| Tool name is empty string        | Tool appears in output as `- ****: version`       |
-| `JobId` is null or empty         | Job ID appears as empty string in parentheses     |
+| Condition              | Behavior                                                     |
+|------------------------|--------------------------------------------------------------|
+| `reportDepth <= 0`     | `ArgumentOutOfRangeException` thrown before any output       |
+| `versionInfos` is empty | Returns valid markdown with heading and no bullets          |
+| Tool name is empty     | Emitted as `- ****: version`                                 |
+| `JobId` is null/empty  | Appears as an empty string in the parenthesised list         |
+
+#### Dependencies
+
+- `VersionInfo` (Capture subsystem) — input data model.
+- `System.Text.StringBuilder` (BCL) — output string construction.
+
+#### Callers
+
+- `Program.RunPublish` — calls `MarkdownFormatter.Format` with the loaded `VersionInfo`
+  records and writes the returned string to the report file.
+- `Validation.RunPublishTest` — indirectly exercises `MarkdownFormatter.Format` via
+  `Program.Run`.

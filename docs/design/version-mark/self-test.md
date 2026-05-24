@@ -1,34 +1,43 @@
-## SelfTest Subsystem
+## SelfTest
 
 ### Overview
 
 The SelfTest subsystem provides built-in verification of the tool's core functionality.
-It consists of one unit: `Validation` (the self-validation test runner).
+It is invoked when the `--validate` flag is passed and can write results to a TRX or JUnit
+XML file when `--results` is also provided. It consists of a single unit: `Validation`.
 
-The validation subsystem is invoked when the `--validate` flag is passed and can write
-results to a TRX or JUnit XML file when `--results` is also provided. This satisfies
-requirements `VersionMark-CommandLine-Validate` and `VersionMark-CommandLine-Results`.
+### Interfaces
 
-### Units
+**`Validation.Run(Context context)`**: Executes the full self-validation suite.
 
-#### Validation
+- *Type*: In-process .NET public API (static method).
+- *Role*: Provider.
+- *Contract*: Runs four functional tests exercising capture, publish, lint-valid, and
+  lint-invalid modes. Prints a results summary via `context.WriteLine`. Writes individual
+  test failures via `context.WriteError`, setting `ExitCode` to `1` if any tests fail.
+  Optionally writes a TRX or JUnit results file when `context.ResultsFile` is set.
+- *Constraints*: Each test runs in an isolated temporary directory using a real re-entrant
+  call to `Program.Run`. Requires write access to `Path.GetTempPath()`.
 
-The `Validation` class (`Validation.cs`) is the self-validation test runner. It exposes a
-single public method, `Run`, which orchestrates all internal self-tests against the tool's
-core modes (capture, publish, lint), collects results, prints a summary, and optionally
-writes a structured results file.
+### Design
 
-See *Validation Unit Design* for the full unit design.
+The SelfTest subsystem consists of the single `Validation` class, which orchestrates four
+independent functional tests against a real (re-entrant) `Program.Run` call inside isolated
+temporary directories:
 
-### Subsystem Interactions
+1. **`RunCaptureTest`** — verifies that `--capture` saves a valid JSON file with the
+   expected `JobId` and a non-empty `dotnet` version.
+2. **`RunPublishTest`** — verifies that `--publish` reads two pre-written JSON files and
+   produces a markdown report containing the expected headings and version strings.
+3. **`RunLintValidTest`** — verifies that `--lint` exits with code `0` for a valid config
+   file.
+4. **`RunLintInvalidTest`** — verifies that `--lint` exits with a non-zero code for an
+   invalid config file.
 
-`Validation.Run` creates temporary directories via the private `TemporaryDirectory` helper
-class and uses `PathHelpers.SafePathCombine` from the Utilities subsystem for all path
-construction within those directories.
+Each test creates a `TemporaryDirectory` (a private disposable helper that cleans up after
+itself), constructs a fresh `Context`, changes the current working directory into the temp
+directory, and calls `Program.Run`. Results are accumulated in a `TestResults` collection
+and serialized by `WriteResultsFile` if `context.ResultsFile` is set.
 
-The subsystem depends on:
-
-- `DemaConsulting.VersionMark.Cli.Context` — command-line arguments and output
-- `DemaConsulting.VersionMark.Capture.VersionInfo` — capture output model
-- `DemaConsulting.VersionMark.Program` — re-entrant entry point for internal test runs
-- `DemaConsulting.TestResults` — test result collection and serialization
+The subsystem depends on `Context` (Cli), `VersionInfo` (Capture), `Program` (Cli, called
+re-entrantly), `PathHelpers` (Utilities), and `DemaConsulting.TestResults` (OTS).

@@ -1,53 +1,61 @@
-## Publishing Subsystem Verification
-
-### Overview
-
-The Publishing subsystem is responsible for reading captured version JSON files and
-generating a consolidated markdown report. It consists of one unit: `MarkdownFormatter`
-(the version report formatter).
-
-Subsystem-level integration tests are in `Publishing/PublishingTests.cs` and cover the
-full publish workflow including glob pattern resolution, JSON file loading, report
-generation, and error handling. Unit-level verification for `MarkdownFormatter` is in the
-chapter that follows.
+## Publishing
 
 ### Verification Approach
 
-Integration tests use temporary directories containing pre-built JSON capture files.
-Tests invoke publish operations via `Program.RunPublish` and assert on the contents of
-the generated report or the error output. No external mocks are required.
+The Publishing subsystem is responsible for reading captured version JSON files and
+generating a consolidated markdown report. It consists of one unit: `MarkdownFormatter`
+(the version report formatter). Subsystem-level integration tests are in
+`Publishing/PublishingTests.cs` and cover the full publish workflow including glob
+pattern resolution, JSON file loading, report generation, and error handling. Tests use
+temporary directories containing pre-built JSON capture files. No external mocks are
+required.
+
+### Test Environment
+
+N/A - standard test environment. Tests create temporary directories and pre-built JSON
+capture files during setup and clean them up afterwards.
+
+### Acceptance Criteria
+
+- All subsystem integration tests pass with zero failures across all supported OS and .NET
+  version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+- Every requirement for the Publishing subsystem is covered by at least one named test
+  scenario.
 
 ### Test Scenarios
 
-The following integration test scenarios verify Publishing subsystem requirements:
+**Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport**: Multiple capture
+files produce a single consolidated report. This scenario is tested by
+`Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport`.
 
-- **`Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport`**: Multiple files produce a consolidated report.
-- **`Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions`**: Identical versions across jobs are consolidated.
-- **`Publishing_Format_ConflictingVersions_ShowsJobIds`**: Conflicting versions show individual job IDs.
-- **`Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel`**: Custom depth produces the correct heading level.
-- **`Publishing_Run_WithoutReport_ReportsError`**: Missing `--report` flag reports an error.
-- **`Publishing_Run_WithGlobPattern_ReadsMatchingFiles`**: Glob pattern reads all matching files.
-- **`Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError`**: No matching files reports an error.
-- **`Publishing_Run_WithMalformedJsonFile_ReportsError`**: Malformed JSON file reports an error.
-- **`Publishing_Run_WithReportDepth_UsesCorrectDepth`**: Report depth flag is applied to heading levels.
+**Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions**: Identical versions
+across multiple jobs are consolidated into a single line. This scenario is tested by
+`Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions`.
 
-### Dependencies
+**Publishing_Format_ConflictingVersions_ShowsJobIds**: Conflicting versions across jobs
+show individual job IDs in the report. This scenario is tested by
+`Publishing_Format_ConflictingVersions_ShowsJobIds`.
 
-No external mocks are required. Tests use temporary directories and pre-built JSON
-capture files created during test setup.
+**Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel**: A custom depth value
+produces the correct markdown heading level. This scenario is tested by
+`Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel`.
 
-### Requirements Coverage
+**Publishing_Run_WithoutReport_ReportsError**: Running publish without the `--report`
+flag reports an error. This scenario is tested by
+`Publishing_Run_WithoutReport_ReportsError`.
 
-The following list maps Publishing subsystem requirements to test scenarios:
+**Publishing_Run_WithGlobPattern_ReadsMatchingFiles**: A glob pattern reads all matching
+capture files. This scenario is tested by
+`Publishing_Run_WithGlobPattern_ReadsMatchingFiles`.
 
-- **`VersionMark-Publish-Publish`**: `Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport`
-- **`VersionMark-Publish-Report`**: `Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport`
-- **`VersionMark-Publish-ReportDepth`**: `Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel`,
-  `Publishing_Run_WithReportDepth_UsesCorrectDepth`
-- **`VersionMark-Publish-RequireReport`**: `Publishing_Run_WithoutReport_ReportsError`
-- **`VersionMark-Publish-GlobPattern`**: `Publishing_Run_WithGlobPattern_ReadsMatchingFiles`
-- **`VersionMark-Publish-Consolidate`**: `Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport`,
-  `Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions`
-- **`VersionMark-Publish-ConflictReport`**: `Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError`
-- **`VersionMark-Publish-ConflictDisplay`**: `Publishing_Format_ConflictingVersions_ShowsJobIds`
-- **`VersionMark-Publish-FileError`**: `Publishing_Run_WithMalformedJsonFile_ReportsError`
+**Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError**: A glob pattern that matches
+no files reports an error. This scenario is tested by
+`Publishing_Run_WithGlobPatternMatchingNoFiles_ReportsError`.
+
+**Publishing_Run_WithMalformedJsonFile_ReportsError**: A malformed JSON capture file
+reports an error. This scenario is tested by
+`Publishing_Run_WithMalformedJsonFile_ReportsError`.
+
+**Publishing_Run_WithReportDepth_UsesCorrectDepth**: The `--report-depth` flag is applied
+to the heading level in the generated report. This scenario is tested by
+`Publishing_Run_WithReportDepth_UsesCorrectDepth`.

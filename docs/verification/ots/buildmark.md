@@ -1,23 +1,28 @@
-## BuildMark Verification
+## BuildMark
 
-### Overview
+### Verification Approach
 
 BuildMark is an OTS tool developed by DEMA Consulting that generates build notes
 documenting which versions of tools were used during a build. VersionMark uses BuildMark
 in its CI/CD pipeline to capture and publish build notes as part of the compliance
 evidence package.
 
-### Verification Approach
+BuildMark is verified through two mechanisms. First, the CI pipeline runs
+`dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx`, which
+executes BuildMark's internal test suite and writes results to a TRX file. Second, the CI
+pipeline runs BuildMark to generate `docs/build_notes/generated/build_notes.md` from
+GitHub Actions workflow metadata. A passing CI run producing this file confirms BuildMark
+is operating correctly in the CI environment.
 
-BuildMark is verified through its built-in self-validation mechanism. The CI pipeline
-runs `dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx`,
-which executes BuildMark's internal test suite and writes results to a TRX file. The
-presence of a passing TRX file serves as evidence that BuildMark is functioning correctly
-in the CI environment.
+### Test Scenarios
 
-### Requirements Coverage
+**BuildMarkSelfValidation**: The CI pipeline runs
+`dotnet buildmark --validate --results artifacts/buildmark-self-validation.trx`, which
+executes BuildMark's internal test suite. The TRX file must be produced and contain no
+failed tests. This scenario is verified by `artifacts/buildmark-self-validation.trx`.
 
-The following list maps BuildMark requirements to verification evidence:
-
-- **`VersionMark-OTS-BuildMark`**: `artifacts/buildmark-self-validation.trx`
-  (BuildMark self-validation passing in CI)
+**BuildMarkMarkdownReportGeneration**: The CI pipeline runs BuildMark to generate
+`docs/build_notes/generated/build_notes.md` from GitHub Actions workflow metadata. The
+markdown build notes document must be produced and incorporated into the build notes
+document collection. This scenario is verified by
+`docs/build_notes/generated/build_notes.md`.

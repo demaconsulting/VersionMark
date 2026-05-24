@@ -49,7 +49,8 @@ sections:
           - Context_Create_OutputFlag_SetsOutputFile
 
       - id: VersionMark-Context-WriteLine
-        title: The Context.WriteLine method shall write output respecting the silent flag.
+        title: The Context.WriteLine method shall write output respecting the silent
+          flag.
         justification: |
           Silent mode suppresses console output so automated scripts can run the tool
           without cluttering their log.
@@ -60,7 +61,8 @@ sections:
       - id: VersionMark-Context-WriteError
         title: >-
           The Context.WriteError method shall write error messages to stderr,
-          unless silent mode is active, and shall write error messages to the log file
+          unless silent mode is active, and shall write error messages to the log
+          file
           when one is open.
         justification: |
           Silent mode suppresses all console output, including error messages written to
@@ -71,7 +73,8 @@ sections:
           - Context_WriteError_WritesToLogFile
 
       - id: VersionMark-Context-WriteErrorExitCode
-        title: The Context.WriteError method shall set the process exit code to a non-zero value.
+        title: The Context.WriteError method shall set the process exit code to a
+          non-zero value.
         justification: |
           The process must exit with a non-zero code so that calling scripts can detect
           failure automatically even when output is silenced.

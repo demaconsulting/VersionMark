@@ -1,44 +1,21 @@
-### VersionInfo Unit
+### VersionInfo
 
-#### Overview
+#### Purpose
 
-The `VersionInfo` record (`VersionInfo.cs`) is a positional record with two properties:
+`VersionInfo` is the data transfer record between the capture and publish operational modes.
+In capture mode, it is produced by `VersionMarkConfig.FindVersions` and saved as a JSON
+artifact by `VersionInfo.SaveToFile`. In publish mode, it is loaded from those artifacts
+by `VersionInfo.LoadFromFile` and passed to `MarkdownFormatter.Format` for report
+generation.
 
-| Property   | Type                          | Description                                           |
-|------------|-------------------------------|-------------------------------------------------------|
-| `JobId`    | `string`                      | Identifies the CI/CD job that captured these versions |
-| `Versions` | `Dictionary<string, string>`  | Maps tool names to their version strings              |
+#### Data Model
 
-`VersionInfo` is the interface between the capture mode and the publish mode: capture
-produces it by executing commands and saving to JSON; publish reads it back and passes it
-to `MarkdownFormatter`.
+| Property   | Type                         | Description                                           |
+|------------|------------------------------|-------------------------------------------------------|
+| `JobId`    | `string`                     | Identifies the CI/CD job that captured these versions |
+| `Versions` | `Dictionary<string, string>` | Maps tool names to their captured version strings     |
 
-#### SaveToFile Method
-
-`SaveToFile` serializes the record to indented JSON using `JsonSerializer.Serialize` with
-`WriteIndented = true` and writes it to the specified path using UTF-8 encoding.
-Non-`InvalidOperationException` errors are wrapped and re-thrown as
-`InvalidOperationException` with context. This satisfies requirement
-`VersionMark-VersionInfo-Save`. The default output filename (`versionmark-<job-id>.json`)
-is determined by the CLI layer and contributes to satisfying `VersionMark-Capture-DefaultOutput`.
-
-#### LoadFromFile Method
-
-`LoadFromFile` is the symmetric counterpart to `SaveToFile`. It:
-
-1. Checks that the file exists; throws `ArgumentException` if not.
-2. Reads the file content as UTF-8.
-3. Deserializes using `JsonSerializer.Deserialize<VersionInfo>`.
-4. Validates the result is not null.
-
-`JsonException` is caught and re-thrown as `ArgumentException`. Other
-non-`ArgumentException` errors are wrapped similarly. This satisfies
-`VersionMark-VersionInfo-Load`, `VersionMark-VersionInfo-Error`,
-`VersionMark-Publish-Consolidate`, and `VersionMark-Publish-FileError`.
-
-#### JSON Schema
-
-The JSON file produced by `SaveToFile` has this structure:
+JSON representation produced by `SaveToFile`:
 
 ```json
 {
@@ -50,6 +27,38 @@ The JSON file produced by `SaveToFile` has this structure:
 }
 ```
 
-The property names in JSON match the C# property names exactly because no custom
-`JsonPropertyName` attributes are applied. The file is UTF-8 encoded with indentation
-for human readability and diff-friendliness in version control.
+Property names in JSON match C# property names exactly because no `JsonPropertyName`
+attributes are applied. Files are UTF-8 encoded with indentation for human readability
+and diff-friendliness.
+
+#### Key Methods
+
+**`SaveToFile(string path)`** — Serializes the record to indented JSON using
+`JsonSerializer.Serialize` with `WriteIndented = true` and writes it to `path` using UTF-8
+encoding. Overwrites the file if it already exists.
+
+**`LoadFromFile(string path)` (static)** — Symmetric counterpart to `SaveToFile`. Checks
+file existence, reads the file as UTF-8, deserializes via
+`JsonSerializer.Deserialize<VersionInfo>`, and validates the result is not null. Returns
+the deserialized `VersionInfo` record.
+
+#### Error Handling
+
+| Condition                         | Method          | Behavior                                         |
+|-----------------------------------|-----------------|--------------------------------------------------|
+| File does not exist               | `LoadFromFile`  | `ArgumentException` thrown                       |
+| JSON is invalid                   | `LoadFromFile`  | `JsonException` caught, re-thrown as `ArgumentException` |
+| Deserialization returns null      | `LoadFromFile`  | `ArgumentException` thrown                       |
+| Other non-`InvalidOperationException` error | `SaveToFile` | Wrapped and re-thrown as `InvalidOperationException` with context |
+
+#### Dependencies
+
+- `System.Text.Json` (BCL) — JSON serialization and deserialization.
+
+#### Callers
+
+- `VersionMarkConfig.FindVersions` — constructs a `VersionInfo` record and returns it.
+- `Program.RunCapture` — calls `VersionInfo.SaveToFile` to persist the capture artifact.
+- `Program.RunPublish` — calls `VersionInfo.LoadFromFile` for each JSON artifact.
+- `Validation.RunPublishTest` — constructs `VersionInfo` records and writes them as JSON
+  for the self-validation publish test.

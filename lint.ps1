@@ -15,10 +15,6 @@
 #   Only modify this file to add project-specific operations at the designated
 #   [PROJECT-SPECIFIC] extension points, or to update tool versions as needed.
 
-# ==============================================================================
-# HELPER FUNCTIONS
-# ==============================================================================
-
 function Get-VenvActivateScript {
     if (Test-Path ".venv/Scripts/Activate.ps1") { return ".venv/Scripts/Activate.ps1" }  # Windows
     if (Test-Path ".venv/bin/Activate.ps1") { return ".venv/bin/Activate.ps1" }          # Linux/macOS
@@ -49,15 +45,9 @@ function Initialize-PythonVenv {
     }
 }
 
-# ==============================================================================
-# LINT CHECKS
-# Runs all lint checks. Exits 1 if any check fails.
-# ==============================================================================
-
 $lintError = $false
 
-# --- PYTHON SECTION ---
-# Sets up a virtual environment and runs yamllint.
+# --- YAML ---
 Write-Host "Linting: YAML..."
 $skipPython = -not (Initialize-PythonVenv)
 if ($skipPython) { $lintError = $true }
@@ -75,8 +65,7 @@ if (-not $skipPython) {
 #       if ($LASTEXITCODE -ne 0) { $lintError = $true }
 #   }
 
-# --- NPM SECTION ---
-# Installs npm dependencies and runs cspell and markdownlint-cli2.
+# --- Spelling and Markdown ---
 Write-Host "Linting: spelling and markdown..."
 $skipNpm = $false
 $env:PUPPETEER_SKIP_DOWNLOAD = "true"
@@ -98,8 +87,7 @@ if (-not $skipNpm) {
 #       if ($LASTEXITCODE -ne 0) { $lintError = $true }
 #   }
 
-# --- DOTNET LINTING SECTION ---
-# Runs compliance tools: reqstream, versionmark, reviewmark.
+# --- Compliance Tools ---
 Write-Host "Linting: compliance tools..."
 $skipDotnetTools = $false
 dotnet tool restore > $null
@@ -123,8 +111,7 @@ if (-not $skipDotnetTools) {
 #       if ($LASTEXITCODE -ne 0) { $lintError = $true }
 #   }
 
-# --- DOTNET FORMATTING SECTION ---
-# Verifies C# code formatting matches .editorconfig rules.
+# --- dotnet Format ---
 Write-Host "Linting: dotnet format..."
 $skipDotnetFormat = $false
 dotnet restore > $null

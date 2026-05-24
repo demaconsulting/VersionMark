@@ -1,65 +1,64 @@
-### GlobMatcher Unit
+### GlobMatcher
 
-#### Overview
+#### Purpose
 
-`GlobMatcher` is a static utility class that provides glob-pattern file matching. It
-supports both relative patterns (evaluated against the current directory) and absolute
-patterns (evaluated from their own root directory), and returns a sorted, deduplicated
-list of full file paths. It uses `Microsoft.Extensions.FileSystemGlobbing` for pattern
-evaluation.
+`GlobMatcher` (`GlobMatcher.cs`) is a static utility class that resolves an array of glob
+patterns into a sorted, deduplicated list of full file paths. It supports both relative
+patterns (evaluated against the current working directory) and absolute patterns (evaluated
+from their own root directory). `GlobMatcher.FindMatchingFiles` is called by
+`Program.RunPublish` to resolve command-line glob patterns into a concrete list of JSON
+capture files.
 
-#### FindMatchingFiles Method
+#### Data Model
 
-```csharp
-internal static List<string> FindMatchingFiles(string[] globPatterns)
-```
+`GlobMatcher` is a static class with no instance state. Internally it accumulates
+absolute patterns into separate `Matcher` invocations and collects relative patterns for a
+single batched `Matcher` run. Results are deduplicated using a case-insensitive
+`HashSet<string>`.
 
-Finds all files matching the specified glob patterns and returns them as a sorted list of
-full paths.
+#### Key Methods
 
-**Processing steps:**
+**`FindMatchingFiles(string[] globPatterns)` (internal static)** — Resolves all patterns
+and returns a sorted `List<string>` of full file paths.
 
-1. Iterate over each pattern in `globPatterns`.
-2. If a pattern is rooted (`Path.IsPathRooted`), call `SplitAbsolutePattern` to obtain the
-   root directory and relative pattern, then use a `Matcher` against that directory.
-3. If the pattern is relative, collect it into a separate list.
-4. After iterating, if any relative patterns were collected, run a single `Matcher` against
-   `Directory.GetCurrentDirectory()` covering all relative patterns.
-5. Combine all matches into a `HashSet<string>` (case-insensitive) to deduplicate, then
-   return the sorted result.
+Processing steps:
 
-#### SplitAbsolutePattern Helper
+1. Iterate each pattern in `globPatterns`.
+2. For rooted patterns, call `SplitAbsolutePattern` to obtain `(rootDir,
+   relativePattern)`, then run a `Matcher` against that `rootDir`.
+3. Collect non-rooted patterns into a list.
+4. If any relative patterns were collected, run a single `Matcher` against
+   `Directory.GetCurrentDirectory()` covering all relative patterns at once.
+5. Combine all matches into a case-insensitive `HashSet<string>` for deduplication,
+   then return the sorted result.
 
-```csharp
-internal static (string rootDir, string relativePattern) SplitAbsolutePattern(string absolutePattern)
-```
+Batching relative patterns into one `Matcher` run reduces directory enumeration overhead
+compared to one run per pattern. Sorted output makes results deterministic.
 
-Splits an absolute glob pattern into its root directory and the relative pattern to be
-passed to the `Matcher`.
+**`SplitAbsolutePattern(string absolutePattern)` (internal static)** — Splits an absolute
+glob pattern into `(string rootDir, string relativePattern)`.
 
-**Algorithm:**
+Algorithm:
 
-1. Determine the path root via `Path.GetPathRoot`.
-2. Find the index of the first wildcard character (`*`, `?`, or `[`).
-3. If no wildcard is found, return `(Path.GetDirectoryName, Path.GetFileName)`.
-4. Find the last directory separator before the wildcard using `LastIndexOfAny` searching
-   backwards from the wildcard position.
-5. Split at that separator, handling the drive-root edge case where the separator is the
-   first character (e.g. `/`) or where the root segment lacks a trailing separator (e.g.
+1. Find the index of the first wildcard character (`*`, `?`, or `[`).
+2. If no wildcard, return `(Path.GetDirectoryName, Path.GetFileName)`.
+3. Find the last directory separator before the wildcard.
+4. Split at that separator, handling edge cases where the separator is the first
+   character (e.g., `/`) or where the root segment has no trailing separator (e.g.,
    `C:` on Windows).
 
-#### Design Decisions
+#### Error Handling
 
-- **Separate absolute and relative handling**: Absolute patterns are rooted at a specific
-  directory and must be evaluated there, while relative patterns are evaluated relative to
-  the current directory. Separating the two cases avoids incorrect matches.
-- **Single Matcher for relative patterns**: Collecting all relative patterns into one
-  `Matcher` run reduces directory enumeration overhead compared to one run per pattern.
-- **Case-insensitive deduplication**: Using a case-insensitive `HashSet` prevents
-  duplicates when patterns overlap or when the file system is case-insensitive.
-- **Sorted output**: Returning a sorted list makes the output deterministic, simplifying
-  testing and producing a consistent report order.
+`GlobMatcher` contains no explicit error handling. Invalid patterns or inaccessible
+directories are handled by the BCL and `Microsoft.Extensions.FileSystemGlobbing`. Callers
+must handle an empty result list.
 
-`GlobMatcher` is used by `Program.RunPublish` to resolve command-line glob patterns into
-a concrete file list. This satisfies requirements `VersionMark-GlobMatcher-FindFiles` and
-`VersionMark-GlobMatcher-AbsolutePaths`.
+#### Dependencies
+
+- `Microsoft.Extensions.FileSystemGlobbing` (OTS) — `Matcher` for pattern evaluation.
+- `System.IO` (BCL) — `Directory.GetCurrentDirectory`, `Path.IsPathRooted`, etc.
+
+#### Callers
+
+- `Program.RunPublish` — calls `GlobMatcher.FindMatchingFiles` with the glob patterns
+  parsed from `context.GlobPatterns`.

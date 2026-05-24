@@ -1,71 +1,56 @@
-## Publishing Subsystem
+## Publishing
 
 ### Overview
 
-The publish subsystem is responsible for generating a human-readable markdown version
-report from captured JSON files. It reads the version data produced by the capture
-subsystem and consolidates identical versions across jobs, flagging any conflicts.
+The Publishing subsystem is responsible for generating a human-readable markdown version
+report from captured JSON files. It reads the version data produced by the Capture
+subsystem and consolidates identical versions across jobs, flagging any conflicts. It
+consists of a single unit: `MarkdownFormatter`.
 
-The publish subsystem consists of a single unit: `MarkdownFormatter`, which converts
-a collection of `VersionInfo` records into a markdown string.
+### Interfaces
 
-### MarkdownFormatter.Format Interface
+**`MarkdownFormatter.Format(IEnumerable<VersionInfo> versionInfos, int reportDepth = 2)`**:
+Converts a collection of captured version records into a markdown string.
 
-`MarkdownFormatter.Format` is an `internal static` method with the signature:
-
-```csharp
-public static string Format(IEnumerable<VersionInfo> versionInfos, int reportDepth = 2)
-```
+- *Type*: In-process .NET public API (static method).
+- *Role*: Provider.
+- *Contract*: Accepts a sequence of `VersionInfo` records and returns a complete markdown
+  string containing a `Tool Versions` section. `reportDepth` controls the heading level:
+  `reportDepth = 2` produces `## Tool Versions`, `reportDepth = 1` produces
+  `# Tool Versions`, and so on. When all jobs report the same version for a tool, a single
+  bullet is emitted with no job IDs; when versions differ, one bullet per distinct version
+  is emitted with contributing job IDs in parentheses.
+- *Constraints*: `reportDepth` must be greater than zero; passing `0` or a negative value
+  throws `ArgumentOutOfRangeException`. An empty `versionInfos` sequence produces valid
+  markdown with only the heading.
 
 | Parameter      | Type                       | Description                                             |
 |----------------|----------------------------|---------------------------------------------------------|
 | `versionInfos` | `IEnumerable<VersionInfo>` | The captured version records to include in the report   |
 | `reportDepth`  | `int`                      | Heading depth for the section title (default: 2)        |
 
-**Returns**: A markdown-formatted string ready to be written to the report file.
+### Design
 
-`reportDepth` must be greater than zero. A value of `0` or less causes
-`ArgumentOutOfRangeException` to be thrown.
+The Publishing subsystem consists of the single `MarkdownFormatter` static class, which
+implements a three-step pipeline:
 
-### Normal-Operation Walkthrough
+1. **`BuildToolVersionsDictionary`** — iterates all `VersionInfo` records and builds a
+   `Dictionary<string, List<(string JobId, string Version)>>` mapping tool names to the
+   `(jobId, version)` pairs observed across all input records.
 
-The `--publish` command follows this pipeline in `Program.RunPublish`:
+2. **`GenerateMarkdown`** — writes the `Tool Versions` heading (using
+   `new string('#', reportDepth)`), sorts tool names alphabetically, then calls
+   `FormatVersionEntries` for each.
 
-1. Validate that `--report` was specified; report an error and return if not.
-2. Resolve glob patterns (default `versionmark-*.json` when none supplied).
-3. Scan the current directory for files matching the glob patterns using
-   `Microsoft.Extensions.FileSystemGlobbing.Matcher`.
-4. If no files match, write an error message via `context.WriteError` and return.
-5. Call `VersionInfo.LoadFromFile` for each matched file to deserialize the JSON.
-6. Pass the resulting `IEnumerable<VersionInfo>` to `MarkdownFormatter.Format`
-   together with `context.ReportDepth`.
-7. Write the returned markdown string to the file specified by `--report`.
+3. **`FormatVersionEntries`** — applies the consolidation rule: if all job entries for a
+   tool share the same version, emits a single `- **tool**: version` bullet; if versions
+   differ, emits one bullet per distinct version with contributing job IDs in parentheses.
 
-### Error Handling
+The subsystem depends on `VersionInfo` (Capture subsystem) as its input data model. The
+following error conditions are handled before the pipeline runs:
 
-- **`--report` not specified**: `context.WriteError` with mention of `--report`; exit 1
-- **No files match the glob patterns**: `context.WriteError` listing the patterns; exit 1
+- **`--report` not specified**: `context.WriteError` in `Program.RunPublish`; exit 1.
+- **No files match the glob patterns**: `context.WriteError` listing the patterns; exit 1.
 - **`VersionInfo.LoadFromFile` throws**: `context.WriteError` with the exception message;
-  exit 1
-- **`reportDepth <= 0`**: `ArgumentOutOfRangeException` thrown by
-  `MarkdownFormatter.Format`
-
-### reportDepth Configuration and Conflict-Display Logic
-
-`context.ReportDepth` is populated from the `--report-depth` CLI argument
-(default: the value of `--depth`, which itself defaults to `1`).
-
-When different jobs report different versions for the same tool, `MarkdownFormatter`
-displays one bullet per distinct version, with the contributing job IDs listed in
-parentheses after the version string. For example:
-
-```markdown
-- **dotnet**: 8.0.0 (job-linux, job-windows)
-- **dotnet**: 9.0.0 (job-preview)
-```
-
-When all jobs report the same version the job IDs are suppressed:
-
-```markdown
-- **dotnet**: 8.0.0
-```
+  exit 1.
+- **`reportDepth <= 0`**: `ArgumentOutOfRangeException` thrown by `MarkdownFormatter.Format`.
