@@ -1,25 +1,27 @@
-# Introduction
+﻿# Introduction
 
-VersionMark is a tool for capturing and publishing tool version information across CI/CD
-environments. It helps track which versions of build tools, compilers, and dependencies are
-used in different jobs and environments.
+This guide describes how to install, configure, and use VersionMark.
 
 ## Purpose
 
-VersionMark provides a standardized way to capture, track, and document tool versions used
-across different CI/CD jobs and environments. This ensures transparency, reproducibility, and
-helps teams understand which tool versions are used in their build and deployment pipelines.
+VersionMark is a .NET tool for capturing and publishing tool version information across
+CI/CD environments. It helps teams track which versions of build tools, compilers, and
+dependencies are used in different jobs and environments, ensuring transparency,
+reproducibility, and traceability between software artifacts and the build environment.
+
+VersionMark follows the [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance)
+methodology, which ensures compliance evidence is generated automatically on every CI run.
 
 ## Scope
 
-This user guide covers:
+This guide covers installation, configuration, capture and publish workflows,
+command-line options, self-validation, CI/CD integration, troubleshooting, and best
+practices. Prerequisites: .NET 8 or later.
 
-- Installing and configuring VersionMark
-- Capturing tool versions in CI/CD environments
-- Publishing version information to documentation
-- Integrating with CI/CD systems like GitHub Actions
-- Configuration file format and options
-- Troubleshooting and best practices
+## References
+
+- [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance)
+- [VersionMark releases](https://github.com/demaconsulting/VersionMark/releases)
 
 # Continuous Compliance
 
@@ -29,11 +31,11 @@ compliance evidence is generated automatically on every CI run.
 ## Key Practices
 
 - **Requirements Traceability**: Every requirement is linked to passing tests, and a trace matrix is
-  auto-generated on each release
-- **Linting Enforcement**: markdownlint, cspell, and yamllint are enforced before any build proceeds
+  auto-generated on each release.
+- **Linting Enforcement**: markdownlint, cspell, and yamllint are enforced before any build proceeds.
 - **Automated Audit Documentation**: Each release ships with generated requirements, justifications,
-  trace matrix, and quality reports
-- **CodeQL and SonarCloud**: Security and quality analysis runs on every build
+  trace matrix, and quality reports.
+- **CodeQL and SonarCloud**: Security and quality analysis runs on every build.
 
 # Installation
 
@@ -54,11 +56,11 @@ tools:
   dotnet:
     command: dotnet --version
     regex: '(?<version>\d+\.\d+\.\d+)'
-  
+
   node:
     command: node --version
     regex: 'v(?<version>\d+\.\d+\.\d+)'
-  
+
   gcc:
     command: gcc --version
     regex: 'gcc \(.*\) (?<version>\d+\.\d+\.\d+)'
@@ -72,7 +74,8 @@ In each CI/CD job, capture tool versions with a unique job identifier:
 versionmark --capture --job-id "windows-net8"
 ```
 
-This creates a JSON file (e.g., `versionmark-windows-net8.json`) containing the captured versions.
+This creates a JSON file (for example, `versionmark-windows-net8.json`) containing the
+captured versions.
 
 ## Step 3: Publish Versions to Documentation
 
@@ -82,35 +85,35 @@ After all jobs complete, publish the captured versions:
 versionmark --publish --report versions.md
 ```
 
-This generates a markdown file consolidating versions from all jobs.
+This generates a Markdown file consolidating versions from all jobs.
 
 # Command-Line Reference
 
 ## Options
 
-| Option                    | Description                                                      |
-| ------------------------- | ---------------------------------------------------------------- |
-| **General**               |                                                                  |
-| `-v`, `--version`         | Display version information                                      |
-| `-?`, `-h`, `--help`      | Display help message                                             |
-| `--silent`                | Suppress console output                                          |
-| `--log <file>`            | Write output to log file                                         |
-| `--depth <depth>`         | Heading depth for validation and publish mode (default: 1, 1-6)  |
-| **Lint Mode**             |                                                                  |
-| `--lint [<config-file>]`  | Check configuration file (default: `.versionmark.yaml`)          |
-| **Capture Mode**          |                                                                  |
-| `--capture`               | Enable capture mode                                              |
-| `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job              |
-| `--output <file>`         | Output JSON file (default: `versionmark-<job-id>.json`)          |
-| `-- <tools...>`           | List of tool names to capture (default: all tools in config)     |
-| **Publish Mode**          |                                                                  |
-| `--publish`               | Enable publish mode                                              |
-| `--report <file>`         | **(Required)** Output markdown file path                         |
-| `--report-depth <depth>`  | Heading depth for markdown output (default: --depth value, 1-6)  |
-| `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`)     |
-| **Self-Validation**       |                                                                  |
-| `--validate`              | Run self-validation tests                                        |
-| `--results <file>`        | Write validation results to file (`.trx` or `.xml`)              |
+| Option                   | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| **General**              |                                                                 |
+| `-v`, `--version`        | Display version information                                     |
+| `-?`, `-h`, `--help`     | Display help message                                            |
+| `--silent`               | Suppress console output                                         |
+| `--log <file>`           | Write output to log file                                        |
+| `--depth <depth>`        | Heading depth for validation and publish mode (default: 1, 1-6) |
+| **Lint Mode**            |                                                                 |
+| `--lint [<config-file>]` | Check configuration file (default: `.versionmark.yaml`)         |
+| **Capture Mode**         |                                                                 |
+| `--capture`              | Enable capture mode                                             |
+| `--job-id <id>`          | **(Required)** Unique identifier for this CI/CD job             |
+| `--output <file>`        | Output JSON file (default: `versionmark-<job-id>.json`)         |
+| `-- <tools...>`          | List of tool names to capture (default: all tools in config)    |
+| **Publish Mode**         |                                                                 |
+| `--publish`              | Enable publish mode                                             |
+| `--report <file>`        | **(Required)** Output Markdown file path                        |
+| `--report-depth <depth>` | Heading depth for Markdown output (default: `--depth` value)    |
+| `-- <patterns...>`       | Glob patterns for JSON files (default: `versionmark-*.json`)    |
+| **Self-Validation**      |                                                                 |
+| `--validate`             | Run self-validation tests                                       |
+| `--results <file>`       | Write validation results to file (`.trx` or `.xml`)             |
 
 ## Lint Mode
 
@@ -124,18 +127,18 @@ versionmark --lint [<config-file>]
 
 The lint command:
 
-- Suppresses the application banner so the output contains only issue lines
-- Reports **all** issues found in the configuration file, not just the first
-- Includes the filename and line/column number for each issue
+- Suppresses the application banner so the output contains only issue lines.
+- Reports **all** issues found in the configuration file, not just the first.
+- Includes the filename and line/column number for each issue.
 - Exits with code `0` if no issues are found (producing no output) or when only warnings are
-  reported
-- Exits with code `1` when errors are detected
+  reported.
+- Exits with code `1` when errors are detected.
 - Checks for:
-  - Missing `tools` section
-  - Tools missing required `command` or `regex` fields
-  - Invalid regex patterns (cannot be compiled)
-  - Regex patterns missing the required `(?<version>...)` capture group
-  - Unknown configuration keys (reported as warnings)
+  - Missing `tools` section.
+  - Tools missing required `command` or `regex` fields.
+  - Invalid regex patterns that cannot be compiled.
+  - Regex patterns missing the required `(?<version>...)` capture group.
+  - Unknown configuration keys, reported as warnings.
 
 ### Lint Examples
 
@@ -189,7 +192,7 @@ versionmark --capture --job-id "macos" --output versions/macos.json
 
 ## Publish Mode
 
-Publish captured versions to markdown documentation:
+Publish captured versions to Markdown documentation:
 
 ```bash
 versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
@@ -226,11 +229,11 @@ after the `--` separator:
 
 Common glob pattern syntax:
 
-- `*` - Matches any characters within a directory
-- `**` - Matches any characters across multiple directory levels
-- `?` - Matches any single character
-- `[abc]` - Matches one character from the set
-- `{a,b}` - Matches either pattern a or b
+- `*` matches any characters within a directory.
+- `**` matches any characters across multiple directory levels.
+- `?` matches any single character.
+- `[abc]` matches one character from the set.
+- `{a,b}` matches either pattern `a` or pattern `b`.
 
 # Configuration File Format
 
@@ -243,11 +246,11 @@ tools:
   dotnet:
     command: dotnet --version
     regex: '(?<version>\d+\.\d+\.\d+)'
-  
+
   node:
     command: node --version
     regex: 'v(?<version>\d+\.\d+\.\d+)'
-  
+
   python:
     command: python --version
     regex: 'Python (?<version>\d+\.\d+\.\d+)'
@@ -257,16 +260,16 @@ tools:
 
 Each tool entry in the `tools` dictionary supports the following properties:
 
-| Property         | Required | Description                                                         |
-| ---------------- | -------- | ------------------------------------------------------------------- |
-| `command`        | Yes*     | Shell command to execute to get version information                 |
-| `regex`          | Yes*     | Regular expression with named 'version' group: `(?<version>...)`    |
-| `command-win`    | No       | Command override for Windows                                        |
-| `command-linux`  | No       | Command override for Linux                                          |
-| `command-macos`  | No       | Command override for macOS                                          |
-| `regex-win`      | No       | Regex override for Windows                                          |
-| `regex-linux`    | No       | Regex override for Linux                                            |
-| `regex-macos`    | No       | Regex override for macOS                                            |
+| Property        | Required | Description                                                      |
+| --------------- | -------- | ---------------------------------------------------------------- |
+| `command`       | Yes*     | Shell command to execute to get version information              |
+| `regex`         | Yes*     | Regular expression with named `version` group: `(?<version>...)` |
+| `command-win`   | No       | Command override for Windows                                     |
+| `command-linux` | No       | Command override for Linux                                       |
+| `command-macos` | No       | Command override for macOS                                       |
+| `regex-win`     | No       | Regex override for Windows                                       |
+| `regex-linux`   | No       | Regex override for Linux                                         |
+| `regex-macos`   | No       | Regex override for macOS                                         |
 
 \* Required unless OS-specific variants (`command-win`/`command-linux`/`command-macos` or
 `regex-win`/`regex-linux`/`regex-macos`) are provided instead.
@@ -287,7 +290,7 @@ tools:
     regex-win: 'gcc\.exe \(.*\) (?<version>\d+\.\d+\.\d+)'
     regex-linux: 'gcc-13 \(.*\) (?<version>\d+\.\d+\.\d+)'
     regex-macos: 'gcc-14 \(.*\) (?<version>\d+\.\d+\.\d+)'
-  
+
   powershell:
     command: pwsh --version
     command-win: powershell -Command "$PSVersionTable.PSVersion.ToString()"
@@ -301,13 +304,13 @@ values.
 
 ## Commands with Spaces in Paths
 
-When a tool's executable is installed at a path that contains spaces, the path must be
-enclosed in double quotes so the shell treats it as a single token.
+When a tool's executable is installed at a path that contains spaces, the path must be enclosed
+in double quotes so the shell treats it as a single token.
 
 ### Windows: Environment Variable Paths
 
 Many Windows tools are installed at paths exposed via environment variables. Use the variable
-directly inside double quotes:
+inside double quotes:
 
 ```yaml
 tools:
@@ -316,15 +319,15 @@ tools:
     command-win: '"%LLVM_PATH%\bin\clang-format" --version'
     regex: 'clang-format version (?<version>.*)'
 
-  # Visual Studio's cl.exe via VSINSTALLDIR
+  # Visual Studio cl.exe via VSINSTALLDIR
   msvc:
     command-win: '"%VSINSTALLDIR%VC\Tools\MSVC\14.39.33519\bin\Hostx64\x64\cl.exe"'
     regex: 'Version (?<version>[\d.]+)'
 ```
 
-> **Note:** The entire value is single-quoted in YAML so that the inner double quotes are
-> preserved literally. VersionMark executes the command via `cmd.exe` as `/c "{command}"`,
-> preserving inner quoted paths and arguments while still allowing normal `%VAR%` expansion.
+> **Note:** The entire value is single-quoted in YAML so the inner double quotes are preserved
+> literally. VersionMark executes the command via `cmd.exe` as `/c "{command}"`, preserving
+> inner quoted paths and arguments while still allowing normal `%VAR%` expansion.
 
 ### Windows: Absolute Paths with Spaces
 
@@ -377,13 +380,15 @@ tools:
 
 ## Regular Expression Tips
 
-The regex must contain a named 'version' capture group using .NET syntax `(?<version>...)` that
-captures the version number. Examples:
+The regex must contain a named `version` capture group using .NET syntax `(?<version>...)`
+that captures the version number. Examples:
 
-- **Simple version**: `(?<version>\d+\.\d+\.\d+)` - Captures `1.2.3`
-- **Prefixed version**: `Version (?<version>\d+\.\d+\.\d+)` - Captures `1.2.3` from `Version 1.2.3`
-- **Multiline output**: `(?m)version (?<version>\d+\.\d+\.\d+)` - Uses multiline mode
-- **Build metadata**: `(?<version>\d+\.\d+\.\d+[-+][a-zA-Z0-9.]+)` - Captures `1.2.3-beta.1`
+- **Simple version**: `(?<version>\d+\.\d+\.\d+)` captures `1.2.3`.
+- **Prefixed version**: `Version (?<version>\d+\.\d+\.\d+)` captures `1.2.3` from
+  `Version 1.2.3`.
+- **Multiline output**: `(?m)version (?<version>\d+\.\d+\.\d+)` uses multiline mode.
+- **Build metadata**: `(?<version>\d+\.\d+\.\d+[-+][a-zA-Z0-9.]+)` captures
+  `1.2.3-beta.1`.
 
 # Output Formats
 
@@ -405,12 +410,12 @@ When you run the capture command, VersionMark creates a JSON file with the follo
 
 ### JSON Structure
 
-- **JobId**: The unique identifier provided via `--job-id`
-- **Versions**: Object mapping tool names to their captured versions
+- **JobId**: The unique identifier provided via `--job-id`.
+- **Versions**: Object mapping tool names to their captured versions.
 
 ## Publish Output (Markdown)
 
-The publish command generates a markdown file with a bulleted list of tool versions:
+The publish command generates a Markdown file with a bulleted list of tool versions.
 
 ### Example 1: All Jobs Use Same Version
 
@@ -436,16 +441,15 @@ identifiers.
 - **node**: 21.0.0 (windows-net9, linux-net9)
 ```
 
-When a tool has different versions across jobs, each version is listed as a separate bullet
-with the jobs that use it shown in parentheses. Job IDs within each group are listed in
-alphabetical order.
+When a tool has different versions across jobs, each version is listed as a separate bullet with
+jobs that use it shown in parentheses. Job IDs within each group are listed in alphabetical order.
 
 ### Output Format Details
 
-- **Heading**: Controlled by `--report-depth` parameter (default: `#` for depth 1)
-- **Tool Order**: Tools are listed in alphabetical order (case-insensitive)
-- **Version Order**: When multiple versions exist, they are sorted alphabetically
-- **Job IDs**: Within each version group, job IDs are sorted alphabetically
+- **Heading**: Controlled by `--report-depth` parameter (default: `#` for depth 1).
+- **Tool Order**: Tools are listed in alphabetical order (case-insensitive).
+- **Version Order**: When multiple versions exist, they are sorted alphabetically.
+- **Job IDs**: Within each version group, job IDs are sorted alphabetically.
 
 # Self-Validation
 
@@ -479,7 +483,7 @@ versionmark --silent --validate --results results.trx
 ```
 
 Use `--depth` to embed the self-validation report at a specific heading level within a larger
-markdown document:
+Markdown document:
 
 ```bash
 versionmark --validate --depth 2
@@ -492,13 +496,13 @@ Example output:
 ```text
 # DEMA Consulting VersionMark
 
-| Information         | Value                                              |
-| :------------------ | :------------------------------------------------- |
-| Tool Version        | 1.2.3                                              |
-| Machine Name        | build-agent-01                                     |
-| OS Version          | Ubuntu 22.04.3 LTS                                 |
-| DotNet Runtime      | .NET 10.0.0                                        |
-| Time Stamp          | 2025-01-01 12:00:00 UTC                            |
+| Information    | Value                       |
+| :------------- | :-------------------------- |
+| Tool Version   | 1.2.3                       |
+| Machine Name   | build-agent-01              |
+| OS Version     | Ubuntu 22.04.3 LTS          |
+| DotNet Runtime | .NET 10.0.0                 |
+| Time Stamp     | 2025-01-01 12:00:00 UTC     |
 
 ✓ VersionMark_CapturesVersions - Passed
 ✓ VersionMark_GeneratesMarkdownReport - Passed
@@ -514,18 +518,18 @@ If any tests fail, the exit code will be non-zero.
 
 ## Validation Tests
 
-| Test | What It Proves |
-| :--- | :------------- |
-| `VersionMark_CapturesVersions` | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file |
-| `VersionMark_GeneratesMarkdownReport` | The tool can read captured JSON files and generate a markdown report |
-| `VersionMark_LintPassesForValidConfig` | The lint command exits with code 0 for a valid configuration file |
-| `VersionMark_LintReportsErrorsForInvalidConfig` | The lint command exits with code 1 for an invalid config |
+| Test                                        | What It Proves                                             |
+| :------------------------------------------ | :--------------------------------------------------------- |
+| `VersionMark_CapturesVersions`              | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file. |
+| `VersionMark_GeneratesMarkdownReport`       | The tool can read captured JSON files and generate a Markdown report. |
+| `VersionMark_LintPassesForValidConfig`      | The lint command exits with code 0 for a valid configuration file. |
+| `VersionMark_LintReportsErrorsForInvalidConfig` | The lint command exits with code 1 for an invalid config. |
 
 # CI/CD Integration
 
 ## GitHub Actions Example
 
-Here's a complete example of using VersionMark in a GitHub Actions workflow:
+Here is a complete example of using VersionMark in a GitHub Actions workflow:
 
 ```yaml
 name: Build
@@ -537,64 +541,64 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      
+
       - name: Install VersionMark
         run: dotnet tool install -g DemaConsulting.VersionMark
-      
+
       - name: Capture tool versions
         run: versionmark --capture --job-id "windows-net8"
-      
+
       - name: Upload version capture
         uses: actions/upload-artifact@v4
         with:
           name: versions-windows-net8
           path: versionmark-windows-net8.json
-  
+
   build-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      
+
       - name: Install VersionMark
         run: dotnet tool install -g DemaConsulting.VersionMark
-      
+
       - name: Capture tool versions
         run: versionmark --capture --job-id "linux-net8"
-      
+
       - name: Upload version capture
         uses: actions/upload-artifact@v4
         with:
           name: versions-linux-net8
           path: versionmark-linux-net8.json
-  
+
   publish-versions:
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Download all version captures
         uses: actions/download-artifact@v4
         with:
           pattern: versions-*
           merge-multiple: true
-      
+
       - name: Install VersionMark
         run: dotnet tool install -g DemaConsulting.VersionMark
-      
+
       - name: Publish versions
         run: versionmark --publish --report docs/tool-versions.md
-      
+
       - name: Commit version documentation
         run: |
           git config user.name "github-actions[bot]"
@@ -606,11 +610,11 @@ jobs:
 
 ## Key Integration Points
 
-1. **Install VersionMark**: Install the tool in each job that needs to capture versions
-2. **Capture per Job**: Run `versionmark capture` with a unique `--job-id` in each job
-3. **Upload Artifacts**: Save the captured JSON files as artifacts
-4. **Download Artifacts**: In the publish job, download all captured JSON files
-5. **Publish**: Run `versionmark publish` to generate consolidated documentation
+1. **Install VersionMark**: Install the tool in each job that needs to capture versions.
+2. **Capture per Job**: Run `versionmark --capture` with a unique `--job-id` in each job.
+3. **Upload Artifacts**: Save the captured JSON files as artifacts.
+4. **Download Artifacts**: In the publish job, download all captured JSON files.
+5. **Publish**: Run `versionmark --publish` to generate consolidated documentation.
 
 # Common Workflows
 
@@ -624,7 +628,7 @@ tools:
   dotnet:
     command: dotnet --version
     regex: '(?<version>\d+\.\d+\.\d+)'
-  
+
   msbuild:
     command: msbuild -version
     regex: '(?<version>\d+\.\d+\.\d+\.\d+)'
@@ -640,7 +644,7 @@ tools:
   gcc:
     command: gcc --version
     regex: 'gcc.*?(?<version>\d+\.\d+\.\d+)'
-  
+
   clang:
     command: clang --version
     regex: 'clang version (?<version>\d+\.\d+\.\d+)'
@@ -656,11 +660,11 @@ tools:
   docker:
     command: docker --version
     regex: 'Docker version (?<version>\d+\.\d+\.\d+)'
-  
+
   kubectl:
     command: kubectl version --client --short
     regex: 'v(?<version>\d+\.\d+\.\d+)'
-  
+
   terraform:
     command: terraform version
     regex: 'Terraform v(?<version>\d+\.\d+\.\d+)'
@@ -682,7 +686,7 @@ value so the inner double quotes are preserved:
 
 ```yaml
 # WRONG — spaces in path cause the shell to split the executable name
-command-win: '%LLVM_PATH%\bin\clang-format --version'
+command-win: '"%LLVM_PATH%\bin\clang-format --version'
 
 # CORRECT — double-quote the executable path
 command-win: '"%LLVM_PATH%\bin\clang-format" --version'
@@ -694,64 +698,63 @@ See [Commands with Spaces in Paths](#commands-with-spaces-in-paths) for more exa
 
 If a tool command fails because the tool is not installed:
 
-- VersionMark aborts capture immediately and reports an error to stderr
-- No JSON output file is created for that job
-- Install the missing tool (or remove it from configuration), then re-run capture
+- VersionMark aborts capture immediately and reports an error to stderr.
+- No JSON output file is created for that job.
+- Install the missing tool or remove it from the configuration, then rerun capture.
 
 ## Version Not Matched
 
-If the regex doesn't match the command output:
+If the regex does not match the command output:
 
-- VersionMark aborts capture immediately and reports an error to stderr
-- No JSON output file is created for that job
-- Check the actual output of the command manually
-- Adjust the regex to match the format
-- Use online regex testers to validate your pattern
-- Remember to escape special regex characters
+- VersionMark aborts capture immediately and reports an error to stderr.
+- No JSON output file is created for that job.
+- Check the actual output of the command manually.
+- Adjust the regex to match the format.
+- Use online regex testers to validate your pattern.
+- Remember to escape special regex characters.
 
 ## OS-Specific Issues
 
 If a tool behaves differently on different platforms:
 
-- Use the OS-specific overrides to provide platform-specific commands
-- Test on each platform to ensure the commands work
-- Consider using platform-specific tools in separate configurations
+- Use OS-specific overrides to provide platform-specific commands.
+- Test on each platform to ensure the commands work.
+- Consider using platform-specific tools in separate configurations.
 
 ## No JSON Files Found
 
 If the publish command reports "No JSON files found":
 
-- Check that the glob patterns match your JSON file names
-- Verify JSON files are in the current directory (or use full/relative paths in patterns)
-- Use `-- versionmark-*.json` explicitly if files don't match the default pattern
-- Check that capture jobs successfully created JSON files before publishing
+- Check that the glob patterns match your JSON file names.
+- Verify that JSON files are in the current directory, or use full or relative paths in patterns.
+- Use `-- versionmark-*.json` explicitly if files do not match the default pattern.
+- Check that capture jobs successfully created JSON files before publishing.
 
 ## Invalid JSON Files
 
 If a JSON file cannot be parsed during publish:
 
-- Ensure the file was created by the capture command (not manually edited)
-- Check that the file is valid JSON format
-- Verify the file contains required fields: `JobId` and `Versions`
-- Re-run the capture command if the file is corrupted
+- Ensure the file was created by the capture command rather than manually edited.
+- Check that the file is valid JSON format.
+- Verify that the file contains the required `JobId` and `Versions` fields.
+- Rerun the capture command if the file is corrupted.
 
 # Best Practices
 
-1. **Use Descriptive Job IDs**: Make job-ids descriptive (e.g., `windows-net8-release`
-instead of `job1`)
-2. **Version Control Config**: Commit `.versionmark.yaml` to version control
-3. **Automate Publishing**: Integrate publishing into your CI/CD pipeline
-4. **Regular Updates**: Update captured versions regularly to track changes
-5. **Document Changes**: Review version changes in pull requests
-6. **Test Locally**: Test capture commands locally before adding to CI/CD
-7. **Consistent Naming**: Use consistent naming for JSON files across jobs (default pattern
-works well)
-8. **Heading Depth**: Choose `--report-depth` based on where the report will be included
-(e.g., depth 3 for subsections)
+1. **Use Descriptive Job IDs**: Make job IDs descriptive, for example `windows-net8-release`
+   instead of `job1`.
+2. **Version Control Config**: Commit `.versionmark.yaml` to version control.
+3. **Automate Publishing**: Integrate publishing into your CI/CD pipeline.
+4. **Regular Updates**: Update captured versions regularly to track changes.
+5. **Document Changes**: Review version changes in pull requests.
+6. **Test Locally**: Test capture commands locally before adding them to CI/CD.
+7. **Consistent Naming**: Use consistent naming for JSON files across jobs; the default pattern
+   works well.
+8. **Heading Depth**: Choose `--report-depth` based on where the report will be included, for
+   example depth 3 for subsections.
 9. **Artifact Management**: In CI/CD, upload JSON files as artifacts and download them before
-publishing
-10. **Review Generated Reports**: Check the generated markdown to ensure version information
-is accurate
+   publishing.
+10. **Review Generated Reports**: Check the generated Markdown to ensure version information is
+    accurate.
 
-<!-- Link References -->
 [continuous-compliance]: https://github.com/demaconsulting/ContinuousCompliance

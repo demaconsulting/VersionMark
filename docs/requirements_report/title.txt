@@ -1,14 +1,13 @@
 ---
-title: VersionMark Trace Matrix
-subtitle: Requirements Traceability Matrix for the VersionMark
-author: DEMA Consulting
-description: Requirements Traceability Matrix for the VersionMark
+title: "VersionMark Trace Matrix"
+subtitle: "A .NET tool for CI/CD tool version tracking"
+author: "DEMA Consulting"
+description: "Trace Matrix for VersionMark"
 lang: en-US
 keywords:
-  - VersionMark
-  - Trace Matrix
-  - Traceability
   - Requirements
-  - Testing
+  - Trace Matrix
+  - VersionMark
+  - C#
   - .NET
 ---

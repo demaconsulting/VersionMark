@@ -1,13 +1,12 @@
 ---
-title: VersionMark Review Plan
-subtitle: File Review Plan for VersionMark
-author: DEMA Consulting
-description: File Review Plan for VersionMark
+title: "VersionMark Code Review Plan"
+subtitle: "A .NET tool for CI/CD tool version tracking"
+author: "DEMA Consulting"
+description: "Code Review Plan for VersionMark"
 lang: en-US
 keywords:
+  - Code Review
   - VersionMark
-  - Review Plan
-  - File Reviews
+  - C#
   - .NET
-  - Tool
 ---
