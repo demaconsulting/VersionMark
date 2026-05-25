@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Utilities
+      - title: Utilities Requirements
         requirements:
           - id: VersionMark-Utilities-GlobMatch
             title: The Utilities subsystem shall provide glob-pattern file matching.
@@ -13,6 +13,11 @@ sections:
             children:
               - VersionMark-GlobMatcher-FindFiles
               - VersionMark-GlobMatcher-AbsolutePaths
+              - VersionMark-GlobMatcher-DeduplicatedSortedOutput
+            tests:
+              - GlobMatcher_FindMatchingFiles_RelativePattern_ReturnsMatchingFiles
+              - GlobMatcher_FindMatchingFiles_AbsolutePattern_ReturnsMatchingFiles
+              - GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles
 
           - id: VersionMark-Utilities-SafePath
             title: The Utilities subsystem shall provide safe path combination.
@@ -22,3 +27,6 @@ sections:
               file paths from partially-trusted input.
             children:
               - VersionMark-PathHelpers-SafeCombine
+            tests:
+              - PathHelpers_SafePathCombine_ValidPaths_CombinesCorrectly
+              - PathHelpers_SafePathCombine_PathTraversalWithDoubleDots_ThrowsArgumentException

@@ -61,3 +61,16 @@ throws `ArgumentNullException`. This scenario is tested by
 **PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException**: A null
 relative path throws `ArgumentNullException`. This scenario is tested by
 `PathHelpers_SafePathCombine_NullRelativePath_ThrowsArgumentNullException`.
+
+**PathHelpers_SafePathCombine_DeepPathTraversal_ThrowsArgumentException**: A deep path
+traversal attempt (e.g. `../../../etc/passwd`) throws `ArgumentException`. This scenario is
+tested by `PathHelpers_SafePathCombine_DeepPathTraversal_ThrowsArgumentException`.
+
+**PathHelpers_SafePathCombine_MultiSegmentRelativePath_ProducesExpectedPath**: A valid
+multi-segment relative path (e.g. `test-results/output.trx`) is combined with a base
+directory correctly. This scenario is tested by
+`PathHelpers_SafePathCombine_MultiSegmentRelativePath_ProducesExpectedPath`.
+
+**PathHelpers_SafePathCombine_DllInBaseDirectory_FileExists**: A path pointing to
+`DemaConsulting.VersionMark.dll` in the base directory resolves to an existing file. This
+scenario is tested by `PathHelpers_SafePathCombine_DllInBaseDirectory_FileExists`.

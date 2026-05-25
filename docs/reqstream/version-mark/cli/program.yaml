@@ -1,58 +1,63 @@
 ---
 sections:
-  - title: Program Unit Requirements
-    requirements:
-      - id: VersionMark-Program-Version
-        title: The Program class shall expose the tool version.
-        justification: |
-          This ensures the displayed version matches the published package version.
-        tests:
-          - Program_Version_ReturnsNonEmptyString
+  - title: VersionMark Requirements
+    sections:
+      - title: Command-Line Interface Requirements
+        sections:
+          - title: Program Requirements
+            requirements:
+              - id: VersionMark-Program-Version
+                title: The Program class shall expose the tool version.
+                justification: |
+                  This ensures the displayed version matches the published package version.
+                tests:
+                  - Program_Version_ReturnsNonEmptyString
 
-      - id: VersionMark-Program-Dispatch
-        title: >-
-          The Program class shall execute the appropriate operation based on the
-          provided command-line arguments, in priority order.
-        justification: |
-          Consistent flag priority ordering ensures predictable behavior
-          across all invocations, whether from Main or from self-validation tests.
-        tests:
-          - Program_Run_WithVersionFlag_DisplaysVersionOnly
-          - Program_Run_WithHelpFlag_DisplaysUsageInformation
-          - Program_Run_WithValidateFlag_RunsValidation
-          - Program_Run_NoArguments_DisplaysDefaultBehavior
+              - id: VersionMark-Program-Dispatch
+                title: >-
+                  The Program class shall execute the appropriate operation based
+                  on the
+                  provided command-line arguments, in priority order.
+                justification: |
+                  Consistent flag priority ordering ensures predictable behavior
+                  across all invocations, whether from Main or from self-validation tests.
+                tests:
+                  - Program_Run_WithVersionFlag_DisplaysVersionOnly
+                  - Program_Run_WithHelpFlag_DisplaysUsageInformation
+                  - Program_Run_WithValidateFlag_RunsValidation
+                  - Program_Run_NoArguments_DisplaysDefaultBehavior
 
-      - id: VersionMark-Program-RunCapture
-        title: The Program class shall orchestrate the capture workflow.
-        justification: |
-          The capture workflow must validate required arguments and execute tool commands
-          to produce the JSON output used by the publish workflow.
-        tests:
-          - Program_Run_WithCaptureCommand_CapturesToolVersions
-          - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
-          - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
+              - id: VersionMark-Program-RunCapture
+                title: The Program class shall orchestrate the capture workflow.
+                justification: |
+                  The capture workflow must validate required arguments and execute tool commands
+                  to produce the JSON output used by the publish workflow.
+                tests:
+                  - Program_Run_WithCaptureCommand_CapturesToolVersions
+                  - Program_Run_WithCaptureCommandWithoutJobId_ReturnsError
+                  - Program_Run_WithCaptureCommandWithMissingConfig_ReturnsError
 
-      - id: VersionMark-Program-RunPublish
-        title: The Program class shall orchestrate the publish workflow.
-        justification: |
-          The publish workflow must validate required arguments, collect version data
-          from capture files, and produce the markdown report.
-        tests:
-          - Program_Run_WithPublishCommandWithoutReport_ReturnsError
-          - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
-          - Program_Run_WithPublishCommandInvalidJson_ReturnsError
-          - Program_Run_WithPublishCommand_GeneratesMarkdownReport
-          - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
+              - id: VersionMark-Program-RunPublish
+                title: The Program class shall orchestrate the publish workflow.
+                justification: |
+                  The publish workflow must validate required arguments, collect version data
+                  from capture files, and produce the markdown report.
+                tests:
+                  - Program_Run_WithPublishCommandWithoutReport_ReturnsError
+                  - Program_Run_WithPublishCommandNoMatchingFiles_ReturnsError
+                  - Program_Run_WithPublishCommandInvalidJson_ReturnsError
+                  - Program_Run_WithPublishCommand_GeneratesMarkdownReport
+                  - Program_Run_WithPublishCommandCustomDepth_AdjustsHeadingLevels
 
-      - id: VersionMark-Program-RunLint
-        title: The Program class shall orchestrate the lint workflow.
-        justification: |
-          Lint mode must report all discovered configuration issues and suppress the
-          application banner so that only issue lines appear in the output, enabling
-          easy script integration.
-        tests:
-          - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
-          - Program_Run_WithLintFlag_ValidConfig_SuppressesBanner
-          - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
-          - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
-          - Program_Run_WithHelpFlag_IncludesLintInformation
+              - id: VersionMark-Program-RunLint
+                title: The Program class shall orchestrate the lint workflow.
+                justification: |
+                  Lint mode must report all discovered configuration issues and suppress the
+                  application banner so that only issue lines appear in the output, enabling
+                  easy script integration.
+                tests:
+                  - Program_Run_WithLintFlag_ValidConfig_ReturnsSuccess
+                  - Program_Run_WithLintFlag_ValidConfig_SuppressesBanner
+                  - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
+                  - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
+                  - Program_Run_WithHelpFlag_IncludesLintInformation

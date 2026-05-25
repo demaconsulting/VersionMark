@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Publish Command
+      - title: Publish Requirements
         requirements:
           - id: VersionMark-Publish-Publish
             title: The tool shall support --publish flag to enable publish mode.
@@ -13,6 +13,7 @@ sections:
               - publish
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
+              - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-Report
             title: The tool shall support --report parameter to specify the output
@@ -24,6 +25,7 @@ sections:
               - publish
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
+              - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-ReportDepth
             title: The tool shall support --report-depth parameter to control heading
@@ -67,6 +69,8 @@ sections:
               multiple JSON files for report generation.
             tags:
               - publish
+            children:
+              - VersionMark-VersionInfo-Load
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
               - Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions
@@ -92,6 +96,9 @@ sections:
               across their CI/CD jobs.
             tags:
               - publish
+            children:
+              - VersionMark-Formatter-Versions
+              - VersionMark-Formatter-MarkdownList
             tests:
               - Publishing_Format_ConflictingVersions_ShowsJobIds
 

@@ -164,18 +164,16 @@ The self-validation suite includes the following named tests:
 - *Role*: Provider — VersionMark writes to stderr.
 - *Contract*: Error messages always written in red. When source location is known (e.g. a
   lint issue), the message is prefixed as `filename(line,column): error: description`.
-- *Constraints*: Never suppressed, even with `--silent`.
+- *Constraints*: Suppressed when '--silent' is set; callers detect failures via the process exit code.
 
 ## Dependencies
 
-- **YamlDotNet** — YAML deserialization of `.versionmark.yaml`; see *Configuration Subsystem
-  Design* for details.
+- **YamlDotNet** — YAML deserialization of `.versionmark.yaml`; see _YamlDotNet
+  Integration Design_ for details.
 - **Microsoft.Extensions.FileSystemGlobbing** — glob-pattern file matching in publish mode;
-  see *Utilities Subsystem Design* for details.
+  see _Microsoft.Extensions.FileSystemGlobbing Integration Design_ for details.
 - **DemaConsulting.TestResults** — TRX and JUnit XML serialization of self-validation
-  results; see *SelfTest Subsystem Design* for details.
-
-No integration design documentation exists for these packages in this repository.
+  results; see _DemaConsulting.TestResults Integration Design_ for details.
 
 ## Risk Control Measures
 

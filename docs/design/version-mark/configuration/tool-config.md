@@ -36,8 +36,8 @@ OS once before calling `GetEffectiveCommand` / `GetEffectiveRegex`.
 | Condition                                  | Behavior                                    |
 |--------------------------------------------|---------------------------------------------|
 | No matching OS key and no default `""` key | `InvalidOperationException` thrown          |
-| Missing required `command` field in YAML   | Error `LintIssue` added by `ValidateTool`   |
-| Missing required `regex` field in YAML     | Error `LintIssue` added by `ValidateTool`   |
+| No `command` field (`command`, `command-win`, `command-linux`, or `command-macos`) is defined | Error `LintIssue` added by `ValidateTool`   |
+| No `regex` field (`regex`, `regex-win`, `regex-linux`, or `regex-macos`) is defined           | Error `LintIssue` added by `ValidateTool`   |
 | Unknown YAML key for a tool entry          | Warning `LintIssue` added by `ValidateTool` |
 | Empty value for a known YAML key           | Error `LintIssue` added by `ValidateTool`   |
 

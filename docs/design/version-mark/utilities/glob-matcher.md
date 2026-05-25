@@ -13,8 +13,7 @@ capture files.
 
 `GlobMatcher` is a static class with no instance state. Internally it accumulates
 absolute patterns into separate `Matcher` invocations and collects relative patterns for a
-single batched `Matcher` run. Results are deduplicated using a case-insensitive
-`HashSet<string>`.
+single batched `Matcher` run. Results are deduplicated using a file-system-appropriate comparer: ordinal case-insensitive on Windows, ordinal case-sensitive on other platforms.
 
 #### Key Methods
 
@@ -29,8 +28,9 @@ Processing steps:
 3. Collect non-rooted patterns into a list.
 4. If any relative patterns were collected, run a single `Matcher` against
    `Directory.GetCurrentDirectory()` covering all relative patterns at once.
-5. Combine all matches into a case-insensitive `HashSet<string>` for deduplication,
-   then return the sorted result.
+5. Combine all matches into a `HashSet<string>` using the file-system-appropriate
+   comparer (ordinal case-insensitive on Windows, ordinal case-sensitive on other
+   platforms) for deduplication, then return the sorted result.
 
 Batching relative patterns into one `Matcher` run reduces directory enumeration overhead
 compared to one run per pattern. Sorted output makes results deterministic.

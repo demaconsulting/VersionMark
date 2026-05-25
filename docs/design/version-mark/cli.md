@@ -33,7 +33,7 @@ instance.
 - *Role*: Provider.
 - *Contract*: Writes `message` to `Console.Error` in red; sets `ExitCode` to `1`; writes
   to the log file if one is open.
-- *Constraints*: Always executes regardless of `Silent`. The exit code cannot be reset once
+- *Constraints*: stderr is suppressed when `Silent` is `true`; `_hasErrors` is always set and `ExitCode` always reflects the failure. The exit code cannot be reset once
   set to `1`.
 
 **`Context.ExitCode`**: Returns the process exit code for the current invocation.
@@ -55,8 +55,11 @@ instance.
 
 - *Type*: In-process .NET public API.
 - *Role*: Provider.
-- *Contract*: Implements priority-ordered dispatch: Version → Help → Validate → Lint →
-  Capture → Publish → default. Called re-entrantly by `Validation.Run` for self-tests.
+- *Contract*: Implements priority-ordered dispatch: Version → (banner) → Help → Validate → Lint →
+  Capture → Publish → default. The application banner is printed after the version check and before
+  all other modes; it is suppressed when lint is the dispatched action (i.e. `--lint` is set and
+  neither `--help` nor `--validate` is set) to produce clean, issue-only output. Called re-entrantly
+  by `Validation.Run` for self-tests.
 - *Constraints*: Does not throw; all errors are routed through `context.WriteError`.
 
 **`Program.Main(string[] args)`**: Process entry point.

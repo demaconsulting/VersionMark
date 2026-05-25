@@ -1,6 +1,6 @@
 ---
 sections:
-  - title: VersionMark System Requirements
+  - title: VersionMark Requirements
     requirements:
       - id: VersionMark-System-Capture
         title: The tool shall capture tool version information from CI/CD environments.
@@ -11,6 +11,7 @@ sections:
         children:
           - VersionMark-Capture-Capture
           - VersionMark-Capture-JobId
+          - VersionMark-Capture-MissingJobId
           - VersionMark-Capture-Output
           - VersionMark-Capture-DefaultOutput
           - VersionMark-Capture-ToolFilter
@@ -21,6 +22,7 @@ sections:
           - VersionMark-Capture-Display
           - VersionMark-Capture-ConfigError
           - VersionMark-Capture-CommandFailure
+          - VersionMark-VersionMarkConfig-FindVersions
         tests:
           - IntegrationTest_CaptureCommand_CapturesToolVersions
 
@@ -54,6 +56,7 @@ sections:
         children:
           - VersionMark-Load-FileExistence
           - VersionMark-Load-YamlParsing
+          - VersionMark-Load-RootMapping
           - VersionMark-Load-ToolsSection
           - VersionMark-Load-ToolCommand
           - VersionMark-Load-ToolRegex
@@ -61,8 +64,14 @@ sections:
           - VersionMark-Load-RegexVersion
           - VersionMark-Load-OsOverrides
           - VersionMark-Load-UnknownKeys
-          - VersionMark-Load-ErrorLocation
+          - VersionMark-Load-IssueLocation
           - VersionMark-Load-AllIssues
+          - VersionMark-Load-Return
+          - VersionMark-Load-OsRegexValid
+          - VersionMark-Load-OsRegexVersion
+          - VersionMark-Load-VersionMarkLoadResult-Bundle
+          - VersionMark-Load-VersionMarkLoadResult-ErrorRouting
+          - VersionMark-Load-VersionMarkLoadResult-WarnRouting
         tests:
           - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
           - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
@@ -76,7 +85,8 @@ sections:
         children:
           - VersionMark-Validate-Capture
           - VersionMark-Validate-Publish
-          - VersionMark-Validate-Lint
+          - VersionMark-Validate-LintValid
+          - VersionMark-Validate-LintInvalid
           - VersionMark-Validate-Results
         tests:
           - IntegrationTest_ValidateFlag_RunsValidation

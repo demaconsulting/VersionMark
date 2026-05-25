@@ -49,6 +49,7 @@ the deserialized `VersionInfo` record.
 | File does not exist               | `LoadFromFile`  | `ArgumentException` thrown                       |
 | JSON is invalid                   | `LoadFromFile`  | `JsonException` caught, re-thrown as `ArgumentException` |
 | Deserialization returns null      | `LoadFromFile`  | `ArgumentException` thrown                       |
+| Other non-`ArgumentException` error | `LoadFromFile` | Wrapped and re-thrown as `ArgumentException` with context |
 | Other non-`InvalidOperationException` error | `SaveToFile` | Wrapped and re-thrown as `InvalidOperationException` with context |
 
 #### Dependencies

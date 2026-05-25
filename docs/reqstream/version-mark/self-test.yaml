@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Validation
+      - title: SelfTest Requirements
         requirements:
           - id: VersionMark-Validate-Capture
             title: The tool shall verify the capture workflow end-to-end during self-validation.
@@ -12,8 +12,11 @@ sections:
               deployment environment, catching integration problems before real runs.
             tags:
               - validation
+            children:
+              - VersionMark-Validation-Capture
             tests:
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_Run_Capture_CapturesToolVersions
 
           - id: VersionMark-Validate-Publish
             title: The tool shall verify the publish workflow end-to-end during self-validation.
@@ -22,20 +25,42 @@ sections:
               capture files and produce markdown reports in the deployment environment.
             tags:
               - validation
+            children:
+              - VersionMark-Validation-Publish
+              - VersionMark-Validation-HeaderDepth
             tests:
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_Run_Publish_GeneratesMarkdownReport
 
-          - id: VersionMark-Validate-Lint
+          - id: VersionMark-Validate-LintValid
             title: >-
-              The tool shall verify that lint mode correctly accepts valid configurations
-              and rejects invalid configurations during self-validation.
+              The tool shall verify that lint mode correctly accepts valid
+              configurations during self-validation.
             justification: |
-              Self-validation of lint mode confirms the configuration validation logic
-              is functioning correctly in the deployment environment.
+              Self-validation of lint mode's valid-config acceptance confirms the
+              configuration validation logic approves correct configurations in the
+              deployment environment.
             tags:
               - validation
+            children:
+              - VersionMark-Validation-LintValid
             tests:
-              - SelfTest_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_Run_LintValid_PassesForValidConfig
+
+          - id: VersionMark-Validate-LintInvalid
+            title: >-
+              The tool shall verify that lint mode correctly rejects invalid
+              configurations during self-validation.
+            justification: |
+              Self-validation of lint mode's error-rejection confirms the
+              configuration validation logic rejects bad configurations in the
+              deployment environment.
+            tags:
+              - validation
+            children:
+              - VersionMark-Validation-LintInvalid
+            tests:
+              - SelfTest_Run_LintInvalid_RejectsInvalidConfig
 
           - id: VersionMark-Validate-Results
             title: The tool shall write self-validation results to a file in TRX or
@@ -45,6 +70,8 @@ sections:
               and display self-validation outcomes without custom tooling.
             tags:
               - validation
+            children:
+              - VersionMark-Validation-WriteResults
             tests:
               - SelfTest_Run_WithResultsFlag_WritesResultsFile
               - SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile

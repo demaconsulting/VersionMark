@@ -15,6 +15,19 @@ generate a review plan markdown document and a review report markdown document. 
 CI run producing both documents confirms ReviewMark is reading the review configuration
 and generating correct output.
 
+### Test Environment
+
+N/A — ReviewMark is an OTS tool verified through the GitHub Actions CI pipeline. No
+additional test environment configuration is required beyond a successful CI workflow run
+with the ReviewMark tool installed.
+
+### Acceptance Criteria
+
+The self-validation TRX (`artifacts/reviewmark-self-validation.trx`) must be produced and
+contain zero failed tests. The generated review plan (`docs/code_review_plan/generated/plan.md`)
+and review report (`docs/code_review_report/generated/report.md`) must be produced and
+incorporated into the code review document collection.
+
 ### Test Scenarios
 
 **ReviewMarkSelfValidation**: The CI pipeline runs
@@ -22,12 +35,12 @@ and generating correct output.
 executes ReviewMark's internal test suite. The TRX file must be produced and contain no
 failed tests. This scenario is verified by `artifacts/reviewmark-self-validation.trx`.
 
-**ReviewMarkReviewPlanGeneration**: The CI pipeline runs ReviewMark to generate
+**ReviewMark_ReviewPlanGeneration**: The CI pipeline runs ReviewMark to generate
 `docs/code_review_plan/generated/plan.md` from the `.reviewmark.yaml` configuration. The
 review plan document must be produced listing all files with their review status. This
 scenario is verified by `docs/code_review_plan/generated/plan.md`.
 
-**ReviewMarkReviewReportGeneration**: The CI pipeline runs ReviewMark to generate
+**ReviewMark_ReviewReportGeneration**: The CI pipeline runs ReviewMark to generate
 `docs/code_review_report/generated/report.md`. The review report document must be produced
 summarizing review coverage across the repository. This scenario is verified by
 `docs/code_review_report/generated/report.md`.

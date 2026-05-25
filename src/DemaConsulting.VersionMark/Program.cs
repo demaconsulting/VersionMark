@@ -34,6 +34,16 @@ namespace DemaConsulting.VersionMark;
 internal static class Program
 {
     /// <summary>
+    ///     Default configuration file name used when no explicit path is provided.
+    /// </summary>
+    private const string DefaultConfigFile = ".versionmark.yaml";
+
+    /// <summary>
+    ///     Default glob pattern used to locate capture JSON files when none are specified.
+    /// </summary>
+    private const string DefaultGlobPattern = "versionmark-*.json";
+
+    /// <summary>
     ///     Gets the application version string.
     /// </summary>
     public static string Version
@@ -201,8 +211,8 @@ internal static class Program
     /// <param name="context">The context containing command line arguments and program state.</param>
     private static void RunLint(Context context)
     {
-        // Use specified file, or default to .versionmark.yaml
-        var configFile = context.LintFile ?? ".versionmark.yaml";
+        // Use specified file, or default to the standard config file name
+        var configFile = context.LintFile ?? DefaultConfigFile;
 
         // Load the configuration, which performs all validation in a single pass
         var result = VersionMarkConfig.Load(configFile);
@@ -231,7 +241,7 @@ internal static class Program
         context.WriteLine($"Output file: {outputFile}");
 
         // Load and validate configuration, reporting all issues before proceeding
-        var loadResult = VersionMarkConfig.Load(".versionmark.yaml");
+        var loadResult = VersionMarkConfig.Load(DefaultConfigFile);
         loadResult.ReportIssues(context);
 
         // Abort capture if the configuration could not be loaded
@@ -290,10 +300,10 @@ internal static class Program
 
         try
         {
-            // Get glob patterns (default to versionmark-*.json if none specified)
+            // Get glob patterns (default to the standard pattern if none specified)
             var globPatterns = context.GlobPatterns.Length > 0
                 ? context.GlobPatterns
-                : new[] { "versionmark-*.json" };
+                : new[] { DefaultGlobPattern };
 
             context.WriteLine($"Searching for JSON files with patterns: {string.Join(", ", globPatterns)}");
 

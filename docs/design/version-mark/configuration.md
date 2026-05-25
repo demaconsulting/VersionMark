@@ -10,6 +10,17 @@ container and validation entry point).
 
 ### Interfaces
 
+**`VersionMarkConfig.ReadFromFile(string filePath)`**: Backward-compatibility wrapper that
+loads and validates a `.versionmark.yaml` file, throwing on the first error.
+
+- *Type*: In-process .NET public API (static method).
+- *Role*: Provider.
+- *Contract*: Delegates to `Load`; throws `ArgumentException` if any error-level issues are
+  found. Returns the loaded `VersionMarkConfig` when all checks pass.
+- *Constraints*: Use `Load` directly when access to the full lint-issue list is needed
+  (e.g. for the `--lint` command). `ReadFromFile` is intended for callers that only need
+  the configuration and do not require access to individual issues.
+
 **`VersionMarkConfig.Load(string filePath)`**: Reads and validates a `.versionmark.yaml`
 file, returning a compound result containing the parsed configuration and all validation
 issues.

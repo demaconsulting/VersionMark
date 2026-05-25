@@ -46,6 +46,10 @@ path with no wildcard returns that single file. This scenario is tested by
 relative patterns produce a combined deduplicated result. This scenario is tested by
 `GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles`.
 
+**GlobMatcher_FindMatchingFiles_OverlappingPatterns_DeduplicatesResults**: A file matched
+by two overlapping patterns appears only once in the result. This scenario is tested by
+`GlobMatcher_FindMatchingFiles_OverlappingPatterns_DeduplicatesResults`.
+
 **GlobMatcher_SplitAbsolutePattern_PatternWithWildcard_SplitsCorrectly**: A pattern with a
 wildcard is split at the last path separator before the wildcard. This scenario is tested
 by `GlobMatcher_SplitAbsolutePattern_PatternWithWildcard_SplitsCorrectly`.

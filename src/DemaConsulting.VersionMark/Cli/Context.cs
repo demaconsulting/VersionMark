@@ -23,6 +23,7 @@ namespace DemaConsulting.VersionMark.Cli;
 /// <summary>
 ///     Context class that handles command-line arguments and program output.
 /// </summary>
+/// <remarks>This class is not thread-safe and is intended for single-threaded use only.</remarks>
 internal sealed class Context : IDisposable
 {
     /// <summary>
@@ -132,7 +133,11 @@ internal sealed class Context : IDisposable
     /// </summary>
     /// <param name="args">Command-line arguments.</param>
     /// <returns>A new Context instance.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="args"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when arguments are invalid.</exception>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown when the log file specified by <c>--log</c> cannot be opened.
+    /// </exception>
     public static Context Create(string[] args)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -286,6 +291,8 @@ internal sealed class Context : IDisposable
         ///     Parses command-line arguments
         /// </summary>
         /// <param name="args">Command-line arguments.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="args"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when an unrecognized or invalid argument is encountered.</exception>
         public void ParseArguments(string[] args)
         {
             ArgumentNullException.ThrowIfNull(args);
@@ -306,6 +313,7 @@ internal sealed class Context : IDisposable
 
                     // In capture mode, these are tool names
                     // In publish mode, these are glob patterns
+                    // Outside capture/publish context, -- is not valid
                     if (Capture)
                     {
                         ToolNames = [.. remainingArgs];
@@ -313,6 +321,12 @@ internal sealed class Context : IDisposable
                     else if (Publish)
                     {
                         GlobPatterns = [.. remainingArgs];
+                    }
+                    else
+                    {
+                        throw new ArgumentException(
+                            "The -- separator is only valid in capture or publish mode",
+                            nameof(args));
                     }
 
                     break;
@@ -417,6 +431,7 @@ internal sealed class Context : IDisposable
         /// <param name="index">Current index</param>
         /// <param name="description">Description of what's required</param>
         /// <returns>Argument value</returns>
+        /// <exception cref="ArgumentException">Thrown when the required argument value is missing.</exception>
         private static string GetRequiredStringArgument(string arg, string[] args, int index, string description)
         {
             if (index >= args.Length)
@@ -457,6 +472,8 @@ internal sealed class Context : IDisposable
         /// <param name="index">Current index</param>
         /// <param name="description">Description of what's required</param>
         /// <returns>Argument value</returns>
+        /// <exception cref="ArgumentException">Thrown when the required argument value is missing.</exception>
+        /// <exception cref="ArgumentException">Thrown when the argument value is not a valid integer.</exception>
         private static int GetRequiredIntArgument(string arg, string[] args, int index, string description)
         {
             if (index >= args.Length)
@@ -498,7 +515,10 @@ internal sealed class Context : IDisposable
         // Mark that we have encountered errors
         _hasErrors = true;
 
-        // Write to error console unless silent mode is enabled
+        // Write to stderr unless silent mode is enabled. In silent mode, the caller
+        // detects failures via the process exit code (ExitCode property) rather than
+        // stderr output — this supports self-validation scenarios that deliberately
+        // trigger errors without producing unwanted output.
         if (!Silent)
         {
             var previousColor = Console.ForegroundColor;

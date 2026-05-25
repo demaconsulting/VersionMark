@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Configuration File
+      - title: Configuration Requirements
         requirements:
           - id: VersionMark-Configuration-YamlConfig
             title: The tool shall read configuration from a .versionmark.yaml file.
@@ -11,6 +11,9 @@ sections:
               version capture commands.
             tags:
               - configuration
+            children:
+              - VersionMark-VersionMarkConfig-ReadFromFile
+              - VersionMark-VersionMarkConfig-Load
             tests:
               - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 
@@ -22,6 +25,9 @@ sections:
               each tool.
             tags:
               - configuration
+            children:
+              - VersionMark-ToolConfig-EffectiveCommand
+              - VersionMark-ToolConfig-EffectiveRegex
             tests:
               - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 
@@ -33,6 +39,8 @@ sections:
               variations to capture tool versions.
             tags:
               - configuration
+            children:
+              - VersionMark-ToolConfig-EffectiveCommand
             tests:
               - Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand
 
@@ -44,6 +52,8 @@ sections:
               different regular expressions for version extraction.
             tags:
               - configuration
+            children:
+              - VersionMark-ToolConfig-EffectiveRegex
             tests:
               - Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex
 
@@ -55,6 +65,8 @@ sections:
               content.
             tags:
               - configuration
+            children:
+              - VersionMark-Load-ToolsSection
             tests:
               - Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException
 
@@ -66,6 +78,8 @@ sections:
               or inaccessible.
             tags:
               - configuration
+            children:
+              - VersionMark-Load-FileExistence
             tests:
               - Configuration_ReadFromFile_MissingFile_ThrowsArgumentException
 
@@ -76,5 +90,7 @@ sections:
               Provides clear feedback to users when configuration files are malformed.
             tags:
               - configuration
+            children:
+              - VersionMark-Load-YamlParsing
             tests:
               - Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException

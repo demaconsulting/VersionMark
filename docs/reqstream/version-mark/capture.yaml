@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Capture Command
+      - title: Capture Requirements
         requirements:
           - id: VersionMark-Capture-Capture
             title: The tool shall support --capture flag to enable capture mode.
@@ -25,6 +25,19 @@ sections:
             tests:
               - Capture_Context_WithJobId_SetsJobId
 
+          - id: VersionMark-Capture-MissingJobId
+            title: >-
+              The tool shall report an error and return a non-zero exit code when
+              --capture is used without --job-id.
+            justification: |
+              The job ID is required to name the output file and identify the capture session.
+              A missing job ID must be caught immediately with a clear error rather than
+              producing an output file with an empty or ambiguous name.
+            tags:
+              - capture
+            tests:
+              - Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode
+
           - id: VersionMark-Capture-Output
             title: The tool shall support --output parameter to specify the JSON output
               file path.
@@ -34,7 +47,7 @@ sections:
             tags:
               - capture
             tests:
-              - Capture_SaveAndLoad_PreservesAllVersionData
+              - Capture_Run_NoToolFilter_CapturesAllConfiguredTools
 
           - id: VersionMark-Capture-DefaultOutput
             title: The tool shall default output filename to versionmark-<job-id>.json
@@ -99,6 +112,8 @@ sections:
               by other tools and systems.
             tags:
               - capture
+            children:
+              - VersionMark-VersionInfo-Save
             tests:
               - Capture_SaveAndLoad_PreservesAllVersionData
               - Capture_MultipleCaptures_EachFileHasDistinctJobId
@@ -122,6 +137,8 @@ sections:
               or inaccessible, preventing silent failures.
             tags:
               - capture
+            children:
+              - VersionMark-Load-FileExistence
             tests:
               - Capture_Run_MissingConfig_ReportsError
 
@@ -138,3 +155,5 @@ sections:
             tests:
               - VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException
               - VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException
+              - Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode
+              - Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode

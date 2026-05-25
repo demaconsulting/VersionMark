@@ -59,3 +59,7 @@ reports an error. This scenario is tested by
 **Publishing_Run_WithReportDepth_UsesCorrectDepth**: The `--report-depth` flag is applied
 to the heading level in the generated report. This scenario is tested by
 `Publishing_Run_WithReportDepth_UsesCorrectDepth`.
+
+**Publishing_Run_WithAbsoluteGlobPattern_ReadsMatchingFiles**: An absolute glob pattern
+reads all matching capture files even when the working directory differs. This scenario is
+tested by `Publishing_Run_WithAbsoluteGlobPattern_ReadsMatchingFiles`.

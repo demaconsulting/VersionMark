@@ -80,4 +80,4 @@ the extension of `context.ResultsFile`: `.trx` → `TrxSerializer.Serialize`; `.
 
 #### Callers
 
-- `Program.RunValidate` — calls `Validation.Run` when `--validate` is specified.
+- `Program.Run` (validate dispatch, priority 3) — calls `Validation.Run` when `--validate` is specified.

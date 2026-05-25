@@ -23,7 +23,7 @@ requirements coverage correctly.
 executes ReqStream's internal test suite. The TRX file must be produced and contain no
 failed tests. This scenario is verified by `artifacts/reqstream-self-validation.trx`.
 
-**ReqStreamEnforcementMode**: The CI pipeline runs `dotnet reqstream --enforce` with all
+**ReqStream_EnforcementMode**: The CI pipeline runs `dotnet reqstream --enforce` with all
 VersionMark requirements YAML files and test TRX results. The tool must exit zero,
 confirming every requirement has passing test evidence. This scenario is verified by the
 passing `--enforce` run in CI.

@@ -13,7 +13,7 @@ FileAssert assertions provides evidence that WeasyPrint is converting documents 
 
 ### Test Scenarios
 
-**WeasyPrintGeneratesRequirementsReportPdf**: The CI pipeline runs WeasyPrint to convert
+**WeasyPrintGeneratesRequirementsReportPdf** (supplementary, non-OTS-evidence): The CI pipeline runs WeasyPrint to convert
 the Pandoc-generated HTML for the requirements report into PDF. FileAssert must verify the
 resulting PDF is non-empty and valid. This scenario is verified by the FileAssert TRX
 results for the requirements report PDF.
@@ -37,6 +37,10 @@ the FileAssert TRX results for the build notes PDF.
 **WeasyPrintGeneratesCodeQualityReportPdf**: The CI pipeline runs WeasyPrint to convert
 the code quality report HTML to PDF. FileAssert must verify the resulting PDF. This
 scenario is verified by the FileAssert TRX results for the code quality report PDF.
+
+**WeasyPrintGeneratesCodeReviewPlanPdf**: The CI pipeline runs WeasyPrint to convert the
+code review plan HTML to PDF. FileAssert must verify the resulting PDF. This scenario is
+verified by the FileAssert TRX results for the code review plan PDF.
 
 **WeasyPrintGeneratesCodeReviewReportPdf**: The CI pipeline runs WeasyPrint to convert the
 code review report HTML to PDF. FileAssert must verify the resulting PDF. This scenario is

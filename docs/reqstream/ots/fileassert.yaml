@@ -21,3 +21,17 @@ sections:
             tests:
               - FileAssert_VersionDisplay
               - FileAssert_HelpDisplay
+              - Pandoc_BuildNotesHtml
+              - WeasyPrint_BuildNotesPdf
+              - Pandoc_CodeQualityHtml
+              - WeasyPrint_CodeQualityPdf
+              - Pandoc_ReviewPlanHtml
+              - WeasyPrint_ReviewPlanPdf
+              - Pandoc_ReviewReportHtml
+              - WeasyPrint_ReviewReportPdf
+              - Pandoc_DesignHtml
+              - WeasyPrint_DesignPdf
+              - Pandoc_VerificationHtml
+              - WeasyPrint_VerificationPdf
+              - Pandoc_UserGuideHtml
+              - WeasyPrint_UserGuidePdf

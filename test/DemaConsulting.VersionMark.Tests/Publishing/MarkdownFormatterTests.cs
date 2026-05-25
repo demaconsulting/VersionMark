@@ -34,7 +34,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The output lists tools in the correct alphabetical sequence
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_SortsToolsAlphabetically()
+    public void MarkdownFormatter_Format_SortsToolsAlphabetically()
     {
         // Arrange - Create VersionInfo with tools in non-alphabetical order
         var versionInfos = new[]
@@ -71,7 +71,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The output displays only the version when all jobs have the same version
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly()
+    public void MarkdownFormatter_Format_WithUniformVersions_ShowsVersionOnly()
     {
         // Arrange - Create multiple VersionInfos with the same version across jobs
         var versionInfos = new[]
@@ -119,7 +119,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The output displays job IDs in parentheses when versions differ
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs()
+    public void MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs()
     {
         // Arrange - Create VersionInfos with different versions across jobs
         var versionInfos = new[]
@@ -168,7 +168,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The output heading level matches the specified depth
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel()
+    public void MarkdownFormatter_Format_WithCustomDepth_UsesCorrectHeadingLevel()
     {
         // Arrange - Create simple VersionInfo
         var versionInfos = new[]
@@ -208,7 +208,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The formatter produces valid output with just the header
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_EmptyList_ProducesHeaderOnly()
+    public void MarkdownFormatter_Format_EmptyList_ProducesHeaderOnly()
     {
         // Arrange - Create empty VersionInfo list
         var versionInfos = Array.Empty<VersionInfo>();
@@ -224,11 +224,11 @@ public class MarkdownFormatterTests
 
     /// <summary>
     ///     Test that MarkdownFormatter handles a single job correctly.
-    ///     What is tested: Edge case - single job shows just the version
-    ///     What the assertions prove: Single job is treated as uniform (shows version only)
+    ///     What is tested: Edge case - single job suppresses job ID
+    ///     What the assertions prove: Single job is treated as uniform (shows version only, no job ID)
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_SingleJob_ShowsAllJobs()
+    public void MarkdownFormatter_Format_SingleJob_SuppressesJobId()
     {
         // Arrange - Create single VersionInfo
         var versionInfos = new[]
@@ -258,7 +258,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: The formatter correctly handles both uniform and varying versions
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_MixedVersions_HandlesCorrectly()
+    public void MarkdownFormatter_Format_MixedVersions_HandlesCorrectly()
     {
         // Arrange - Create VersionInfos with some tools uniform, some different
         var versionInfos = new[]
@@ -298,7 +298,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: Job IDs appear in alphabetical order within version groups
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_SortsJobIdsAlphabetically()
+    public void MarkdownFormatter_Format_SortsJobIdsAlphabetically()
     {
         // Arrange - Create VersionInfos where two jobs share a version and one job has a different version
         var versionInfos = new[]
@@ -329,7 +329,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: Special characters in versions are preserved in output
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_WithSpecialCharacters_PreservesVersions()
+    public void MarkdownFormatter_Format_WithSpecialCharacters_PreservesVersions()
     {
         // Arrange - Create VersionInfo with special version strings
         var versionInfos = new[]
@@ -360,7 +360,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: Sorting is case-insensitive (Dotnet comes before node)
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_CaseInsensitiveSorting()
+    public void MarkdownFormatter_Format_CaseInsensitiveSorting()
     {
         // Arrange - Create VersionInfo with mixed-case tool names
         var versionInfos = new[]
@@ -397,7 +397,7 @@ public class MarkdownFormatterTests
     ///     What the assertions prove: Version groups are sorted alphabetically
     /// </summary>
     [Fact]
-    public void MarkdownFormatter_FormatVersions_SortsVersionsAlphabetically()
+    public void MarkdownFormatter_Format_SortsVersionsAlphabetically()
     {
         // Arrange - Create VersionInfos with multiple different versions
         var versionInfos = new[]

@@ -46,10 +46,13 @@ and routes each to `context.WriteError` (for `Error` severity) or `context.Write
 
 #### Error Handling
 
-These types are value-carrying data records with no internal error handling. All
-error accumulation is performed by `VersionMarkConfig.Load`, which populates the `Issues`
+These types are primarily value-carrying data records with minimal internal error handling.
+All error accumulation is performed by `VersionMarkConfig.Load`, which populates the `Issues`
 list. Callers inspect the returned `VersionMarkLoadResult` to determine whether the
 configuration is usable.
+
+`VersionMarkLoadResult.ReportIssues` guards against a null `context` argument by calling
+`ArgumentNullException.ThrowIfNull(context)` before iterating issues.
 
 #### Dependencies
 

@@ -30,8 +30,9 @@ Version)>>` mapping each tool name to its observed `(jobId, version)` pairs.
 heading using `new string('#', reportDepth)`, sorts tool names alphabetically, then calls
 `FormatVersionEntries` for each tool.
 
-**`FormatVersionEntries(List<(string, string)> entries)` (private static)** — Applies the
-consolidation rule:
+**`FormatVersionEntries(StringBuilder markdown, string tool, List<(string JobId, string Version)> versions)` (private static)** — Applies the
+consolidation rule. Version groups are ordered alphabetically (case-insensitive) before
+per-group bullet lines are emitted:
 
 - If all entries share the same version: emit `- **tool**: version` (no job IDs).
 - If versions differ: emit one `- **tool**: version (job1, job2)` per distinct version

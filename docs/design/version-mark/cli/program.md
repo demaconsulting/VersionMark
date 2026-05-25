@@ -17,9 +17,7 @@ assembly's `AssemblyInformationalVersionAttribute` at runtime, falling back to
 
 **`Main(string[] args)` (static)** — Constructs a `Context` from command-line arguments,
 calls `Run`, and returns `context.ExitCode`. `ArgumentException` and
-`InvalidOperationException` are caught and written to `Console.Error`, returning exit code
-
-1. Unexpected exceptions are re-thrown to generate event-log entries.
+`InvalidOperationException` are caught and written to `Console.Error`, returning exit code 1. Unexpected exceptions are re-thrown to generate event-log entries.
 
 **`Run(Context context)` (static)** — Implements the following priority-ordered dispatch:
 
@@ -48,11 +46,25 @@ writes it to the report file.
 (defaulting to `.versionmark.yaml` when `context.LintFile` is null), calls
 `VersionMarkConfig.Load`, and reports all discovered issues via `result.ReportIssues`.
 
+**`PrintBanner(Context context)` (private static)** — Writes the application name, version
+string, and copyright line to the context output. Raises no exceptions; output is suppressed
+automatically by `context.WriteLine` when `--silent` is set.
+
+**`RunToolLogic(Context context)` (private static)** — Executes the default tool logic when
+no specific operational mode flag is given. Currently prints a placeholder message; intended
+to be replaced with the main tool implementation.
+
+**`LoadVersionInfoFiles(List<string> jsonFiles)` (private static)** — Maps a list of JSON
+file paths to `VersionInfo` instances by calling `VersionInfo.LoadFromFile` on each entry.
+Throws `ArgumentException` (propagated from `LoadFromFile`) when a file cannot be read or
+parsed.
+
 #### Error Handling
 
 | Condition                              | Behavior                                                           |
 |----------------------------------------|--------------------------------------------------------------------|
 | `ArgumentException` or `InvalidOperationException` from any mode | `context.WriteError`; `ExitCode` set to 1 |
+| `ArgumentException` or `InvalidOperationException` from `Context.Create` | Written directly to `Console.Error` (no context object exists yet); exit code `1` returned |
 | Unexpected exception from `Main`       | Re-thrown to propagate as unhandled exception                      |
 | `--job-id` missing in capture mode     | `context.WriteError`; return                                       |
 | `--report` missing in publish mode     | `context.WriteError`; return                                       |

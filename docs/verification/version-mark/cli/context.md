@@ -162,12 +162,20 @@ silent mode. This scenario is tested by
 in silent mode. This scenario is tested by
 `Context_WriteError_NotSilent_WritesToConsole`.
 
-**Context_WriteError_Silent_DoesNotWriteToConsole**: `WriteError` suppresses output in
+**Context_WriteError_Silent_SuppressesStderr**: `WriteError` suppresses output in
 silent mode. This scenario is tested by
-`Context_WriteError_Silent_DoesNotWriteToConsole`.
+`Context_WriteError_Silent_SuppressesStderr`.
 
 **Context_WriteError_WritesToLogFile**: `WriteError` writes the message to the log file.
 This scenario is tested by `Context_WriteError_WritesToLogFile`.
 
 **Context_WriteError_SetsErrorExitCode**: `WriteError` sets the exit code to 1. This
 scenario is tested by `Context_WriteError_SetsErrorExitCode`.
+
+**Context_Create_DepthFlag_WithoutValue_ThrowsArgumentException**: `--depth` without a
+value throws `ArgumentException`. This scenario is tested by
+`Context_Create_DepthFlag_WithoutValue_ThrowsArgumentException`.
+
+**Context_Create_SeparatorOutsideMode_ThrowsArgumentException**: The `--` separator used
+outside capture or publish mode throws `ArgumentException`. This scenario is tested by
+`Context_Create_SeparatorOutsideMode_ThrowsArgumentException`.

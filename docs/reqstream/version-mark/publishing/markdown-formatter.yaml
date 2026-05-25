@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Markdown Formatter
+      - title: Markdown Formatter Requirements
         requirements:
           - id: VersionMark-Formatter-Structure
             title: The tool shall generate markdown output listing all tools in sorted
@@ -13,7 +13,7 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
+              - MarkdownFormatter_Format_SortsToolsAlphabetically
 
           - id: VersionMark-Formatter-JobId
             title: >-
@@ -26,7 +26,7 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly
+              - MarkdownFormatter_Format_WithUniformVersions_ShowsVersionOnly
 
           - id: VersionMark-Formatter-Versions
             title: >-
@@ -39,7 +39,7 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
+              - MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs
 
           - id: VersionMark-Formatter-MarkdownList
             title: >-
@@ -52,7 +52,7 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
+              - MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs
 
           - id: VersionMark-Formatter-MarkdownConsolidation
             title: The tool shall respect the report-depth parameter when generating
@@ -63,4 +63,4 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel
+              - MarkdownFormatter_Format_WithCustomDepth_UsesCorrectHeadingLevel

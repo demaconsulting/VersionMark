@@ -68,6 +68,7 @@ public class GlobMatcherTests
         }
     }
 
+    // NOTE: This test mutates Environment.CurrentDirectory and requires sequential execution within the class.
     /// <summary>
     ///     Test that FindMatchingFiles returns matching files when given a relative pattern.
     /// </summary>
@@ -153,6 +154,7 @@ public class GlobMatcherTests
         }
     }
 
+    // NOTE: This test mutates Environment.CurrentDirectory and requires sequential execution within the class.
     /// <summary>
     ///     Test that FindMatchingFiles combines results from both absolute and relative patterns.
     /// </summary>
@@ -189,6 +191,37 @@ public class GlobMatcherTests
             Environment.CurrentDirectory = originalDir;
             Directory.Delete(tempDir1, recursive: true);
             Directory.Delete(tempDir2, recursive: true);
+        }
+    }
+
+    /// <summary>
+    ///     Test that FindMatchingFiles returns each file only once when overlapping patterns match the same file.
+    /// </summary>
+    [Fact]
+    public void GlobMatcher_FindMatchingFiles_OverlappingPatterns_DeduplicatesResults()
+    {
+        // Arrange
+        var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            var filePath = Path.Combine(tempDir, "target.json");
+            File.WriteAllText(filePath, "{}");
+
+            // Two patterns that both match the same file
+            var pattern1 = Path.Combine(tempDir, "*.json");
+            var pattern2 = Path.Combine(tempDir, "target.json");
+
+            // Act
+            var result = GlobMatcher.FindMatchingFiles([pattern1, pattern2]);
+
+            // Assert - The file should appear only once
+            Assert.Single(result);
+            Assert.Equal(Path.GetFullPath(filePath), result[0]);
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
         }
     }
 

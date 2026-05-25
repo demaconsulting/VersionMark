@@ -137,6 +137,32 @@ public class VersionMarkConfigLoadTests
     }
 
     /// <summary>
+    ///     Test that a YAML file whose root node is not a mapping returns null config with an error issue.
+    /// </summary>
+    [Fact]
+    public void VersionMarkConfig_Load_NonMappingRoot_ReturnsNullConfig()
+    {
+        // Arrange - Write a YAML file whose root is a plain scalar, not a mapping
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            const string yaml = "just a plain scalar";
+            File.WriteAllText(tempFile, yaml);
+
+            // Act - Attempt to load config with a non-mapping root node
+            var (config, issues) = VersionMarkConfig.Load(tempFile);
+
+            // Assert - Config should be null because the root must be a mapping
+            Assert.Null(config);
+            Assert.Contains(issues, i => i.Severity == LintSeverity.Error);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
     ///     Test that a config with an empty 'tools' section returns null config with an error issue.
     /// </summary>
     [Fact]

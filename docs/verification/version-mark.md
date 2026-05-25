@@ -40,18 +40,24 @@ process exits with code 0. A non-zero exit code or any internal scenario failure
 constitutes a test failure. This scenario is tested by
 `IntegrationTest_ValidateFlag_RunsValidation`.
 
-**VersionMark-CapturePublishCycle**: Capture one or more tools using the capture workflow,
-then invoke the publish workflow to generate a markdown report. Assert that the output
-markdown report contains the expected tool name and version entries. This scenario confirms
-that the Capture and Publishing subsystems interoperate correctly when assembled. This
-scenario is tested by `IntegrationTest_CaptureCommand_CapturesToolVersions`.
+**VersionMark-CapturePublishCycle**: Verify capture mode and publish mode independently.
+The capture scenario invokes the capture workflow and asserts that a JSON output file is
+produced with the expected tool name and version entries. The publish scenario writes known
+JSON capture files and invokes the publish workflow, asserting that the markdown report
+contains the expected content. This scenario confirms that the Capture and Publishing
+subsystems each operate correctly in isolation; end-to-end integration is verified through
+the self-validation suite (see VersionMark-Validate-Full). This scenario is tested by
+`IntegrationTest_CaptureCommand_CapturesToolVersions`.
 
 **VersionMark-CLI-ErrorHandling**: Submit an unknown argument, omit a required flag, and
 supply a missing configuration file path in separate invocations. Assert that each
 invocation produces a non-zero exit code and emits a descriptive error message. This
 scenario confirms that the Cli subsystem correctly rejects invalid inputs at the
 assembled-system level. This scenario is tested by
-`IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess`.
+`IntegrationTest_UnknownArgument_ReturnsError`,
+`IntegrationTest_CaptureCommandWithoutJobId_ReturnsError`,
+`IntegrationTest_CaptureCommandWithMissingConfig_ReturnsError`, and
+`IntegrationTest_LintFlag_MissingConfig_ReturnsError`.
 
 **VersionMark-MultiPlatform**: Each of the above scenarios (VersionMark-Validate-Full,
 VersionMark-CapturePublishCycle, and VersionMark-CLI-ErrorHandling) is repeated on

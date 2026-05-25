@@ -63,3 +63,15 @@ version data. This scenario is tested by `Capture_SaveAndLoad_PreservesAllVersio
 **Capture_MultipleCaptures_EachFileHasDistinctJobId**: Multiple capture files each have a
 distinct job ID. This scenario is tested by
 `Capture_MultipleCaptures_EachFileHasDistinctJobId`.
+
+**Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode**: When `--capture` is used
+without `--job-id`, the capture pipeline reports an error and returns a non-zero exit code.
+This scenario is tested by `Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode`.
+
+**Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode**: When a configured command is
+invalid or not found, the capture pipeline reports an error and returns a non-zero exit code.
+This scenario is tested by `Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode`.
+
+**Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode**: When command output does not
+match the configured regex, the capture pipeline reports an error and returns a non-zero
+exit code. This scenario is tested by `Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode`.

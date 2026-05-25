@@ -61,9 +61,11 @@ on success.
 redirected stdout and stderr. Streams are read asynchronously to prevent pipe-deadlock.
 Throws `InvalidOperationException` on non-zero exit code.
 
-**`ExtractVersion(string output, string regexPattern)` (private)** — Compiles the regex,
-matches against the command output, and returns the value of the named `version` capture
-group. Throws `InvalidOperationException` when no match or group is found.
+**`ExtractVersion(string output, string regexPattern, string toolName)` (private)** —
+Compiles the regex, matches against the command output, and returns the value of the named
+`version` capture group. The `toolName` parameter is included solely to produce actionable
+error messages that identify which tool's version could not be extracted. Throws
+`InvalidOperationException` when no match or group is found.
 
 #### Error Handling
 

@@ -33,3 +33,18 @@ tested by `SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile`.
 **SelfTest_Run_WithDepthTwo_WritesHashHashHeader**: Running with depth 2 produces a `##`
 heading level in the output. This scenario is tested by
 `SelfTest_Run_WithDepthTwo_WritesHashHashHeader`.
+
+**SelfTest_Run_Capture_CapturesToolVersions**: The capture sub-test within self-validation
+runs successfully. This scenario is tested by `SelfTest_Run_Capture_CapturesToolVersions`.
+
+**SelfTest_Run_Publish_GeneratesMarkdownReport**: The publish sub-test within
+self-validation runs successfully. This scenario is tested by
+`SelfTest_Run_Publish_GeneratesMarkdownReport`.
+
+**SelfTest_Run_LintValid_PassesForValidConfig**: The lint-valid sub-test within
+self-validation accepts a valid configuration with exit code 0. This scenario is tested by
+`SelfTest_Run_LintValid_PassesForValidConfig`.
+
+**SelfTest_Run_LintInvalid_RejectsInvalidConfig**: The lint-invalid sub-test within
+self-validation rejects an invalid configuration with a non-zero exit code. This scenario
+is tested by `SelfTest_Run_LintInvalid_RejectsInvalidConfig`.

@@ -14,6 +14,19 @@ pipeline passes the SARIF file produced by the CodeQL code scanning step to Sari
 which generates `docs/code_quality/generated/quality.md`. A passing CI run producing this
 report confirms SarifMark is reading SARIF correctly and generating markdown output.
 
+### Test Environment
+
+N/A — SarifMark is an OTS tool verified through the GitHub Actions CI pipeline. No
+additional test environment configuration is required beyond a successful CI workflow run
+with the SarifMark tool installed.
+
+### Acceptance Criteria
+
+The self-validation TRX (`artifacts/sarifmark-self-validation.trx`) must be produced and
+contain zero failed tests. The generated quality report
+(`docs/code_quality/generated/quality.md`) must be produced and incorporated into the
+code quality document collection.
+
 ### Test Scenarios
 
 **SarifMarkSelfValidation**: The CI pipeline runs
@@ -21,11 +34,11 @@ report confirms SarifMark is reading SARIF correctly and generating markdown out
 executes SarifMark's internal test suite. The TRX file must be produced and contain no
 failed tests. This scenario is verified by `artifacts/sarifmark-self-validation.trx`.
 
-**SarifMarkSarifReading**: The CI pipeline runs SarifMark against the CodeQL SARIF output
+**SarifMark_SarifReading**: The CI pipeline runs SarifMark against the CodeQL SARIF output
 file. The tool must read the SARIF without error and extract all findings. This scenario
 is verified by the successful generation of `docs/code_quality/generated/quality.md`.
 
-**SarifMarkMarkdownReportGeneration**: The CI pipeline runs SarifMark to generate
+**SarifMark_MarkdownReportGeneration**: The CI pipeline runs SarifMark to generate
 `docs/code_quality/generated/quality.md` from the CodeQL SARIF file. The markdown quality
 report must be produced and incorporated into the code quality document collection. This
 scenario is verified by `docs/code_quality/generated/quality.md`.

@@ -23,50 +23,50 @@ environment setup required.
 
 #### Test Scenarios
 
-**MarkdownFormatter_FormatVersions_SortsToolsAlphabetically**: Tools appear in
+**MarkdownFormatter_Format_SortsToolsAlphabetically**: Tools appear in
 alphabetical order in the generated report. This scenario is tested by
-`MarkdownFormatter_FormatVersions_SortsToolsAlphabetically`.
+`MarkdownFormatter_Format_SortsToolsAlphabetically`.
 
-**MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly**: When all jobs
+**MarkdownFormatter_Format_WithUniformVersions_ShowsVersionOnly**: When all jobs
 report the same version for a tool, the version is shown without job IDs. This scenario is
-tested by `MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly`.
+tested by `MarkdownFormatter_Format_WithUniformVersions_ShowsVersionOnly`.
 
-**MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs**: When jobs
+**MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs**: When jobs
 report different versions for a tool, each job ID and version is shown individually. This
 scenario is tested by
-`MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs`.
+`MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs`.
 
-**MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel**: A custom
+**MarkdownFormatter_Format_WithCustomDepth_UsesCorrectHeadingLevel**: A custom
 depth value produces the correct markdown heading level. This scenario is tested by
-`MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel`.
+`MarkdownFormatter_Format_WithCustomDepth_UsesCorrectHeadingLevel`.
 
-**MarkdownFormatter_FormatVersions_EmptyList_ProducesHeaderOnly**: An empty input list
+**MarkdownFormatter_Format_EmptyList_ProducesHeaderOnly**: An empty input list
 produces a header with no tool entries. This scenario is tested by
-`MarkdownFormatter_FormatVersions_EmptyList_ProducesHeaderOnly`.
+`MarkdownFormatter_Format_EmptyList_ProducesHeaderOnly`.
 
-**MarkdownFormatter_FormatVersions_SingleJob_ShowsAllJobs**: A single job shows all
-version entries. This scenario is tested by
-`MarkdownFormatter_FormatVersions_SingleJob_ShowsAllJobs`.
+**MarkdownFormatter_Format_SingleJob_SuppressesJobId**: A single job suppresses
+the job ID and shows only the version. This scenario is tested by
+`MarkdownFormatter_Format_SingleJob_SuppressesJobId`.
 
-**MarkdownFormatter_FormatVersions_MixedVersions_HandlesCorrectly**: A mix of uniform and
+**MarkdownFormatter_Format_MixedVersions_HandlesCorrectly**: A mix of uniform and
 differing versions across tools is handled correctly. This scenario is tested by
-`MarkdownFormatter_FormatVersions_MixedVersions_HandlesCorrectly`.
+`MarkdownFormatter_Format_MixedVersions_HandlesCorrectly`.
 
-**MarkdownFormatter_FormatVersions_SortsJobIdsAlphabetically**: Job IDs appear in
+**MarkdownFormatter_Format_SortsJobIdsAlphabetically**: Job IDs appear in
 alphabetical order within each tool entry. This scenario is tested by
-`MarkdownFormatter_FormatVersions_SortsJobIdsAlphabetically`.
+`MarkdownFormatter_Format_SortsJobIdsAlphabetically`.
 
-**MarkdownFormatter_FormatVersions_WithSpecialCharacters_PreservesVersions**: Version
+**MarkdownFormatter_Format_WithSpecialCharacters_PreservesVersions**: Version
 strings with special characters are preserved in the report. This scenario is tested by
-`MarkdownFormatter_FormatVersions_WithSpecialCharacters_PreservesVersions`.
+`MarkdownFormatter_Format_WithSpecialCharacters_PreservesVersions`.
 
-**MarkdownFormatter_FormatVersions_CaseInsensitiveSorting**: Alphabetical sorting of tools
+**MarkdownFormatter_Format_CaseInsensitiveSorting**: Alphabetical sorting of tools
 and job IDs is case-insensitive. This scenario is tested by
-`MarkdownFormatter_FormatVersions_CaseInsensitiveSorting`.
+`MarkdownFormatter_Format_CaseInsensitiveSorting`.
 
-**MarkdownFormatter_FormatVersions_SortsVersionsAlphabetically**: Version strings within a
+**MarkdownFormatter_Format_SortsVersionsAlphabetically**: Version strings within a
 tool entry are sorted alphabetically. This scenario is tested by
-`MarkdownFormatter_FormatVersions_SortsVersionsAlphabetically`.
+`MarkdownFormatter_Format_SortsVersionsAlphabetically`.
 
 **MarkdownFormatter_Format_WithZeroDepth_ThrowsArgumentOutOfRangeException**: A depth of
 zero throws `ArgumentOutOfRangeException`. This scenario is tested by

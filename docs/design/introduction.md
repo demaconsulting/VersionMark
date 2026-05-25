@@ -102,10 +102,13 @@ above. The test project mirrors the same layout under `test/DemaConsulting.Versi
 Each local software item has corresponding artifacts in parallel directory trees:
 
 - Requirements: `docs/reqstream/version-mark.yaml`,
+  `docs/reqstream/version-mark/{subsystem}.yaml`,
   `docs/reqstream/version-mark/{subsystem}/{unit}.yaml`
 - Design: `docs/design/version-mark.md`,
+  `docs/design/version-mark/{subsystem}.md`,
   `docs/design/version-mark/{subsystem}/{unit}.md`
 - Verification: `docs/verification/version-mark.md`,
+  `docs/verification/version-mark/{subsystem}.md`,
   `docs/verification/version-mark/{subsystem}/{unit}.md`
 - Source: `src/DemaConsulting.VersionMark/{Subsystem}/{Unit}.cs`
 - Tests: `test/DemaConsulting.VersionMark.Tests/{Subsystem}/{Unit}Tests.cs`

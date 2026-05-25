@@ -16,6 +16,19 @@ hotspot data from the SonarCloud project for VersionMark, then generates
 confirms SonarMark is communicating with SonarCloud and generating correct markdown
 output.
 
+### Test Environment
+
+N/A — SonarMark is an OTS tool verified through the GitHub Actions CI pipeline. No
+additional test environment configuration is required beyond a successful CI workflow run
+with the SonarMark tool installed.
+
+### Acceptance Criteria
+
+The self-validation TRX (`artifacts/sonarmark-self-validation.trx`) must be produced and
+contain zero failed tests. The generated quality report
+(`docs/code_quality/generated/sonarmark.md`) must be produced and incorporated into the
+code quality document collection.
+
 ### Test Scenarios
 
 **SonarMarkSelfValidation**: The CI pipeline runs
@@ -23,22 +36,22 @@ output.
 executes SonarMark's internal test suite. The TRX file must be produced and contain no
 failed tests. This scenario is verified by `artifacts/sonarmark-self-validation.trx`.
 
-**SonarMarkQualityGateRetrieval**: The CI pipeline runs SonarMark to retrieve the
+**SonarMark_QualityGateRetrieval**: The CI pipeline runs SonarMark to retrieve the
 SonarCloud quality gate status for the VersionMark project. The tool must return the gate
 result without error. This scenario is verified by the successful generation of
 `docs/code_quality/generated/sonarmark.md`.
 
-**SonarMarkIssuesRetrieval**: The CI pipeline runs SonarMark to retrieve open issues from
+**SonarMark_IssuesRetrieval**: The CI pipeline runs SonarMark to retrieve open issues from
 SonarCloud. The tool must return issue count and severity data for inclusion in the quality
 report. This scenario is verified by the open issues section of
 `docs/code_quality/generated/sonarmark.md`.
 
-**SonarMarkHotSpotsRetrieval**: The CI pipeline runs SonarMark to retrieve security
+**SonarMark_HotSpotsRetrieval**: The CI pipeline runs SonarMark to retrieve security
 hotspots from SonarCloud. The tool must return hotspot data for inclusion in the quality
 report. This scenario is verified by the security hotspots section of
 `docs/code_quality/generated/sonarmark.md`.
 
-**SonarMarkMarkdownReportGeneration**: The CI pipeline runs SonarMark to generate
+**SonarMark_MarkdownReportGeneration**: The CI pipeline runs SonarMark to generate
 `docs/code_quality/generated/sonarmark.md` from the SonarCloud data. The markdown quality
 report must be produced and incorporated into the code quality document collection. This
 scenario is verified by `docs/code_quality/generated/sonarmark.md`.
