@@ -16,7 +16,7 @@ adapter boundary. No OTS type leaks beyond the unit that owns it:
 | Microsoft.Extensions.FileSystemGlobbing   | GlobMatcher         | Utilities     |
 | DemaConsulting.TestResults                | Validation          | SelfTest      |
 
-Restricting each OTS item to a single consuming unit minimises the blast radius
+Restricting each OTS item to a single consuming unit minimizes the blast radius
 of an API change during an upgrade: only the adapter unit needs to change. See
 the individual per-item design files for details of features used and
 initialization requirements:

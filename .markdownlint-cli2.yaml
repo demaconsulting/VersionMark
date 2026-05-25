@@ -45,6 +45,10 @@ config:
   # fragments in isolation and would otherwise raise false positives.
   MD041: false
 
+  # Disable table column alignment enforcement.
+  # Existing docs use valid pipe tables but do not require visually aligned columns.
+  MD060: false
+
 # Exclude common build artifacts, dependencies, and vendored third-party code
 ignores:
   - '**/.git/**'

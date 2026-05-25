@@ -66,7 +66,7 @@ the extension of `context.ResultsFile`: `.trx` → `TrxSerializer.Serialize`; `.
 |-----------------------------------------------|--------------------------------------------------|
 | Any test assertion fails                      | Failure recorded in `TestResults`; `context.WriteError` called; `ExitCode` set to 1 |
 | `TemporaryDirectory` creation fails           | `InvalidOperationException` wrapping the original exception |
-| `context.ResultsFile` extension unrecognised  | `context.WriteError`; no file written            |
+| `context.ResultsFile` extension unrecognized  | `context.WriteError`; no file written            |
 | `Dispose` on `TemporaryDirectory` fails       | `IOException`/`UnauthorizedAccessException` silently suppressed |
 
 #### Dependencies
