@@ -132,7 +132,7 @@ Instead use **verbal references** - plain prose that identifies the target by na
 
 Follow `.markdownlint-cli2.yaml` formatting standards:
 
-- **120 Character Line Limit**: Keep lines 120 characters or fewer; break at punctuation or logical breaks.
+- **120 Character Line Limit (Guideline)**: Prefer lines 120 characters or fewer; break at punctuation or logical breaks when practical.
 - **No Trailing Whitespace**: Remove all trailing spaces and tabs.
 - **Blank Lines Around Headings**: Include a blank line before and after each heading.
 - **Blank Lines Around Lists**: Include a blank line before and after numbered and bullet lists.

@@ -38,7 +38,7 @@ signatures.
    created for each distinct root directory, the relative portion is added via
    `AddInclude`, and `Execute` is called with a `DirectoryInfoWrapper` wrapping
    the absolute root directory.
-4. Results from all `Matcher` instances are collected into a `SortedSet<string>`
-   (to deduplicate overlapping patterns and provide deterministic ordering) and
-   returned as a `List<string>`.
+4. Results from all `Matcher` instances are collected into a `HashSet<string>`
+   with a file-system-appropriate comparer (to deduplicate overlapping
+   patterns), then returned as a sorted `List<string>`.
 5. No `Dispose` is required; `Matcher` does not hold unmanaged resources.

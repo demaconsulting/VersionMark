@@ -18,7 +18,8 @@ patterns into a sorted, deduplicated list of full file paths.
 - *Contract*: Accepts an array of glob patterns (relative or absolute). Relative patterns
   are evaluated against `Directory.GetCurrentDirectory()`; absolute patterns are each
   evaluated against their own root directory. Returns a sorted, deduplicated
-  `List<string>` of full file paths. Deduplication uses a case-insensitive `HashSet`.
+  `List<string>` of full file paths. Deduplication uses a `HashSet<string>` with a
+  file-system-appropriate comparer (ordinal ignore-case on Windows, ordinal elsewhere).
 - *Constraints*: No explicit error handling; invalid patterns or inaccessible directories
   are handled by the BCL and FileSystemGlobbing. Callers must handle an empty result.
 
@@ -51,7 +52,8 @@ each other or on any other VersionMark subsystem:
   `Microsoft.Extensions.FileSystemGlobbing`. Relative patterns are batched into a single
   `Matcher` run against `Directory.GetCurrentDirectory()`; absolute patterns are each
   evaluated against their own root directory obtained via `SplitAbsolutePattern`. Results
-  are deduplicated with a case-insensitive `HashSet` and returned sorted.
+  are deduplicated with a `HashSet<string>` using a file-system-appropriate comparer
+  and returned sorted.
   `GlobMatcher.FindMatchingFiles` is called by `Program.RunPublish` to resolve command-line
   glob patterns into a concrete list of JSON capture files.
 

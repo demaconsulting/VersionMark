@@ -168,12 +168,12 @@ The self-validation suite includes the following named tests:
 
 ## Dependencies
 
-- **YamlDotNet** — YAML deserialization of `.versionmark.yaml`; see _YamlDotNet
-  Integration Design_ for details.
+- **YamlDotNet** — YAML deserialization of `.versionmark.yaml`; see *YamlDotNet
+  Integration Design* for details.
 - **Microsoft.Extensions.FileSystemGlobbing** — glob-pattern file matching in publish mode;
-  see _Microsoft.Extensions.FileSystemGlobbing Integration Design_ for details.
+  see *Microsoft.Extensions.FileSystemGlobbing Integration Design* for details.
 - **DemaConsulting.TestResults** — TRX and JUnit XML serialization of self-validation
-  results; see _DemaConsulting.TestResults Integration Design_ for details.
+  results; see *DemaConsulting.TestResults Integration Design* for details.
 
 ## Risk Control Measures
 

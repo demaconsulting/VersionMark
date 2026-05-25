@@ -27,4 +27,4 @@ scenario is verified by `GlobMatcher_FindMatchingFiles_AbsolutePattern_ReturnsMa
 **FileSystemGlobbing_DeduplicatesOverlappingPatterns**: Two overlapping glob patterns
 supplied to `GlobMatcher.FindMatchingFiles` return each matching file only once in the
 sorted result. This scenario is verified by
-`GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles`.
+`GlobMatcher_FindMatchingFiles_OverlappingPatterns_DeduplicatesResults`.
