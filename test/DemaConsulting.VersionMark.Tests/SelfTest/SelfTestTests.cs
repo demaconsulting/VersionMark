@@ -128,6 +128,7 @@ public class SelfTestTests
     ///     What the assertions prove: Validation completes with exit code 0, confirming capture ran
     /// </summary>
     [Fact]
+#pragma warning disable S4144 // Intentionally identical: each test covers a distinct requirement for traceability
     public void SelfTest_Run_Capture_CapturesToolVersions()
     {
         // Arrange
@@ -139,6 +140,7 @@ public class SelfTestTests
         // Assert - Exit code 0 means all self-validation tests (including capture) passed
         Assert.Equal(0, context.ExitCode);
     }
+#pragma warning restore S4144
 
     /// <summary>
     ///     Test that the self-validation publish workflow runs successfully.
