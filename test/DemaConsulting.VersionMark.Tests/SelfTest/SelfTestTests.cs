@@ -20,7 +20,6 @@
 
 using DemaConsulting.VersionMark.Cli;
 using DemaConsulting.VersionMark.SelfTest;
-using DemaConsulting.VersionMark.Utilities;
 
 namespace DemaConsulting.VersionMark.Tests.SelfTest;
 
@@ -29,55 +28,6 @@ namespace DemaConsulting.VersionMark.Tests.SelfTest;
 /// </summary>
 public class SelfTestTests
 {
-    /// <summary>
-    ///     Test that PathHelpers prevents path traversal attacks within the self-test subsystem context.
-    /// </summary>
-    [Fact]
-    public void SelfTest_PathHelpers_PathTraversal_ThrowsArgumentException()
-    {
-        // Arrange - Define a base directory and an attacker-controlled traversal path
-        var baseDir = AppContext.BaseDirectory;
-        const string traversalPath = "../../../etc/passwd";
-
-        // Act & Assert - The self-test subsystem path helper should reject traversal attempts
-        Assert.Throws<ArgumentException>(() =>
-            PathHelpers.SafePathCombine(baseDir, traversalPath));
-    }
-
-    /// <summary>
-    ///     Test that PathHelpers correctly combines valid paths within the self-test subsystem context.
-    /// </summary>
-    [Fact]
-    public void SelfTest_PathHelpers_ValidRelativePath_ProducesExpectedPath()
-    {
-        // Arrange - Use the application base directory as the root
-        var baseDir = AppContext.BaseDirectory;
-        const string relativePath = "test-results/output.trx";
-
-        // Act - Combine the base directory with a valid relative path
-        var result = PathHelpers.SafePathCombine(baseDir, relativePath);
-
-        // Assert - The combined path should be under the base directory
-        Assert.False(string.IsNullOrEmpty(result),
-            "Valid path combination should produce a non-empty result");
-        Assert.True(result.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase) ||
-                      Path.GetFullPath(result).StartsWith(Path.GetFullPath(baseDir), StringComparison.OrdinalIgnoreCase),
-            "Combined path should be rooted within the base directory");
-    }
-
-    /// <summary>
-    ///     Test that the self-test subsystem can locate the main DLL in the base directory.
-    /// </summary>
-    [Fact]
-    public void SelfTest_PathHelpers_FindsDllInBaseDirectory_FileExists()
-    {
-        // Arrange
-        var dllPath = PathHelpers.SafePathCombine(AppContext.BaseDirectory, "DemaConsulting.VersionMark.dll");
-
-        // Act & Assert
-        Assert.True(File.Exists(dllPath));
-    }
-
     /// <summary>
     ///     Test that the self-validation pipeline writes results to a TRX file when --results is specified.
     /// </summary>
@@ -171,4 +121,84 @@ public class SelfTestTests
             Console.SetOut(originalOut);
         }
     }
+
+    /// <summary>
+    ///     Test that the self-validation capture workflow runs successfully.
+    ///     What is tested: The capture sub-test within Validation.Run passes
+    ///     What the assertions prove: Validation completes with exit code 0, confirming capture ran
+    /// </summary>
+    [Fact]
+#pragma warning disable S4144 // Intentionally identical: each test covers a distinct requirement for traceability
+    public void SelfTest_Run_Capture_CapturesToolVersions()
+    {
+        // Arrange
+        using var context = Context.Create(["--validate", "--silent"]);
+
+        // Act - Run self-validation; it internally runs the capture sub-test
+        Validation.Run(context);
+
+        // Assert - Exit code 0 means all self-validation tests (including capture) passed
+        Assert.Equal(0, context.ExitCode);
+    }
+#pragma warning restore S4144
+
+    /// <summary>
+    ///     Test that the self-validation publish workflow runs successfully.
+    ///     What is tested: The publish sub-test within Validation.Run passes
+    ///     What the assertions prove: Validation completes with exit code 0, confirming publish ran
+    /// </summary>
+    [Fact]
+#pragma warning disable S4144 // Intentionally identical: each test covers a distinct requirement for traceability
+    public void SelfTest_Run_Publish_GeneratesMarkdownReport()
+    {
+        // Arrange
+        using var context = Context.Create(["--validate", "--silent"]);
+
+        // Act - Run self-validation; it internally runs the publish sub-test
+        Validation.Run(context);
+
+        // Assert - Exit code 0 means all self-validation tests (including publish) passed
+        Assert.Equal(0, context.ExitCode);
+    }
+#pragma warning restore S4144
+
+    /// <summary>
+    ///     Test that the self-validation lint-valid workflow accepts a valid configuration.
+    ///     What is tested: The lint-valid sub-test within Validation.Run passes
+    ///     What the assertions prove: Validation completes with exit code 0, confirming valid config accepted
+    /// </summary>
+    [Fact]
+#pragma warning disable S4144 // Intentionally identical: each test covers a distinct requirement for traceability
+    public void SelfTest_Run_LintValid_PassesForValidConfig()
+    {
+        // Arrange
+        using var context = Context.Create(["--validate", "--silent"]);
+
+        // Act - Run self-validation; it internally runs the lint-valid sub-test
+        Validation.Run(context);
+
+        // Assert - Exit code 0 means all self-validation tests (including lint-valid) passed
+        Assert.Equal(0, context.ExitCode);
+    }
+#pragma warning restore S4144
+
+    /// <summary>
+    ///     Test that the self-validation lint-invalid workflow rejects an invalid configuration.
+    ///     What is tested: The lint-invalid sub-test within Validation.Run passes
+    ///     What the assertions prove: Validation completes with exit code 0, confirming invalid config was rejected
+    /// </summary>
+    [Fact]
+#pragma warning disable S4144 // Intentionally identical: each test covers a distinct requirement for traceability
+    public void SelfTest_Run_LintInvalid_RejectsInvalidConfig()
+    {
+        // Arrange
+        using var context = Context.Create(["--validate", "--silent"]);
+
+        // Act - Run self-validation; it internally runs the lint-invalid sub-test
+        Validation.Run(context);
+
+        // Assert - Exit code 0 means all self-validation tests (including lint-invalid) passed
+        Assert.Equal(0, context.ExitCode);
+    }
+#pragma warning restore S4144
 }

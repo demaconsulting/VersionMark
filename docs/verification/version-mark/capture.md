@@ -1,57 +1,77 @@
-## Capture Subsystem Verification
-
-### Overview
-
-The Capture subsystem is responsible for executing tool version commands, extracting
-version strings, and serializing the results to JSON. It consists of one unit:
-`VersionInfo` (the JSON version data record).
-
-Subsystem-level integration tests are in `Capture/CaptureTests.cs` and cover the full
-capture workflow including configuration loading, command execution, output file writing,
-and loading the saved data. Unit-level verification for `VersionInfo` is in the chapter
-that follows.
+## Capture
 
 ### Verification Approach
 
-Integration tests use a temporary directory containing a `.versionmark.yaml` configuration
-file. Tests invoke capture operations and assert on the written JSON files and displayed
-output. No external API mocks are required.
+The Capture subsystem is responsible for executing tool version commands, extracting
+version strings, and serializing the results to JSON. It consists of one unit:
+`VersionInfo` (the JSON version data record). Subsystem-level integration tests are in
+`Capture/CaptureTests.cs` and cover the full capture workflow including configuration
+loading, command execution, output file writing, and loading the saved data. Tests use a
+temporary directory containing a `.versionmark.yaml` configuration file. No external API
+mocks are required.
+
+### Test Environment
+
+N/A - standard test environment. Tests create temporary directories and configuration files
+during setup and clean them up afterwards.
+
+### Acceptance Criteria
+
+- All subsystem integration tests pass with zero failures across all supported OS and .NET
+  version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+- Every requirement for the Capture subsystem is covered by at least one named test
+  scenario.
 
 ### Test Scenarios
 
-The following integration test scenarios verify Capture subsystem requirements:
+**Capture_Context_CaptureFlag_SetsCaptureMode**: `--capture` sets capture mode in the
+context. This scenario is tested by `Capture_Context_CaptureFlag_SetsCaptureMode`.
 
-- **`Capture_Context_CaptureFlag_SetsCaptureMode`**: `--capture` sets capture mode in context.
-- **`Capture_Context_WithJobId_SetsJobId`**: `--job-id` sets the job ID in context.
-- **`Capture_Run_NoOutputFlagSpecified_UsesDefaultFilename`**: Default output filename is derived from job ID.
-- **`Capture_Context_WithToolFilter_SetsToolNames`**: Tool filter patterns after `--` are captured.
-- **`Capture_Run_NoToolFilter_CapturesAllConfiguredTools`**: No tool filter captures all configured tools.
-- **`Capture_Config_ReadFromFile_LoadsToolDefinitions`**: Config file loads all tool definitions.
-- **`Capture_FindVersions_ExecutesCommandAndExtractsVersion`**: Command is executed and version extracted via regex.
-- **`Capture_Run_DisplaysCapturedVersionsAfterCapture`**: Captured versions are displayed after capture.
-- **`Capture_Run_MissingConfig_ReportsError`**: Missing config file reports an error.
-- **`Capture_SaveAndLoad_PreservesAllVersionData`**: Save and load cycle preserves all version data.
-- **`Capture_MultipleCaptures_EachFileHasDistinctJobId`**: Multiple capture files each have a distinct job ID.
+**Capture_Context_WithJobId_SetsJobId**: `--job-id` sets the job ID in the context. This
+scenario is tested by `Capture_Context_WithJobId_SetsJobId`.
 
-### Dependencies
+**Capture_Run_NoOutputFlagSpecified_UsesDefaultFilename**: When no `--output` flag is
+specified, the default output filename is derived from the job ID. This scenario is tested
+by `Capture_Run_NoOutputFlagSpecified_UsesDefaultFilename`.
 
-No external mocks are required. Tests use temporary directories and configuration files
-created during test setup.
+**Capture_Context_WithToolFilter_SetsToolNames**: Tool filter patterns after `--` are
+captured in the context. This scenario is tested by
+`Capture_Context_WithToolFilter_SetsToolNames`.
 
-### Requirements Coverage
+**Capture_Run_NoToolFilter_CapturesAllConfiguredTools**: When no tool filter is specified,
+all configured tools are captured. This scenario is tested by
+`Capture_Run_NoToolFilter_CapturesAllConfiguredTools`.
 
-The following list maps Capture subsystem requirements to test scenarios:
+**Capture_Config_ReadFromFile_LoadsToolDefinitions**: The config file loads all tool
+definitions correctly. This scenario is tested by
+`Capture_Config_ReadFromFile_LoadsToolDefinitions`.
 
-- **`VersionMark-Capture-Capture`**: `Capture_Context_CaptureFlag_SetsCaptureMode`
-- **`VersionMark-Capture-JobId`**: `Capture_Context_WithJobId_SetsJobId`
-- **`VersionMark-Capture-Output`**: `Capture_SaveAndLoad_PreservesAllVersionData`
-- **`VersionMark-Capture-DefaultOutput`**: `Capture_Run_NoOutputFlagSpecified_UsesDefaultFilename`
-- **`VersionMark-Capture-ToolFilter`**: `Capture_Context_WithToolFilter_SetsToolNames`
-- **`VersionMark-Capture-MultipleTools`**: `Capture_Run_NoToolFilter_CapturesAllConfiguredTools`
-- **`VersionMark-Capture-Config`**: `Capture_Config_ReadFromFile_LoadsToolDefinitions`
-- **`VersionMark-Capture-Command`**: `Capture_FindVersions_ExecutesCommandAndExtractsVersion`
-- **`VersionMark-Capture-JsonOutput`**: `Capture_SaveAndLoad_PreservesAllVersionData`,
-  `Capture_MultipleCaptures_EachFileHasDistinctJobId`
-- **`VersionMark-Capture-Display`**: `Capture_Run_DisplaysCapturedVersionsAfterCapture`
-- **`VersionMark-Capture-ConfigError`**: `Capture_Run_MissingConfig_ReportsError`
-- **`VersionMark-Capture-CommandFailure`**: `Capture_FindVersions_ExecutesCommandAndExtractsVersion`
+**Capture_FindVersions_ExecutesCommandAndExtractsVersion**: The tool command is executed and
+the version string is extracted via the configured regex. This scenario is tested by
+`Capture_FindVersions_ExecutesCommandAndExtractsVersion`.
+
+**Capture_Run_DisplaysCapturedVersionsAfterCapture**: Captured versions are displayed in
+the output after capture completes. This scenario is tested by
+`Capture_Run_DisplaysCapturedVersionsAfterCapture`.
+
+**Capture_Run_MissingConfig_ReportsError**: A missing config file reports an error. This
+scenario is tested by `Capture_Run_MissingConfig_ReportsError`.
+
+**Capture_SaveAndLoad_PreservesAllVersionData**: A save and load cycle preserves all
+version data. This scenario is tested by `Capture_SaveAndLoad_PreservesAllVersionData`.
+
+**Capture_MultipleCaptures_EachFileHasDistinctJobId**: Multiple capture files each have a
+distinct job ID. This scenario is tested by
+`Capture_MultipleCaptures_EachFileHasDistinctJobId`.
+
+**Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode**: When `--capture` is used
+without `--job-id`, the capture pipeline reports an error and returns a non-zero exit code.
+This scenario is tested by `Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode`.
+
+**Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode**: When a configured command is
+invalid or not found, the capture pipeline reports an error and returns a non-zero exit code.
+This scenario is tested by `Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode`.
+
+**Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode**: When command output does not
+match the configured regex, the capture pipeline reports an error and returns a non-zero
+exit code. This scenario is tested by `Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode`.

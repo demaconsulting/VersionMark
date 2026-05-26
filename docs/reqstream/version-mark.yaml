@@ -1,6 +1,6 @@
 ---
 sections:
-  - title: VersionMark System Requirements
+  - title: VersionMark Requirements
     requirements:
       - id: VersionMark-System-Capture
         title: The tool shall capture tool version information from CI/CD environments.
@@ -11,6 +11,7 @@ sections:
         children:
           - VersionMark-Capture-Capture
           - VersionMark-Capture-JobId
+          - VersionMark-Capture-MissingJobId
           - VersionMark-Capture-Output
           - VersionMark-Capture-DefaultOutput
           - VersionMark-Capture-ToolFilter
@@ -21,11 +22,13 @@ sections:
           - VersionMark-Capture-Display
           - VersionMark-Capture-ConfigError
           - VersionMark-Capture-CommandFailure
+          - VersionMark-VersionMarkConfig-FindVersions
         tests:
           - IntegrationTest_CaptureCommand_CapturesToolVersions
 
       - id: VersionMark-System-Publish
-        title: The tool shall publish collected version information as a markdown report.
+        title: The tool shall publish collected version information as a markdown
+          report.
         justification: |
           Teams need a human-readable summary of tool versions across all jobs.
           Publishing to markdown enables the report to be included in release
@@ -44,7 +47,8 @@ sections:
           - VersionMark_PublishCommand_GeneratesMarkdownReport
 
       - id: VersionMark-System-Lint
-        title: The tool shall validate configuration files and report issues before capture or publish is run.
+        title: The tool shall validate configuration files and report issues before
+          capture or publish is run.
         justification: |
           Detecting configuration errors early, before a CI/CD run proceeds, reduces
           wasted build time and provides precise error locations so users can fix
@@ -52,6 +56,7 @@ sections:
         children:
           - VersionMark-Load-FileExistence
           - VersionMark-Load-YamlParsing
+          - VersionMark-Load-RootMapping
           - VersionMark-Load-ToolsSection
           - VersionMark-Load-ToolCommand
           - VersionMark-Load-ToolRegex
@@ -59,8 +64,14 @@ sections:
           - VersionMark-Load-RegexVersion
           - VersionMark-Load-OsOverrides
           - VersionMark-Load-UnknownKeys
-          - VersionMark-Load-ErrorLocation
+          - VersionMark-Load-IssueLocation
           - VersionMark-Load-AllIssues
+          - VersionMark-Load-Return
+          - VersionMark-Load-OsRegexValid
+          - VersionMark-Load-OsRegexVersion
+          - VersionMark-Load-VersionMarkLoadResult-Bundle
+          - VersionMark-Load-VersionMarkLoadResult-ErrorRouting
+          - VersionMark-Load-VersionMarkLoadResult-WarnRouting
         tests:
           - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
           - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
@@ -74,7 +85,8 @@ sections:
         children:
           - VersionMark-Validate-Capture
           - VersionMark-Validate-Publish
-          - VersionMark-Validate-Lint
+          - VersionMark-Validate-LintValid
+          - VersionMark-Validate-LintInvalid
           - VersionMark-Validate-Results
         tests:
           - IntegrationTest_ValidateFlag_RunsValidation

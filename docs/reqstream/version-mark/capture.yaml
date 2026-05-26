@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Capture Command
+      - title: Capture Requirements
         requirements:
           - id: VersionMark-Capture-Capture
             title: The tool shall support --capture flag to enable capture mode.
@@ -15,7 +15,8 @@ sections:
               - Capture_Context_CaptureFlag_SetsCaptureMode
 
           - id: VersionMark-Capture-JobId
-            title: The tool shall require --job-id parameter when capture mode is enabled.
+            title: The tool shall require --job-id parameter when capture mode is
+              enabled.
             justification: |
               The job ID uniquely identifies the capture session and is used in the
               default output filename, ensuring traceability of captured versions.
@@ -24,18 +25,33 @@ sections:
             tests:
               - Capture_Context_WithJobId_SetsJobId
 
+          - id: VersionMark-Capture-MissingJobId
+            title: >-
+              The tool shall report an error and return a non-zero exit code when
+              --capture is used without --job-id.
+            justification: |
+              The job ID is required to name the output file and identify the capture session.
+              A missing job ID must be caught immediately with a clear error rather than
+              producing an output file with an empty or ambiguous name.
+            tags:
+              - capture
+            tests:
+              - Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode
+
           - id: VersionMark-Capture-Output
-            title: The tool shall support --output parameter to specify the JSON output file path.
+            title: The tool shall support --output parameter to specify the JSON output
+              file path.
             justification: |
               Allows users to control where captured version information is saved,
               enabling integration with existing workflows and file structures.
             tags:
               - capture
             tests:
-              - Capture_SaveAndLoad_PreservesAllVersionData
+              - Capture_Run_NoToolFilter_CapturesAllConfiguredTools
 
           - id: VersionMark-Capture-DefaultOutput
-            title: The tool shall default output filename to versionmark-<job-id>.json when --output is not specified.
+            title: The tool shall default output filename to versionmark-<job-id>.json
+              when --output is not specified.
             justification: |
               Provides a predictable default naming convention that includes the job ID,
               making it easy to identify and organize capture files.
@@ -45,7 +61,8 @@ sections:
               - Capture_Run_NoOutputFlagSpecified_UsesDefaultFilename
 
           - id: VersionMark-Capture-ToolFilter
-            title: The tool shall accept an optional list of tool names after -- separator in capture mode.
+            title: The tool shall accept an optional list of tool names after -- separator
+              in capture mode.
             justification: |
               Allows users to capture versions for specific tools rather than all configured
               tools, improving performance and reducing unnecessary captures.
@@ -55,7 +72,8 @@ sections:
               - Capture_Context_WithToolFilter_SetsToolNames
 
           - id: VersionMark-Capture-MultipleTools
-            title: The tool shall capture all tools defined in configuration when no tool names are specified.
+            title: The tool shall capture all tools defined in configuration when
+              no tool names are specified.
             justification: |
               Provides a convenient default behavior where all configured tools are captured,
               suitable for comprehensive version tracking scenarios.
@@ -65,7 +83,8 @@ sections:
               - Capture_Run_NoToolFilter_CapturesAllConfiguredTools
 
           - id: VersionMark-Capture-Config
-            title: The tool shall read .versionmark.yaml from the current directory in capture mode.
+            title: The tool shall read .versionmark.yaml from the current directory
+              in capture mode.
             justification: |
               Uses the standard configuration file location to determine which tools to
               capture and how to capture them.
@@ -75,7 +94,8 @@ sections:
               - Capture_Config_ReadFromFile_LoadsToolDefinitions
 
           - id: VersionMark-Capture-Command
-            title: The tool shall execute configured commands and extract version information using regex patterns.
+            title: The tool shall execute configured commands and extract version
+              information using regex patterns.
             justification: |
               Implements the core capture functionality by running tool commands and parsing
               their output to extract version numbers.
@@ -85,18 +105,22 @@ sections:
               - Capture_FindVersions_ExecutesCommandAndExtractsVersion
 
           - id: VersionMark-Capture-JsonOutput
-            title: The tool shall save captured version information to a JSON file with job ID and version mappings.
+            title: The tool shall save captured version information to a JSON file
+              with job ID and version mappings.
             justification: |
               Stores captured versions in a structured format that can be easily consumed
               by other tools and systems.
             tags:
               - capture
+            children:
+              - VersionMark-VersionInfo-Save
             tests:
               - Capture_SaveAndLoad_PreservesAllVersionData
               - Capture_MultipleCaptures_EachFileHasDistinctJobId
 
           - id: VersionMark-Capture-Display
-            title: The tool shall display captured tool names and versions to the user.
+            title: The tool shall display captured tool names and versions to the
+              user.
             justification: |
               Provides immediate feedback to users about what versions were captured,
               enabling verification of the capture operation.
@@ -106,12 +130,15 @@ sections:
               - Capture_Run_DisplaysCapturedVersionsAfterCapture
 
           - id: VersionMark-Capture-ConfigError
-            title: The tool shall report errors when .versionmark.yaml cannot be found or read in capture mode.
+            title: The tool shall report errors when .versionmark.yaml cannot be found
+              or read in capture mode.
             justification: |
               Provides clear error messages to users when the configuration file is missing
               or inaccessible, preventing silent failures.
             tags:
               - capture
+            children:
+              - VersionMark-Load-FileExistence
             tests:
               - Capture_Run_MissingConfig_ReportsError
 
@@ -128,3 +155,5 @@ sections:
             tests:
               - VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException
               - VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException
+              - Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode
+              - Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode

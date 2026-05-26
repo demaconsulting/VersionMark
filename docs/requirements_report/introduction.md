@@ -1,27 +1,17 @@
 # Introduction
 
-This document contains the requirements traceability matrix for the VersionMark project.
+This document provides the requirements Trace Matrix for VersionMark,
+mapping each requirement to its corresponding test evidence.
 
 ## Purpose
 
-The trace matrix provides traceability between requirements and test cases, ensuring that
-all requirements are validated through appropriate testing. This demonstrates that the
-VersionMark meets its specified requirements.
+To demonstrate that every requirement is covered by at least one passing test,
+providing compliance evidence for VersionMark.
 
 ## Scope
 
-This traceability matrix covers:
+This document covers all requirements in `docs/reqstream/` and their test evidence.
 
-- Mapping of requirements to test cases
-- Test execution results linked to requirements
-- Validation of requirement coverage
-- Platform-specific test execution
+## References
 
-## Audience
-
-This document is intended for:
-
-- Software developers working on VersionMark
-- Quality assurance teams validating requirements coverage
-- Project stakeholders reviewing test coverage
-- Auditors verifying requirements traceability
+[VersionMark releases](https://github.com/demaconsulting/VersionMark/releases)

@@ -1,61 +1,66 @@
 ---
 sections:
-  - title: VersionMarkConfig Unit Requirements
-    requirements:
-      - id: VersionMark-VersionMarkConfig-ReadFromFile
-        title: >-
-          The VersionMarkConfig.ReadFromFile method shall load and parse a
-          .versionmark.yaml file, validating structure and content.
-        justification: |
-          ReadFromFile is the single entry point for loading configuration. It validates
-          file existence, YAML structure, presence of at least one tool definition,
-          required command and regex field presence and non-emptiness, OS-specific
-          override validity, regex compilability, and the presence of a named 'version'
-          capture group, providing clear errors when any check fails.
-        tests:
-          - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
-          - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
-          - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
-          - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
-          - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
+  - title: VersionMark Requirements
+    sections:
+      - title: Configuration Requirements
+        sections:
+          - title: VersionMarkConfig Requirements
+            requirements:
+              - id: VersionMark-VersionMarkConfig-ReadFromFile
+                title: >-
+                  The VersionMarkConfig.ReadFromFile method shall load and parse a
+                  .versionmark.yaml file, validating structure and content.
+                justification: |
+                  ReadFromFile delegates to Load and converts the first error-level issue into an
+                  ArgumentException, acting as a backward-compatibility wrapper for callers that do
+                  not require the full lint-issue list. It is simpler to call when only the loaded
+                  configuration is needed and error details beyond the first are not important.
+                tests:
+                  - VersionMarkConfig_ReadFromFile_ValidFile_ReturnsConfig
+                  - VersionMarkConfig_ReadFromFile_WithAllOsOverrides_ReturnsConfig
+                  - VersionMarkConfig_ReadFromFile_NonExistentFile_ThrowsArgumentException
+                  - VersionMarkConfig_ReadFromFile_InvalidYaml_ThrowsArgumentException
+                  - VersionMarkConfig_ReadFromFile_NoTools_ThrowsArgumentException
 
-      - id: VersionMark-VersionMarkConfig-Load
-        title: >-
-          The VersionMarkConfig.Load method shall perform a full validation
-          of a .versionmark.yaml file and return both the parsed configuration and all
-          discovered issues.
-        justification: |
-          Load provides the primary API for lint-aware configuration loading. It validates
-          the file in a single pass, accumulating all warnings and errors rather than
-          failing on the first problem, and returns null config when any error-severity
-          issue is found.
-        tests:
-          - VersionMarkConfig_Load_ValidConfig_ReturnsConfig
-          - VersionMarkConfig_Load_MissingFile_ReturnsNullConfig
-          - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig
-          - VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig
-          - VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig
-          - VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig
-          - VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig
-          - VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig
-          - VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig
-          - VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig
-          - VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig
-          - VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig
-          - VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig
+              - id: VersionMark-VersionMarkConfig-Load
+                title: >-
+                  The VersionMarkConfig.Load method shall perform a full validation
+                  of a .versionmark.yaml file and return both the parsed configuration
+                  and
+                  all discovered issues.
+                justification: |
+                  Load provides the primary API for lint-aware configuration loading. It validates
+                  the file in a single pass, accumulating all warnings and errors rather than
+                  failing on the first problem, and returns null config when any error-severity
+                  issue is found.
+                tests:
+                  - VersionMarkConfig_Load_ValidConfig_ReturnsConfig
+                  - VersionMarkConfig_Load_MissingFile_ReturnsNullConfig
+                  - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig
+                  - VersionMarkConfig_Load_MissingToolsSection_ReturnsNullConfig
+                  - VersionMarkConfig_Load_EmptyToolsSection_ReturnsNullConfig
+                  - VersionMarkConfig_Load_MissingCommand_ReturnsNullConfig
+                  - VersionMarkConfig_Load_EmptyCommand_ReturnsNullConfig
+                  - VersionMarkConfig_Load_MissingRegex_ReturnsNullConfig
+                  - VersionMarkConfig_Load_EmptyRegex_ReturnsNullConfig
+                  - VersionMarkConfig_Load_InvalidRegex_ReturnsNullConfig
+                  - VersionMarkConfig_Load_RegexMissingVersionGroup_ReturnsNullConfig
+                  - VersionMarkConfig_Load_UnknownTopLevelKey_ReturnsConfig
+                  - VersionMarkConfig_Load_UnknownToolKey_ReturnsConfig
 
-      - id: VersionMark-VersionMarkConfig-FindVersions
-        title: >-
-          The VersionMarkConfig.FindVersions method shall execute tool commands and
-          extract version strings using the configured regex patterns.
-        justification: |
-          FindVersions is the core capture mechanism. It runs each configured tool's
-          command and applies the regex to extract the version string, returning a
-          VersionInfo record ready for serialization.
-        tests:
-          - VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo
-          - VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions
-          - VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException
-          - VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException
-          - VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException
-          - VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException
+              - id: VersionMark-VersionMarkConfig-FindVersions
+                title: >-
+                  The VersionMarkConfig.FindVersions method shall execute tool commands
+                  and
+                  extract version strings using the configured regex patterns.
+                justification: |
+                  FindVersions is the core capture mechanism. It runs each configured tool's
+                  command and applies the regex to extract the version string, returning a
+                  VersionInfo record ready for serialization.
+                tests:
+                  - VersionMarkConfig_FindVersions_DotnetCommand_ReturnsVersionInfo
+                  - VersionMarkConfig_FindVersions_MultipleTools_ReturnsAllVersions
+                  - VersionMarkConfig_FindVersions_NonExistentTool_ThrowsArgumentException
+                  - VersionMarkConfig_FindVersions_InvalidCommand_ThrowsInvalidOperationException
+                  - VersionMarkConfig_FindVersions_RegexNoMatch_ThrowsInvalidOperationException
+                  - VersionMarkConfig_FindVersions_RegexNoVersionGroup_ThrowsInvalidOperationException

@@ -1,79 +1,101 @@
 ---
 sections:
-  - title: Context Unit Requirements
-    requirements:
-      - id: VersionMark-Context-Create
-        title: >-
-          The Context class shall parse command-line arguments into a Context instance
-          with accessible properties for every supported flag.
-        justification: |
-          All argument parsing is centralized in the Context class, ensuring
-          consistent parsing behavior across all invocations and making the parsed
-          state available throughout the program.
-        tests:
-          - Context_Create_NoArguments_ReturnsDefaultContext
-          - Context_Create_VersionFlag_SetsVersionTrue
-          - Context_Create_ShortVersionFlag_SetsVersionTrue
-          - Context_Create_HelpFlag_SetsHelpTrue
-          - Context_Create_ShortHelpFlag_H_SetsHelpTrue
-          - Context_Create_ShortHelpFlag_Question_SetsHelpTrue
-          - Context_Create_SilentFlag_SetsSilentTrue
-          - Context_Create_ValidateFlag_SetsValidateTrue
-          - Context_Create_ResultsFlag_SetsResultsFile
-          - Context_Create_LogFlag_OpensLogFile
-          - Context_Create_UnknownArgument_ThrowsArgumentException
-          - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
-          - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
-          - Context_Create_PublishFlag_SetsPublishTrue
-          - Context_Create_ReportParameter_SetsReportFile
-          - Context_Create_ReportDepthParameter_SetsReportDepth
-          - Context_Create_NoReportDepth_DefaultsToDepthOne
-          - Context_Create_GlobPatternsAfterSeparator_CapturesPatterns
-          - Context_Create_PublishWithoutReport_ParsesSuccessfully
-          - Context_Create_NoGlobPatterns_EmptyArray
-          - Context_Create_LintFlag_SetsLintTrue
-          - Context_Create_LintFlag_WithFile_SetsLintFile
-          - Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile
-          - Context_Create_DepthParameter_SetsDepth
-          - Context_Create_NoDepth_DefaultsToOne
-          - Context_Create_DepthParameter_SetsDefaultReportDepth
-          - Context_Create_ExplicitReportDepthOverridesDepth
-          - Context_Create_DepthZero_ThrowsArgumentException
-          - Context_Create_DepthNegative_ThrowsArgumentException
-          - Context_Create_DepthSeven_ThrowsArgumentException
-          - Context_Create_ReportDepthZero_ThrowsArgumentException
-          - Context_Create_ReportDepthNegative_ThrowsArgumentException
-          - Context_Create_ReportDepthSeven_ThrowsArgumentException
-          - Context_Create_CaptureFlag_SetsCaptureTrue
-          - Context_Create_JobIdFlag_SetsJobId
-          - Context_Create_OutputFlag_SetsOutputFile
+  - title: VersionMark Requirements
+    sections:
+      - title: Command-Line Interface Requirements
+        sections:
+          - title: Context Requirements
+            requirements:
+              - id: VersionMark-Context-Create
+                title: >-
+                  The Context class shall parse command-line arguments into a Context
+                  instance
+                  with accessible properties for every supported flag.
+                justification: |
+                  All argument parsing is centralized in the Context class, ensuring
+                  consistent parsing behavior across all invocations and making the parsed
+                  state available throughout the program.
+                tests:
+                  - Context_Create_NoArguments_ReturnsDefaultContext
+                  - Context_Create_VersionFlag_SetsVersionTrue
+                  - Context_Create_ShortVersionFlag_SetsVersionTrue
+                  - Context_Create_HelpFlag_SetsHelpTrue
+                  - Context_Create_ShortHelpFlag_H_SetsHelpTrue
+                  - Context_Create_ShortHelpFlag_Question_SetsHelpTrue
+                  - Context_Create_SilentFlag_SetsSilentTrue
+                  - Context_Create_ValidateFlag_SetsValidateTrue
+                  - Context_Create_ResultsFlag_SetsResultsFile
+                  - Context_Create_LogFlag_OpensLogFile
+                  - Context_Create_UnknownArgument_ThrowsArgumentException
+                  - Context_Create_LogFlag_WithoutValue_ThrowsArgumentException
+                  - Context_Create_ResultsFlag_WithoutValue_ThrowsArgumentException
+                  - Context_Create_PublishFlag_SetsPublishTrue
+                  - Context_Create_ReportParameter_SetsReportFile
+                  - Context_Create_ReportDepthParameter_SetsReportDepth
+                  - Context_Create_NoReportDepth_DefaultsToDepthOne
+                  - Context_Create_GlobPatternsAfterSeparator_CapturesPatterns
+                  - Context_Create_PublishWithoutReport_ParsesSuccessfully
+                  - Context_Create_NoGlobPatterns_EmptyArray
+                  - Context_Create_LintFlag_SetsLintTrue
+                  - Context_Create_LintFlag_WithFile_SetsLintFile
+                  - Context_Create_LintFlag_FollowedByFlag_DoesNotConsumeFlagAsFile
+                  - Context_Create_DepthParameter_SetsDepth
+                  - Context_Create_NoDepth_DefaultsToOne
+                  - Context_Create_DepthParameter_SetsDefaultReportDepth
+                  - Context_Create_ExplicitReportDepthOverridesDepth
+                  - Context_Create_DepthZero_ThrowsArgumentException
+                  - Context_Create_DepthNegative_ThrowsArgumentException
+                  - Context_Create_DepthSeven_ThrowsArgumentException
+                  - Context_Create_ReportDepthZero_ThrowsArgumentException
+                  - Context_Create_ReportDepthNegative_ThrowsArgumentException
+                  - Context_Create_ReportDepthSeven_ThrowsArgumentException
+                  - Context_Create_CaptureFlag_SetsCaptureTrue
+                  - Context_Create_JobIdFlag_SetsJobId
+                  - Context_Create_OutputFlag_SetsOutputFile
+                  - Context_Create_DepthFlag_WithoutValue_ThrowsArgumentException
+                  - Context_Create_SeparatorOutsideMode_ThrowsArgumentException
 
-      - id: VersionMark-Context-WriteLine
-        title: The Context.WriteLine method shall write output respecting the silent flag.
-        justification: |
-          Silent mode suppresses console output so automated scripts can run the tool
-          without cluttering their log.
-        tests:
-          - Context_WriteLine_NotSilent_WritesToConsole
-          - Context_WriteLine_Silent_DoesNotWriteToConsole
+              - id: VersionMark-Context-WriteLine
+                title: The Context.WriteLine method shall write output respecting
+                  the silent flag.
+                justification: |
+                  Silent mode suppresses console output so automated scripts can run the tool
+                  without cluttering their log.
+                tests:
+                  - Context_WriteLine_NotSilent_WritesToConsole
+                  - Context_WriteLine_Silent_DoesNotWriteToConsole
 
-      - id: VersionMark-Context-WriteError
-        title: >-
-          The Context.WriteError method shall write error messages to stderr,
-          unless silent mode is active, and shall write error messages to the log file
-          when one is open.
-        justification: |
-          Silent mode suppresses all console output, including error messages written to
-          stderr. The log file always receives error output regardless of silent mode.
-        tests:
-          - Context_WriteError_NotSilent_WritesToConsole
-          - Context_WriteError_Silent_DoesNotWriteToConsole
-          - Context_WriteError_WritesToLogFile
+              - id: VersionMark-Context-WriteError
+                title: >-
+                  The Context.WriteError method shall write error messages to stderr
+                  unless silent mode is active.
+                justification: |
+                  Silent mode suppresses all output (both stdout and stderr) so that callers
+                  can run the tool without any console output and detect failures solely through
+                  the process exit code. This supports self-validation scenarios where the tool
+                  deliberately triggers errors to verify error handling without polluting the
+                  output stream.
+                tests:
+                  - Context_WriteError_NotSilent_WritesToConsole
+                  - Context_WriteError_Silent_SuppressesStderr
 
-      - id: VersionMark-Context-WriteErrorExitCode
-        title: The Context.WriteError method shall set the process exit code to a non-zero value.
-        justification: |
-          The process must exit with a non-zero code so that calling scripts can detect
-          failure automatically even when output is silenced.
-        tests:
-          - Context_WriteError_SetsErrorExitCode
+              - id: VersionMark-Context-WriteErrorLog
+                title: >-
+                  The Context.WriteError method shall write error messages to the
+                  log
+                  file when one is open.
+                justification: |
+                  The log file always receives error output regardless of silent mode,
+                  ensuring a complete record of all errors is available for debugging and
+                  audit even when console output is suppressed.
+                tests:
+                  - Context_WriteError_WritesToLogFile
+
+              - id: VersionMark-Context-WriteErrorExitCode
+                title: The Context.WriteError method shall set the process exit code
+                  to a non-zero value.
+                justification: |
+                  The process must exit with a non-zero code so that calling scripts can detect
+                  failure automatically even when output is silenced.
+                tests:
+                  - Context_WriteError_SetsErrorExitCode

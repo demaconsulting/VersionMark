@@ -2,21 +2,23 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Markdown Formatter
+      - title: Markdown Formatter Requirements
         requirements:
           - id: VersionMark-Formatter-Structure
-            title: The tool shall generate markdown output listing all tools in sorted order.
+            title: The tool shall generate markdown output listing all tools in sorted
+              order.
             justification: |
               Provides consistent, predictable output ordering that makes reports easier
               to read and compare across multiple runs.
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_SortsToolsAlphabetically
+              - MarkdownFormatter_Format_SortsToolsAlphabetically
 
           - id: VersionMark-Formatter-JobId
             title: >-
-              The tool shall suppress job IDs and emit only the version string when the same
+              The tool shall suppress job IDs and emit only the version string when
+              the same
               version appears across all input files for a tool.
             justification: |
               Reduces redundancy in reports when all jobs used the same version of a tool,
@@ -24,11 +26,12 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithUniformVersions_ShowsVersionOnly
+              - MarkdownFormatter_Format_WithUniformVersions_ShowsVersionOnly
 
           - id: VersionMark-Formatter-Versions
             title: >-
-              The tool shall display individual job IDs with their versions when versions differ
+              The tool shall display individual job IDs with their versions when versions
+              differ
               across input files.
             justification: |
               Provides detailed visibility into version differences across jobs,
@@ -36,11 +39,12 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
+              - MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs
 
           - id: VersionMark-Formatter-MarkdownList
             title: >-
-              The tool shall use bold formatting and parenthesized job IDs to indicate which
+              The tool shall use bold formatting and parenthesized job IDs to indicate
+              which
               jobs had which versions.
             justification: |
               Provides clear visual distinction between different job executions and their
@@ -48,14 +52,15 @@ sections:
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithDifferentVersions_ShowsIndividualJobs
+              - MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs
 
           - id: VersionMark-Formatter-MarkdownConsolidation
-            title: The tool shall respect the report-depth parameter when generating markdown heading levels.
+            title: The tool shall respect the report-depth parameter when generating
+              markdown heading levels.
             justification: |
               Allows the generated markdown to integrate properly into existing document
               structures with appropriate heading hierarchy.
             tags:
               - formatter
             tests:
-              - MarkdownFormatter_FormatVersions_WithCustomDepth_UsesCorrectHeadingLevel
+              - MarkdownFormatter_Format_WithCustomDepth_UsesCorrectHeadingLevel

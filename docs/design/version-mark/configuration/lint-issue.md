@@ -1,23 +1,23 @@
-### LintIssue Unit
+### LintIssue
 
-#### Overview
+#### Purpose
 
-`LintIssue.cs` contains the types used to surface validation issues found while loading a
-`.versionmark.yaml` configuration file. It defines three public types: the `LintSeverity`
-enumeration, the `LintIssue` record, and the `VersionMarkLoadResult` record.
+`LintIssue.cs` defines the types used to surface validation issues found while loading a
+`.versionmark.yaml` configuration file. It provides `LintSeverity` (severity
+classification), `LintIssue` (a single located issue), and `VersionMarkLoadResult` (the
+return value of `VersionMarkConfig.Load` bundling the loaded configuration with all issues
+found).
 
-#### LintSeverity Enumeration
+#### Data Model
 
-`LintSeverity` classifies the severity of a validation issue:
+**`LintSeverity` enumeration**
 
 | Value     | Meaning                                                                    |
 |-----------|----------------------------------------------------------------------------|
 | `Warning` | Non-fatal advisory message; loading continues.                             |
-| `Error`   | Fatal validation failure that prevents the configuration from being built. |
+| `Error`   | Fatal validation failure that prevents the configuration from being used.  |
 
-#### LintIssue Record
-
-`LintIssue` represents a single issue found during configuration loading. It carries:
+**`LintIssue` record**
 
 | Property      | Type           | Description                                    |
 |---------------|----------------|------------------------------------------------|
@@ -27,21 +27,40 @@ enumeration, the `LintIssue` record, and the `VersionMarkLoadResult` record.
 | `Severity`    | `LintSeverity` | Severity classification.                       |
 | `Description` | `string`       | Human-readable description of the issue.       |
 
-`ToString` formats the record as `"{FilePath}({Line},{Column}): {severity}: {Description}"`,
-where `{severity}` is emitted in lowercase (`warning` or `error`), producing output in
-the familiar `file(line,col): error: message` format understood by CI systems and editors.
+`ToString` formats the record as `"{FilePath}({Line},{Column}): {severity}: {Description}"`
+where `{severity}` is lowercase (`warning` or `error`), producing output in the familiar
+`file(line,col): level: message` format understood by CI systems and editors.
 
-#### VersionMarkLoadResult Record
+**`VersionMarkLoadResult` record**
 
-`VersionMarkLoadResult` is the return type of `VersionMarkConfig.Load`. It bundles two
-properties:
-
-| Property | Type                       | Description                                                                 |
-|----------|----------------------------|-----------------------------------------------------------------------------|
-| `Config` | `VersionMarkConfig?`       | The loaded configuration, or `null` when errors prevented building it.      |
+| Property | Type                       | Description                                                                |
+|----------|----------------------------|----------------------------------------------------------------------------|
+| `Config` | `VersionMarkConfig?`       | Loaded configuration; `null` when any error-level issues were found.       |
 | `Issues` | `IReadOnlyList<LintIssue>` | All validation issues; may contain warnings even when `Config` is non-null. |
 
-The `ReportIssues` method writes all issues to a `Context`, routing `LintSeverity.Error`
-issues to `context.WriteError` and `LintSeverity.Warning` issues to `context.WriteLine`.
-This method is `internal` and is called only within the library (by `RunLint` and
-`RunCapture` in `Program`).
+#### Key Methods
+
+**`VersionMarkLoadResult.ReportIssues(Context context)` (internal)** — Iterates all issues
+and routes each to `context.WriteError` (for `Error` severity) or `context.WriteLine` (for
+`Warning` severity).
+
+#### Error Handling
+
+These types are primarily value-carrying data records with minimal internal error handling.
+All error accumulation is performed by `VersionMarkConfig.Load`, which populates the `Issues`
+list. Callers inspect the returned `VersionMarkLoadResult` to determine whether the
+configuration is usable.
+
+`VersionMarkLoadResult.ReportIssues` guards against a null `context` argument by calling
+`ArgumentNullException.ThrowIfNull(context)` before iterating issues.
+
+#### Dependencies
+
+- `Context` (Cli subsystem) — used by `ReportIssues` to route issue output.
+
+#### Callers
+
+- `VersionMarkConfig.Load` — creates `LintIssue` records and returns them in a
+  `VersionMarkLoadResult`.
+- `Program.RunCapture` and `Program.RunLint` — call `result.ReportIssues` to write
+  discovered issues to the context output.

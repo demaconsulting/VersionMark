@@ -1,47 +1,51 @@
-## Configuration Subsystem Verification
+## Configuration
 
-### Overview
+### Verification Approach
 
 The Configuration subsystem is responsible for loading and validating the
 `.versionmark.yaml` configuration file. It consists of three units: `VersionMarkConfig`
 (the top-level configuration container), `ToolConfig` (per-tool configuration record), and
-`LintIssue` (lint issue record and load result).
+`LintIssue` (lint issue record and load result). Subsystem-level integration tests are in
+`Configuration/ConfigurationTests.cs` and cover the full configuration loading workflow via
+`VersionMarkConfig.ReadFromFile`. Tests write temporary YAML files to disk and assert on
+the returned configuration object. No external mocks or stubs are required.
 
-Subsystem-level integration tests are in `Configuration/ConfigurationTests.cs` and cover
-the full configuration loading workflow via `VersionMarkConfig.ReadFromFile`. Unit-level
-verification for each unit is in the chapters that follow.
+### Test Environment
 
-### Verification Approach
+N/A - standard test environment. Tests write temporary YAML files to disk during setup and
+clean them up afterwards. No additional environment configuration is required.
 
-Integration tests write temporary YAML files to disk and call `VersionMarkConfig.ReadFromFile`,
-then assert on the returned configuration object. No external mocks or stubs are required.
+### Acceptance Criteria
+
+- All subsystem integration tests pass with zero failures across all supported OS and .NET
+  version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+- Every requirement for the Configuration subsystem is covered by at least one named test
+  scenario.
 
 ### Test Scenarios
 
-The following integration test scenarios verify Configuration subsystem requirements:
+**Configuration_ReadFromFile_MultipleTools_AllToolsAccessible**: A YAML file defining
+multiple tools is loaded and all tools are accessible in the returned config object. This
+scenario is tested by `Configuration_ReadFromFile_MultipleTools_AllToolsAccessible`.
 
-- **`Configuration_ReadFromFile_MultipleTools_AllToolsAccessible`**: Multiple tools all accessible after load.
-- **`Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand`**: OS overrides select correct command.
-- **`Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex`**: OS regex overrides select correct regex.
-- **`Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException`**: Empty tools section throws ArgumentException.
-- **`Configuration_ReadFromFile_MissingFile_ThrowsArgumentException`**: Missing config file throws ArgumentException.
-- **`Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException`**: Invalid YAML throws ArgumentException.
+**Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand**: A YAML file with
+OS-specific command overrides is loaded and the correct command is selected for the current
+OS. This scenario is tested by
+`Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand`.
 
-### Dependencies
+**Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex**: A YAML file with
+OS-specific regex overrides is loaded and the correct regex is selected for the current OS.
+This scenario is tested by
+`Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex`.
 
-No external mocks are required. Tests read from temporary YAML files written during the
-test setup.
+**Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException**: A YAML file with an
+empty tools section throws `ArgumentException` during loading. This scenario is tested by
+`Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException`.
 
-### Requirements Coverage
+**Configuration_ReadFromFile_MissingFile_ThrowsArgumentException**: A path pointing to a
+non-existent file throws `ArgumentException`. This scenario is tested by
+`Configuration_ReadFromFile_MissingFile_ThrowsArgumentException`.
 
-The following list maps Configuration subsystem requirements to test scenarios:
-
-- **`VersionMark-Configuration-YamlConfig`**: `Configuration_ReadFromFile_MultipleTools_AllToolsAccessible`
-- **`VersionMark-Configuration-ToolDefinition`**: `Configuration_ReadFromFile_MultipleTools_AllToolsAccessible`
-- **`VersionMark-Configuration-OsCommandOverride`**:
-  `Configuration_ReadFromFile_WithOsOverrides_SelectsAppropriateCommand`
-- **`VersionMark-Configuration-OsRegexOverride`**:
-  `Configuration_ReadFromFile_OsRegexOverride_SelectsAppropriateRegex`
-- **`VersionMark-Configuration-ValidateTools`**: `Configuration_ReadFromFile_EmptyTools_ThrowsArgumentException`
-- **`VersionMark-Configuration-ReadError`**: `Configuration_ReadFromFile_MissingFile_ThrowsArgumentException`
-- **`VersionMark-Configuration-ParseError`**: `Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException`
+**Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException**: A file containing
+invalid YAML throws `ArgumentException` during loading. This scenario is tested by
+`Configuration_ReadFromFile_InvalidYaml_ThrowsArgumentException`.

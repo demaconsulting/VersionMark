@@ -1,55 +1,70 @@
 ---
 sections:
-  - title: Validation Unit Requirements
-    requirements:
-      - id: VersionMark-Validation-Capture
-        title: The Validation class shall verify the capture mode end-to-end.
-        justification: |
-          Self-validation of the capture workflow confirms the tool is correctly
-          installed and able to execute commands and produce JSON output in the
-          deployment environment.
-        tests:
-          - VersionMark_CapturesVersions
+  - title: VersionMark Requirements
+    sections:
+      - title: SelfTest Requirements
+        sections:
+          - title: Validation Requirements
+            requirements:
+              - id: VersionMark-Validation-Capture
+                title: The Validation class shall verify the capture mode end-to-end.
+                justification: |
+                  Self-validation of the capture workflow confirms the tool is correctly
+                  installed and able to execute commands and produce JSON output in the
+                  deployment environment.
+                tests:
+                  - VersionMark_CapturesVersions
 
-      - id: VersionMark-Validation-Publish
-        title: The Validation class shall verify the publish mode end-to-end.
-        justification: |
-          Self-validation of the publish workflow confirms the tool is correctly
-          able to read JSON capture files and produce markdown reports in the
-          deployment environment.
-        tests:
-          - VersionMark_GeneratesMarkdownReport
+              - id: VersionMark-Validation-Publish
+                title: The Validation class shall verify the publish mode end-to-end.
+                justification: |
+                  Self-validation of the publish workflow confirms the tool is correctly
+                  able to read JSON capture files and produce markdown reports in the
+                  deployment environment.
+                tests:
+                  - VersionMark_GeneratesMarkdownReport
 
-      - id: VersionMark-Validation-Lint
-        title: >-
-          The Validation class shall verify that lint mode correctly accepts valid
-          and rejects invalid configurations.
-        justification: |
-          Self-validation of lint mode confirms that the configuration validation
-          logic is functioning correctly in the deployment environment.
-        tests:
-          - VersionMark_LintPassesForValidConfig
-          - VersionMark_LintReportsErrorsForInvalidConfig
+              - id: VersionMark-Validation-LintValid
+                title: The Validation class shall verify that lint mode accepts valid
+                  configurations.
+                justification: |
+                  Self-validation of lint mode's valid-config acceptance confirms the
+                  configuration validation logic approves correct configurations in the
+                  deployment environment.
+                tests:
+                  - VersionMark_LintPassesForValidConfig
 
-      - id: VersionMark-Validation-HeaderDepth
-        title: >-
-          The Validation class shall use the heading depth specified by the --depth
-          argument for the self-validation report.
-        justification: |
-          The --depth argument allows callers to embed the self-validation report
-          at the appropriate heading level within a larger markdown document.
-        tests:
-          - SelfTest_Run_WithDepthTwo_WritesHashHashHeader
+              - id: VersionMark-Validation-LintInvalid
+                title: The Validation class shall verify that lint mode rejects invalid
+                  configurations.
+                justification: |
+                  Self-validation of lint mode's error-rejection confirms the
+                  configuration validation logic rejects bad configurations in the
+                  deployment environment.
+                tests:
+                  - VersionMark_LintReportsErrorsForInvalidConfig
 
-      - id: VersionMark-Validation-WriteResults
-        title: >-
-          The Validation class shall write self-validation results to a TRX or JUnit XML
-          file when a results file path is specified.
-        justification: |
-          Standard test result formats allow CI/CD systems and dashboards to consume
-          and display self-validation outcomes without custom tooling. Supporting both
-          TRX (.trx) and JUnit XML (.xml) ensures compatibility with MSTest-based and
-          JUnit-based CI pipelines.
-        tests:
-          - SelfTest_Run_WithResultsFlag_WritesResultsFile
-          - SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile
+              - id: VersionMark-Validation-HeaderDepth
+                title: >-
+                  The Validation class shall use the heading depth specified by the
+                  --depth
+                  argument for the self-validation report.
+                justification: |
+                  The --depth argument allows callers to embed the self-validation report
+                  at the appropriate heading level within a larger markdown document.
+                tests:
+                  - SelfTest_Run_WithDepthTwo_WritesHashHashHeader
+
+              - id: VersionMark-Validation-WriteResults
+                title: >-
+                  The Validation class shall write self-validation results to a TRX
+                  or JUnit
+                  XML file when a results file path is specified.
+                justification: |
+                  Standard test result formats allow CI/CD systems and dashboards to consume
+                  and display self-validation outcomes without custom tooling. Supporting both
+                  TRX (.trx) and JUnit XML (.xml) ensures compatibility with MSTest-based and
+                  JUnit-based CI pipelines.
+                tests:
+                  - SelfTest_Run_WithResultsFlag_WritesResultsFile
+                  - SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile

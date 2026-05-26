@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Platform Support
+      - title: Platform Support Requirements
         requirements:
           - id: VersionMark-Platform-Windows
             title: The tool shall build and run on Windows platforms.

@@ -1,13 +1,13 @@
 ---
-title: VersionMark Code Quality Report
-subtitle: Code Quality Analysis Report
-author: DEMA Consulting
-description: Code Quality Analysis Report for VersionMark
+title: "VersionMark Code Quality Report"
+subtitle: "A .NET tool for CI/CD tool version tracking"
+author: "DEMA Consulting"
+description: "Code Quality Report for VersionMark"
 lang: en-US
 keywords:
-  - VersionMark
   - Code Quality
-  - Analysis
+  - Static Analysis
+  - VersionMark
+  - C#
   - .NET
-  - Documentation
 ---

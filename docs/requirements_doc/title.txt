@@ -1,13 +1,12 @@
 ---
-title: VersionMark Requirements
-subtitle: Requirements Specification for the VersionMark
-author: DEMA Consulting
-description: Requirements Specification for the VersionMark
+title: "VersionMark Requirements Document"
+subtitle: "A .NET tool for CI/CD tool version tracking"
+author: "DEMA Consulting"
+description: "Requirements Document for VersionMark"
 lang: en-US
 keywords:
-  - VersionMark
   - Requirements
-  - Specification
+  - VersionMark
+  - C#
   - .NET
-  - Command-Line Tool
 ---

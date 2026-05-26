@@ -181,16 +181,20 @@ public class ContextTests
     [Fact]
     public void Context_Create_LogFlag_OpensLogFile()
     {
+        // Arrange
         var logFile = Path.GetTempFileName();
         try
         {
+            // Act
             using (var context = Context.Create(["--log", logFile]))
             {
                 context.WriteLine("Test message");
+
+                // Assert - Verify exit code is success
                 Assert.Equal(0, context.ExitCode);
             }
 
-            // Verify log file was written
+            // Assert - Verify log file was written
             Assert.True(File.Exists(logFile));
             var logContent = File.ReadAllText(logFile);
             Assert.Contains("Test message", logContent);
@@ -272,12 +276,12 @@ public class ContextTests
     }
 
     /// <summary>
-    ///     Test that WriteError does not write to console when silent.
-    ///     What is tested: WriteError is suppressed when Silent flag is set
-    ///     What the assertions prove: WriteError respects the Silent flag
+    ///     Test that WriteError suppresses stderr when the silent flag is set.
+    ///     What is tested: WriteError respects Silent — no stderr output when silent is active
+    ///     What the assertions prove: Silent mode suppresses all output; callers detect failure via ExitCode
     /// </summary>
     [Fact]
-    public void Context_WriteError_Silent_DoesNotWriteToConsole()
+    public void Context_WriteError_Silent_SuppressesStderr()
     {
         // Arrange - Redirect console error output
         var originalError = Console.Error;
@@ -290,9 +294,12 @@ public class ContextTests
             using var context = Context.Create(["--silent"]);
             context.WriteError("Error message");
 
-            // Assert - Verify error message was not written to console
+            // Assert - Verify no output was written to stderr in silent mode
             var output = errorWriter.ToString();
-            Assert.DoesNotContain("Error message", output);
+            Assert.Empty(output);
+
+            // Assert - Verify errors are still tracked via exit code
+            Assert.Equal(1, context.ExitCode);
         }
         finally
         {
@@ -769,5 +776,35 @@ public class ContextTests
         // Assert - Verify output file is set
         Assert.Equal("output.json", context.OutputFile);
         Assert.Equal(0, context.ExitCode);
+    }
+
+    /// <summary>
+    ///     Test creating a context with --depth flag without a value throws ArgumentException.
+    ///     What is tested: --depth flag requires a value argument
+    ///     What the assertions prove: Missing value for --depth raises ArgumentException
+    /// </summary>
+    [Fact]
+    public void Context_Create_DepthFlag_WithoutValue_ThrowsArgumentException()
+    {
+        // Arrange & Act - Create context with --depth flag but no value
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--depth"]));
+
+        // Assert - Verify exception is thrown with relevant message
+        Assert.Contains("--depth", exception.Message);
+    }
+
+    /// <summary>
+    ///     Test that using the -- separator outside capture or publish mode throws ArgumentException.
+    ///     What is tested: -- separator is only valid in capture or publish mode
+    ///     What the assertions prove: ArgumentException is thrown when -- is used outside those modes
+    /// </summary>
+    [Fact]
+    public void Context_Create_SeparatorOutsideMode_ThrowsArgumentException()
+    {
+        // Arrange & Act - Use -- separator without --capture or --publish
+        var exception = Assert.Throws<ArgumentException>(() => Context.Create(["--", "tool1"]));
+
+        // Assert - Verify exception mentions the constraint
+        Assert.Contains("capture or publish", exception.Message);
     }
 }

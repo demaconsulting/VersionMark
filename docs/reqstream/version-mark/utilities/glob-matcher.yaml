@@ -1,31 +1,47 @@
 ---
 sections:
-  - title: GlobMatcher Unit Requirements
-    requirements:
-      - id: VersionMark-GlobMatcher-FindFiles
-        title: The GlobMatcher class shall find files matching relative glob patterns relative to the current directory.
-        justification: |
-          Publish mode accepts glob patterns supplied on the command line, which are
-          typically relative to the working directory. GlobMatcher must evaluate these
-          relative patterns against the current directory so callers do not need to
-          resolve them manually.
-        tests:
-          - GlobMatcher_FindMatchingFiles_RelativePattern_ReturnsMatchingFiles
-          - GlobMatcher_FindMatchingFiles_EmptyPatterns_ReturnsEmptyList
-          - GlobMatcher_FindMatchingFiles_PatternMatchingNoFiles_ReturnsEmptyList
-          - GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles
+  - title: VersionMark Requirements
+    sections:
+      - title: Utilities
+        sections:
+          - title: GlobMatcher Requirements
+            requirements:
+              - id: VersionMark-GlobMatcher-FindFiles
+                title: The GlobMatcher class shall find files matching relative glob
+                  patterns relative to the current directory.
+                justification: |
+                  Publish mode accepts glob patterns supplied on the command line, which are
+                  typically relative to the working directory. GlobMatcher must evaluate these
+                  relative patterns against the current directory so callers do not need to
+                  resolve them manually.
+                tests:
+                  - GlobMatcher_FindMatchingFiles_RelativePattern_ReturnsMatchingFiles
+                  - GlobMatcher_FindMatchingFiles_EmptyPatterns_ReturnsEmptyList
+                  - GlobMatcher_FindMatchingFiles_PatternMatchingNoFiles_ReturnsEmptyList
+                  - GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles
 
-      - id: VersionMark-GlobMatcher-AbsolutePaths
-        title: >-
-          The GlobMatcher class shall find files matching absolute glob patterns
-          regardless of the current working directory.
-        justification: |
-          CI/CD pipelines frequently pass fully-qualified artifact paths to VersionMark.
-          GlobMatcher must evaluate absolute patterns from their own root directory so
-          that the caller's current working directory does not affect the result.
-        tests:
-          - GlobMatcher_FindMatchingFiles_AbsolutePattern_ReturnsMatchingFiles
-          - GlobMatcher_FindMatchingFiles_SingleFileAbsolutePath_ReturnsSingleFile
-          - GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles
-          - GlobMatcher_SplitAbsolutePattern_PatternWithWildcard_SplitsCorrectly
-          - GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator
+              - id: VersionMark-GlobMatcher-AbsolutePaths
+                title: >-
+                  The GlobMatcher class shall find files matching absolute glob patterns
+                  regardless of the current working directory.
+                justification: |
+                  CI/CD pipelines frequently pass fully-qualified artifact paths to VersionMark.
+                  GlobMatcher must evaluate absolute patterns from their own root directory so
+                  that the caller's current working directory does not affect the result.
+                tests:
+                  - GlobMatcher_FindMatchingFiles_AbsolutePattern_ReturnsMatchingFiles
+                  - GlobMatcher_FindMatchingFiles_SingleFileAbsolutePath_ReturnsSingleFile
+                  - GlobMatcher_FindMatchingFiles_MixedPatterns_ReturnsCombinedFiles
+                  - GlobMatcher_SplitAbsolutePattern_PatternWithWildcard_SplitsCorrectly
+                  - GlobMatcher_SplitAbsolutePattern_PatternWithoutWildcard_SplitsAtLastSeparator
+
+              - id: VersionMark-GlobMatcher-DeduplicatedSortedOutput
+                title: >-
+                  The GlobMatcher class shall return a sorted, deduplicated list of
+                  matching file paths.
+                justification: |
+                  When multiple overlapping glob patterns match the same file, the file
+                  should appear only once in the result. Sorted output ensures deterministic
+                  ordering across calls, making results predictable for downstream consumers.
+                tests:
+                  - GlobMatcher_FindMatchingFiles_OverlappingPatterns_DeduplicatesResults

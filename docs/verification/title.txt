@@ -1,8 +1,8 @@
 ---
-title: VersionMark Verification Design Document
-subtitle: Tool Version Capture and Publication Tool
-author: DEMA Consulting
-description: Verification design document for VersionMark
+title: "VersionMark Verification Design Document"
+subtitle: "Tool version tracking for CI/CD environments"
+author: "DEMA Consulting"
+description: "Verification Design Document for VersionMark"
 lang: en-US
 keywords:
   - VersionMark

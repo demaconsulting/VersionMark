@@ -1,12 +1,13 @@
 ---
-title: VersionMark Software Design
-subtitle: Design Documentation
-author: DEMA Consulting
-description: Software design document for the VersionMark .NET tool for capturing and publishing tool version information
+title: "VersionMark Software Design Document"
+subtitle: "Tool version tracking for CI/CD environments"
+author: "DEMA Consulting"
+description: "Software Design Document for VersionMark"
 lang: en-US
 keywords:
   - VersionMark
   - Design
+  - Software Design Document
   - C#
   - .NET
   - CLI Tool

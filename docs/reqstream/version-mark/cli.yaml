@@ -2,10 +2,11 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Command-Line Interface
+      - title: Command-Line Interface Requirements
         requirements:
           - id: VersionMark-CommandLine-Context
-            title: The tool shall parse and validate command-line arguments consistently across all invocations.
+            title: The tool shall parse and validate command-line arguments consistently
+              across all invocations.
             justification: |
               Provides a standardized approach to command-line argument parsing and output
               handling across all DEMA Consulting DotNet Tools.
@@ -16,7 +17,8 @@ sections:
               - Cli_Run_SilentWithVersionFlag_SuppressesOutput
 
           - id: VersionMark-CommandLine-Version
-            title: The tool shall support -v and --version flags to display version information.
+            title: The tool shall support -v and --version flags to display version
+              information.
             justification: |
               Users need to quickly identify the version of the tool they are using for
               troubleshooting and compatibility verification.
@@ -26,7 +28,8 @@ sections:
               - Cli_Run_VersionFlag_ExitsCleanly
 
           - id: VersionMark-CommandLine-Help
-            title: The tool shall support -?, -h, and --help flags to display usage information.
+            title: The tool shall support -?, -h, and --help flags to display usage
+              information.
             justification: |
               Users need access to command-line usage documentation without requiring
               external resources.
@@ -56,7 +59,8 @@ sections:
               - Cli_Run_ValidateFlag_RunsValidation
 
           - id: VersionMark-CommandLine-Results
-            title: The tool shall support --results flag to write validation results in TRX or JUnit format.
+            title: The tool shall support --results flag to write validation results
+              in TRX or JUnit format.
             justification: |
               Enables integration with CI/CD systems that expect standard test result formats.
             tags:
@@ -84,7 +88,8 @@ sections:
               - Cli_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-InvalidArgs
-            title: The tool shall reject unknown or malformed command-line arguments with a descriptive error.
+            title: The tool shall reject unknown or malformed command-line arguments
+              with a descriptive error.
             justification: |
               Clear rejection of invalid arguments prevents silent misconfiguration and
               guides users toward correct usage without requiring external documentation.
@@ -104,7 +109,8 @@ sections:
               - Cli_Run_InvalidArgs_ThrowsArgumentException
 
           - id: VersionMark-CommandLine-Lint
-            title: The tool shall support --lint to check the configuration file for issues.
+            title: The tool shall support --lint to check the configuration file for
+              issues.
             justification: |
               Lint support lets users identify and fix issues in .versionmark.yaml files
               during development, before running capture or publish operations. All issues

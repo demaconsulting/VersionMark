@@ -177,4 +177,18 @@ public class LintIssueTests
             Console.SetError(originalError);
         }
     }
+
+    /// <summary>
+    ///     Test that <see cref="VersionMarkLoadResult.ReportIssues"/> throws <see cref="ArgumentNullException"/>
+    ///     when context is null.
+    /// </summary>
+    [Fact]
+    public void VersionMarkLoadResult_ReportIssues_NullContext_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var loadResult = new VersionMarkLoadResult(null, []);
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() => loadResult.ReportIssues(null!));
+    }
 }

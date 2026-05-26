@@ -1,13 +1,13 @@
 ---
-title: VersionMark User Guide
-subtitle: User Guide
-author: DEMA Consulting
-description: User guide for the VersionMark .NET tool for capturing and publishing tool version information
+title: "VersionMark User Guide"
+subtitle: "A .NET tool for CI/CD tool version tracking"
+author: "DEMA Consulting"
+description: "User Guide for VersionMark"
 lang: en-US
 keywords:
+  - User Guide
   - VersionMark
   - .NET
   - Command-Line Tool
-  - Documentation
   - Version Capture
 ---

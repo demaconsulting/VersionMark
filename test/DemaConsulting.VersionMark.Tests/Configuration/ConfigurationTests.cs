@@ -194,4 +194,152 @@ public class ConfigurationTests
             File.Delete(tempFile);
         }
     }
+
+    /// <summary>
+    ///     Test that reading a configuration file whose root node is not a mapping throws an ArgumentException.
+    /// </summary>
+    [Fact]
+    public void Configuration_ReadFromFile_NonMappingRoot_ThrowsArgumentException()
+    {
+        // Arrange - A YAML scalar at the root is not a valid config file
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, "just a plain scalar");
+
+        try
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration without a 'tools' section throws an ArgumentException.
+    /// </summary>
+    [Fact]
+    public void Configuration_ReadFromFile_MissingToolsSection_ThrowsArgumentException()
+    {
+        // Arrange - A YAML mapping without a 'tools' key
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, """
+            version: 1
+            """);
+
+        try
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with an invalid regex throws an ArgumentException.
+    /// </summary>
+    [Fact]
+    public void Configuration_ReadFromFile_InvalidRegex_ThrowsArgumentException()
+    {
+        // Arrange - regex pattern has an unclosed group
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, """
+            tools:
+              dotnet:
+                command: dotnet --version
+                regex: '(?<version'
+            """);
+
+        try
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with a regex that has no 'version' group throws an ArgumentException.
+    /// </summary>
+    [Fact]
+    public void Configuration_ReadFromFile_RegexMissingVersionGroup_ThrowsArgumentException()
+    {
+        // Arrange - regex is valid but missing the required named 'version' capture group
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, """
+            tools:
+              dotnet:
+                command: dotnet --version
+                regex: '\d+\.\d+\.\d+'
+            """);
+
+        try
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with an empty command throws an ArgumentException.
+    /// </summary>
+    [Fact]
+    public void Configuration_ReadFromFile_EmptyCommand_ThrowsArgumentException()
+    {
+        // Arrange - command is empty string
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, """
+            tools:
+              dotnet:
+                command: ''
+                regex: '(?<version>\d+\.\d+\.\d+)'
+            """);
+
+        try
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    /// <summary>
+    ///     Test that reading a configuration with an empty regex throws an ArgumentException.
+    /// </summary>
+    [Fact]
+    public void Configuration_ReadFromFile_EmptyRegex_ThrowsArgumentException()
+    {
+        // Arrange - regex is empty string
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, """
+            tools:
+              dotnet:
+                command: dotnet --version
+                regex: ''
+            """);
+
+        try
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => VersionMarkConfig.ReadFromFile(tempFile));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
 }

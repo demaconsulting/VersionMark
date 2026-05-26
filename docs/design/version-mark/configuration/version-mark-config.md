@@ -1,98 +1,101 @@
-### VersionMarkConfig Unit
+### VersionMarkConfig
 
-#### Overview
+#### Purpose
 
-The `VersionMarkConfig` record holds a `Dictionary<string, ToolConfig>` mapping tool names
-to their configurations. It is the top-level entry point for loading configuration from
-the `.versionmark.yaml` file.
+`VersionMarkConfig` is the top-level record for a loaded `.versionmark.yaml` configuration
+file. It holds the full set of tool definitions and exposes the `Load` method, which
+parses and validates the YAML file in a single pass, accumulating all warnings and errors.
+It also provides `FindVersions`, which executes the configured commands to capture tool
+version strings for the current CI/CD job.
 
-#### Load Method
+#### Data Model
 
-`Load` is the primary entry point for loading configuration with integrated linting. It:
+| Property | Type                              | Description                                   |
+|----------|-----------------------------------|-----------------------------------------------|
+| `Tools`  | `Dictionary<string, ToolConfig>`  | Maps tool names to their per-OS configuration |
 
-1. Checks that the file exists; adds an error issue if not.
-2. Parses the YAML stream and validates the root node is a mapping.
-3. Locates the `tools` mapping key; adds an error issue if absent.
-4. Iterates tool entries, calling the private `ValidateTool` method for each.
-5. Validates that at least one tool is present.
+The dictionary is populated during `Load`. Tools with error-level issues are excluded;
+tools with only warnings are included.
 
-The method returns a `VersionMarkLoadResult` containing both the parsed configuration and
-a list of `LintIssue` records. YAML parse errors are captured as error-level issues with
-source location. This satisfies requirements `VersionMark-Configuration-YamlConfig`,
-`VersionMark-Configuration-ValidateTools`, and `VersionMark-Configuration-ParseError`.
+#### Key Methods
 
-##### Error-Handling Strategy
+**`Load(string filePath)` (static)** — Primary entry point for loading and validating the
+configuration file. Performs the following steps:
 
-`Load` uses an accumulate-and-continue approach: rather than aborting on the first error,
-all warnings and errors are collected in a single `issues` list across the entire file.
-This allows a single validation pass to surface all problems.
+1. Checks file existence; adds an error issue if absent.
+2. Parses the YAML stream; captures parse errors as error-level issues with source location.
+3. Validates the root node is a mapping and locates the `tools` key.
+4. Iterates all tool entries, calling the private `ValidateTool` for each.
+5. Validates at least one tool is present.
+6. Returns a `VersionMarkLoadResult` with the loaded `VersionMarkConfig` (or `null` if any
+   errors were found) and the complete issue list.
 
-The `toolIssuesBefore` snapshot pattern isolates per-tool validation: `ValidateTool`
-records the list length before processing a tool entry and compares it after. When any
-new error-severity issue was added, `toolConfig` is set to `null` for that tool, ensuring
-a partially valid tool does not contribute broken entries to the result.
+The accumulate-and-continue strategy collects all issues in a single pass. A
+`toolIssuesBefore` snapshot isolates per-tool validation: when any new error-severity
+issues are added while processing a tool, that tool is excluded from the result rather
+than contributing a broken entry.
 
-The returned `VersionMarkLoadResult` carries a `null` `Config` property when any
-error-severity issue exists, so callers can distinguish a warnings-only load from a
-failure without iterating the issue list themselves.
+**`ReadFromFile(string filePath)` (static)** — Backward-compatibility wrapper that calls
+`Load` and throws `ArgumentException` if any error-level issues are present. Use `Load`
+directly when access to lint issues is needed.
 
-#### ValidateTool Helper
+**`FindVersions(IEnumerable<string> toolNames, string jobId, string? os = null)`** —
+Resolves the OS once (`os ?? ToolConfig.GetCurrentOs()`), then for each named tool:
+looks up the `ToolConfig`, calls `GetEffectiveCommand` and `GetEffectiveRegex` with the
+resolved OS, calls the private `RunCommand` helper, calls `ExtractVersion`, and stores
+the result. Returns a `VersionInfo` record.
 
-The private `ValidateTool` method processes a single tool's `YamlMappingNode`. It:
+**`ValidateTool(string name, YamlMappingNode node, ...)` (private)** — Processes a single
+tool's `YamlMappingNode`. Iterates all key-value pairs, populating command and regex
+dictionaries. Reports unknown keys as warnings, empty values as errors, and calls
+`TryCompileRegex` to validate each regex entry and verify the `version` named capture
+group is present. Returns `null` for that tool if any new errors were added.
 
-1. Records the current issue count (`toolIssuesBefore`) as a snapshot.
-2. Iterates all key-value pairs, populating `commands` and `regexes` dictionaries.
-3. Reports unknown keys as warnings and empty values as errors.
-4. Calls `TryCompileRegex` for `regex` and OS-specific regex values to validate compilation
-   and the presence of the required `version` named capture group.
-5. Reports missing required `command` or `regex` fields after scanning all entries.
-6. Sets `toolConfig` to `null` when any new errors were added since the snapshot;
-   otherwise returns a `ToolConfig` constructed from the validated dictionaries.
+**`TryCompileRegex(string pattern, ...)` (private)** — Compiles the pattern with
+`RegexOptions.Multiline | RegexOptions.IgnoreCase` and a one-second timeout. Appends an
+error-level issue on compilation failure and returns `null`; returns the compiled `Regex`
+on success.
 
-#### TryCompileRegex Helper
+**`RunCommand(string command)` (private)** — Runs the command through the OS shell
+(`cmd.exe /c` on Windows, `/bin/sh -c` on other platforms) using `Process.Start` with
+redirected stdout and stderr. Streams are read asynchronously to prevent pipe-deadlock.
+Throws `InvalidOperationException` on non-zero exit code.
 
-The private `TryCompileRegex` method attempts to compile a regex pattern with
-`RegexOptions.Multiline | RegexOptions.IgnoreCase` and a one-second timeout. If
-compilation fails (invalid pattern syntax), it appends an error-level `LintIssue` to
-the shared list and returns `null`. On success it returns the compiled `Regex` for
-group-name inspection by `ValidateTool`.
+**`ExtractVersion(string output, string regexPattern, string toolName)` (private)** —
+Compiles the regex, matches against the command output, and returns the value of the named
+`version` capture group. The `toolName` parameter is included solely to produce actionable
+error messages that identify which tool's version could not be extracted. Throws
+`InvalidOperationException` when no match or group is found.
 
-#### ReadFromFile Method
+#### Error Handling
 
-`ReadFromFile` is a backward-compatibility wrapper that delegates to `Load`. It throws
-`ArgumentException` if any error-level lint issues are present. Use `Load` directly when
-you need access to lint issues.
+| Condition                                   | Behavior                                             |
+|---------------------------------------------|------------------------------------------------------|
+| File does not exist                         | Error `LintIssue` added; `Config` returns null       |
+| YAML parse error                            | Error `LintIssue` with source location; parse stops  |
+| Root node is not a mapping                  | Error `LintIssue`; `Config` returns null             |
+| Missing `tools` key                         | Error `LintIssue`; `Config` returns null             |
+| No tools defined                            | Error `LintIssue`; `Config` returns null             |
+| Unknown YAML key in tool entry              | Warning `LintIssue`; tool otherwise valid            |
+| Invalid regex pattern                       | Error `LintIssue`; tool excluded from result         |
+| Missing `version` capture group in regex    | Error `LintIssue`; tool excluded from result         |
+| Command exits with non-zero code            | `InvalidOperationException` in `FindVersions`        |
+| Version group not found in command output   | `InvalidOperationException` in `FindVersions`        |
+| Error-level issues present in `ReadFromFile`| `ArgumentException` thrown                           |
 
-#### FindVersions Method
+#### Dependencies
 
-`FindVersions` accepts a list of tool names, a job ID, and an optional OS name. It resolves
-the OS once up-front — `os ?? ToolConfig.GetCurrentOs()` — so that all tools use the same
-consistent platform for the entire call. For each named tool it:
+- `ToolConfig` (this unit's companion in the same file) — per-tool configuration.
+- `LintIssue`, `VersionMarkLoadResult` (Configuration subsystem) — issue and result types.
+- `VersionInfo` (Capture subsystem) — return type of `FindVersions`.
+- `YamlDotNet` (OTS) — YAML parsing.
+- `System.Text.RegularExpressions` (BCL) — regex compilation in `TryCompileRegex` and
+  `ExtractVersion`.
+- `System.Diagnostics.Process` (BCL) — shell command execution in `RunCommand`.
 
-1. Looks up the `ToolConfig` (throws `ArgumentException` for unknown tools).
-2. Calls `GetEffectiveCommand(resolvedOs)` and `GetEffectiveRegex(resolvedOs)` using the
-   already-resolved OS string.
-3. Calls the private `RunCommand` helper to execute the command in a shell.
-4. Calls the private `ExtractVersion` helper to apply the regex.
-5. Stores the result in a `versions` dictionary.
+#### Callers
 
-The optional `os` parameter (`null` by default) enables callers to override OS detection,
-which is particularly useful for unit testing cross-OS scenarios without depending on the
-actual runtime platform. Passing an OS name for which no tool command or regex is defined
-(and no default entry exists) raises `InvalidOperationException`. The method returns a
-`VersionInfo` record. This satisfies requirements `VersionMark-Capture-Command` and
-`VersionMark-Capture-MultipleTools`.
-
-#### RunCommand Helper
-
-`RunCommand` runs the command through the OS shell (`cmd.exe /c` on Windows, `/bin/sh -c`
-on other platforms) using `Process.Start` with redirected stdout and stderr. Output and
-error streams are read asynchronously to prevent pipe-deadlock. A non-zero exit code
-raises `InvalidOperationException`. This satisfies `VersionMark-Capture-Command`.
-
-#### ExtractVersion Helper
-
-`ExtractVersion` compiles the regex with `Multiline | IgnoreCase` and a 1-second timeout,
-matches against the command output, and returns the value of the named `version` capture
-group. Missing match or missing group raises `InvalidOperationException`. This satisfies
-`VersionMark-Capture-Command`.
+- `Program.RunCapture` — calls `VersionMarkConfig.Load` then `FindVersions`.
+- `Program.RunLint` — calls `VersionMarkConfig.Load` to validate configuration.
+- `Validation.RunCaptureTest`, `Validation.RunLintValidTest`,
+  `Validation.RunLintInvalidTest` — exercise `Load` indirectly via `Program.Run`.

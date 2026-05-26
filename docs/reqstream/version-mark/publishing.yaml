@@ -2,7 +2,7 @@
 sections:
   - title: VersionMark Requirements
     sections:
-      - title: Publish Command
+      - title: Publish Requirements
         requirements:
           - id: VersionMark-Publish-Publish
             title: The tool shall support --publish flag to enable publish mode.
@@ -13,9 +13,11 @@ sections:
               - publish
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
+              - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-Report
-            title: The tool shall support --report parameter to specify the output markdown file path in publish mode.
+            title: The tool shall support --report parameter to specify the output
+              markdown file path in publish mode.
             justification: |
               Allows users to control where the generated markdown report is saved,
               enabling integration with documentation systems and custom workflows.
@@ -23,9 +25,11 @@ sections:
               - publish
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
+              - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-ReportDepth
-            title: The tool shall support --report-depth parameter to control heading depth in generated markdown.
+            title: The tool shall support --report-depth parameter to control heading
+              depth in generated markdown.
             justification: |
               Enables users to adjust the heading level of the generated markdown to fit
               within existing document structures and hierarchy requirements.
@@ -36,7 +40,8 @@ sections:
               - Publishing_Run_WithReportDepth_UsesCorrectDepth
 
           - id: VersionMark-Publish-RequireReport
-            title: The tool shall require --report parameter when publish mode is enabled.
+            title: The tool shall require --report parameter when publish mode is
+              enabled.
             justification: |
               Ensures users specify an output file location for the generated markdown,
               preventing ambiguity about where the report will be saved.
@@ -46,7 +51,8 @@ sections:
               - Publishing_Run_WithoutReport_ReportsError
 
           - id: VersionMark-Publish-GlobPattern
-            title: The tool shall accept glob patterns after -- separator to specify input JSON files in publish mode.
+            title: The tool shall accept glob patterns after -- separator to specify
+              input JSON files in publish mode.
             justification: |
               Allows users to flexibly select which captured JSON files to include in
               the report using standard glob patterns like versionmark-*.json.
@@ -56,18 +62,22 @@ sections:
               - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
 
           - id: VersionMark-Publish-Consolidate
-            title: The tool shall read and parse JSON files matching the specified glob patterns in publish mode.
+            title: The tool shall read and parse JSON files matching the specified
+              glob patterns in publish mode.
             justification: |
               Implements the core functionality of loading captured version data from
               multiple JSON files for report generation.
             tags:
               - publish
+            children:
+              - VersionMark-VersionInfo-Load
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
               - Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions
 
           - id: VersionMark-Publish-ConflictReport
-            title: The tool shall report errors when no JSON files match the specified glob patterns.
+            title: The tool shall report errors when no JSON files match the specified
+              glob patterns.
             justification: |
               Provides clear feedback to users when input files cannot be found,
               preventing silent failures and helping diagnose configuration issues.
@@ -86,11 +96,15 @@ sections:
               across their CI/CD jobs.
             tags:
               - publish
+            children:
+              - VersionMark-Formatter-Versions
+              - VersionMark-Formatter-MarkdownList
             tests:
               - Publishing_Format_ConflictingVersions_ShowsJobIds
 
           - id: VersionMark-Publish-FileError
-            title: The tool shall report errors when JSON files cannot be read or parsed in publish mode.
+            title: The tool shall report errors when JSON files cannot be read or
+              parsed in publish mode.
             justification: |
               Provides clear feedback when input files are malformed or inaccessible,
               helping users identify and fix data quality issues.

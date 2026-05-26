@@ -33,6 +33,13 @@ internal static class PathHelpers
     /// <param name="basePath">The base path.</param>
     /// <param name="relativePath">The relative path to combine.</param>
     /// <returns>The combined path.</returns>
+    /// <remarks>
+    ///     This method prevents path-traversal attacks by verifying that the combined path stays
+    ///     within the base directory. After combining the paths, it resolves both to their absolute
+    ///     forms and checks that the result is not rooted outside, or otherwise escaping, the base
+    ///     directory. Any attempt to use <c>..</c> segments or absolute paths that would escape the
+    ///     base directory results in an <see cref="ArgumentException"/>.
+    /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="basePath"/> or <paramref name="relativePath"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">
     ///     Thrown when the resolved combined path escapes the base directory, or when a supplied path is invalid.

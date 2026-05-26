@@ -16,26 +16,31 @@ The purpose of this document is to:
 
 ## Scope
 
-This document covers verification of five in-house subsystems within the VersionMark system:
+This document covers verification of six in-house subsystems within the VersionMark system:
 
 - The **Cli Subsystem**: argument parsing and program dispatch via `Program` and `Context`
 - The **Configuration Subsystem**: YAML configuration loading and validation via
   `VersionMarkConfig`, `ToolConfig`, and `LintIssue`
 - The **Capture Subsystem**: tool version capture and JSON serialization via `VersionInfo`
 - The **Publishing Subsystem**: markdown report generation via `MarkdownFormatter`
-- The **SelfTest Subsystem**: built-in self-validation via `Validation` and `PathHelpers`
+- The **SelfTest Subsystem**: built-in self-validation via `Validation`
+- The **Utilities Subsystem**: glob-pattern file matching and safe path combination via
+  `GlobMatcher` and `PathHelpers`
 
 It also covers verification evidence for the following Off-The-Shelf (OTS) components:
 
 - **BuildMark** - build notes generation tool
+- **DemaConsulting.TestResults** - TRX/JUnit result serialization library
 - **FileAssert** - file content assertion tool
-- **xUnit** - unit testing framework
+- **Microsoft.Extensions.FileSystemGlobbing** - glob-pattern file matching library
 - **Pandoc** - document conversion tool
 - **ReqStream** - requirements traceability tool
 - **ReviewMark** - code review enforcement tool
 - **SarifMark** - SARIF report tool
 - **SonarMark** - SonarCloud report tool
 - **WeasyPrint** - HTML-to-PDF conversion tool
+- **xUnit** - unit testing framework
+- **YamlDotNet** - YAML parsing library
 
 This document does not cover installation, end-user usage patterns, or CI/CD pipeline
 configuration. Those topics are addressed in the VersionMark User Guide and the
@@ -59,8 +64,10 @@ VersionMark (System)
 │   └── VersionInfo (Unit)
 ├── Publishing (Subsystem)
 │   └── MarkdownFormatter (Unit)
-└── SelfTest (Subsystem)
-    ├── Validation (Unit)
+├── SelfTest (Subsystem)
+│   └── Validation (Unit)
+└── Utilities (Subsystem)
+    ├── GlobMatcher (Unit)
     └── PathHelpers (Unit)
 ```
 
@@ -68,23 +75,31 @@ VersionMark (System)
 
 In-house items have parallel artifacts in the following locations:
 
-- Requirements: `docs/reqstream/version-mark.yaml`,
-  `docs/reqstream/version-mark/{subsystem}/{item}.yaml`
-- Design: `docs/design/version-mark.md`,
-  `docs/design/version-mark/{subsystem}/{item}.md`
-- Verification: `docs/verification/version-mark.md`,
-  `docs/verification/version-mark/{subsystem}/{item}.md`
-- Source: `src/DemaConsulting.VersionMark/{Subsystem}/{Unit}.cs`
-- Tests: `test/DemaConsulting.VersionMark.Tests/{Subsystem}/{Unit}Tests.cs`
+- Requirements: `docs/reqstream/version-mark.yaml` for the system, with subsystem and unit
+  requirements in paths such as `docs/reqstream/version-mark/cli.yaml` and
+  `docs/reqstream/version-mark/cli/context.yaml`
+- Design: `docs/design/version-mark.md` for the system, with subsystem and unit design
+  documents in paths such as `docs/design/version-mark/cli.md` and
+  `docs/design/version-mark/cli/context.md`
+- Verification: `docs/verification/version-mark.md` for the system, with subsystem and unit
+  verification documents in paths such as `docs/verification/version-mark/cli.md` and
+  `docs/verification/version-mark/cli/context.md`
+- Source: implementation files under `src/DemaConsulting.VersionMark/`, such as
+  `src/DemaConsulting.VersionMark/Program.cs`,
+  `src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs`, and
+  `src/DemaConsulting.VersionMark/Utilities/PathHelpers.cs`
+- Tests: verification evidence under `test/DemaConsulting.VersionMark.Tests/`, such as
+  `test/DemaConsulting.VersionMark.Tests/ProgramTests.cs`,
+  `test/DemaConsulting.VersionMark.Tests/Configuration/VersionMarkConfigTests.cs`, and
+  `test/DemaConsulting.VersionMark.Tests/Utilities/PathHelpersTests.cs`
 
 OTS items (no design documentation) have artifacts in these locations:
 
-- Requirements: `docs/reqstream/ots/{ots-name}.yaml`
-- Verification: `docs/verification/ots/{ots-name}.md`
+- Requirements: `docs/reqstream/ots/`, for example `docs/reqstream/ots/buildmark.yaml`
+- Verification: `docs/verification/ots/`, for example `docs/verification/ots/buildmark.md`
 
 Review-sets are defined in `.reviewmark.yaml`.
 
 ## References
 
-- [REF-1] VersionMark Software Design Document, DEMA Consulting
-- [REF-2] VersionMark Requirements Document, DEMA Consulting
+- [VersionMark releases](https://github.com/demaconsulting/VersionMark/releases)

@@ -419,4 +419,144 @@ public class CaptureTests
             }
         }
     }
+
+    /// <summary>
+    ///     Test that the capture pipeline reports an error and exits non-zero when the configured command is invalid.
+    /// </summary>
+    [Fact]
+    public void Capture_Run_InvalidCommand_ReportsErrorAndNonZeroExitCode()
+    {
+        // Arrange - Set up temp directory with a config referencing a non-existent command
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var outputFile = PathHelpers.SafePathCombine(tempDir, "output.json");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(
+                PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml"),
+                """
+                tools:
+                  nonexistent-tool-xyz:
+                    command: nonexistent-tool-xyz-command-that-does-not-exist --version
+                    regex: '(?<version>\d+\.\d+\.\d+)'
+                """);
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalError = Console.Error;
+            try
+            {
+                using var errWriter = new StringWriter();
+                Console.SetError(errWriter);
+                using var context = Context.Create([
+                    "--capture", "--job-id", "fail-job", "--output", outputFile
+                ]);
+
+                // Act - Run capture with an invalid command
+                Program.Run(context);
+
+                // Assert - Non-zero exit code and an error message should be reported
+                Assert.Equal(1, context.ExitCode);
+                Assert.True(
+                    errWriter.ToString().Length > 0,
+                    "An error message should be written when the configured command fails");
+            }
+            finally
+            {
+                Console.SetError(originalError);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the capture pipeline reports an error and exits non-zero when the command output does not match
+    ///     the configured regex.
+    /// </summary>
+    [Fact]
+    public void Capture_Run_RegexNoMatch_ReportsErrorAndNonZeroExitCode()
+    {
+        // Arrange - Set up temp directory with a config whose regex will never match dotnet output
+        var currentDir = Directory.GetCurrentDirectory();
+        var tempDir = PathHelpers.SafePathCombine(Path.GetTempPath(), Path.GetRandomFileName());
+        var outputFile = PathHelpers.SafePathCombine(tempDir, "output.json");
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            File.WriteAllText(
+                PathHelpers.SafePathCombine(tempDir, ".versionmark.yaml"),
+                """
+                tools:
+                  dotnet:
+                    command: dotnet --version
+                    regex: '(?<version>WILL_NEVER_MATCH_ANYTHING_XYZ_12345)'
+                """);
+            Directory.SetCurrentDirectory(tempDir);
+
+            var originalError = Console.Error;
+            try
+            {
+                using var errWriter = new StringWriter();
+                Console.SetError(errWriter);
+                using var context = Context.Create([
+                    "--capture", "--job-id", "regex-fail-job", "--output", outputFile
+                ]);
+
+                // Act - Run capture with a regex that will not match
+                Program.Run(context);
+
+                // Assert - Non-zero exit code and an error message should be reported
+                Assert.Equal(1, context.ExitCode);
+                Assert.True(
+                    errWriter.ToString().Length > 0,
+                    "An error message should be written when the regex does not match command output");
+            }
+            finally
+            {
+                Console.SetError(originalError);
+            }
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(currentDir);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, recursive: true);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Test that the capture pipeline reports an error and exits non-zero when --capture is used without --job-id.
+    /// </summary>
+    [Fact]
+    public void Capture_Run_MissingJobId_ReportsErrorAndNonZeroExitCode()
+    {
+        // Arrange - Create a capture context without --job-id
+        var originalError = Console.Error;
+        try
+        {
+            using var errWriter = new StringWriter();
+            Console.SetError(errWriter);
+            using var context = Context.Create(["--capture"]);
+
+            // Act - Run capture without providing --job-id
+            Program.Run(context);
+
+            // Assert - Non-zero exit code and an error message referencing --job-id should be reported
+            Assert.Equal(1, context.ExitCode);
+            Assert.Contains("--job-id", errWriter.ToString());
+        }
+        finally
+        {
+            Console.SetError(originalError);
+        }
+    }
 }

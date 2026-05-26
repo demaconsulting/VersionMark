@@ -9,9 +9,11 @@
 [![Security][badge-security]][link-security]
 [![NuGet][badge-nuget]][link-nuget]
 
-VersionMark is a tool for capturing and publishing tool version information across CI/CD
-environments. It helps track which versions of build tools, compilers, and dependencies are
-used in different jobs and environments.
+## Overview
+
+VersionMark is a .NET tool for capturing and publishing tool version information across CI/CD environments.
+It tracks which versions of build tools, compilers, and dependencies are used in different jobs and
+environments, and publishes consolidated version reports to markdown documentation.
 
 ## Features
 
@@ -21,22 +23,17 @@ used in different jobs and environments.
 - **Job-ID Tracking**: Associates captured versions with specific CI/CD job identifiers
 - **Version Consolidation**: Collapses common versions across jobs while highlighting conflicts
 - **OS-Specific Overrides**: Supports platform-specific version capture commands
-- **Configurable**: Uses `.versionmark.yaml` config file to define tools and capture methods
-- **Multi-Platform Support**: Runs on Windows, Linux, and macOS
-- **Multi-Runtime Support**: Targets .NET 8, 9, and 10
-- **Self-Validation**: Runs built-in self-verification tests to confirm the tool is functioning correctly
+- **Self-Validation**: Runs built-in self-verification tests to confirm correct operation
 - **Continuous Compliance**: Compliance evidence generated automatically on every CI run, following
-  the [Continuous Compliance][link-continuous-compliance] methodology
+  the [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance) methodology
 
 ## Installation
-
-Install the tool globally using the .NET CLI:
 
 ```bash
 dotnet tool install -g DemaConsulting.VersionMark
 ```
 
-## Quick Start
+## Usage
 
 ### 1. Create Configuration File
 
@@ -47,7 +44,7 @@ tools:
   dotnet:
     command: dotnet --version
     regex: '(?<version>\d+\.\d+\.\d+)'
-  
+
   node:
     command: node --version
     regex: 'v(?<version>\d+\.\d+\.\d+)'
@@ -71,7 +68,32 @@ After all jobs complete, publish the captured versions to markdown:
 versionmark --publish --report versions.md
 ```
 
-This consolidates versions from all jobs and generates a markdown report.
+## Building
+
+```pwsh
+pwsh ./build.ps1
+```
+
+## User Guide
+
+The VersionMark User Guide is available on the [VersionMark releases page](https://github.com/demaconsulting/VersionMark/releases).
+
+## Contributing
+
+See [CONTRIBUTING.md](https://github.com/demaconsulting/VersionMark/blob/main/CONTRIBUTING.md) for
+guidelines on how to contribute to this project.
+
+## License
+
+Copyright (c) DEMA Consulting. Licensed under the MIT License.
+See [LICENSE](https://github.com/demaconsulting/VersionMark/blob/main/LICENSE) for details.
+
+By contributing to this project, you agree that your contributions will be licensed under the MIT License.
+
+## Support
+
+- [Report a bug or request a feature](https://github.com/demaconsulting/VersionMark/issues)
+- [Ask a question or start a discussion](https://github.com/demaconsulting/VersionMark/discussions)
 
 ## Command-Line Options
 
@@ -116,7 +138,7 @@ tools:
   dotnet:
     command: dotnet --version
     regex: '(?<version>\d+\.\d+\.\d+)'
-  
+
   # Tool with OS-specific overrides
   gcc:
     command: gcc --version
@@ -124,22 +146,14 @@ tools:
     command-linux: gcc-13 --version
     command-macos: gcc-14 --version
     regex: 'gcc \(.*\) (?<version>\d+\.\d+\.\d+)'
-    regex-win: 'gcc\.exe \(.*\) (?<version>\d+\.\d+\.\d+)'
-    regex-linux: 'gcc-13 \(.*\) (?<version>\d+\.\d+\.\d+)'
-  
-  # Tool with custom output parsing
-  cmake:
-    command: cmake --version
-    regex: 'cmake version (?<version>\d+\.\d+\.\d+)'
 ```
 
 ### Configuration Options
 
-Each tool in the `tools` dictionary has the following properties:
+Each tool in the `tools` dictionary supports the following properties:
 
-- **command**: Shell command to execute to get version information (required unless OS-specific variants are provided)
-- **regex**: Regular expression with a named 'version' capture group using .NET syntax
-  `(?<version>...)` (required unless OS-specific variants are provided)
+- **command**: Shell command to execute to get version information
+- **regex**: Regular expression with a named `version` capture group using .NET syntax `(?<version>...)`
 - **command-win**: (Optional) Command override for Windows
 - **command-linux**: (Optional) Command override for Linux
 - **command-macos**: (Optional) Command override for macOS
@@ -158,8 +172,7 @@ Capture mode creates a JSON file with the following structure:
   "JobId": "windows-net8",
   "Versions": {
     "dotnet": "8.0.100",
-    "node": "20.11.0",
-    "gcc": "13.2.0"
+    "node": "20.11.0"
   }
 }
 ```
@@ -172,82 +185,28 @@ Publish mode generates a markdown list consolidating versions from all jobs:
 # Tool Versions
 
 - **dotnet**: 8.0.100
-- **gcc**: 11.4.0 (windows-net8)
-- **gcc**: 13.2.0 (linux-net8)
 - **node**: 20.11.0
 ```
 
-When a tool has the same version across all jobs, it's shown without job identifiers. When versions
-differ, each version is listed on a separate line with the jobs that use it shown in parentheses.
+When a tool has the same version across all jobs, it is shown without job identifiers.
+When versions differ, each version is listed with the jobs that use it shown in parentheses.
 
-## Self Validation
+## Self-Validation
 
-VersionMark includes built-in self-validation tests that verify the tool is working correctly in
-its current environment. Run with `--validate`:
+VersionMark includes built-in self-validation tests. Run with `--validate`:
 
 ```bash
 versionmark --validate
 ```
 
-Use `--depth` to control the heading depth of the report (default: 1):
-
-```bash
-versionmark --validate --depth 2
-```
-
-Example output:
-
-```text
-# DEMA Consulting VersionMark
-
-| Information         | Value                                              |
-| :------------------ | :------------------------------------------------- |
-| Tool Version        | 1.2.3                                              |
-| Machine Name        | build-agent-01                                     |
-| OS Version          | Ubuntu 22.04.3 LTS                                 |
-| DotNet Runtime      | .NET 10.0.0                                        |
-| Time Stamp          | 2025-01-01 12:00:00 UTC                            |
-
-✓ VersionMark_CapturesVersions - Passed
-✓ VersionMark_GeneratesMarkdownReport - Passed
-✓ VersionMark_LintPassesForValidConfig - Passed
-✓ VersionMark_LintReportsErrorsForInvalidConfig - Passed
-
-Total Tests: 4
-Passed: 4
-Failed: 0
-```
-
-To save results in TRX format (Visual Studio test results):
+Use `--results` to save results in TRX or JUnit XML format:
 
 ```bash
 versionmark --validate --results results.trx
-```
-
-To save results in JUnit XML format:
-
-```bash
 versionmark --validate --results results.xml
 ```
 
 If any tests fail, the exit code will be non-zero.
-
-## Documentation
-
-Generated documentation includes:
-
-- **Build Notes**: Release information and changes
-- **User Guide**: Comprehensive usage documentation
-- **Code Quality Report**: CodeQL and SonarCloud analysis results
-- **Requirements**: Functional and non-functional requirements
-- **Requirements Justifications**: Detailed requirement rationale
-- **Trace Matrix**: Requirements to test traceability
-
-## License
-
-Copyright (c) DEMA Consulting. Licensed under the MIT License. See [LICENSE][link-license] for details.
-
-By contributing to this project, you agree that your contributions will be licensed under the MIT License.
 
 <!-- Badge References -->
 [badge-forks]: https://img.shields.io/github/forks/demaconsulting/VersionMark?style=plastic
@@ -268,4 +227,3 @@ By contributing to this project, you agree that your contributions will be licen
 [link-quality]: https://sonarcloud.io/dashboard?id=demaconsulting_VersionMark
 [link-security]: https://sonarcloud.io/dashboard?id=demaconsulting_VersionMark
 [link-nuget]: https://www.nuget.org/packages/DemaConsulting.VersionMark
-[link-continuous-compliance]: https://github.com/demaconsulting/ContinuousCompliance

@@ -2,7 +2,8 @@
 # VersionMark Requirements
 #
 # This file defines the requirements for the VersionMark tool.
-# Requirements are verified through tests and documented in docs/requirements_doc/ and docs/requirements_report/.
+# Requirements are verified through tests and documented in
+# docs/requirements_doc/ and docs/requirements_report/.
 
 includes:
   - docs/reqstream/version-mark.yaml
@@ -18,6 +19,7 @@ includes:
   - docs/reqstream/version-mark/configuration/version-mark-config.yaml
   - docs/reqstream/version-mark/configuration/tool-config.yaml
   - docs/reqstream/version-mark/configuration/load.yaml
+  - docs/reqstream/version-mark/configuration/lint-issue.yaml
   - docs/reqstream/version-mark/self-test.yaml
   - docs/reqstream/version-mark/self-test/validation.yaml
   - docs/reqstream/version-mark/utilities.yaml

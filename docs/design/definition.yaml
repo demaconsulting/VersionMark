@@ -10,9 +10,9 @@ input-files:
   - docs/design/version-mark/cli/program.md
   - docs/design/version-mark/cli/context.md
   - docs/design/version-mark/configuration.md
+  - docs/design/version-mark/configuration/lint-issue.md
   - docs/design/version-mark/configuration/tool-config.md
   - docs/design/version-mark/configuration/version-mark-config.md
-  - docs/design/version-mark/configuration/lint-issue.md
   - docs/design/version-mark/capture.md
   - docs/design/version-mark/capture/version-info.md
   - docs/design/version-mark/publishing.md

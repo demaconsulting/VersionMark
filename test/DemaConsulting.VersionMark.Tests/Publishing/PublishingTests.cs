@@ -377,4 +377,21 @@ public class PublishingTests
             }
         }
     }
+
+    /// <summary>
+    ///     Test that <see cref="MarkdownFormatter.Format"/> throws <see cref="ArgumentOutOfRangeException"/>
+    ///     when reportDepth is zero or negative.
+    /// </summary>
+    [Fact]
+    public void Publishing_Format_ReportDepthZeroOrNegative_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var versionInfos = new[] { new VersionInfo("job-1", new Dictionary<string, string> { ["dotnet"] = "8.0.100" }) };
+
+        // Act & Assert - depth 0 should throw
+        Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownFormatter.Format(versionInfos, reportDepth: 0));
+
+        // Act & Assert - negative depth should also throw
+        Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownFormatter.Format(versionInfos, reportDepth: -1));
+    }
 }
