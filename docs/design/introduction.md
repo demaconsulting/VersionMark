@@ -17,33 +17,25 @@ and .NET development and general concepts of command-line tool design.
 
 ## Scope
 
-This document covers the design of the VersionMark system and its six subsystems:
+This document covers the following software items:
 
-- The **Cli Subsystem**: the `Program` entry point and `Context` class that handle argument
-  parsing, output routing, and program flow control
-- The **Configuration Subsystem**: the `VersionMarkConfig`, `ToolConfig`, and `LintIssue`
-  classes that read, validate, and interpret `.versionmark.yaml` configuration files
-- The **Capture Subsystem**: the `VersionInfo` record that serializes and deserializes
-  captured version data to and from JSON
-- The **Publishing Subsystem**: the `MarkdownFormatter` class that generates the markdown
-  version report from captured data
-- The **SelfTest Subsystem**: the `Validation` class that provides built-in verification
-  of the tool's core functionality
-- The **Utilities Subsystem**: the `GlobMatcher` class that provides glob-pattern file
-  matching and the `PathHelpers` class that provides safe path combination
+Local items:
 
-This document does not cover installation, end-user usage patterns, or CI/CD pipeline
-configuration. Those topics are addressed in the *VersionMark User Guide* and the
-*VersionMark Requirements Document*. It does cover the integration and usage design of the
-OTS items VersionMark depends on: **YamlDotNet**, **Microsoft.Extensions.FileSystemGlobbing**,
-**DemaConsulting.TestResults**, and **SysML2Tools** (the tool used to model VersionMark's
-software structure and render the diagrams embedded throughout this document).
+- **VersionMark**: system, subsystem, and unit design for all local components.
 
-Each component described here corresponds to one or more requirements defined in the
-`docs/reqstream/` files. The source code in `src/DemaConsulting.VersionMark/` is the
-authoritative implementation. Any discrepancy between this document and the code should be
-resolved by updating this document to reflect the actual implementation, or by raising a
-defect against the code.
+OTS items:
+
+- **DemaConsulting.TestResults**: integration and usage design.
+- **FileSystemGlobbing**: integration and usage design.
+- **SysML2Tools**: integration and usage design.
+- **YamlDotNet**: integration and usage design.
+
+The following topics are out of scope:
+
+- Installation and end-user usage patterns
+- CI/CD pipeline configuration
+- External library internals
+- Test projects
 
 ## Software Structure
 
@@ -55,38 +47,16 @@ than parsing this diagram before deep-diving into source code.
 
 ![Software Structure](SoftwareStructureView.svg)
 
-VersionMark is organized as a single system with six subsystems — Cli, Configuration,
-Capture, Publishing, SelfTest, and Utilities — each containing one or more units, as shown
-above.
-
 ## Folder Layout
 
-The source code folder structure mirrors the top-level subsystem breakdown above, giving
-reviewers an explicit navigation aid from design to code:
-
-```text
-src/DemaConsulting.VersionMark/
-├── Program.cs                              — entry point and execution orchestrator
-├── Cli/
-│   └── Context.cs                          — command-line argument parser and I/O owner
-├── Configuration/
-│   ├── LintIssue.cs                        — lint issue record and severity enum
-│   └── VersionMarkConfig.cs                — YAML configuration, tool definitions, and validation
-├── Capture/
-│   └── VersionInfo.cs                      — captured version data record
-├── Publishing/
-│   └── MarkdownFormatter.cs                — markdown report generation
-├── SelfTest/
-│   └── Validation.cs                       — self-validation test runner
-└── Utilities/
-    ├── GlobMatcher.cs                      — glob-pattern file matching
-    └── PathHelpers.cs                      — safe path utilities
-```
-
-`Program.cs` resides at the project root rather than inside `Cli/` because .NET uses the
-presence of a top-level `Program.cs` at the project root as the conventional entry-point
-file. It is conceptually part of the Cli Subsystem, as shown in the Software Structure tree
-above. The test project mirrors the same layout under `test/DemaConsulting.VersionMark.Tests/`.
+- **src/** - source files and projects
+  - **DemaConsulting.VersionMark/** - VersionMark system source
+    - **Cli/** - Cli subsystem
+    - **Configuration/** - Configuration subsystem
+    - **Capture/** - Capture subsystem
+    - **Publishing/** - Publishing subsystem
+    - **SelfTest/** - SelfTest subsystem
+    - **Utilities/** - Utilities subsystem
 
 ## Companion Artifact Structure
 
