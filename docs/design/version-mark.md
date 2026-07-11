@@ -1,5 +1,7 @@
 # VersionMark
 
+![VersionMark Structure](VersionMarkView.svg)
+
 ## Architecture
 
 VersionMark is structured as a single system comprising six subsystems. There is no

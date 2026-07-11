@@ -1,5 +1,7 @@
 ## Publishing
 
+![Publishing Structure](PublishingView.svg)
+
 ### Overview
 
 The Publishing subsystem is responsible for generating a human-readable markdown version

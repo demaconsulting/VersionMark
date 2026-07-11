@@ -1,0 +1,24 @@
+---
+# YamlDotNet OTS Software Requirements
+#
+# Requirements for the YamlDotNet library functionality consumed by VersionMark.
+
+sections:
+  - title: OTS Software Requirements
+    sections:
+      - title: YamlDotNet Requirements
+        requirements:
+          - id: VersionMark-OTS-YamlDotNet
+            title: YamlDotNet shall parse YAML configuration files and report parse
+              errors with source location.
+            justification: |
+              YamlDotNet is the YAML parser used by VersionMark to deserialize
+              `.versionmark.yaml` configuration files inside
+              `VersionMarkConfig.Load`, using its object-model API to preserve
+              source-location (`Mark`) information for precise lint issue
+              reporting. VersionMark relies on YamlDotNet for correct YAML
+              parsing and for surfacing malformed-document errors.
+            tags: [ots]
+            tests:
+              - VersionMarkConfig_Load_ValidConfig_ReturnsConfig
+              - VersionMarkConfig_Load_InvalidYaml_ReturnsNullConfig

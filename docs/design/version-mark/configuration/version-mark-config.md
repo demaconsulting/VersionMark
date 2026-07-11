@@ -1,5 +1,7 @@
 ### VersionMarkConfig
 
+![Configuration Structure](ConfigurationView.svg)
+
 #### Purpose
 
 `VersionMarkConfig` is the top-level record for a loaded `.versionmark.yaml` configuration

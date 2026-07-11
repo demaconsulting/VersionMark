@@ -1,5 +1,7 @@
 ## Capture
 
+![Capture Structure](CaptureView.svg)
+
 ### Overview
 
 The Capture subsystem is responsible for persisting tool version information for the

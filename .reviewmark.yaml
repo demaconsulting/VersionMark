@@ -13,6 +13,7 @@ needs-review:
   - docs/reqstream/**/*.yaml
   - docs/design/**/*.md
   - docs/verification/**/*.md
+  - docs/sysml2/**/*.sysml
   - '!**/obj/**'
   - '!**/bin/**'
   - '!**/generated/**'
@@ -25,21 +26,38 @@ evidence-source:
   type: url
   location: https://raw.githubusercontent.com/demaconsulting/VersionMark/reviews/index.json
 
+# Global context shown to every reviewer for orientation (not fingerprinted).
+context:
+  - docs/design/introduction.md
+
 # Review sets following standardized patterns for hierarchical compliance coverage
 reviews:
   # Purpose
   - id: Purpose
-    title: Review that Advertised Features Match System Design
+    title: Review that README and User Guide are Coherent and Complete
+    context:
+      - '!docs/design/introduction.md'
     paths:
       - README.md
       - docs/user_guide/**/*.md
-      - docs/reqstream/version-mark.yaml
+
+  # Decomposition
+  - id: Decomposition
+    title: Review that VersionMark Decomposition Addresses the Stated Purpose
+    context:
+      - README.md
+      - docs/user_guide/**/*.md
+    paths:
+      - requirements.yaml
       - docs/design/introduction.md
-      - docs/design/version-mark.md
+      - docs/sysml2/**/*.sysml
 
   # VersionMark - Architecture (system-level)
   - id: VersionMark-Architecture
     title: Review that VersionMark Architecture Satisfies Requirements
+    context:
+      - README.md
+      - docs/user_guide/**/*.md
     paths:
       - docs/reqstream/version-mark.yaml
       - docs/design/introduction.md
@@ -53,18 +71,23 @@ reviews:
   # VersionMark - Design (consistency and completeness)
   - id: VersionMark-Design
     title: Review that VersionMark Design is Consistent and Complete
+    context:
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark.yaml
       - docs/reqstream/version-mark/platform-requirements.yaml
       - docs/design/introduction.md
       - docs/design/version-mark.md
       - docs/design/version-mark/**/*.md
+      - docs/design/ots.md
       - docs/verification/introduction.md
       - docs/verification/ots.md
 
   # VersionMark - Verification (consistency and completeness)
   - id: VersionMark-Verification
     title: Review that VersionMark Verification is Consistent and Complete
+    context:
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark.yaml
       - docs/verification/introduction.md
@@ -75,6 +98,9 @@ reviews:
   # VersionMark - All Requirements
   - id: VersionMark-AllRequirements
     title: Review that All VersionMark Requirements are Complete
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - requirements.yaml
       - docs/reqstream/**/*.yaml
@@ -82,6 +108,9 @@ reviews:
   # VersionMark - Cli
   - id: VersionMark-Cli
     title: Review that VersionMark Cli Satisfies Subsystem Requirements
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark/cli.yaml
       - docs/design/version-mark/cli.md
@@ -90,6 +119,11 @@ reviews:
 
   - id: VersionMark-Cli-Program
     title: Review that VersionMark Cli Program Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/cli.md
+      - docs/reqstream/version-mark/cli.yaml
     paths:
       - docs/reqstream/version-mark/cli/program.yaml
       - docs/design/version-mark/cli/program.md
@@ -99,6 +133,11 @@ reviews:
 
   - id: VersionMark-Cli-Context
     title: Review that VersionMark Cli Context Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/cli.md
+      - docs/reqstream/version-mark/cli.yaml
     paths:
       - docs/reqstream/version-mark/cli/context.yaml
       - docs/design/version-mark/cli/context.md
@@ -109,6 +148,9 @@ reviews:
   # VersionMark - Configuration
   - id: VersionMark-Configuration
     title: Review that VersionMark Configuration Satisfies Subsystem Requirements
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark/configuration.yaml
       - docs/design/version-mark/configuration.md
@@ -118,6 +160,11 @@ reviews:
   - id: VersionMark-Configuration-VersionMarkConfig
     title: Review that VersionMark Configuration VersionMarkConfig Implementation
       is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/configuration.md
+      - docs/reqstream/version-mark/configuration.yaml
     paths:
       - docs/reqstream/version-mark/configuration/version-mark-config.yaml
       - docs/design/version-mark/configuration/version-mark-config.md
@@ -128,6 +175,11 @@ reviews:
 
   - id: VersionMark-Configuration-ToolConfig
     title: Review that VersionMark Configuration ToolConfig Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/configuration.md
+      - docs/reqstream/version-mark/configuration.yaml
     paths:
       - docs/reqstream/version-mark/configuration/tool-config.yaml
       - docs/design/version-mark/configuration/tool-config.md
@@ -137,6 +189,11 @@ reviews:
 
   - id: VersionMark-Configuration-LintIssue
     title: Review that VersionMark Configuration LintIssue Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/configuration.md
+      - docs/reqstream/version-mark/configuration.yaml
     paths:
       - docs/reqstream/version-mark/configuration/load.yaml
       - docs/design/version-mark/configuration/lint-issue.md
@@ -147,6 +204,9 @@ reviews:
   # VersionMark - Capture
   - id: VersionMark-Capture
     title: Review that VersionMark Capture Satisfies Subsystem Requirements
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark/capture.yaml
       - docs/design/version-mark/capture.md
@@ -155,6 +215,11 @@ reviews:
 
   - id: VersionMark-Capture-VersionInfo
     title: Review that VersionMark Capture VersionInfo Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/capture.md
+      - docs/reqstream/version-mark/capture.yaml
     paths:
       - docs/reqstream/version-mark/capture/version-info.yaml
       - docs/design/version-mark/capture/version-info.md
@@ -165,6 +230,9 @@ reviews:
   # VersionMark - Publishing
   - id: VersionMark-Publishing
     title: Review that VersionMark Publishing Satisfies Subsystem Requirements
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark/publishing.yaml
       - docs/design/version-mark/publishing.md
@@ -174,6 +242,11 @@ reviews:
   - id: VersionMark-Publishing-MarkdownFormatter
     title: Review that VersionMark Publishing MarkdownFormatter Implementation is
       Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/publishing.md
+      - docs/reqstream/version-mark/publishing.yaml
     paths:
       - docs/reqstream/version-mark/publishing/markdown-formatter.yaml
       - docs/design/version-mark/publishing/markdown-formatter.md
@@ -184,6 +257,9 @@ reviews:
   # VersionMark - SelfTest
   - id: VersionMark-SelfTest
     title: Review that VersionMark SelfTest Satisfies Subsystem Requirements
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark/self-test.yaml
       - docs/design/version-mark/self-test.md
@@ -192,6 +268,11 @@ reviews:
 
   - id: VersionMark-SelfTest-Validation
     title: Review that VersionMark SelfTest Validation Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/self-test.md
+      - docs/reqstream/version-mark/self-test.yaml
     paths:
       - docs/reqstream/version-mark/self-test/validation.yaml
       - docs/design/version-mark/self-test/validation.md
@@ -202,6 +283,9 @@ reviews:
   # VersionMark - Utilities
   - id: VersionMark-Utilities
     title: Review that VersionMark Utilities Satisfies Subsystem Requirements
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
     paths:
       - docs/reqstream/version-mark/utilities.yaml
       - docs/design/version-mark/utilities.md
@@ -211,6 +295,11 @@ reviews:
 
   - id: VersionMark-Utilities-GlobMatcher
     title: Review that VersionMark Utilities GlobMatcher Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/utilities.md
+      - docs/reqstream/version-mark/utilities.yaml
     paths:
       - docs/reqstream/version-mark/utilities/glob-matcher.yaml
       - docs/design/version-mark/utilities/glob-matcher.md
@@ -220,6 +309,11 @@ reviews:
 
   - id: VersionMark-Utilities-PathHelpers
     title: Review that VersionMark Utilities PathHelpers Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/utilities.md
+      - docs/reqstream/version-mark/utilities.yaml
     paths:
       - docs/reqstream/version-mark/utilities/path-helpers.yaml
       - docs/design/version-mark/utilities/path-helpers.md
@@ -229,55 +323,83 @@ reviews:
 
   # OTS Items
   - id: OTS-BuildMark
-    title: Review of BuildMark OTS verification evidence
+    title: Review that BuildMark Provides Required Functionality
     paths:
       - docs/reqstream/ots/buildmark.yaml
       - docs/verification/ots/buildmark.md
 
   - id: OTS-FileAssert
-    title: Review of FileAssert OTS verification evidence
+    title: Review that FileAssert Provides Required Functionality
     paths:
       - docs/reqstream/ots/fileassert.yaml
       - docs/verification/ots/fileassert.md
 
   - id: OTS-xUnit
-    title: Review of xUnit OTS verification evidence
+    title: Review that xUnit Provides Required Functionality
     paths:
       - docs/reqstream/ots/xunit.yaml
       - docs/verification/ots/xunit.md
 
   - id: OTS-Pandoc
-    title: Review of Pandoc OTS verification evidence
+    title: Review that Pandoc Provides Required Functionality
     paths:
       - docs/reqstream/ots/pandoc.yaml
       - docs/verification/ots/pandoc.md
 
   - id: OTS-ReqStream
-    title: Review of ReqStream OTS verification evidence
+    title: Review that ReqStream Provides Required Functionality
     paths:
       - docs/reqstream/ots/reqstream.yaml
       - docs/verification/ots/reqstream.md
 
   - id: OTS-ReviewMark
-    title: Review of ReviewMark OTS verification evidence
+    title: Review that ReviewMark Provides Required Functionality
     paths:
       - docs/reqstream/ots/reviewmark.yaml
       - docs/verification/ots/reviewmark.md
 
   - id: OTS-SarifMark
-    title: Review of SarifMark OTS verification evidence
+    title: Review that SarifMark Provides Required Functionality
     paths:
       - docs/reqstream/ots/sarifmark.yaml
       - docs/verification/ots/sarifmark.md
 
   - id: OTS-SonarMark
-    title: Review of SonarMark OTS verification evidence
+    title: Review that SonarMark Provides Required Functionality
     paths:
       - docs/reqstream/ots/sonarmark.yaml
       - docs/verification/ots/sonarmark.md
 
   - id: OTS-WeasyPrint
-    title: Review of WeasyPrint OTS verification evidence
+    title: Review that WeasyPrint Provides Required Functionality
     paths:
       - docs/reqstream/ots/weasyprint.yaml
       - docs/verification/ots/weasyprint.md
+
+  - id: OTS-SysML2Tools
+    title: Review that SysML2Tools Provides Required Functionality
+    paths:
+      - docs/reqstream/ots/sysml2tools.yaml
+      - docs/design/ots/sysml2tools.md
+      - docs/verification/ots/sysml2tools.md
+
+  - id: OTS-YamlDotNet
+    title: Review that YamlDotNet Provides Required Functionality
+    paths:
+      - docs/reqstream/ots/yaml-dot-net.yaml
+      - docs/design/ots/yaml-dot-net.md
+      - docs/verification/ots/yaml-dot-net.md
+
+  - id: OTS-FileSystemGlobbing
+    title: Review that FileSystemGlobbing Provides Required Functionality
+    paths:
+      - docs/reqstream/ots/microsoft-extensions-file-system-globbing.yaml
+      - docs/design/ots/microsoft-extensions-file-system-globbing.md
+      - docs/verification/ots/microsoft-extensions-file-system-globbing.md
+
+  - id: OTS-TestResults
+    title: Review that TestResults Provides Required Functionality
+    paths:
+      - docs/reqstream/ots/dema-consulting-test-results.yaml
+      - docs/design/ots/dema-consulting-test-results.md
+      - docs/verification/ots/dema-consulting-test-results.md

@@ -1,5 +1,7 @@
 ### Program
 
+![Cli Structure](CliView.svg)
+
 #### Purpose
 
 `Program` (`Program.cs`) is the top-level entry point for VersionMark. It owns the `Main`

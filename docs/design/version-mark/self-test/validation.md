@@ -1,5 +1,7 @@
 ### Validation
 
+![SelfTest Structure](SelfTestView.svg)
+
 #### Purpose
 
 `Validation` (`Validation.cs`) implements the built-in self-validation suite for

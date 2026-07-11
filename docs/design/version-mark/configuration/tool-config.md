@@ -1,5 +1,7 @@
 ### ToolConfig
 
+![Configuration Structure](ConfigurationView.svg)
+
 #### Purpose
 
 `ToolConfig` (`VersionMarkConfig.cs`) represents the configuration for a single tool

@@ -1,5 +1,7 @@
 ## SelfTest
 
+![SelfTest Structure](SelfTestView.svg)
+
 ### Overview
 
 The SelfTest subsystem provides built-in verification of the tool's core functionality.

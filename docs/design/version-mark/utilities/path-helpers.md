@@ -1,5 +1,7 @@
 ### PathHelpers
 
+![Utilities Structure](UtilitiesView.svg)
+
 #### Purpose
 
 `PathHelpers` (`PathHelpers.cs`) is a static utility class that provides safe path

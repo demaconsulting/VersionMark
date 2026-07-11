@@ -1,5 +1,7 @@
 ### GlobMatcher
 
+![Utilities Structure](UtilitiesView.svg)
+
 #### Purpose
 
 `GlobMatcher` (`GlobMatcher.cs`) is a static utility class that resolves an array of glob

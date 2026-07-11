@@ -38,6 +38,7 @@ It also covers verification evidence for the following Off-The-Shelf (OTS) compo
 - **ReviewMark** - code review enforcement tool
 - **SarifMark** - SARIF report tool
 - **SonarMark** - SonarCloud report tool
+- **SysML2Tools** - SysML2 architecture modeling and diagram rendering tool
 - **WeasyPrint** - HTML-to-PDF conversion tool
 - **xUnit** - unit testing framework
 - **YamlDotNet** - YAML parsing library
@@ -45,31 +46,6 @@ It also covers verification evidence for the following Off-The-Shelf (OTS) compo
 This document does not cover installation, end-user usage patterns, or CI/CD pipeline
 configuration. Those topics are addressed in the VersionMark User Guide and the
 VersionMark Requirements documents.
-
-## Software Structure
-
-The following tree shows how the VersionMark software items are organized across the
-system, subsystem, and unit levels:
-
-```text
-VersionMark (System)
-├── Cli (Subsystem)
-│   ├── Program (Unit)
-│   └── Context (Unit)
-├── Configuration (Subsystem)
-│   ├── VersionMarkConfig (Unit)
-│   ├── ToolConfig (Unit)
-│   └── LintIssue (Unit)
-├── Capture (Subsystem)
-│   └── VersionInfo (Unit)
-├── Publishing (Subsystem)
-│   └── MarkdownFormatter (Unit)
-├── SelfTest (Subsystem)
-│   └── Validation (Unit)
-└── Utilities (Subsystem)
-    ├── GlobMatcher (Unit)
-    └── PathHelpers (Unit)
-```
 
 ## Companion Artifact Structure
 
