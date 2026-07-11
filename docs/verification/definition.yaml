@@ -39,6 +39,7 @@ input-files:
   - docs/verification/ots/reviewmark.md
   - docs/verification/ots/sarifmark.md
   - docs/verification/ots/sonarmark.md
+  - docs/verification/ots/sysml2tools.md
   - docs/verification/ots/weasyprint.md
 template: template.html
 table-of-contents: true

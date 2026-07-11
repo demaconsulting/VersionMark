@@ -1,5 +1,7 @@
 ### VersionInfo
 
+![Capture Structure](CaptureView.svg)
+
 #### Purpose
 
 `VersionInfo` is the data transfer record between the capture and publish operational modes.

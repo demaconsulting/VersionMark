@@ -1,0 +1,24 @@
+---
+# DemaConsulting.TestResults OTS Software Requirements
+#
+# Requirements for the DemaConsulting.TestResults library functionality consumed by
+# VersionMark.
+
+sections:
+  - title: OTS Software Requirements
+    sections:
+      - title: TestResults Requirements
+        requirements:
+          - id: VersionMark-OTS-TestResults
+            title: TestResults shall collect self-validation test outcomes and serialize
+              them to TRX and JUnit XML formats.
+            justification: |
+              DemaConsulting.TestResults is used inside the SelfTest subsystem's
+              `Validation` class to accumulate pass/fail outcomes for each
+              self-validation scenario and serialize them via `TrxSerializer` or
+              `JUnitSerializer` when `--results`/`--results-xml` is specified,
+              matching the TRX format consumed by the CI/CD traceability pipeline.
+            tags: [ots]
+            tests:
+              - SelfTest_Run_WithResultsFlag_WritesResultsFile
+              - SelfTest_Run_WithResultsXmlFlag_WritesJUnitResultsFile

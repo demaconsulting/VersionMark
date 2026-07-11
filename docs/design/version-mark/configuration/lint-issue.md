@@ -1,5 +1,7 @@
 ### LintIssue
 
+![Configuration Structure](ConfigurationView.svg)
+
 #### Purpose
 
 `LintIssue.cs` defines the types used to surface validation issues found while loading a

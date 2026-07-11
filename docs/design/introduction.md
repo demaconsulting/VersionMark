@@ -32,10 +32,12 @@ This document covers the design of the VersionMark system and its six subsystems
 - The **Utilities Subsystem**: the `GlobMatcher` class that provides glob-pattern file
   matching and the `PathHelpers` class that provides safe path combination
 
-This document does not cover installation, end-user usage patterns, CI/CD pipeline
-configuration, or the internal design of OTS dependencies. Those topics are addressed in
-the *VersionMark User Guide*, the *VersionMark Requirements Document*, and the respective
-OTS package documentation.
+This document does not cover installation, end-user usage patterns, or CI/CD pipeline
+configuration. Those topics are addressed in the *VersionMark User Guide* and the
+*VersionMark Requirements Document*. It does cover the integration and usage design of the
+OTS items VersionMark depends on: **YamlDotNet**, **Microsoft.Extensions.FileSystemGlobbing**,
+**DemaConsulting.TestResults**, and **SysML2Tools** (the tool used to model VersionMark's
+software structure and render the diagrams embedded throughout this document).
 
 Each component described here corresponds to one or more requirements defined in the
 `docs/reqstream/` files. The source code in `src/DemaConsulting.VersionMark/` is the
@@ -45,28 +47,17 @@ defect against the code.
 
 ## Software Structure
 
-The following tree shows how the VersionMark software items are organized across the
-system, subsystem, and unit levels:
+The software structure is modeled in SysML2 under `docs/sysml2/` and rendered to the
+diagram below by SysML2Tools as part of the build pipeline. The model is the authoritative,
+machine-queryable source of structure; the diagram is a generated/derived artifact. AI
+agents should query the SysML2 model directly (see the `sysml2tools-query` skill) rather
+than parsing this diagram before deep-diving into source code.
 
-```text
-VersionMark (System)                        Version capture/publish tool
-├── Cli (Subsystem)                         Argument parsing and dispatch
-│   ├── Program (Unit)                      Tool entry point
-│   └── Context (Unit)                      Command-line state container
-├── Configuration (Subsystem)               YAML configuration loading and validation
-│   ├── VersionMarkConfig (Unit)            Top-level config container and validator
-│   ├── ToolConfig (Unit)                   Per-tool config record
-│   └── LintIssue (Unit)                    Lint severity, issue record, and load result
-├── Capture (Subsystem)                     Tool version capture
-│   └── VersionInfo (Unit)                  JSON version data record
-├── Publishing (Subsystem)                  Markdown report publishing
-│   └── MarkdownFormatter (Unit)            Version report formatter
-├── SelfTest (Subsystem)                    Built-in self-validation
-│   └── Validation (Unit)                   Self-validation runner
-└── Utilities (Subsystem)                   General-purpose helper utilities
-    ├── GlobMatcher (Unit)                  Glob-pattern file matching
-    └── PathHelpers (Unit)                  Safe path combination
-```
+![Software Structure](SoftwareStructureView.svg)
+
+VersionMark is organized as a single system with six subsystems — Cli, Configuration,
+Capture, Publishing, SelfTest, and Utilities — each containing one or more units, as shown
+above.
 
 ## Folder Layout
 

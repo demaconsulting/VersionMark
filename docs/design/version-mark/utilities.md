@@ -1,5 +1,7 @@
 ## Utilities
 
+![Utilities Structure](UtilitiesView.svg)
+
 ### Overview
 
 The Utilities subsystem provides general-purpose helper classes used by other subsystems

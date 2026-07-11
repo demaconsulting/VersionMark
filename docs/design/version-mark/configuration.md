@@ -1,5 +1,7 @@
 ## Configuration
 
+![Configuration Structure](ConfigurationView.svg)
+
 ### Overview
 
 The Configuration subsystem reads and interprets the `.versionmark.yaml` file that defines

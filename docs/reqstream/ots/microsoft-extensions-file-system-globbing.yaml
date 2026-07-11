@@ -1,0 +1,25 @@
+---
+# Microsoft.Extensions.FileSystemGlobbing OTS Software Requirements
+#
+# Requirements for the Microsoft.Extensions.FileSystemGlobbing library functionality
+# consumed by VersionMark.
+
+sections:
+  - title: OTS Software Requirements
+    sections:
+      - title: FileSystemGlobbing Requirements
+        requirements:
+          - id: VersionMark-OTS-FileSystemGlobbing
+            title: FileSystemGlobbing shall match relative and absolute glob patterns
+              against the file system and deduplicate overlapping matches.
+            justification: |
+              Microsoft.Extensions.FileSystemGlobbing provides the `Matcher` class
+              used by VersionMark's `GlobMatcher.FindMatchingFiles` to resolve
+              relative and absolute glob patterns supplied in CI/CD pipeline
+              configuration into concrete file lists. VersionMark relies on it for
+              correct wildcard, recursive-wildcard, and cross-platform path matching.
+            tags: [ots]
+            tests:
+              - GlobMatcher_FindMatchingFiles_RelativePattern_ReturnsMatchingFiles
+              - GlobMatcher_FindMatchingFiles_AbsolutePattern_ReturnsMatchingFiles
+              - GlobMatcher_FindMatchingFiles_OverlappingPatterns_DeduplicatesResults

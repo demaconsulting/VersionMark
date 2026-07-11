@@ -1,5 +1,7 @@
 ### MarkdownFormatter
 
+![Publishing Structure](PublishingView.svg)
+
 #### Purpose
 
 `MarkdownFormatter` (`MarkdownFormatter.cs`) converts a collection of `VersionInfo` records

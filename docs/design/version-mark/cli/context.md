@@ -1,5 +1,7 @@
 ### Context
 
+![Cli Structure](CliView.svg)
+
 #### Purpose
 
 `Context` (`Context.cs`) is a sealed, disposable container for all parsed command-line

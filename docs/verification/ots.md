@@ -17,7 +17,7 @@ provides a built-in self-validation mode.
 
 Tools that expose a `--validate` flag are verified by invoking that flag directly in the
 CI pipeline. The following tools fall into this category: BuildMark, FileAssert, ReqStream,
-ReviewMark, SarifMark, and SonarMark. Each tool's self-validation exercises its own
+ReviewMark, SarifMark, SonarMark, and SysML2Tools. Each tool's self-validation exercises its own
 internal logic and reports results in TRX format. xUnit is treated similarly: the
 `dotnet test` run that executes the VersionMark test suite simultaneously validates that
 xUnit itself is operating correctly.
@@ -41,7 +41,7 @@ exercise YAML parsing.
 The following evidence artifacts are collected during each CI run:
 
 For tools with built-in self-validation (BuildMark, FileAssert, ReqStream, ReviewMark,
-SarifMark, SonarMark), the CI pipeline captures TRX result files stored as pipeline
+SarifMark, SonarMark, SysML2Tools), the CI pipeline captures TRX result files stored as pipeline
 artifacts under the path `artifacts/{tool}-self-validation.trx`, where `{tool}` is the
 lowercase tool name (for example, `artifacts/buildmark-self-validation.trx`).
 
@@ -65,8 +65,8 @@ When an OTS component is upgraded to a new version, the full CI pipeline is re-r
 that version before the upgrade is accepted.
 
 For tools with built-in self-validation (BuildMark, FileAssert, ReqStream, ReviewMark,
-SarifMark, SonarMark, xUnit), the corresponding self-validation TRX must complete with
-zero failures. Any failure in the TRX output blocks the upgrade until the root cause is
+SarifMark, SonarMark, SysML2Tools, xUnit), the corresponding self-validation TRX must complete
+with zero failures. Any failure in the TRX output blocks the upgrade until the root cause is
 resolved.
 
 For Pandoc and WeasyPrint, all FileAssert assertions on the seven generated document types
