@@ -383,22 +383,23 @@ reviews:
       - docs/design/ots/sysml2tools.md
       - docs/verification/ots/sysml2tools.md
 
-  # OTS runtime dependencies (no reqstream file yet; requirements are a follow-up
-  # per docs/design/ots.md's existing three-item scope)
   - id: OTS-YamlDotNet
     title: Review that YamlDotNet Provides Required Functionality
     paths:
+      - docs/reqstream/ots/yaml-dot-net.yaml
       - docs/design/ots/yaml-dot-net.md
       - docs/verification/ots/yaml-dot-net.md
 
   - id: OTS-FileSystemGlobbing
     title: Review that FileSystemGlobbing Provides Required Functionality
     paths:
+      - docs/reqstream/ots/microsoft-extensions-file-system-globbing.yaml
       - docs/design/ots/microsoft-extensions-file-system-globbing.md
       - docs/verification/ots/microsoft-extensions-file-system-globbing.md
 
   - id: OTS-TestResults
     title: Review that TestResults Provides Required Functionality
     paths:
+      - docs/reqstream/ots/dema-consulting-test-results.yaml
       - docs/design/ots/dema-consulting-test-results.md
       - docs/verification/ots/dema-consulting-test-results.md
