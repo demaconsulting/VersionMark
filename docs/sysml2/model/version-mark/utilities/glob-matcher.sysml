@@ -1,11 +1,16 @@
 package VersionMark {
-    part def GlobMatcher {
-        doc /* Resolves glob patterns into concrete file path lists for publish mode. */
+    package Utilities {
+        private import SoftwareItemMetadata::*;
 
-        comment sourceRef /* Source: src/DemaConsulting.VersionMark/Utilities/GlobMatcher.cs */
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/Utilities/GlobMatcherTests.cs */
-        comment designRef /* Design: docs/design/version-mark/utilities/glob-matcher.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/utilities/glob-matcher.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/utilities/glob-matcher.yaml */
+        part def GlobMatcher {
+            metadata info : SoftwareInfo {
+                description = "Resolves glob patterns into concrete file path lists for publish mode.";
+                sourceFiles = ("src/DemaConsulting.VersionMark/Utilities/GlobMatcher.cs");
+                testFiles = ("test/DemaConsulting.VersionMark.Tests/Utilities/GlobMatcherTests.cs");
+                designFiles = ("docs/design/version-mark/utilities/glob-matcher.md");
+                verificationFiles = ("docs/verification/version-mark/utilities/glob-matcher.md");
+                requirementFiles = ("docs/reqstream/version-mark/utilities/glob-matcher.yaml");
+            }
+        }
     }
 }

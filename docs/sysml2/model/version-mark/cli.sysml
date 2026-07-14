@@ -1,13 +1,18 @@
 package VersionMark {
-    part def CliSubsystem {
-        doc /* Command-line argument parsing, mode dispatch, and output routing. */
+    package Cli {
+        private import SoftwareItemMetadata::*;
 
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/Cli/CliTests.cs */
-        comment designRef /* Design: docs/design/version-mark/cli.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/cli.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/cli.yaml */
+        part def CliSubsystem {
+            metadata info : SoftwareInfo {
+                description = "Command-line argument parsing, mode dispatch, and output routing.";
+                testFiles = ("test/DemaConsulting.VersionMark.Tests/Cli/CliTests.cs");
+                designFiles = ("docs/design/version-mark/cli.md");
+                verificationFiles = ("docs/verification/version-mark/cli.md");
+                requirementFiles = ("docs/reqstream/version-mark/cli.yaml");
+            }
 
-        part program : Program;
-        part context : Context;
+            part program : Program;
+            part context : Context;
+        }
     }
 }

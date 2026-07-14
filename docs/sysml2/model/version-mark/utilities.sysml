@@ -1,12 +1,17 @@
 package VersionMark {
-    part def UtilitiesSubsystem {
-        doc /* Glob-pattern matching and safe path combination helpers. */
+    package Utilities {
+        private import SoftwareItemMetadata::*;
 
-        comment designRef /* Design: docs/design/version-mark/utilities.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/utilities.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/utilities.yaml */
+        part def UtilitiesSubsystem {
+            metadata info : SoftwareInfo {
+                description = "Glob-pattern matching and safe path combination helpers.";
+                designFiles = ("docs/design/version-mark/utilities.md");
+                verificationFiles = ("docs/verification/version-mark/utilities.md");
+                requirementFiles = ("docs/reqstream/version-mark/utilities.yaml");
+            }
 
-        part globMatcher : GlobMatcher;
-        part pathHelpers : PathHelpers;
+            part globMatcher : GlobMatcher;
+            part pathHelpers : PathHelpers;
+        }
     }
 }

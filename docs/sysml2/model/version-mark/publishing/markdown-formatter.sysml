@@ -1,11 +1,16 @@
 package VersionMark {
-    part def MarkdownFormatter {
-        doc /* Converts loaded version records into a consolidated markdown report. */
+    package Publishing {
+        private import SoftwareItemMetadata::*;
 
-        comment sourceRef /* Source: src/DemaConsulting.VersionMark/Publishing/MarkdownFormatter.cs */
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/Publishing/MarkdownFormatterTests.cs */
-        comment designRef /* Design: docs/design/version-mark/publishing/markdown-formatter.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/publishing/markdown-formatter.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/publishing/markdown-formatter.yaml */
+        part def MarkdownFormatter {
+            metadata info : SoftwareInfo {
+                description = "Converts loaded version records into a consolidated markdown report.";
+                sourceFiles = ("src/DemaConsulting.VersionMark/Publishing/MarkdownFormatter.cs");
+                testFiles = ("test/DemaConsulting.VersionMark.Tests/Publishing/MarkdownFormatterTests.cs");
+                designFiles = ("docs/design/version-mark/publishing/markdown-formatter.md");
+                verificationFiles = ("docs/verification/version-mark/publishing/markdown-formatter.md");
+                requirementFiles = ("docs/reqstream/version-mark/publishing/markdown-formatter.yaml");
+            }
+        }
     }
 }

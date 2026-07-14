@@ -1,11 +1,16 @@
 package VersionMark {
-    part def Validation {
-        doc /* Exercises capture, publish, and lint modes end-to-end for self-validation. */
+    package SelfTest {
+        private import SoftwareItemMetadata::*;
 
-        comment sourceRef /* Source: src/DemaConsulting.VersionMark/SelfTest/Validation.cs */
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/SelfTest/SelfTestTests.cs (no dedicated ValidationTests.cs) */
-        comment designRef /* Design: docs/design/version-mark/self-test/validation.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/self-test/validation.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/self-test/validation.yaml */
+        part def Validation {
+            metadata info : SoftwareInfo {
+                description = "Exercises capture, publish, and lint modes end-to-end for self-validation.";
+                sourceFiles = ("src/DemaConsulting.VersionMark/SelfTest/Validation.cs");
+                testFiles = ("test/DemaConsulting.VersionMark.Tests/SelfTest/SelfTestTests.cs");
+                designFiles = ("docs/design/version-mark/self-test/validation.md");
+                verificationFiles = ("docs/verification/version-mark/self-test/validation.md");
+                requirementFiles = ("docs/reqstream/version-mark/self-test/validation.yaml");
+            }
+        }
     }
 }

@@ -1,5 +1,17 @@
 package VersionMark {
     import OtsDependencies::*;
+    private import SoftwareItemMetadata::*;
+
+    // Each subsystem now lives in its own VersionMark::<Subsystem> nested package (see
+    // version-mark/*.sysml) rather than being flattened directly into VersionMark, so this system
+    // definition needs an explicit import per subsystem to reference its subsystem part def by
+    // simple name below.
+    import VersionMark::Cli::*;
+    import VersionMark::Configuration::*;
+    import VersionMark::Capture::*;
+    import VersionMark::Publishing::*;
+    import VersionMark::SelfTest::*;
+    import VersionMark::Utilities::*;
 
     doc
     /*
@@ -8,12 +20,13 @@ package VersionMark {
      */
 
     part def VersionMarkSystem {
-        doc /* The VersionMark system as a whole. */
-
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/IntegrationTests.cs */
-        comment designRef /* Design: docs/design/version-mark.md */
-        comment verificationRef /* Verification: docs/verification/version-mark.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark.yaml */
+        metadata info : SoftwareInfo {
+            description = "The VersionMark system as a whole.";
+            testFiles = ("test/DemaConsulting.VersionMark.Tests/IntegrationTests.cs");
+            designFiles = ("docs/design/version-mark.md");
+            verificationFiles = ("docs/verification/version-mark.md");
+            requirementFiles = ("docs/reqstream/version-mark.yaml");
+        }
 
         part cli : CliSubsystem;
         part configuration : ConfigurationSubsystem;

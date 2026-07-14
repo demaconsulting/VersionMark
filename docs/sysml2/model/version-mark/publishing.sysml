@@ -1,12 +1,17 @@
 package VersionMark {
-    part def PublishingSubsystem {
-        doc /* Markdown report generation from captured version data. */
+    package Publishing {
+        private import SoftwareItemMetadata::*;
 
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/Publishing/PublishingTests.cs */
-        comment designRef /* Design: docs/design/version-mark/publishing.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/publishing.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/publishing.yaml */
+        part def PublishingSubsystem {
+            metadata info : SoftwareInfo {
+                description = "Markdown report generation from captured version data.";
+                testFiles = ("test/DemaConsulting.VersionMark.Tests/Publishing/PublishingTests.cs");
+                designFiles = ("docs/design/version-mark/publishing.md");
+                verificationFiles = ("docs/verification/version-mark/publishing.md");
+                requirementFiles = ("docs/reqstream/version-mark/publishing.yaml");
+            }
 
-        part markdownFormatter : MarkdownFormatter;
+            part markdownFormatter : MarkdownFormatter;
+        }
     }
 }
