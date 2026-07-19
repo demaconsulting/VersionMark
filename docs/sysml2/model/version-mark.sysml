@@ -2,17 +2,6 @@ package VersionMark {
     import OtsDependencies::*;
     private import SoftwareItemMetadata::*;
 
-    // Each subsystem now lives in its own VersionMark::<Subsystem> nested package (see
-    // version-mark/*.sysml) rather than being flattened directly into VersionMark, so this system
-    // definition needs an explicit import per subsystem to reference its subsystem part def by
-    // simple name below.
-    import VersionMark::Cli::*;
-    import VersionMark::Configuration::*;
-    import VersionMark::Capture::*;
-    import VersionMark::Publishing::*;
-    import VersionMark::SelfTest::*;
-    import VersionMark::Utilities::*;
-
     doc
     /*
      * VersionMark is a .NET global tool that captures tool/dependency versions,
