@@ -1,11 +1,31 @@
 package VersionMark {
-    part def VersionMarkConfig {
-        doc /* Loads, validates, and executes `.versionmark.yaml` tool version capture. */
+    private import SoftwareItemMetadata::*;
+    import OtsDependencies::*;
 
-        comment sourceRef /* Source: src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs */
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/Configuration/VersionMarkConfigTests.cs (also see VersionMarkConfigLoadTests.cs) */
-        comment designRef /* Design: docs/design/version-mark/configuration/version-mark-config.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/configuration/version-mark-config.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/configuration/version-mark-config.yaml (also load.yaml for VersionMarkConfig.Load behavior) */
+    part def VersionMarkConfig {
+        metadata info : SoftwareInfo {
+            description = "Loads, validates, and executes `.versionmark.yaml` tool version capture.";
+            sourceFiles = ("src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs");
+            testFiles = (
+                "test/DemaConsulting.VersionMark.Tests/Configuration/VersionMarkConfigTests.cs",
+                "test/DemaConsulting.VersionMark.Tests/Configuration/VersionMarkConfigLoadTests.cs"
+            );
+            designFiles = ("docs/design/version-mark/configuration/version-mark-config.md");
+            verificationFiles = ("docs/verification/version-mark/configuration/version-mark-config.md");
+            requirementFiles = (
+                "docs/reqstream/version-mark/configuration/version-mark-config.yaml",
+                "docs/reqstream/version-mark/configuration/load.yaml"
+            );
+        }
+
+        // Tools is keyed by tool name; the key/value pairing is not representable here,
+        // so this is a flat multiplicity of ToolConfig parts.
+        part tools : ToolConfig [0..*];
     }
+
+    // Load validates and produces LintIssue/ToolConfig records; FindVersions returns VersionInfo.
+    dependency VersionMarkConfig to ToolConfig;
+    dependency VersionMarkConfig to LintIssue;
+    dependency VersionMarkConfig to VersionInfo;
+    dependency VersionMarkConfig to YamlDotNet;
 }

@@ -161,15 +161,16 @@ whichever produces a single coherent overview diagram.
 
 ## Diagram Embedding
 
-Render with a single quoted recursive glob for the model tree, plus the views file
+Render with a single quoted recursive glob covering the entire `docs/sysml2/` tree
 (`sysml2tools` 0.1.0-beta.5+ expands and recurses `**` internally, so no shell-side globbing
-or explicit per-file listing is needed):
+or explicit per-file listing is needed). Use one glob rooted at `docs/sysml2/`, not just
+`docs/sysml2/model/**`, so shared definitions under `docs/sysml2/common/` (e.g. metadata
+defs) are always included:
 
 ```pwsh
 dotnet sysml2tools render `
   --output docs/design/generated --format svg `
-  'docs/sysml2/model/**/*.sysml' `
-  'docs/sysml2/views/design-views.sysml'
+  'docs/sysml2/**/*.sysml'
 ```
 
 With multiple views declared and no `--view` flag, `sysml2tools` renders every declared view
@@ -198,10 +199,10 @@ subsection, e.g. `![{Name} Structure]({ViewName}.svg)`.
   `Get-ChildItem`/shell-side globbing is needed.
 - The CI design-document job renders the views (see the render command above) before running
   Pandoc, so generated SVGs exist before HTML generation. Rename/stable-filename workarounds
-  are unnecessary since view names are stable by definition. Pass the model and views globs as
-  separate quoted arguments (e.g. `'docs/sysml2/model/**/*.sysml' 'docs/sysml2/views/design-views.sysml'`)
-  — plain PowerShell (the default shell) is sufficient; no `shell: bash`/`shopt -s globstar`
-  workaround is needed.
+  are unnecessary since view names are stable by definition. Pass a single recursive glob
+  rooted at `docs/sysml2/` (e.g. `'docs/sysml2/**/*.sysml'`) so shared definitions outside
+  `model/` (such as `docs/sysml2/common/`) are always included — plain PowerShell (the default
+  shell) is sufficient; no `shell: bash`/`shopt -s globstar` workaround is needed.
 - Add `sysml2tools` to `.config/dotnet-tools.json` (`demaconsulting.sysml2tools.tool`) and to
   `.versionmark.yaml`'s captured tool list.
 

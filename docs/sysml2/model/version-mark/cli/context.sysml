@@ -1,11 +1,14 @@
 package VersionMark {
-    part def Context {
-        doc /* Command-line argument and output container (console, error, log file). */
+    private import SoftwareItemMetadata::*;
 
-        comment sourceRef /* Source: src/DemaConsulting.VersionMark/Cli/Context.cs */
-        comment testRef /* Test: test/DemaConsulting.VersionMark.Tests/Cli/ContextTests.cs */
-        comment designRef /* Design: docs/design/version-mark/cli/context.md */
-        comment verificationRef /* Verification: docs/verification/version-mark/cli/context.md */
-        comment reqRef /* Requirements: docs/reqstream/version-mark/cli/context.yaml */
+    part def Context {
+        metadata info : SoftwareInfo {
+            description = "Command-line argument and output container (console, error, log file).";
+            sourceFiles = ("src/DemaConsulting.VersionMark/Cli/Context.cs");
+            testFiles = ("test/DemaConsulting.VersionMark.Tests/Cli/ContextTests.cs");
+            designFiles = ("docs/design/version-mark/cli/context.md");
+            verificationFiles = ("docs/verification/version-mark/cli/context.md");
+            requirementFiles = ("docs/reqstream/version-mark/cli/context.yaml");
+        }
     }
 }
