@@ -46,6 +46,8 @@ sections:
               enabling integration with existing workflows and file structures.
             tags:
               - capture
+            children:
+              - VersionMark-Utilities-SafePath
             tests:
               - Capture_Run_NoToolFilter_CapturesAllConfiguredTools
 
@@ -90,6 +92,14 @@ sections:
               capture and how to capture them.
             tags:
               - capture
+            children:
+              - VersionMark-Configuration-YamlConfig
+              - VersionMark-Configuration-ToolDefinition
+              - VersionMark-Configuration-OsCommandOverride
+              - VersionMark-Configuration-OsRegexOverride
+              - VersionMark-Configuration-ValidateTools
+              - VersionMark-Configuration-ReadError
+              - VersionMark-Configuration-ParseError
             tests:
               - Capture_Config_ReadFromFile_LoadsToolDefinitions
 
@@ -114,6 +124,7 @@ sections:
               - capture
             children:
               - VersionMark-VersionInfo-Save
+              - VersionMark-VersionInfo-WriteError
             tests:
               - Capture_SaveAndLoad_PreservesAllVersionData
               - Capture_MultipleCaptures_EachFileHasDistinctJobId

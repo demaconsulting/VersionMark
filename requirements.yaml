@@ -4,6 +4,17 @@
 # This file defines the requirements for the VersionMark tool.
 # Requirements are verified through tests and documented in
 # docs/requirements_doc/ and docs/requirements_report/.
+#
+# root-tags identifies the tags that mark "root" requirements - product-facing
+# system requirements and quality/process requirements that exist for their own
+# sake and don't need a further parent. Every other requirement must trace up
+# (via children links) to at least one root-tagged requirement, or it is
+# reported as orphaned - a requirement implemented, tested, and documented but
+# never connected to anything a user or the repository's compliance process
+# actually needs. Because root-tags is configured here, orphan checking runs
+# automatically on every "reqstream" invocation (including --lint and
+# --enforce) without needing a --root-tags command-line flag.
+root-tags: [system, quality]
 
 includes:
   - docs/reqstream/version-mark.yaml
@@ -25,6 +36,7 @@ includes:
   - docs/reqstream/version-mark/utilities.yaml
   - docs/reqstream/version-mark/utilities/glob-matcher.yaml
   - docs/reqstream/version-mark/utilities/path-helpers.yaml
+  - docs/reqstream/quality.yaml
   - docs/reqstream/ots/xunit.yaml
   - docs/reqstream/ots/reqstream.yaml
   - docs/reqstream/ots/buildmark.yaml
