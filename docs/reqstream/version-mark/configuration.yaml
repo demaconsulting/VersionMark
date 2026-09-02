@@ -14,6 +14,7 @@ sections:
             children:
               - VersionMark-VersionMarkConfig-ReadFromFile
               - VersionMark-VersionMarkConfig-Load
+              - VersionMark-OTS-YamlDotNet
             tests:
               - Configuration_ReadFromFile_MultipleTools_AllToolsAccessible
 

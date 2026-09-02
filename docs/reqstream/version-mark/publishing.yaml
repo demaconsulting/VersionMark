@@ -23,6 +23,8 @@ sections:
               enabling integration with documentation systems and custom workflows.
             tags:
               - publish
+            children:
+              - VersionMark-Formatter-Structure
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
               - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
@@ -35,6 +37,8 @@ sections:
               within existing document structures and hierarchy requirements.
             tags:
               - publish
+            children:
+              - VersionMark-Formatter-MarkdownConsolidation
             tests:
               - Publishing_Format_WithCustomDepth_UsesCorrectHeadingLevel
               - Publishing_Run_WithReportDepth_UsesCorrectDepth
@@ -58,6 +62,8 @@ sections:
               the report using standard glob patterns like versionmark-*.json.
             tags:
               - publish
+            children:
+              - VersionMark-Utilities-GlobMatch
             tests:
               - Publishing_Run_WithGlobPattern_ReadsMatchingFiles
 
@@ -71,6 +77,7 @@ sections:
               - publish
             children:
               - VersionMark-VersionInfo-Load
+              - VersionMark-Formatter-JobId
             tests:
               - Publishing_Format_MultipleCaptureFiles_ProducesConsolidatedReport
               - Publishing_Format_IdenticalVersionsAcrossJobs_ConsolidatesVersions
@@ -110,5 +117,7 @@ sections:
               helping users identify and fix data quality issues.
             tags:
               - publish
+            children:
+              - VersionMark-VersionInfo-Error
             tests:
               - Publishing_Run_WithMalformedJsonFile_ReportsError

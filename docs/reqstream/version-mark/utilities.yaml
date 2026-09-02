@@ -14,6 +14,7 @@ sections:
               - VersionMark-GlobMatcher-FindFiles
               - VersionMark-GlobMatcher-AbsolutePaths
               - VersionMark-GlobMatcher-DeduplicatedSortedOutput
+              - VersionMark-OTS-FileSystemGlobbing
             tests:
               - GlobMatcher_FindMatchingFiles_RelativePattern_ReturnsMatchingFiles
               - GlobMatcher_FindMatchingFiles_AbsolutePattern_ReturnsMatchingFiles

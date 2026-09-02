@@ -8,6 +8,7 @@ sections:
           The primary purpose of VersionMark is to record which tool versions were
           present in each CI/CD job so that version differences across environments
           can be detected and reported.
+        tags: [system]
         children:
           - VersionMark-Capture-Capture
           - VersionMark-Capture-JobId
@@ -23,6 +24,7 @@ sections:
           - VersionMark-Capture-ConfigError
           - VersionMark-Capture-CommandFailure
           - VersionMark-VersionMarkConfig-FindVersions
+          - VersionMark-Program-RunCapture
         tests:
           - IntegrationTest_CaptureCommand_CapturesToolVersions
 
@@ -33,6 +35,7 @@ sections:
           Teams need a human-readable summary of tool versions across all jobs.
           Publishing to markdown enables the report to be included in release
           documentation and artifact archives.
+        tags: [system]
         children:
           - VersionMark-Publish-Publish
           - VersionMark-Publish-Report
@@ -43,6 +46,7 @@ sections:
           - VersionMark-Publish-ConflictReport
           - VersionMark-Publish-ConflictDisplay
           - VersionMark-Publish-FileError
+          - VersionMark-Program-RunPublish
         tests:
           - VersionMark_PublishCommand_GeneratesMarkdownReport
 
@@ -53,6 +57,7 @@ sections:
           Detecting configuration errors early, before a CI/CD run proceeds, reduces
           wasted build time and provides precise error locations so users can fix
           problems quickly.
+        tags: [system]
         children:
           - VersionMark-Load-FileExistence
           - VersionMark-Load-YamlParsing
@@ -72,6 +77,10 @@ sections:
           - VersionMark-Load-VersionMarkLoadResult-Bundle
           - VersionMark-Load-VersionMarkLoadResult-ErrorRouting
           - VersionMark-Load-VersionMarkLoadResult-WarnRouting
+          - VersionMark-Load-LintIssue-Fields
+          - VersionMark-Load-LintIssue-Format
+          - VersionMark-CommandLine-Lint
+          - VersionMark-Program-RunLint
         tests:
           - IntegrationTest_LintFlag_ValidConfig_ReturnsSuccess
           - IntegrationTest_LintFlag_InvalidConfig_ReturnsError
@@ -82,11 +91,51 @@ sections:
           A built-in self-validation suite lets operators confirm that the installed
           tool is functioning correctly in the deployment environment without
           requiring external fixtures or test data.
+        tags: [system]
         children:
           - VersionMark-Validate-Capture
           - VersionMark-Validate-Publish
           - VersionMark-Validate-LintValid
           - VersionMark-Validate-LintInvalid
           - VersionMark-Validate-Results
+          - VersionMark-CommandLine-Validate
+          - VersionMark-CommandLine-Results
+          - VersionMark-OTS-TestResults
         tests:
           - IntegrationTest_ValidateFlag_RunsValidation
+
+      - id: VersionMark-System-CommandLine
+        title: >-
+          The tool shall provide a consistent command-line interface across all
+          invocations, including flags to display version and help information,
+          suppress console output, write a log file, and report errors for
+          unrecognized arguments.
+        justification: |
+          Every DEMA Consulting DotNet Tool exposes the same baseline command-line
+          conventions so users and CI/CD scripts can rely on predictable behavior
+          for version display, usage help, output verbosity, logging, and error
+          reporting regardless of which specific capture, publish, or lint
+          operation is invoked.
+        tags: [system]
+        children:
+          - VersionMark-CommandLine-Context
+          - VersionMark-CommandLine-Version
+          - VersionMark-CommandLine-Help
+          - VersionMark-CommandLine-Silent
+          - VersionMark-CommandLine-Log
+          - VersionMark-CommandLine-ErrorOutput
+          - VersionMark-CommandLine-InvalidArgs
+          - VersionMark-CommandLine-ExitCode
+          - VersionMark-Program-Version
+          - VersionMark-Program-Dispatch
+          - VersionMark-Context-Create
+          - VersionMark-Context-WriteLine
+          - VersionMark-Context-WriteError
+          - VersionMark-Context-WriteErrorLog
+          - VersionMark-Context-WriteErrorExitCode
+        tests:
+          - Cli_Run_VersionFlag_ExitsCleanly
+          - Cli_Run_HelpFlag_DisplaysUsageInformation
+          - Cli_Run_SilentWithVersionFlag_SuppressesOutput
+          - Cli_Run_LogFlag_WritesOutputToLogFile
+          - Cli_Run_InvalidArgs_ThrowsArgumentException
