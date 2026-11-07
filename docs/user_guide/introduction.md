@@ -1,4 +1,4 @@
-﻿# Introduction
+# Introduction
 
 This guide describes how to install, configure, and use VersionMark.
 
@@ -8,6 +8,11 @@ VersionMark is a .NET tool for capturing and publishing tool version information
 CI/CD environments. It helps teams track which versions of build tools, compilers, and
 dependencies are used in different jobs and environments, ensuring transparency,
 reproducibility, and traceability between software artifacts and the build environment.
+
+The following diagram shows how VersionMark captures and publishes tool versions:
+
+![VersionMark architecture: the Program entry point uses Configuration to read .versionmark.yaml, Capture to
+save versions as JSON, and Publishing to write the version report.](architecture.svg)
 
 VersionMark follows the [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance)
 methodology, which ensures compliance evidence is generated automatically on every CI run.
