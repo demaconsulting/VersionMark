@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect x="14" y="16" width="875" height="495" rx="28" fill="#d5dce6"/>
+  <rect x="10" y="10" width="875" height="495" rx="28" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+
+  <g transform="translate(30,30)">
+    <rect x="150" y="0" width="460" height="70" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+    <text x="380" y="31" font-size="16" font-family="Consolas, monospace" font-weight="600" fill="#92400e" text-anchor="middle">versionmark (Program)</text>
+    <text x="380" y="53" font-size="13" fill="#92400e" text-anchor="middle">command-line tool run by you or your CI pipeline</text>
+    <line x1="380" y1="74" x2="380" y2="118" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+    <text x="392" y="100" font-size="12" fill="#334155">--capture, --publish, --lint ...</text>
+
+    <rect x="150" y="122" width="460" height="328" rx="14" fill="#f8fafc" stroke="#2563eb" stroke-width="2" stroke-dasharray="8 5"/>
+    <text x="166" y="148" font-size="14" font-weight="600" fill="#2563eb">DemaConsulting.VersionMark</text>
+
+    <rect x="170" y="162" width="420" height="52" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="380" y="185" font-size="16" font-weight="600" fill="#166534" text-anchor="middle">Cli</text>
+    <text x="380" y="204" font-size="12" fill="#166534" text-anchor="middle">Parses flags into a Context that owns the output streams</text>
+
+    <rect x="170" y="230" width="200" height="72" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="270" y="256" font-size="15" font-weight="600" fill="#1e3a8a" text-anchor="middle">Utilities</text>
+    <text x="270" y="276" font-size="12" fill="#1e40af" text-anchor="middle">Safe path handling</text>
+    <rect x="390" y="230" width="200" height="72" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="490" y="256" font-size="15" font-weight="600" fill="#1e3a8a" text-anchor="middle">SelfTest</text>
+    <text x="490" y="276" font-size="12" fill="#1e40af" text-anchor="middle">With --validate, runs the</text>
+    <text x="490" y="291" font-size="12" fill="#1e40af" text-anchor="middle">tool's built-in checks</text>
+
+    <g fill="#ede9fe" stroke="#7c3aed" stroke-width="2">
+      <rect x="170" y="318" width="130" height="100" rx="12"/>
+      <rect x="315" y="318" width="130" height="100" rx="12"/>
+      <rect x="460" y="318" width="130" height="100" rx="12"/>
+    </g>
+    <g text-anchor="middle">
+      <g font-size="15" font-weight="600" fill="#4c1d95">
+        <text x="235" y="344">Configuration</text>
+        <text x="380" y="344">Capture</text>
+        <text x="525" y="344">Publishing</text>
+      </g>
+      <g font-size="11" fill="#5b21b6">
+        <text x="235" y="366">Reads and lints</text>
+        <text x="235" y="381">.versionmark.yaml</text>
+        <text x="235" y="396">and reads versions</text>
+        <text x="380" y="366">Saves the versions</text>
+        <text x="380" y="381">of one job to a</text>
+        <text x="380" y="396">JSON file</text>
+        <text x="525" y="366">Merges JSON files,</text>
+        <text x="525" y="381">collapsing common</text>
+        <text x="525" y="396">versions and conflicts</text>
+      </g>
+    </g>
+    <g stroke="#475569" stroke-width="2" marker-end="url(#a)">
+      <line x1="302" y1="368" x2="313" y2="368"/>
+      <line x1="447" y1="368" x2="458" y2="368"/>
+    </g>
+
+    <text x="60" y="274" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">Inputs</text>
+    <rect x="0" y="288" width="120" height="66" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+    <text x="60" y="315" font-size="15" font-weight="600" fill="#334155" text-anchor="middle">Config</text>
+    <text x="60" y="336" font-size="12" fill="#475569" text-anchor="middle">.versionmark.yaml</text>
+    <rect x="0" y="370" width="120" height="66" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+    <text x="60" y="397" font-size="15" font-weight="600" fill="#334155" text-anchor="middle">Tools</text>
+    <text x="60" y="418" font-size="12" fill="#475569" text-anchor="middle">queried for versions</text>
+    <line x1="124" y1="321" x2="146" y2="321" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="124" y1="403" x2="146" y2="403" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+
+    <rect x="650" y="318" width="165" height="102" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="732" y="344" font-size="16" font-weight="600" fill="#166534" text-anchor="middle">Outputs</text>
+    <g font-size="13" fill="#14532d" text-anchor="middle">
+      <rect x="664" y="356" width="137" height="26" rx="5" fill="#ffffff" stroke="#16a34a"/>
+      <text x="732" y="374">Version JSON</text>
+      <rect x="664" y="386" width="137" height="26" rx="5" fill="#ffffff" stroke="#16a34a"/>
+      <text x="732" y="404">Version report</text>
+    </g>
+    <line x1="594" y1="368" x2="646" y2="368" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+  </g>
+</svg>

@@ -15,6 +15,8 @@ VersionMark is a .NET tool for capturing and publishing tool version information
 It tracks which versions of build tools, compilers, and dependencies are used in different jobs and
 environments, and publishes consolidated version reports to markdown documentation.
 
+![VersionMark architecture: Configuration reads .versionmark.yaml, Capture saves versions to JSON, and Publishing writes the version report][architecture]
+
 ## Features
 
 - **Version Capture**: Captures tool versions from CI/CD jobs and saves them to JSON files
@@ -219,6 +221,7 @@ If any tests fail, the exit code will be non-zero.
 [badge-nuget]: https://img.shields.io/nuget/v/DemaConsulting.VersionMark?style=plastic
 
 <!-- Link References -->
+[architecture]: https://raw.githubusercontent.com/demaconsulting/VersionMark/main/docs/images/architecture.png
 [link-forks]: https://github.com/demaconsulting/VersionMark/network/members
 [link-stars]: https://github.com/demaconsulting/VersionMark/stargazers
 [link-contributors]: https://github.com/demaconsulting/VersionMark/graphs/contributors
