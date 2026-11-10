@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def PathHelpers {
+        doc /* Safe path combination helpers used to construct paths within temp directories. */
+
         metadata info : SoftwareInfo {
             description = "Safe path combination helpers used to construct paths within temp directories.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Utilities/PathHelpers.cs");

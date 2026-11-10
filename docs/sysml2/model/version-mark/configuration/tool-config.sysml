@@ -3,6 +3,8 @@ package VersionMark {
     private import ScalarValues::String;
 
     part def ToolConfig {
+        doc /* Per-tool capture configuration (command, regex, OS-specific overrides). */
+
         metadata info : SoftwareInfo {
             description = "Per-tool capture configuration (command, regex, OS-specific overrides).";
             sourceFiles = ("src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs");

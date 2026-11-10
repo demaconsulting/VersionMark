@@ -3,6 +3,8 @@ package VersionMark {
     import OtsDependencies::*;
 
     part def VersionMarkConfig {
+        doc /* Loads, validates, and executes `.versionmark.yaml` tool version capture. */
+
         metadata info : SoftwareInfo {
             description = "Loads, validates, and executes `.versionmark.yaml` tool version capture.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs");

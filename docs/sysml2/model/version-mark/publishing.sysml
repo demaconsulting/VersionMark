@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def PublishingSubsystem {
+        doc /* Markdown report generation from captured version data. */
+
         metadata info : SoftwareInfo {
             description = "Markdown report generation from captured version data.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Publishing/PublishingTests.cs");

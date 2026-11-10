@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def Context {
+        doc /* Command-line argument and output container (console, error, log file). */
+
         metadata info : SoftwareInfo {
             description = "Command-line argument and output container (console, error, log file).";
             sourceFiles = ("src/DemaConsulting.VersionMark/Cli/Context.cs");

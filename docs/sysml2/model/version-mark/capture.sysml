@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def CaptureSubsystem {
+        doc /* JSON serialization of captured version data. */
+
         metadata info : SoftwareInfo {
             description = "JSON serialization of captured version data.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Capture/CaptureTests.cs");

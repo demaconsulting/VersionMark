@@ -1,5 +1,5 @@
 ---
-# Spell-Checking
+# Spell-Checking with TextLint
 #
 # PURPOSE:
 # - Maintain professional documentation and code quality
@@ -12,40 +12,32 @@
 version: '0.2'
 language: en
 
+# Files to spell-check when textlint runs with no arguments
+files:
+  - "**/*.{md,yaml,yml,json,cs,cpp,hpp,h,txt}"
+enableGlobDot: true
+
 # Project-specific technical terms and tool names
 words:
-  - buildmark
-  - canvasnet
-  - compilability
-  - Dema
+  - DEMA
   - demaconsulting
+  - DEMACONSULTINGNUGETKEY
   - entrantly
-  - fileassert
-  - hotspot
-  - hotspots
   - Hostx
   - misparse
-  - msbuild
-  - msvc
-  - opencover
-  - Pandoc
-  - postconditions
-  - reqstream
-  - reviewmark
+  - ncipollo
+  - nestings
+  - netstandard
   - sarif
-  - sarifmark
-  - SARIF
+  - Setext
+  - shopt
   - slnx
-  - sonar
-  - sonarmark
-  - sysml
-  - sysml2tools
-  - versionmark
+  - snupkg
+  - sonarscanner
+  - thirdparty
+  - unidirectionality
+  - venv
   - VSINSTALLDIR
-  - Weasy
-  - Weasyprint
-  - xunit
-  - Xunit
   - yamlfix
 
 # Exclude common build artifacts, dependencies, and vendored third-party code
@@ -56,8 +48,8 @@ ignorePaths:
   - '**/thirdparty/**'
   - '**/third-party/**'
   - '**/3rd-party/**'
+  - '**/generated/**'
   - '**/.agent-logs/**'
   - '**/bin/**'
   - '**/obj/**'
-  - '**/generated/**'
   - package-lock.json

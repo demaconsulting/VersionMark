@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def SelfTestSubsystem {
+        doc /* Built-in self-verification of all operational modes. */
+
         metadata info : SoftwareInfo {
             description = "Built-in self-verification of all operational modes.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/SelfTest/SelfTestTests.cs");

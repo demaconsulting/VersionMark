@@ -4,6 +4,8 @@ package OtsDependencies {
     doc /* Off-the-shelf (OTS) runtime dependencies used by VersionMark. */
 
     part def YamlDotNet {
+        doc /* OTS: YamlDotNet. */
+
         metadata info : SoftwareInfo {
             description = "OTS: YamlDotNet.";
             designFiles = ("docs/design/ots/yaml-dot-net.md");
@@ -13,6 +15,8 @@ package OtsDependencies {
     }
 
     part def FileSystemGlobbing {
+        doc /* OTS: Microsoft.Extensions.FileSystemGlobbing. */
+
         metadata info : SoftwareInfo {
             description = "OTS: Microsoft.Extensions.FileSystemGlobbing.";
             designFiles = ("docs/design/ots/microsoft-extensions-file-system-globbing.md");
@@ -22,6 +26,8 @@ package OtsDependencies {
     }
 
     part def TestResults {
+        doc /* OTS: DemaConsulting.TestResults. */
+
         metadata info : SoftwareInfo {
             description = "OTS: DemaConsulting.TestResults.";
             designFiles = ("docs/design/ots/dema-consulting-test-results.md");
