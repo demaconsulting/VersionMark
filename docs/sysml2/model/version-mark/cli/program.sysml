@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def Program {
+        doc /* Entry point and mode dispatcher (capture, publish, lint, validate). */
+
         metadata info : SoftwareInfo {
             description = "Entry point and mode dispatcher (capture, publish, lint, validate).";
             sourceFiles = ("src/DemaConsulting.VersionMark/Program.cs");

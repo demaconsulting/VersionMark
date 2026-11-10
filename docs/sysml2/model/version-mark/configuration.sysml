@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def ConfigurationSubsystem {
+        doc /* YAML configuration loading, validation, and version capture execution. */
+
         metadata info : SoftwareInfo {
             description = "YAML configuration loading, validation, and version capture execution.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Configuration/ConfigurationTests.cs");

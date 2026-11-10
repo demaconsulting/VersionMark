@@ -9,6 +9,8 @@ package VersionMark {
      */
 
     part def VersionMarkSystem {
+        doc /* The VersionMark system as a whole. */
+
         metadata info : SoftwareInfo {
             description = "The VersionMark system as a whole.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/IntegrationTests.cs");

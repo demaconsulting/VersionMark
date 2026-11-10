@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def MarkdownFormatter {
+        doc /* Converts loaded version records into a consolidated markdown report. */
+
         metadata info : SoftwareInfo {
             description = "Converts loaded version records into a consolidated markdown report.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Publishing/MarkdownFormatter.cs");

@@ -3,6 +3,8 @@ package VersionMark {
     import OtsDependencies::*;
 
     part def Validation {
+        doc /* Exercises capture, publish, and lint modes end-to-end for self-validation. */
+
         metadata info : SoftwareInfo {
             description = "Exercises capture, publish, and lint modes end-to-end for self-validation.";
             sourceFiles = ("src/DemaConsulting.VersionMark/SelfTest/Validation.cs");

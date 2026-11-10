@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def CliSubsystem {
+        doc /* Command-line argument parsing, mode dispatch, and output routing. */
+
         metadata info : SoftwareInfo {
             description = "Command-line argument parsing, mode dispatch, and output routing.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Cli/CliTests.cs");

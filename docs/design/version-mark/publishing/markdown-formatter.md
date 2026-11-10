@@ -47,7 +47,7 @@ per-group bullet lines are emitted:
 | `reportDepth <= 0`     | `ArgumentOutOfRangeException` thrown before any output       |
 | `versionInfos` is empty | Returns valid markdown with heading and no bullets          |
 | Tool name is empty     | Emitted as `- ****: version`                                 |
-| `JobId` is null/empty  | Appears as an empty string in the parenthesised list         |
+| `JobId` is null/empty  | Appears as an empty string in the parenthesized list         |
 
 #### Dependencies
 

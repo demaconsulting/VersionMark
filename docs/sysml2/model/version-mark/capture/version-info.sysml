@@ -3,6 +3,8 @@ package VersionMark {
     private import ScalarValues::String;
 
     part def VersionInfo {
+        doc /* Captured version record; JSON serialization for capture/publish handoff. */
+
         metadata info : SoftwareInfo {
             description = "Captured version record; JSON serialization for capture/publish handoff.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Capture/VersionInfo.cs");

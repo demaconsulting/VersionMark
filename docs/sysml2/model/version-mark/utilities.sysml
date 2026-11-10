@@ -2,6 +2,8 @@ package VersionMark {
     private import SoftwareItemMetadata::*;
 
     part def UtilitiesSubsystem {
+        doc /* Glob-pattern matching and safe path combination helpers. */
+
         metadata info : SoftwareInfo {
             description = "Glob-pattern matching and safe path combination helpers.";
             designFiles = ("docs/design/version-mark/utilities.md");

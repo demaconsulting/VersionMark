@@ -9,6 +9,8 @@ package VersionMark {
     }
 
     part def LintIssue {
+        doc /* Represents a single configuration validation issue with source location. */
+
         metadata info : SoftwareInfo {
             description = "Represents a single configuration validation issue with source location.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Configuration/LintIssue.cs");
