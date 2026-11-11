@@ -5,7 +5,6 @@ package VersionMark {
         doc /* Converts loaded version records into a consolidated markdown report. */
 
         metadata info : SoftwareInfo {
-            description = "Converts loaded version records into a consolidated markdown report.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Publishing/MarkdownFormatter.cs");
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Publishing/MarkdownFormatterTests.cs");
             designFiles = ("docs/design/version-mark/publishing/markdown-formatter.md");

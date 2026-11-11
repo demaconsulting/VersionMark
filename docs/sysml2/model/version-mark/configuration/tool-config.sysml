@@ -6,7 +6,6 @@ package VersionMark {
         doc /* Per-tool capture configuration (command, regex, OS-specific overrides). */
 
         metadata info : SoftwareInfo {
-            description = "Per-tool capture configuration (command, regex, OS-specific overrides).";
             sourceFiles = ("src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs");
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Configuration/VersionMarkConfigTests.cs");
             designFiles = ("docs/design/version-mark/configuration/tool-config.md");

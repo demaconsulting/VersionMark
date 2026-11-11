@@ -6,7 +6,6 @@ package VersionMark {
         doc /* Exercises capture, publish, and lint modes end-to-end for self-validation. */
 
         metadata info : SoftwareInfo {
-            description = "Exercises capture, publish, and lint modes end-to-end for self-validation.";
             sourceFiles = ("src/DemaConsulting.VersionMark/SelfTest/Validation.cs");
             testFiles = ("test/DemaConsulting.VersionMark.Tests/SelfTest/SelfTestTests.cs");
             designFiles = ("docs/design/version-mark/self-test/validation.md");

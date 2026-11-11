@@ -5,7 +5,6 @@ package VersionMark {
         doc /* Command-line argument parsing, mode dispatch, and output routing. */
 
         metadata info : SoftwareInfo {
-            description = "Command-line argument parsing, mode dispatch, and output routing.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Cli/CliTests.cs");
             designFiles = ("docs/design/version-mark/cli.md");
             verificationFiles = ("docs/verification/version-mark/cli.md");

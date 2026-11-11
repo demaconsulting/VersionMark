@@ -5,7 +5,6 @@ package VersionMark {
         doc /* Glob-pattern matching and safe path combination helpers. */
 
         metadata info : SoftwareInfo {
-            description = "Glob-pattern matching and safe path combination helpers.";
             designFiles = ("docs/design/version-mark/utilities.md");
             verificationFiles = ("docs/verification/version-mark/utilities.md");
             requirementFiles = ("docs/reqstream/version-mark/utilities.yaml");
