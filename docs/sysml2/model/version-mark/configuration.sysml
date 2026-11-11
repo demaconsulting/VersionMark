@@ -5,7 +5,6 @@ package VersionMark {
         doc /* YAML configuration loading, validation, and version capture execution. */
 
         metadata info : SoftwareInfo {
-            description = "YAML configuration loading, validation, and version capture execution.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Configuration/ConfigurationTests.cs");
             designFiles = ("docs/design/version-mark/configuration.md");
             verificationFiles = ("docs/verification/version-mark/configuration.md");

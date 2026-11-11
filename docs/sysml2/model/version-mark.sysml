@@ -12,7 +12,6 @@ package VersionMark {
         doc /* The VersionMark system as a whole. */
 
         metadata info : SoftwareInfo {
-            description = "The VersionMark system as a whole.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/IntegrationTests.cs");
             designFiles = ("docs/design/version-mark.md");
             verificationFiles = ("docs/verification/version-mark.md");

@@ -6,7 +6,6 @@ package VersionMark {
         doc /* Loads, validates, and executes `.versionmark.yaml` tool version capture. */
 
         metadata info : SoftwareInfo {
-            description = "Loads, validates, and executes `.versionmark.yaml` tool version capture.";
             sourceFiles = ("src/DemaConsulting.VersionMark/Configuration/VersionMarkConfig.cs");
             testFiles = (
                 "test/DemaConsulting.VersionMark.Tests/Configuration/VersionMarkConfigTests.cs",

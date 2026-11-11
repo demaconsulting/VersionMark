@@ -5,7 +5,6 @@ package VersionMark {
         doc /* Built-in self-verification of all operational modes. */
 
         metadata info : SoftwareInfo {
-            description = "Built-in self-verification of all operational modes.";
             testFiles = ("test/DemaConsulting.VersionMark.Tests/SelfTest/SelfTestTests.cs");
             designFiles = ("docs/design/version-mark/self-test.md");
             verificationFiles = ("docs/verification/version-mark/self-test.md");
