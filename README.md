@@ -64,10 +64,10 @@ tools:
 In your CI/CD job, capture tool versions with a job identifier:
 
 ```bash
-versionmark --capture --job-id "windows-net8"
+versionmark --capture --job-id "windows-net10"
 ```
 
-This creates a JSON file with captured versions (e.g., `versionmark-windows-net8.json`).
+This creates a JSON file with captured versions (e.g., `versionmark-windows-net10.json`).
 
 ### 3. Publish to Documentation
 
@@ -178,9 +178,9 @@ Capture mode creates a JSON file with the following structure:
 
 ```json
 {
-  "JobId": "windows-net8",
+  "JobId": "windows-net10",
   "Versions": {
-    "dotnet": "8.0.100",
+    "dotnet": "10.0.100",
     "node": "20.11.0"
   }
 }
@@ -193,7 +193,7 @@ Publish mode generates a markdown list consolidating versions from all jobs:
 ```markdown
 # Tool Versions
 
-- **dotnet**: 8.0.100
+- **dotnet**: 10.0.100
 - **node**: 20.11.0
 ```
 
