@@ -7,7 +7,7 @@
   information across CI/CD environments. It tracks which versions of build
   tools, compilers, and dependencies are used in different jobs and environments.
 - **languages**: C#
-- **technologies**: .NET 8/9/10, NuGet, YAML, GitHub Actions
+- **technologies**: .NET 10/11, NuGet, YAML, GitHub Actions
 
 # Project Structure
 

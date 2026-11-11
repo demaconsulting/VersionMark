@@ -21,7 +21,7 @@ captured using `StringWriter`. The one test that exercises file I/O
 ### Acceptance Criteria
 
 - All subsystem integration tests pass with zero failures across all supported OS and .NET
-  version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+  version matrix combinations (Windows, Linux, macOS x .NET 10, .NET 11).
 - Every requirement for the Cli subsystem is covered by at least one named test scenario.
 
 ### Test Scenarios

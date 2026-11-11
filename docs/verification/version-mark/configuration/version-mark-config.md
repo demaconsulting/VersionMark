@@ -18,7 +18,7 @@ clean them up afterwards. No additional environment configuration is required.
 #### Acceptance Criteria
 
 - All unit tests for `VersionMarkConfig` pass with zero failures across all supported OS
-  and .NET version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+  and .NET version matrix combinations (Windows, Linux, macOS x .NET 10, .NET 11).
 - Every requirement for the `VersionMarkConfig` unit is covered by at least one named test
   scenario.
 

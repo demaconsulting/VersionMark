@@ -9,10 +9,14 @@ CI/CD environments. It helps teams track which versions of build tools, compiler
 dependencies are used in different jobs and environments, ensuring transparency,
 reproducibility, and traceability between software artifacts and the build environment.
 
-The following diagram shows how VersionMark captures and publishes tool versions:
+The workflow below shows how VersionMark is used: define your tools in `.versionmark.yaml`, run
+`versionmark --capture` with a unique job ID in each CI job, publish the captured JSON files as a
+consolidated markdown report, and use the report for documentation, traceability, and reviews.
 
-![VersionMark architecture: the Program entry point uses Configuration to read .versionmark.yaml, Capture to
-save versions as JSON, and Publishing to write the version report.](architecture.svg)
+![VersionMark workflow: define tools with a command and version regex in .versionmark.yaml and lint it, run
+versionmark --capture --job-id in each CI job to save versionmark-job-id.json, publish the downloaded JSON files with
+versionmark --publish --report into a consolidated markdown report, then use it for documentation, traceability,
+comparing versions across jobs, and pull request reviews](workflow.svg)
 
 VersionMark follows the [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance)
 methodology, which ensures compliance evidence is generated automatically on every CI run.
@@ -21,7 +25,7 @@ methodology, which ensures compliance evidence is generated automatically on eve
 
 This guide covers installation, configuration, capture and publish workflows,
 command-line options, self-validation, CI/CD integration, troubleshooting, and best
-practices. Prerequisites: .NET 8 or later.
+practices. Prerequisites: .NET 10 or later.
 
 ## References
 

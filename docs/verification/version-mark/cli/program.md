@@ -20,7 +20,7 @@ available on `PATH`.
 #### Acceptance Criteria
 
 - All unit tests for `Program` pass with zero failures across all supported OS and .NET
-  version matrix combinations (Windows, Linux, macOS × .NET 8, .NET 9, .NET 10).
+  version matrix combinations (Windows, Linux, macOS × .NET 10, .NET 11).
 - Every requirement for the `Program` unit is covered by at least one named test scenario.
 
 #### Test Scenarios

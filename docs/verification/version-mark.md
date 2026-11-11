@@ -10,7 +10,7 @@ tests (at the subsystem level) and unit tests (at the unit level). All tests are
 implemented using xUnit and are located under `test/DemaConsulting.VersionMark.Tests/`.
 
 Tests are executed using `dotnet test` across multiple operating systems (Windows, Linux,
-macOS) and multiple .NET versions (8, 9, 10). Each test run produces a TRX results file
+macOS) and multiple .NET versions (10, 11). Each test run produces a TRX results file
 which serves as compliance evidence.
 
 The built-in `--validate` mode exercises capture, publish, and lint workflows end-to-end
@@ -26,7 +26,7 @@ test names provide the platform linkage used by ReqStream filters.
 ## Acceptance Criteria
 
 - All automated tests pass with zero failures across all supported operating system and
-  .NET version matrix combinations (Windows, Linux, macOS × .NET 8, .NET 9, .NET 10).
+  .NET version matrix combinations (Windows, Linux, macOS × .NET 10, .NET 11).
 - The built-in self-validation (`--validate`) exits with code 0 on each supported platform.
 - No unresolved anomalies of severity "error" or above remain open at the time of release.
 
@@ -61,6 +61,6 @@ assembled-system level. This scenario is tested by
 
 **VersionMark-MultiPlatform**: Each of the above scenarios (VersionMark-Validate-Full,
 VersionMark-CapturePublishCycle, and VersionMark-CLI-ErrorHandling) is repeated on
-Windows, Linux, and macOS across .NET 8, .NET 9, and .NET 10. Successful execution on all
+Windows, Linux, and macOS across .NET 10 and .NET 11. Successful execution on all
 matrix combinations confirms that there are no platform-specific regressions in the
 assembled system. This scenario is verified by the full CI matrix run.

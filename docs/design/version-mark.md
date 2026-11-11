@@ -243,7 +243,7 @@ Command-line args
 
 | Constraint               | Value / Description                                                              |
 |--------------------------|----------------------------------------------------------------------------------|
-| Target frameworks        | .NET 8, .NET 9, .NET 10 (multi-targeted)                                         |
+| Target frameworks        | .NET 10, .NET 11 (multi-targeted)                                                |
 | Supported platforms      | Windows, Linux, macOS                                                            |
 | Shell execution          | `cmd.exe /c` on Windows; `/bin/sh -c` on Linux and macOS                         |
 | Nullable reference types | Enabled; all public APIs annotated                                               |

@@ -47,6 +47,18 @@ than parsing this diagram before deep-diving into source code.
 
 ![Software Structure](SoftwareStructureView.svg)
 
+The diagram below complements the structure view by showing how data flows at run time:
+the versionmark Program passes command-line flags to the Cli subsystem, Configuration reads
+and lints `.versionmark.yaml` and runs the tool commands, Capture saves and loads each job's
+versions as JSON, Publishing consolidates them as markdown, and the tool writes the version
+JSON and report; Utilities provides safe paths and glob matching, and SelfTest runs the
+built-in checks.
+
+![VersionMark architecture: the versionmark Program passes flags to the Cli subsystem,
+Configuration reads .versionmark.yaml and queries the tools, Capture saves and loads job
+versions as JSON, Publishing consolidates them as markdown, and the tool produces the version
+JSON and the version report, with Utilities and SelfTest in support](architecture.svg)
+
 ## Folder Layout
 
 - **src/** - source files and projects
