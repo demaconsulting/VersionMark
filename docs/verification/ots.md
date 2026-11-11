@@ -46,7 +46,7 @@ artifacts under the path `artifacts/{tool}-self-validation.trx`, where `{tool}` 
 lowercase tool name (for example, `artifacts/buildmark-self-validation.trx`).
 
 For xUnit, evidence is provided by the TRX files produced by `dotnet test` across the
-supported platform matrix (Windows, Linux, macOS × .NET 8, .NET 9, .NET 10), stored at
+supported platform matrix (Windows, Linux, macOS × .NET 10, .NET 11), stored at
 `artifacts/validation-{os}-{dotnet}.trx`.
 
 For Pandoc and WeasyPrint, evidence is provided by the FileAssert TRX results that assert

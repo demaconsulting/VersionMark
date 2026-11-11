@@ -9,10 +9,14 @@ CI/CD environments. It helps teams track which versions of build tools, compiler
 dependencies are used in different jobs and environments, ensuring transparency,
 reproducibility, and traceability between software artifacts and the build environment.
 
-The following diagram shows how VersionMark captures and publishes tool versions:
+The workflow below shows how VersionMark is used: define your tools in `.versionmark.yaml`, run
+`versionmark --capture` with a unique job ID in each CI job, publish the captured JSON files as a
+consolidated markdown report, and use the report for documentation, traceability, and reviews.
 
-![VersionMark architecture: the Program entry point uses Configuration to read .versionmark.yaml, Capture to
-save versions as JSON, and Publishing to write the version report.](architecture.svg)
+![VersionMark workflow: define tools with a command and version regex in .versionmark.yaml and lint it, run
+versionmark --capture --job-id in each CI job to save versionmark-job-id.json, publish the downloaded JSON files with
+versionmark --publish --report into a consolidated markdown report, then use it for documentation, traceability,
+comparing versions across jobs, and pull request reviews](workflow.svg)
 
 VersionMark follows the [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance)
 methodology, which ensures compliance evidence is generated automatically on every CI run.
@@ -21,7 +25,7 @@ methodology, which ensures compliance evidence is generated automatically on eve
 
 This guide covers installation, configuration, capture and publish workflows,
 command-line options, self-validation, CI/CD integration, troubleshooting, and best
-practices. Prerequisites: .NET 8 or later.
+practices. Prerequisites: .NET 10 or later.
 
 ## References
 
@@ -76,10 +80,10 @@ tools:
 In each CI/CD job, capture tool versions with a unique job identifier:
 
 ```bash
-versionmark --capture --job-id "windows-net8"
+versionmark --capture --job-id "windows-net10"
 ```
 
-This creates a JSON file (for example, `versionmark-windows-net8.json`) containing the
+This creates a JSON file (for example, `versionmark-windows-net10.json`) containing the
 captured versions.
 
 ## Step 3: Publish Versions to Documentation
@@ -186,7 +190,7 @@ versionmark --capture --job-id <job-identifier> [options] [-- tool1 tool2 ...]
 
 ```bash
 # Capture all tools defined in config
-versionmark --capture --job-id "windows-dotnet8-release"
+versionmark --capture --job-id "windows-dotnet10-release"
 
 # Capture specific tools only
 versionmark --capture --job-id "linux-gcc" -- gcc make cmake
@@ -403,9 +407,9 @@ When you run the capture command, VersionMark creates a JSON file with the follo
 
 ```json
 {
-  "JobId": "windows-net8",
+  "JobId": "windows-net10",
   "Versions": {
-    "dotnet": "8.0.100",
+    "dotnet": "10.0.100",
     "node": "20.11.0",
     "gcc": "13.2.0",
     "cmake": "3.28.0"
@@ -427,7 +431,7 @@ The publish command generates a Markdown file with a bulleted list of tool versi
 ```markdown
 # Tool Versions
 
-- **dotnet**: 8.0.100
+- **dotnet**: 10.0.100
 - **node**: 20.11.0
 ```
 
@@ -439,11 +443,12 @@ identifiers.
 ```markdown
 # Tool Versions
 
-- **dotnet**: 8.0.100
-- **gcc**: 11.4.0 (windows-net8, windows-net9)
-- **gcc**: 13.2.0 (linux-net8, linux-net9)
-- **node**: 20.11.0 (windows-net8, linux-net8)
-- **node**: 21.0.0 (windows-net9, linux-net9)
+- **dotnet**: 10.0.100 (linux-net10, windows-net10)
+- **dotnet**: 11.0.100 (linux-net11, windows-net11)
+- **gcc**: 11.4.0 (windows-net10, windows-net11)
+- **gcc**: 13.2.0 (linux-net10, linux-net11)
+- **node**: 20.11.0 (linux-net10, windows-net10)
+- **node**: 21.0.0 (linux-net11, windows-net11)
 ```
 
 When a tool has different versions across jobs, each version is listed as a separate bullet with
@@ -544,56 +549,62 @@ on: [push, pull_request]
 jobs:
   build-windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet: ['10', '11']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '${{ matrix.dotnet }}.x'
 
       - name: Install VersionMark
         run: dotnet tool install -g DemaConsulting.VersionMark
 
       - name: Capture tool versions
-        run: versionmark --capture --job-id "windows-net8"
+        run: versionmark --capture --job-id "windows-net${{ matrix.dotnet }}"
 
       - name: Upload version capture
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: versions-windows-net8
-          path: versionmark-windows-net8.json
+          name: versions-windows-net${{ matrix.dotnet }}
+          path: versionmark-windows-net${{ matrix.dotnet }}.json
 
   build-linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: ['10', '11']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '${{ matrix.dotnet }}.x'
 
       - name: Install VersionMark
         run: dotnet tool install -g DemaConsulting.VersionMark
 
       - name: Capture tool versions
-        run: versionmark --capture --job-id "linux-net8"
+        run: versionmark --capture --job-id "linux-net${{ matrix.dotnet }}"
 
       - name: Upload version capture
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: versions-linux-net8
-          path: versionmark-linux-net8.json
+          name: versions-linux-net${{ matrix.dotnet }}
+          path: versionmark-linux-net${{ matrix.dotnet }}.json
 
   publish-versions:
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download all version captures
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: versions-*
           merge-multiple: true
@@ -746,7 +757,7 @@ If a JSON file cannot be parsed during publish:
 
 # Best Practices
 
-1. **Use Descriptive Job IDs**: Make job IDs descriptive, for example `windows-net8-release`
+1. **Use Descriptive Job IDs**: Make job IDs descriptive, for example `windows-net10-release`
    instead of `job1`.
 2. **Version Control Config**: Commit `.versionmark.yaml` to version control.
 3. **Automate Publishing**: Integrate publishing into your CI/CD pipeline.

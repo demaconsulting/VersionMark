@@ -15,7 +15,7 @@ them up afterwards.
 #### Acceptance Criteria
 
 - All unit tests for `VersionInfo` pass with zero failures across all supported OS and
-  .NET version matrix combinations (Windows, Linux, macOS x .NET 8, .NET 9, .NET 10).
+  .NET version matrix combinations (Windows, Linux, macOS x .NET 10, .NET 11).
 - Every requirement for the `VersionInfo` unit is covered by at least one named test
   scenario.
 

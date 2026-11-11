@@ -15,7 +15,14 @@ VersionMark is a .NET tool for capturing and publishing tool version information
 It tracks which versions of build tools, compilers, and dependencies are used in different jobs and
 environments, and publishes consolidated version reports to markdown documentation.
 
-![VersionMark architecture: Configuration reads .versionmark.yaml, Capture saves versions to JSON, and Publishing writes the version report][architecture]
+The workflow below shows how to use it: define your tools in `.versionmark.yaml`, capture their versions in each
+CI job with a unique job ID, publish the captured JSON files as a consolidated markdown report, and use the report
+for documentation, traceability, and reviews.
+
+![VersionMark workflow: define tools with a command and version regex in .versionmark.yaml and lint it, run
+versionmark --capture --job-id in each CI job to save versionmark-job-id.json, publish the downloaded JSON files with
+versionmark --publish --report into a consolidated markdown report, then use it for documentation, traceability,
+comparing versions across jobs, and pull request reviews][workflow]
 
 ## Features
 
@@ -57,10 +64,10 @@ tools:
 In your CI/CD job, capture tool versions with a job identifier:
 
 ```bash
-versionmark --capture --job-id "windows-net8"
+versionmark --capture --job-id "windows-net10"
 ```
 
-This creates a JSON file with captured versions (e.g., `versionmark-windows-net8.json`).
+This creates a JSON file with captured versions (e.g., `versionmark-windows-net10.json`).
 
 ### 3. Publish to Documentation
 
@@ -171,9 +178,9 @@ Capture mode creates a JSON file with the following structure:
 
 ```json
 {
-  "JobId": "windows-net8",
+  "JobId": "windows-net10",
   "Versions": {
-    "dotnet": "8.0.100",
+    "dotnet": "10.0.100",
     "node": "20.11.0"
   }
 }
@@ -186,7 +193,7 @@ Publish mode generates a markdown list consolidating versions from all jobs:
 ```markdown
 # Tool Versions
 
-- **dotnet**: 8.0.100
+- **dotnet**: 10.0.100
 - **node**: 20.11.0
 ```
 
@@ -221,7 +228,7 @@ If any tests fail, the exit code will be non-zero.
 [badge-nuget]: https://img.shields.io/nuget/v/DemaConsulting.VersionMark?style=plastic
 
 <!-- Link References -->
-[architecture]: https://raw.githubusercontent.com/demaconsulting/VersionMark/main/docs/images/architecture.png
+[workflow]: https://raw.githubusercontent.com/demaconsulting/VersionMark/main/docs/images/workflow.png
 [link-forks]: https://github.com/demaconsulting/VersionMark/network/members
 [link-stars]: https://github.com/demaconsulting/VersionMark/stargazers
 [link-contributors]: https://github.com/demaconsulting/VersionMark/graphs/contributors
