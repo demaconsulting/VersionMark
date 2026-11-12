@@ -5,10 +5,10 @@
 // 'render' - is what scopes the rendered diagram content.
 package VersionMark {
     import OtsDependencies::*;
+    private import StandardViewDefinitions::*;
 
-    view SoftwareStructureView {
+    view SoftwareStructureView : InterconnectionView {
         expose VersionMark::**;
-        render asInterconnectionDiagram;
     }
 
     view VersionMarkSystemView {
