@@ -91,4 +91,3 @@ Thumbs.db
 
 # VersionMark captures (generated during CI/CD)
 versionmark-*.json
-/package-lock.json
