@@ -41,11 +41,11 @@ overrides, and platform edge cases — without fragile pre-combine string inspec
 
 #### Error Handling
 
-| Condition                                    | Behavior                                                    |
-|----------------------------------------------|-------------------------------------------------------------|
-| `basePath` is null                           | `ArgumentNullException` thrown                              |
-| `relativePath` is null                       | `ArgumentNullException` thrown                              |
-| Combined path escapes the base directory     | `ArgumentException` thrown, identifying `relativePath`      |
+| Condition | Behavior |
+| --- | --- |
+| `basePath` is null | `ArgumentNullException` thrown |
+| `relativePath` is null | `ArgumentNullException` thrown |
+| Combined path escapes the base directory | `ArgumentException` thrown, identifying `relativePath` |
 
 #### Dependencies
 

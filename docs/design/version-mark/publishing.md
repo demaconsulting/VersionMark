@@ -26,10 +26,10 @@ Converts a collection of captured version records into a markdown string.
   throws `ArgumentOutOfRangeException`. An empty `versionInfos` sequence produces valid
   markdown with only the heading.
 
-| Parameter      | Type                       | Description                                             |
-|----------------|----------------------------|---------------------------------------------------------|
-| `versionInfos` | `IEnumerable<VersionInfo>` | The captured version records to include in the report   |
-| `reportDepth`  | `int`                      | Heading depth for the section title (default: 2)        |
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `versionInfos` | `IEnumerable<VersionInfo>` | The captured version records to include in the report |
+| `reportDepth` | `int` | Heading depth for the section title (default: 2) |
 
 ### Design
 

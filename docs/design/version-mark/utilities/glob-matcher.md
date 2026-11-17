@@ -13,9 +13,9 @@ capture files.
 
 #### Data Model
 
-`GlobMatcher` is a static class with no instance state. Internally it accumulates
-absolute patterns into separate `Matcher` invocations and collects relative patterns for a
-single batched `Matcher` run. Results are deduplicated using a file-system-appropriate comparer: ordinal case-insensitive on Windows, ordinal case-sensitive on other platforms.
+`GlobMatcher` is a static class with no instance state. Internally it accumulates absolute patterns into separate
+`Matcher` invocations and collects relative patterns for a single batched `Matcher` run. Results are deduplicated using
+a file-system-appropriate comparer: ordinal case-insensitive on Windows, ordinal case-sensitive on other platforms.
 
 #### Key Methods
 

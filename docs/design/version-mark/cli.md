@@ -35,8 +35,8 @@ instance.
 - *Role*: Provider.
 - *Contract*: Writes `message` to `Console.Error` in red; sets `ExitCode` to `1`; writes
   to the log file if one is open.
-- *Constraints*: stderr is suppressed when `Silent` is `true`; `_hasErrors` is always set and `ExitCode` always reflects the failure. The exit code cannot be reset once
-  set to `1`.
+- *Constraints*: stderr is suppressed when `Silent` is `true`; `_hasErrors` is always set and `ExitCode` always reflects
+  the failure. The exit code cannot be reset once set to `1`.
 
 **`Context.ExitCode`**: Returns the process exit code for the current invocation.
 

@@ -13,12 +13,12 @@ evidence set alongside the xUnit results.
 
 ### Features Used
 
-| Feature                    | Usage in VersionMark                                          |
-|----------------------------|---------------------------------------------------------------|
-| `TestResults` (class)      | Collection of test case results named `"VersionMark Self-Validation"` |
-| `TestResults.AddResult`    | Record the pass/fail outcome of each self-validation scenario |
-| `TrxSerializer.Serialize`  | Write the collection to a `.trx` file                        |
-| `JUnitSerializer.Serialize`| Write the collection to a JUnit XML `.xml` file              |
+| Feature | Usage in VersionMark |
+| --- | --- |
+| `TestResults` (class) | Collection of test case results named `"VersionMark Self-Validation"` |
+| `TestResults.AddResult` | Record the pass/fail outcome of each self-validation scenario |
+| `TrxSerializer.Serialize` | Write the collection to a `.trx` file |
+| `JUnitSerializer.Serialize` | Write the collection to a JUnit XML `.xml` file |
 
 ### Integration Pattern
 

@@ -18,12 +18,12 @@ context output and optionally written to a TRX or JUnit XML file.
 
 Test names:
 
-| Test name                                          | Validates                        |
-|----------------------------------------------------|----------------------------------|
-| `VersionMark_CapturesVersions`                     | Capture mode end-to-end          |
-| `VersionMark_GeneratesMarkdownReport`              | Publish mode end-to-end          |
-| `VersionMark_LintPassesForValidConfig`             | Lint mode: valid config exit 0   |
-| `VersionMark_LintReportsErrorsForInvalidConfig`    | Lint mode: invalid config exit 1 |
+| Test name | Validates |
+| --- | --- |
+| `VersionMark_CapturesVersions` | Capture mode end-to-end |
+| `VersionMark_GeneratesMarkdownReport` | Publish mode end-to-end |
+| `VersionMark_LintPassesForValidConfig` | Lint mode: valid config exit 0 |
+| `VersionMark_LintReportsErrorsForInvalidConfig` | Lint mode: invalid config exit 1 |
 
 #### Key Methods
 
@@ -64,12 +64,12 @@ the extension of `context.ResultsFile`: `.trx` → `TrxSerializer.Serialize`; `.
 
 #### Error Handling
 
-| Condition                                     | Behavior                                         |
-|-----------------------------------------------|--------------------------------------------------|
-| Any test assertion fails                      | Failure recorded in `TestResults`; `context.WriteError` called; `ExitCode` set to 1 |
-| `TemporaryDirectory` creation fails           | `InvalidOperationException` wrapping the original exception |
-| `context.ResultsFile` extension unrecognized  | `context.WriteError`; no file written            |
-| `Dispose` on `TemporaryDirectory` fails       | `IOException`/`UnauthorizedAccessException` silently suppressed |
+| Condition | Behavior |
+| --- | --- |
+| Any test assertion fails | Failure recorded in `TestResults`; `context.WriteError` called; `ExitCode` set to 1 |
+| `TemporaryDirectory` creation fails | `InvalidOperationException` wrapping the original exception |
+| `context.ResultsFile` extension unrecognized | `context.WriteError`; no file written |
+| `Dispose` on `TemporaryDirectory` fails | `IOException`/`UnauthorizedAccessException` silently suppressed |
 
 #### Dependencies
 

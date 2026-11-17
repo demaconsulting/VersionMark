@@ -12,10 +12,10 @@ generation.
 
 #### Data Model
 
-| Property   | Type                         | Description                                           |
-|------------|------------------------------|-------------------------------------------------------|
-| `JobId`    | `string`                     | Identifies the CI/CD job that captured these versions |
-| `Versions` | `Dictionary<string, string>` | Maps tool names to their captured version strings     |
+| Property | Type | Description |
+| --- | --- | --- |
+| `JobId` | `string` | Identifies the CI/CD job that captured these versions |
+| `Versions` | `Dictionary<string, string>` | Maps tool names to their captured version strings |
 
 JSON representation produced by `SaveToFile`:
 
@@ -46,13 +46,13 @@ the deserialized `VersionInfo` record.
 
 #### Error Handling
 
-| Condition                         | Method          | Behavior                                         |
-|-----------------------------------|-----------------|--------------------------------------------------|
-| File does not exist               | `LoadFromFile`  | `ArgumentException` thrown                       |
-| JSON is invalid                   | `LoadFromFile`  | `JsonException` caught, re-thrown as `ArgumentException` |
-| Deserialization returns null      | `LoadFromFile`  | `ArgumentException` thrown                       |
-| Other non-`ArgumentException` error | `LoadFromFile` | Wrapped and re-thrown as `ArgumentException` with context |
-| Other non-`InvalidOperationException` error | `SaveToFile` | Wrapped and re-thrown as `InvalidOperationException` with context |
+| Condition | Method | Behavior |
+| --- | --- | --- |
+| File does not exist | `LoadFromFile` | `ArgumentException` thrown |
+| JSON is invalid | `LoadFromFile` | `JsonException` caught, re-thrown as `ArgumentException` |
+| Deserialization returns null | `LoadFromFile` | `ArgumentException` thrown |
+| Other non-`ArgumentException` error | `LoadFromFile` | Wrapped in `ArgumentException` with context |
+| Other non-`InvalidOperationException` error | `SaveToFile` | Wrapped in `InvalidOperationException` with context |
 
 #### Dependencies
 

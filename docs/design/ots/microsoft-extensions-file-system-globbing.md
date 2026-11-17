@@ -12,11 +12,11 @@ pipeline authors.
 
 ### Features Used
 
-| Feature              | Usage in VersionMark                                               |
-|----------------------|--------------------------------------------------------------------|
-| `Matcher`            | Accumulate one or more patterns and execute the match             |
-| `Matcher.AddInclude` | Register each glob pattern supplied by the caller                 |
-| `Matcher.Execute`    | Run the match against a `DirectoryInfoWrapper` rooted at a base path |
+| Feature | Usage in VersionMark |
+| --- | --- |
+| `Matcher` | Accumulate one or more patterns and execute the match |
+| `Matcher.AddInclude` | Register each glob pattern supplied by the caller |
+| `Matcher.Execute` | Run the match against a `DirectoryInfoWrapper` rooted at a base path |
 | `PatternMatchingResult.Files` | Enumerate matched relative file paths and resolve to absolute paths |
 
 Only `AddInclude` and `Execute` are used; exclude patterns are not consumed by
