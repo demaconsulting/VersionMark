@@ -32,8 +32,8 @@ Version)>>` mapping each tool name to its observed `(jobId, version)` pairs.
 heading using `new string('#', reportDepth)`, sorts tool names alphabetically, then calls
 `FormatVersionEntries` for each tool.
 
-**`FormatVersionEntries(StringBuilder markdown, string tool, List<(string JobId, string Version)> versions)` (private static)** — Applies the
-consolidation rule. Version groups are ordered alphabetically (case-insensitive) before
+**`FormatVersionEntries(StringBuilder markdown, string tool, List<(string JobId, string Version)> versions)` (private
+static)** — Applies the consolidation rule. Version groups are ordered alphabetically (case-insensitive) before
 per-group bullet lines are emitted:
 
 - If all entries share the same version: emit `- **tool**: version` (no job IDs).
@@ -42,12 +42,12 @@ per-group bullet lines are emitted:
 
 #### Error Handling
 
-| Condition              | Behavior                                                     |
-|------------------------|--------------------------------------------------------------|
-| `reportDepth <= 0`     | `ArgumentOutOfRangeException` thrown before any output       |
-| `versionInfos` is empty | Returns valid markdown with heading and no bullets          |
-| Tool name is empty     | Emitted as `- ****: version`                                 |
-| `JobId` is null/empty  | Appears as an empty string in the parenthesized list         |
+| Condition | Behavior |
+| --- | --- |
+| `reportDepth <= 0` | `ArgumentOutOfRangeException` thrown before any output |
+| `versionInfos` is empty | Returns valid markdown with heading and no bullets |
+| Tool name is empty | Emitted as `- ****: version` |
+| `JobId` is null/empty | Appears as an empty string in the parenthesized list |
 
 #### Dependencies
 

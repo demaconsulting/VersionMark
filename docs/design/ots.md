@@ -16,11 +16,11 @@ The OTS items used by this project fall into two functional groups:
   DemaConsulting.TestResults are each consumed only through a single local unit that acts as an
   adapter boundary. No OTS type leaks beyond the unit that owns it:
 
-  | OTS Item                                  | Consuming Unit      | Subsystem     |
-  |-------------------------------------------|---------------------|---------------|
-  | YamlDotNet                                | VersionMarkConfig   | Configuration |
-  | Microsoft.Extensions.FileSystemGlobbing   | GlobMatcher         | Utilities     |
-  | DemaConsulting.TestResults                | Validation          | SelfTest      |
+  | OTS Item | Consuming Unit | Subsystem |
+  | --- | --- | --- |
+  | YamlDotNet | VersionMarkConfig | Configuration |
+  | Microsoft.Extensions.FileSystemGlobbing | GlobMatcher | Utilities |
+  | DemaConsulting.TestResults | Validation | SelfTest |
 
   Restricting each OTS item to a single consuming unit minimizes the blast radius of an API
   change during an upgrade: only the adapter unit needs to change.
@@ -33,7 +33,7 @@ The OTS items used by this project fall into two functional groups:
 See the individual per-item design files for details of features used and initialization
 requirements:
 
-- See _YamlDotNet Integration Design_
-- See _Microsoft.Extensions.FileSystemGlobbing Integration Design_
-- See _DemaConsulting.TestResults Integration Design_
-- See _SysML2Tools OTS Design_
+- See *YamlDotNet Integration Design*
+- See *Microsoft.Extensions.FileSystemGlobbing Integration Design*
+- See *DemaConsulting.TestResults Integration Design*
+- See *SysML2Tools OTS Design*

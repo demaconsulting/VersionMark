@@ -41,7 +41,7 @@ compliance evidence is generated automatically on every CI run.
 
 - **Requirements Traceability**: Every requirement is linked to passing tests, and a trace matrix is
   auto-generated on each release.
-- **Linting Enforcement**: markdownlint, TextLint, and yamllint are enforced before any build proceeds.
+- **Linting Enforcement**: LintMark, TextLint, and yamllint are enforced before any build proceeds.
 - **Automated Audit Documentation**: Each release ships with generated requirements, justifications,
   trace matrix, and quality reports.
 - **CodeQL and SonarCloud**: Security and quality analysis runs on every build.
@@ -100,29 +100,29 @@ This generates a Markdown file consolidating versions from all jobs.
 
 ## Options
 
-| Option                   | Description                                                     |
-| ------------------------ | --------------------------------------------------------------- |
-| **General**              |                                                                 |
-| `-v`, `--version`        | Display version information                                     |
-| `-?`, `-h`, `--help`     | Display help message                                            |
-| `--silent`               | Suppress console output                                         |
-| `--log <file>`           | Write output to log file                                        |
-| `--depth <depth>`        | Heading depth for validation and publish mode (default: 1, 1-6) |
-| **Lint Mode**            |                                                                 |
-| `--lint [<config-file>]` | Check configuration file (default: `.versionmark.yaml`)         |
-| **Capture Mode**         |                                                                 |
-| `--capture`              | Enable capture mode                                             |
-| `--job-id <id>`          | **(Required)** Unique identifier for this CI/CD job             |
-| `--output <file>`        | Output JSON file (default: `versionmark-<job-id>.json`)         |
-| `-- <tools...>`          | List of tool names to capture (default: all tools in config)    |
-| **Publish Mode**         |                                                                 |
-| `--publish`              | Enable publish mode                                             |
-| `--report <file>`        | **(Required)** Output Markdown file path                        |
-| `--report-depth <depth>` | Heading depth for Markdown output (default: `--depth` value)    |
-| `-- <patterns...>`       | Glob patterns for JSON files (default: `versionmark-*.json`)    |
-| **Self-Validation**      |                                                                 |
-| `--validate`             | Run self-validation tests                                       |
-| `--results <file>`       | Write validation results to file (`.trx` or `.xml`)             |
+| Option | Description |
+| --- | --- |
+| **General** | |
+| `-v`, `--version` | Display version information |
+| `-?`, `-h`, `--help` | Display help message |
+| `--silent` | Suppress console output |
+| `--log <file>` | Write output to log file |
+| `--depth <depth>` | Heading depth for validation and publish mode (default: 1, 1-6) |
+| **Lint Mode** | |
+| `--lint [<config-file>]` | Check configuration file (default: `.versionmark.yaml`) |
+| **Capture Mode** | |
+| `--capture` | Enable capture mode |
+| `--job-id <id>` | **(Required)** Unique identifier for this CI/CD job |
+| `--output <file>` | Output JSON file (default: `versionmark-<job-id>.json`) |
+| `-- <tools...>` | List of tool names to capture (default: all tools in config) |
+| **Publish Mode** | |
+| `--publish` | Enable publish mode |
+| `--report <file>` | **(Required)** Output Markdown file path |
+| `--report-depth <depth>` | Heading depth for Markdown output (default: `--depth` value) |
+| `-- <patterns...>` | Glob patterns for JSON files (default: `versionmark-*.json`) |
+| **Self-Validation** | |
+| `--validate` | Run self-validation tests |
+| `--results <file>` | Write validation results to file (`.trx` or `.xml`) |
 
 ## Lint Mode
 
@@ -269,16 +269,16 @@ tools:
 
 Each tool entry in the `tools` dictionary supports the following properties:
 
-| Property        | Required | Description                                                      |
-| --------------- | -------- | ---------------------------------------------------------------- |
-| `command`       | Yes*     | Shell command to execute to get version information              |
-| `regex`         | Yes*     | Regular expression with named `version` group: `(?<version>...)` |
-| `command-win`   | No       | Command override for Windows                                     |
-| `command-linux` | No       | Command override for Linux                                       |
-| `command-macos` | No       | Command override for macOS                                       |
-| `regex-win`     | No       | Regex override for Windows                                       |
-| `regex-linux`   | No       | Regex override for Linux                                         |
-| `regex-macos`   | No       | Regex override for macOS                                         |
+| Property | Required | Description |
+| --- | --- | --- |
+| `command` | Yes* | Shell command to execute to get version information |
+| `regex` | Yes* | Regular expression with named `version` group: `(?<version>...)` |
+| `command-win` | No | Command override for Windows |
+| `command-linux` | No | Command override for Linux |
+| `command-macos` | No | Command override for macOS |
+| `regex-win` | No | Regex override for Windows |
+| `regex-linux` | No | Regex override for Linux |
+| `regex-macos` | No | Regex override for macOS |
 
 \* Required unless OS-specific variants (`command-win`/`command-linux`/`command-macos` or
 `regex-win`/`regex-linux`/`regex-macos`) are provided instead.
@@ -528,11 +528,11 @@ If any tests fail, the exit code will be non-zero.
 
 ## Validation Tests
 
-| Test                                        | What It Proves                                             |
-| :------------------------------------------ | :--------------------------------------------------------- |
-| `VersionMark_CapturesVersions`              | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file. |
-| `VersionMark_GeneratesMarkdownReport`       | The tool can read captured JSON files and generate a Markdown report. |
-| `VersionMark_LintPassesForValidConfig`      | The lint command exits with code 0 for a valid configuration file. |
+| Test | What It Proves |
+| :--- | :--- |
+| `VersionMark_CapturesVersions` | The tool can read a `.versionmark.yaml` config and capture versions to a JSON file. |
+| `VersionMark_GeneratesMarkdownReport` | The tool can read captured JSON files and generate a Markdown report. |
+| `VersionMark_LintPassesForValidConfig` | The lint command exits with code 0 for a valid configuration file. |
 | `VersionMark_LintReportsErrorsForInvalidConfig` | The lint command exits with code 1 for an invalid config. |
 
 # CI/CD Integration

@@ -10,7 +10,7 @@ SysML2Tools provides the toolchain that keeps VersionMark's architecture model
 (`docs/sysml2/common/**/*.sysml`), and its declared views (`docs/sysml2/views/design-views.sysml`)
 consistent with the design documentation. It validates the model for syntax and reference errors,
 and renders each declared view to an SVG diagram embedded directly in the corresponding design
-document (for example `docs/design/version-mark.md` embeds `VersionMarkView.svg` and
+document (for example `docs/design/version-mark.md` embeds `VersionMarkSystemView.svg` and
 `docs/design/introduction.md` embeds `SoftwareStructureView.svg`). AI agents also query the model
 directly via the `sysml2tools-query` skill rather than parsing the rendered diagrams or
 hand-maintained prose.
@@ -46,7 +46,7 @@ It is used in two places in the pipeline:
 - **Render** (`build.yaml`, build-docs job): `dotnet sysml2tools render` renders each declared view
   to an SVG file in `docs/design/generated/`, immediately before Pandoc compiles the Design
   document. The rendered SVGs sit alongside the compiled `design.html`, so the design Markdown
-  sources embed bare filenames (for example `![VersionMark Structure](VersionMarkView.svg)`)
+  sources embed bare filenames (for example `![VersionMark Structure](VersionMarkSystemView.svg)`)
   that Pandoc and the browser resolve relative to that directory.
 
 SysML2Tools reads only the local SysML2 model files and writes only local SVG output files; it

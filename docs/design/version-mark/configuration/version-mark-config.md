@@ -12,9 +12,9 @@ version strings for the current CI/CD job.
 
 #### Data Model
 
-| Property | Type                              | Description                                   |
-|----------|-----------------------------------|-----------------------------------------------|
-| `Tools`  | `Dictionary<string, ToolConfig>`  | Maps tool names to their per-OS configuration |
+| Property | Type | Description |
+| --- | --- | --- |
+| `Tools` | `Dictionary<string, ToolConfig>` | Maps tool names to their per-OS configuration |
 
 The dictionary is populated during `Load`. Tools with error-level issues are excluded;
 tools with only warnings are included.
@@ -71,19 +71,19 @@ error messages that identify which tool's version could not be extracted. Throws
 
 #### Error Handling
 
-| Condition                                   | Behavior                                             |
-|---------------------------------------------|------------------------------------------------------|
-| File does not exist                         | Error `LintIssue` added; `Config` returns null       |
-| YAML parse error                            | Error `LintIssue` with source location; parse stops  |
-| Root node is not a mapping                  | Error `LintIssue`; `Config` returns null             |
-| Missing `tools` key                         | Error `LintIssue`; `Config` returns null             |
-| No tools defined                            | Error `LintIssue`; `Config` returns null             |
-| Unknown YAML key in tool entry              | Warning `LintIssue`; tool otherwise valid            |
-| Invalid regex pattern                       | Error `LintIssue`; tool excluded from result         |
-| Missing `version` capture group in regex    | Error `LintIssue`; tool excluded from result         |
-| Command exits with non-zero code            | `InvalidOperationException` in `FindVersions`        |
-| Version group not found in command output   | `InvalidOperationException` in `FindVersions`        |
-| Error-level issues present in `ReadFromFile`| `ArgumentException` thrown                           |
+| Condition | Behavior |
+| --- | --- |
+| File does not exist | Error `LintIssue` added; `Config` returns null |
+| YAML parse error | Error `LintIssue` with source location; parse stops |
+| Root node is not a mapping | Error `LintIssue`; `Config` returns null |
+| Missing `tools` key | Error `LintIssue`; `Config` returns null |
+| No tools defined | Error `LintIssue`; `Config` returns null |
+| Unknown YAML key in tool entry | Warning `LintIssue`; tool otherwise valid |
+| Invalid regex pattern | Error `LintIssue`; tool excluded from result |
+| Missing `version` capture group in regex | Error `LintIssue`; tool excluded from result |
+| Command exits with non-zero code | `InvalidOperationException` in `FindVersions` |
+| Version group not found in command output | `InvalidOperationException` in `FindVersions` |
+| Error-level issues present in `ReadFromFile` | `ArgumentException` thrown |
 
 #### Dependencies
 

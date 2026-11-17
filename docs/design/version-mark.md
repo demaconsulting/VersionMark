@@ -1,6 +1,6 @@
 # VersionMark
 
-![VersionMark Structure](VersionMarkView.svg)
+![VersionMark Structure](VersionMarkSystemView.svg)
 
 ## Architecture
 
@@ -26,23 +26,23 @@ graph TD
     Publishing --> Capture
 ```
 
-| Subsystem     | Units                                    | Responsibility                                      |
-|---------------|------------------------------------------|-----------------------------------------------------|
-| Cli           | Program, Context                         | Argument parsing, mode dispatch, output routing     |
-| Configuration | VersionMarkConfig, ToolConfig, LintIssue | YAML config loading, validation, version capture    |
-| Capture       | VersionInfo                              | JSON serialization of captured version data         |
-| Publishing    | MarkdownFormatter                        | Markdown report generation from captured data       |
-| SelfTest      | Validation                               | Built-in self-verification of all operational modes |
-| Utilities     | GlobMatcher, PathHelpers                 | Glob-pattern matching and safe path combination     |
+| Subsystem | Units | Responsibility |
+| --- | --- | --- |
+| Cli | Program, Context | Argument parsing, mode dispatch, output routing |
+| Configuration | VersionMarkConfig, ToolConfig, LintIssue | YAML config loading, validation, version capture |
+| Capture | VersionInfo | JSON serialization of captured version data |
+| Publishing | MarkdownFormatter | Markdown report generation from captured data |
+| SelfTest | Validation | Built-in self-verification of all operational modes |
+| Utilities | GlobMatcher, PathHelpers | Glob-pattern matching and safe path combination |
 
 The tool operates in four distinct modes, selected by command-line flags:
 
-| Mode     | Flag         | Description                                              |
-|----------|--------------|----------------------------------------------------------|
-| Capture  | `--capture`  | Runs configured commands and saves versions to JSON      |
-| Publish  | `--publish`  | Reads JSON files and generates a markdown version report |
-| Lint     | `--lint`     | Validates the `.versionmark.yaml` configuration file     |
-| Validate | `--validate` | Runs built-in self-verification tests                    |
+| Mode | Flag | Description |
+| --- | --- | --- |
+| Capture | `--capture` | Runs configured commands and saves versions to JSON |
+| Publish | `--publish` | Reads JSON files and generates a markdown version report |
+| Lint | `--lint` | Validates the `.versionmark.yaml` configuration file |
+| Validate | `--validate` | Runs built-in self-verification tests |
 
 ### Inter-Subsystem Interactions
 
@@ -82,12 +82,12 @@ The subsystems interact as follows during the four operational modes.
 
 The self-validation suite includes the following named tests:
 
-| Test Name                                    | What it Verifies                                                   |
-|----------------------------------------------|--------------------------------------------------------------------|
-| `VersionMark_CapturesVersions`               | Capture mode correctly runs commands and saves version JSON        |
-| `VersionMark_GeneratesMarkdownReport`        | Publish mode correctly reads JSON and produces a markdown report   |
-| `VersionMark_LintPassesForValidConfig`       | Lint mode passes for a valid `.versionmark.yaml` configuration     |
-| `VersionMark_LintReportsErrorsForInvalidConfig` | Lint mode reports errors for an invalid configuration           |
+| Test Name | What it Verifies |
+| --- | --- |
+| `VersionMark_CapturesVersions` | Capture mode correctly runs commands and saves version JSON |
+| `VersionMark_GeneratesMarkdownReport` | Publish mode correctly reads JSON and produces a markdown report |
+| `VersionMark_LintPassesForValidConfig` | Lint mode passes for a valid `.versionmark.yaml` configuration |
+| `VersionMark_LintReportsErrorsForInvalidConfig` | Lint mode reports errors for an invalid configuration |
 
 ## External Interfaces
 
@@ -241,13 +241,13 @@ Command-line args
 
 ## Design Constraints
 
-| Constraint               | Value / Description                                                              |
-|--------------------------|----------------------------------------------------------------------------------|
-| Target frameworks        | .NET 10, .NET 11 (multi-targeted)                                                |
-| Supported platforms      | Windows, Linux, macOS                                                            |
-| Shell execution          | `cmd.exe /c` on Windows; `/bin/sh -c` on Linux and macOS                         |
-| Nullable reference types | Enabled; all public APIs annotated                                               |
-| Warnings as errors       | Enabled; build fails on any warning                                              |
-| Distribution             | NuGet global tool (`dotnet tool install -g DemaConsulting.VersionMark`)          |
-| No network access        | No network calls at runtime; all I/O is local file system and shell              |
-| Regex timeout            | User-supplied regex patterns have a 1-second evaluation timeout                  |
+| Constraint | Value / Description |
+| --- | --- |
+| Target frameworks | .NET 10, .NET 11 (multi-targeted) |
+| Supported platforms | Windows, Linux, macOS |
+| Shell execution | `cmd.exe /c` on Windows; `/bin/sh -c` on Linux and macOS |
+| Nullable reference types | Enabled; all public APIs annotated |
+| Warnings as errors | Enabled; build fails on any warning |
+| Distribution | NuGet global tool (`dotnet tool install -g DemaConsulting.VersionMark`) |
+| No network access | No network calls at runtime; all I/O is local file system and shell |
+| Regex timeout | User-supplied regex patterns have a 1-second evaluation timeout |

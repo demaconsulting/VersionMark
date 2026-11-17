@@ -12,10 +12,10 @@ default entry.
 
 #### Data Model
 
-| Dictionary | Key values                                     | Purpose                             |
-|------------|------------------------------------------------|-------------------------------------|
-| `Command`  | `""` (default), `"win"`, `"linux"`, `"macos"` | Shell command to execute            |
-| `Regex`    | `""` (default), `"win"`, `"linux"`, `"macos"` | Regex pattern with `version` group  |
+| Dictionary | Key values | Purpose |
+| --- | --- | --- |
+| `Command` | `""` (default), `"win"`, `"linux"`, `"macos"` | Shell command to execute |
+| `Regex` | `""` (default), `"win"`, `"linux"`, `"macos"` | Regex pattern with `version` group |
 
 Both dictionaries are populated by `VersionMarkConfig.ValidateTool` during YAML parsing.
 The empty-string key `""` holds the default (OS-independent) value.
@@ -35,13 +35,13 @@ OS once before calling `GetEffectiveCommand` / `GetEffectiveRegex`.
 
 #### Error Handling
 
-| Condition                                  | Behavior                                    |
-|--------------------------------------------|---------------------------------------------|
-| No matching OS key and no default `""` key | `InvalidOperationException` thrown          |
-| No `command` field (`command`, `command-win`, `command-linux`, or `command-macos`) is defined | Error `LintIssue` added by `ValidateTool`   |
-| No `regex` field (`regex`, `regex-win`, `regex-linux`, or `regex-macos`) is defined           | Error `LintIssue` added by `ValidateTool`   |
-| Unknown YAML key for a tool entry          | Warning `LintIssue` added by `ValidateTool` |
-| Empty value for a known YAML key           | Error `LintIssue` added by `ValidateTool`   |
+| Condition | Behavior |
+| --- | --- |
+| No matching OS key and no default `""` key | `InvalidOperationException` thrown |
+| No `command`, `command-win`, `command-linux`, or `command-macos` key | Error `LintIssue` added by `ValidateTool` |
+| No `regex`, `regex-win`, `regex-linux`, or `regex-macos` key | Error `LintIssue` added by `ValidateTool` |
+| Unknown YAML key for a tool entry | Warning `LintIssue` added by `ValidateTool` |
+| Empty value for a known YAML key | Error `LintIssue` added by `ValidateTool` |
 
 #### Dependencies
 

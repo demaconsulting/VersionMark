@@ -14,20 +14,20 @@ found).
 
 **`LintSeverity` enumeration**
 
-| Value     | Meaning                                                                    |
-|-----------|----------------------------------------------------------------------------|
-| `Warning` | Non-fatal advisory message; loading continues.                             |
-| `Error`   | Fatal validation failure that prevents the configuration from being used.  |
+| Value | Meaning |
+| --- | --- |
+| `Warning` | Non-fatal advisory message; loading continues. |
+| `Error` | Fatal validation failure that prevents the configuration from being used. |
 
 **`LintIssue` record**
 
-| Property      | Type           | Description                                    |
-|---------------|----------------|------------------------------------------------|
-| `FilePath`    | `string`       | Path to the file containing the issue.         |
-| `Line`        | `long`         | One-based line number of the issue.            |
-| `Column`      | `long`         | One-based column number of the issue.          |
-| `Severity`    | `LintSeverity` | Severity classification.                       |
-| `Description` | `string`       | Human-readable description of the issue.       |
+| Property | Type | Description |
+| --- | --- | --- |
+| `FilePath` | `string` | Path to the file containing the issue. |
+| `Line` | `long` | One-based line number of the issue. |
+| `Column` | `long` | One-based column number of the issue. |
+| `Severity` | `LintSeverity` | Severity classification. |
+| `Description` | `string` | Human-readable description of the issue. |
 
 `ToString` formats the record as `"{FilePath}({Line},{Column}): {severity}: {Description}"`
 where `{severity}` is lowercase (`warning` or `error`), producing output in the familiar
@@ -35,9 +35,9 @@ where `{severity}` is lowercase (`warning` or `error`), producing output in the 
 
 **`VersionMarkLoadResult` record**
 
-| Property | Type                       | Description                                                                |
-|----------|----------------------------|----------------------------------------------------------------------------|
-| `Config` | `VersionMarkConfig?`       | Loaded configuration; `null` when any error-level issues were found.       |
+| Property | Type | Description |
+| --- | --- | --- |
+| `Config` | `VersionMarkConfig?` | Loaded configuration; `null` when any error-level issues were found. |
 | `Issues` | `IReadOnlyList<LintIssue>` | All validation issues; may contain warnings even when `Config` is non-null. |
 
 #### Key Methods

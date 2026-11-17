@@ -12,25 +12,25 @@ flags and to write output or errors.
 
 #### Data Model
 
-| Property       | Type       | Default     | Description                                        |
-|----------------|------------|-------------|----------------------------------------------------|
-| `Version`      | `bool`     | `false`     | `-v` / `--version` flag                            |
-| `Help`         | `bool`     | `false`     | `-?`, `-h`, `--help` flag                          |
-| `Silent`       | `bool`     | `false`     | `--silent` flag                                    |
-| `Validate`     | `bool`     | `false`     | `--validate` flag                                  |
-| `ResultsFile`  | `string?`  | `null`      | `--results <file>` / `--result <file>` (legacy alias) |
-| `Lint`         | `bool`     | `false`     | `--lint` flag                                      |
-| `LintFile`     | `string?`  | `null`      | Optional file argument for `--lint`                |
-| `Capture`      | `bool`     | `false`     | `--capture` flag                                   |
-| `JobId`        | `string?`  | `null`      | `--job-id <id>`                                    |
-| `OutputFile`   | `string?`  | `null`      | `--output <file>`                                  |
-| `ToolNames`    | `string[]` | `[]`        | Tool names after `--` separator in capture mode    |
-| `Publish`      | `bool`     | `false`     | `--publish` flag                                   |
-| `ReportFile`   | `string?`  | `null`      | `--report <file>`                                  |
-| `Depth`        | `int`      | `1`         | `--depth <depth>` (heading depth, default: 1)      |
-| `ReportDepth`  | `int`      | `Depth`     | `--report-depth <depth>` (defaults to `Depth`)     |
-| `GlobPatterns` | `string[]` | `[]`        | Patterns after `--` separator in publish mode      |
-| `ExitCode`     | `int`      | `0` / `1`   | 0 for success; 1 if any errors have been reported  |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `Version` | `bool` | `false` | `-v` / `--version` flag |
+| `Help` | `bool` | `false` | `-?`, `-h`, `--help` flag |
+| `Silent` | `bool` | `false` | `--silent` flag |
+| `Validate` | `bool` | `false` | `--validate` flag |
+| `ResultsFile` | `string?` | `null` | `--results <file>` / `--result <file>` (legacy alias) |
+| `Lint` | `bool` | `false` | `--lint` flag |
+| `LintFile` | `string?` | `null` | Optional file argument for `--lint` |
+| `Capture` | `bool` | `false` | `--capture` flag |
+| `JobId` | `string?` | `null` | `--job-id <id>` |
+| `OutputFile` | `string?` | `null` | `--output <file>` |
+| `ToolNames` | `string[]` | `[]` | Tool names after `--` separator in capture mode |
+| `Publish` | `bool` | `false` | `--publish` flag |
+| `ReportFile` | `string?` | `null` | `--report <file>` |
+| `Depth` | `int` | `1` | `--depth <depth>` (heading depth, default: 1) |
+| `ReportDepth` | `int` | `Depth` | `--report-depth <depth>` (defaults to `Depth`) |
+| `GlobPatterns` | `string[]` | `[]` | Patterns after `--` separator in publish mode |
+| `ExitCode` | `int` | `0` / `1` | 0 for success; 1 if any errors have been reported |
 
 The private `_hasErrors` field, set by `WriteError`, controls whether `ExitCode` returns 1.
 An optional `StreamWriter` opened by `OpenLogFile` is disposed when `Context` is disposed.
@@ -60,12 +60,12 @@ triggers errors without producing unwanted output.
 
 #### Error Handling
 
-| Condition                         | Behavior                                               |
-|-----------------------------------|--------------------------------------------------------|
-| `null` `args` passed to `Create`  | `Create` throws `ArgumentNullException`                |
-| Unknown argument token            | `ArgumentParser` throws `ArgumentException`            |
-| `--` used outside capture/publish | `ArgumentParser` throws `ArgumentException`            |
-| Log file cannot be opened         | `OpenLogFile` throws `InvalidOperationException`       |
+| Condition | Behavior |
+| --- | --- |
+| `null` `args` passed to `Create` | `Create` throws `ArgumentNullException` |
+| Unknown argument token | `ArgumentParser` throws `ArgumentException` |
+| `--` used outside capture/publish | `ArgumentParser` throws `ArgumentException` |
+| Log file cannot be opened | `OpenLogFile` throws `InvalidOperationException` |
 
 #### Dependencies
 

@@ -85,7 +85,8 @@ pwsh ./build.ps1
 
 ## User Guide
 
-The VersionMark User Guide is available on the [VersionMark releases page](https://github.com/demaconsulting/VersionMark/releases).
+The VersionMark User Guide is available on the
+[VersionMark releases page](https://github.com/demaconsulting/VersionMark/releases).
 
 ## Contributing
 
@@ -113,29 +114,29 @@ Usage: versionmark [options]
        versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
 ```
 
-| Option                    | Description                                                      |
-| ------------------------- | ---------------------------------------------------------------- |
-| **General**               |                                                                  |
-| `-v`, `--version`         | Display version information                                      |
-| `-?`, `-h`, `--help`      | Display help message                                             |
-| `--silent`                | Suppress console output                                          |
-| `--log <file>`            | Write output to log file                                         |
-| `--depth <depth>`         | Heading depth for validation and publish mode (default: 1, 1-6)  |
-| **Lint Mode**             |                                                                  |
-| `--lint [<config-file>]`  | Check configuration file (default: `.versionmark.yaml`)          |
-| **Capture Mode**          |                                                                  |
-| `--capture`               | Enable capture mode                                              |
-| `--job-id <id>`           | **(Required)** Unique identifier for this CI/CD job              |
-| `--output <file>`         | Output JSON file (default: `versionmark-<job-id>.json`)          |
-| `-- <tools...>`           | List of tool names to capture (default: all tools in config)     |
-| **Publish Mode**          |                                                                  |
-| `--publish`               | Enable publish mode                                              |
-| `--report <file>`         | **(Required)** Output markdown file path                         |
-| `--report-depth <depth>`  | Heading depth for markdown output (default: --depth value, 1-6)  |
-| `-- <patterns...>`        | Glob patterns for JSON files (default: `versionmark-*.json`)     |
-| **Self-Validation**       |                                                                  |
-| `--validate`              | Run self-validation tests                                        |
-| `--results <file>`        | Write validation results to file (`.trx` or `.xml`)              |
+| Option | Description |
+| --- | --- |
+| **General** | |
+| `-v`, `--version` | Display version information |
+| `-?`, `-h`, `--help` | Display help message |
+| `--silent` | Suppress console output |
+| `--log <file>` | Write output to log file |
+| `--depth <depth>` | Heading depth for validation and publish mode (default: 1, 1-6) |
+| **Lint Mode** | |
+| `--lint [<config-file>]` | Check configuration file (default: `.versionmark.yaml`) |
+| **Capture Mode** | |
+| `--capture` | Enable capture mode |
+| `--job-id <id>` | **(Required)** Unique identifier for this CI/CD job |
+| `--output <file>` | Output JSON file (default: `versionmark-<job-id>.json`) |
+| `-- <tools...>` | List of tool names to capture (default: all tools in config) |
+| **Publish Mode** | |
+| `--publish` | Enable publish mode |
+| `--report <file>` | **(Required)** Output markdown file path |
+| `--report-depth <depth>` | Heading depth for markdown output (default: --depth value, 1-6) |
+| `-- <patterns...>` | Glob patterns for JSON files (default: `versionmark-*.json`) |
+| **Self-Validation** | |
+| `--validate` | Run self-validation tests |
+| `--results <file>` | Write validation results to file (`.trx` or `.xml`) |
 
 ## Configuration File
 
