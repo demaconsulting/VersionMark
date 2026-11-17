@@ -1,6 +1,6 @@
 # VersionMark
 
-![VersionMark Structure](VersionMarkView.svg)
+![VersionMark Structure](VersionMarkSystemView.svg)
 
 ## Architecture
 
