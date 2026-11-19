@@ -25,8 +25,7 @@ sections:
                   - VersionMark_GeneratesMarkdownReport
 
               - id: VersionMark-Validation-LintValid
-                title: The Validation class shall verify that lint mode accepts valid
-                  configurations.
+                title: The Validation class shall verify that lint mode accepts valid configurations.
                 justification: |
                   Self-validation of lint mode's valid-config acceptance confirms the
                   configuration validation logic approves correct configurations in the
@@ -35,8 +34,7 @@ sections:
                   - VersionMark_LintPassesForValidConfig
 
               - id: VersionMark-Validation-LintInvalid
-                title: The Validation class shall verify that lint mode rejects invalid
-                  configurations.
+                title: The Validation class shall verify that lint mode rejects invalid configurations.
                 justification: |
                   Self-validation of lint mode's error-rejection confirms the
                   configuration validation logic rejects bad configurations in the

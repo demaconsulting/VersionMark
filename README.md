@@ -9,6 +9,12 @@
 [![Security][badge-security]][link-security]
 [![NuGet][badge-nuget]][link-nuget]
 
+![VersionMark banner: the VersionMark name with the tagline 'Every tool, versioned. Every job, on record.' and the
+command 'versionmark --capture --job-id linux -- dotnet'. The .versionmark.yaml tool definitions, the version output of
+each tool command, and the CI job IDs flow on curved arrows into the versionmark .NET tool, and arrows lead out to a
+Markdown versions report with a Tool Versions heading, per-job JSON capture files, lint findings with line and column
+for the configuration, and self-validation test results in a TRX file][hero]
+
 ## Overview
 
 VersionMark is a .NET tool for capturing and publishing tool version information across CI/CD environments.
@@ -229,6 +235,7 @@ If any tests fail, the exit code will be non-zero.
 [badge-nuget]: https://img.shields.io/nuget/v/DemaConsulting.VersionMark?style=plastic
 
 <!-- Link References -->
+[hero]: https://raw.githubusercontent.com/demaconsulting/VersionMark/main/docs/images/hero.png
 [workflow]: https://raw.githubusercontent.com/demaconsulting/VersionMark/main/docs/images/workflow.png
 [link-forks]: https://github.com/demaconsulting/VersionMark/network/members
 [link-stars]: https://github.com/demaconsulting/VersionMark/stargazers

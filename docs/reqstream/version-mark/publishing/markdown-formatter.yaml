@@ -5,8 +5,7 @@ sections:
       - title: Markdown Formatter Requirements
         requirements:
           - id: VersionMark-Formatter-Structure
-            title: The tool shall generate markdown output listing all tools in sorted
-              order.
+            title: The tool shall generate markdown output listing all tools in sorted order.
             justification: |
               Provides consistent, predictable output ordering that makes reports easier
               to read and compare across multiple runs.
@@ -55,8 +54,7 @@ sections:
               - MarkdownFormatter_Format_WithDifferentVersions_ShowsIndividualJobs
 
           - id: VersionMark-Formatter-MarkdownConsolidation
-            title: The tool shall respect the report-depth parameter when generating
-              markdown heading levels.
+            title: The tool shall respect the report-depth parameter when generating markdown heading levels.
             justification: |
               Allows the generated markdown to integrate properly into existing document
               structures with appropriate heading hierarchy.

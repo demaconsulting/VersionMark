@@ -9,8 +9,7 @@ sections:
       - title: YamlDotNet Requirements
         requirements:
           - id: VersionMark-OTS-YamlDotNet
-            title: YamlDotNet shall parse YAML configuration files and report parse
-              errors with source location.
+            title: YamlDotNet shall parse YAML configuration files and report parse errors with source location.
             justification: |
               YamlDotNet is the YAML parser used by VersionMark to deserialize
               `.versionmark.yaml` configuration files inside

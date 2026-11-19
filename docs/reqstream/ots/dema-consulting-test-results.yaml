@@ -10,8 +10,7 @@ sections:
       - title: TestResults Requirements
         requirements:
           - id: VersionMark-OTS-TestResults
-            title: TestResults shall collect self-validation test outcomes and serialize
-              them to TRX and JUnit XML formats.
+            title: TestResults shall collect self-validation test outcomes and serialize them to TRX and JUnit XML formats.
             justification: |
               DemaConsulting.TestResults is used inside the SelfTest subsystem's
               `Validation` class to accumulate pass/fail outcomes for each

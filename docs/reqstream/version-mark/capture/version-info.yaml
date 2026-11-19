@@ -7,8 +7,7 @@ sections:
           - title: VersionInfo Requirements
             requirements:
               - id: VersionMark-VersionInfo-Save
-                title: The VersionInfo class shall save captured version data to a
-                  JSON file.
+                title: The VersionInfo class shall save captured version data to a JSON file.
                 justification: |
                   Captured version data must be persisted between the capture job and the
                   publish job. Writing to JSON provides a portable, human-readable format
@@ -32,8 +31,7 @@ sections:
                   - VersionInfo_SpecialCharacters_SavesAndLoadsCorrectly
 
               - id: VersionMark-VersionInfo-Error
-                title: The VersionInfo class shall report errors when JSON files cannot
-                  be read or parsed.
+                title: The VersionInfo class shall report errors when JSON files cannot be read or parsed.
                 justification: |
                   Providing clear errors when a file is missing or malformed prevents silent
                   data loss and guides users to the source of the problem quickly.
@@ -44,8 +42,7 @@ sections:
                   - VersionInfo_LoadFromFile_NullJson_ThrowsArgumentException
 
               - id: VersionMark-VersionInfo-WriteError
-                title: The VersionInfo class shall signal an error with context when
-                  a JSON file cannot be written.
+                title: The VersionInfo class shall signal an error with context when a JSON file cannot be written.
                 justification: |
                   Write failures (e.g., invalid path, permissions) must be surfaced immediately
                   with a clear, context-bearing exception so that capture pipelines can report

@@ -9,8 +9,7 @@ sections:
       - title: SysML2Tools Requirements
         requirements:
           - id: VersionMark-OTS-SysML2Tools-Lint
-            title: SysML2Tools shall validate the SysML2 model for syntax and reference
-              errors.
+            title: SysML2Tools shall validate the SysML2 model for syntax and reference errors.
             justification: |
               Linting the model in CI catches broken references and syntax errors in the
               architecture model before they reach the generated documentation.

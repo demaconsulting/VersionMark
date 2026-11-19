@@ -159,8 +159,7 @@ reviews:
       - test/**/Configuration/ConfigurationTests.cs
 
   - id: VersionMark-Configuration-VersionMarkConfig
-    title: Review that VersionMark Configuration VersionMarkConfig Implementation
-      is Correct
+    title: Review that VersionMark Configuration VersionMarkConfig Implementation is Correct
     context:
       - docs/design/version-mark.md
       - docs/reqstream/version-mark.yaml
@@ -241,8 +240,7 @@ reviews:
       - test/**/Publishing/PublishingTests.cs
 
   - id: VersionMark-Publishing-MarkdownFormatter
-    title: Review that VersionMark Publishing MarkdownFormatter Implementation is
-      Correct
+    title: Review that VersionMark Publishing MarkdownFormatter Implementation is Correct
     context:
       - docs/design/version-mark.md
       - docs/reqstream/version-mark.yaml

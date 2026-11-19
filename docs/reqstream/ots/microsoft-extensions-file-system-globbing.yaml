@@ -10,8 +10,7 @@ sections:
       - title: FileSystemGlobbing Requirements
         requirements:
           - id: VersionMark-OTS-FileSystemGlobbing
-            title: FileSystemGlobbing shall match relative and absolute glob patterns
-              against the file system and deduplicate overlapping matches.
+            title: FileSystemGlobbing shall match relative and absolute glob patterns against the file system and deduplicate overlapping matches.
             justification: |
               Microsoft.Extensions.FileSystemGlobbing provides the `Matcher` class
               used by VersionMark's `GlobMatcher.FindMatchingFiles` to resolve
