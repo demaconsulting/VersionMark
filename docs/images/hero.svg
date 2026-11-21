@@ -111,12 +111,13 @@
   <ellipse cx="1480" cy="620" rx="380" ry="260" fill="url(#glowPink)"/>
   <rect width="1600" height="640" fill="url(#dots)"/>
 
-  <!-- Wordmark and tagline: "VersionMark" is 6002 units, so both words use 81px and "Mark" starts at
-       52 + 0.081 * 3668 = 349.1 -->
+  <!-- Wordmark and tagline: "VersionMark" is 6002 units, so both words use 81px. "Mark" starts at x = 345.1,
+       where the renderer ends "Version" (measured by drawing "Version<tspan>Mark</tspan>" as one text); the
+       table value 52 + 0.081 * 3668 = 349.1 left a visible gap. -->
   <image href="hero/dc-logo-dark.svg" x="46" y="54" width="50" height="50"/>
   <text class="eyebrow" x="100" y="90">DEMA Consulting</text>
   <text class="word" x="52" y="176" style="font-size:81px">Version</text>
-  <text class="word brandText" x="349.1" y="176" style="font-size:81px">Mark</text>
+  <text class="word brandText" x="345.1" y="176" style="font-size:81px">Mark</text>
   <rect x="58" y="200" width="132" height="6" rx="3" fill="url(#brand)"/>
   <text class="tag" x="56" y="266">Tool versions captured</text>
   <text class="tag" x="56" y="314" style="fill: #a5b4fc">from CI/CD jobs.</text>
