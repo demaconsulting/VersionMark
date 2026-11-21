@@ -1,4 +1,4 @@
-# VersionMark
+# ![VersionMark: Tool versions captured from CI/CD jobs][hero]
 
 [![GitHub forks][badge-forks]][link-forks]
 [![GitHub stars][badge-stars]][link-stars]
@@ -8,12 +8,6 @@
 [![Quality Gate][badge-quality]][link-quality]
 [![Security][badge-security]][link-security]
 [![NuGet][badge-nuget]][link-nuget]
-
-![VersionMark banner: the VersionMark name with the tagline 'Every tool, versioned. Every job, on record.' and the
-command 'versionmark --capture --job-id linux -- dotnet'. The .versionmark.yaml tool definitions, the version output of
-each tool command, and the CI job IDs flow on curved arrows into the versionmark .NET tool, and arrows lead out to a
-Markdown versions report with a Tool Versions heading, per-job JSON capture files, lint findings with line and column
-for the configuration, and self-validation test results in a TRX file][hero]
 
 ## Overview
 
