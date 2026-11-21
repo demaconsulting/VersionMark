@@ -183,7 +183,7 @@ approach. Tools: **ReqStream** (requirements traceability), **ReviewMark** (file
 ## SysML2 package structure (legacy layout, migration pending)
 
 The model under `docs/sysml2/` predates the one-package-per-file rule: package `VersionMark` is reopened
-across 19 files (18 under `model/` plus `views/design-views.sysml`, instead of a `VersionMarkDesignViews`
+across 18 files (17 under `model/` plus `views/design-views.sysml`, instead of a `VersionMarkDesignViews`
 package), while `ots.sysml` uses `OtsDependencies` and `common/software-items.sysml` uses
 `SoftwareItemMetadata`. The Package Structure rules in `sysml2-modeling.md` and the qualified-name examples
 in the `sysml2tools-query` skill apply once the model is migrated in a dedicated PR. Until then, agents use
