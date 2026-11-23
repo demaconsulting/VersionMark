@@ -1,5 +1,11 @@
 package VersionMark {
-    import OtsDependencies::*;
+    public import VersionMark_CliSubsystem::*;
+    public import VersionMark_ConfigurationSubsystem::*;
+    public import VersionMark_CaptureSubsystem::*;
+    public import VersionMark_PublishingSubsystem::*;
+    public import VersionMark_SelfTestSubsystem::*;
+    public import VersionMark_UtilitiesSubsystem::*;
+    private import OtsDependencies::*;
     private import SoftwareItemMetadata::*;
 
     doc

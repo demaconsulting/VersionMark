@@ -44,6 +44,7 @@ enableGlobDot: true
 # Project-specific technical terms and tool names
 words:
   - DEMA
+  - distinguishability
   - demaconsulting
   - entrantly
   - lintmark
@@ -53,11 +54,13 @@ words:
   - nestings
   - netstandard
   - sarif
+  - Sensmetry
   - Setext
   - shopt
   - slnx
   - snupkg
   - sonarscanner
+  - Syside
   - thirdparty
   - unidirectionality
   - venv

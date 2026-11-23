@@ -1,6 +1,6 @@
-package VersionMark {
+package VersionMark_GlobMatcher {
     private import SoftwareItemMetadata::*;
-    import OtsDependencies::*;
+    private import OtsDependencies::*;
 
     part def GlobMatcher {
         doc /* Resolves glob patterns into concrete file path lists for publish mode. */
@@ -15,5 +15,5 @@ package VersionMark {
     }
 
     // FindMatchingFiles delegates pattern evaluation to Microsoft.Extensions.FileSystemGlobbing.
-    dependency GlobMatcher to FileSystemGlobbing;
+    dependency GlobMatcher to OtsDependencies::FileSystemGlobbing;
 }

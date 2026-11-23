@@ -1,4 +1,4 @@
-package VersionMark {
+package VersionMark_Program {
     private import SoftwareItemMetadata::*;
 
     part def Program {
@@ -14,10 +14,10 @@ package VersionMark {
     }
 
     // Program dispatches each operational mode to the unit that implements it.
-    dependency Program to Context;
-    dependency Program to VersionMarkConfig;
-    dependency Program to VersionInfo;
-    dependency Program to MarkdownFormatter;
-    dependency Program to GlobMatcher;
-    dependency Program to Validation;
+    dependency Program to VersionMark_Context::Context;
+    dependency Program to VersionMark_VersionMarkConfig::VersionMarkConfig;
+    dependency Program to VersionMark_VersionInfo::VersionInfo;
+    dependency Program to VersionMark_MarkdownFormatter::MarkdownFormatter;
+    dependency Program to VersionMark_GlobMatcher::GlobMatcher;
+    dependency Program to VersionMark_Validation::Validation;
 }

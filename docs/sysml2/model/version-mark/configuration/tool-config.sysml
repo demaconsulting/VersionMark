@@ -1,4 +1,4 @@
-package VersionMark {
+package VersionMark_ToolConfig {
     private import SoftwareItemMetadata::*;
     private import ScalarValues::String;
 

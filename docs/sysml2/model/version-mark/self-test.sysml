@@ -1,4 +1,5 @@
-package VersionMark {
+package VersionMark_SelfTestSubsystem {
+    public import VersionMark_Validation::*;
     private import SoftwareItemMetadata::*;
 
     part def SelfTestSubsystem {

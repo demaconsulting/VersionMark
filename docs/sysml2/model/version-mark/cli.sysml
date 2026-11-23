@@ -1,4 +1,6 @@
-package VersionMark {
+package VersionMark_CliSubsystem {
+    public import VersionMark_Program::*;
+    public import VersionMark_Context::*;
     private import SoftwareItemMetadata::*;
 
     part def CliSubsystem {

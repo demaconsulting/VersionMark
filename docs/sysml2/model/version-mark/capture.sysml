@@ -1,4 +1,5 @@
-package VersionMark {
+package VersionMark_CaptureSubsystem {
+    public import VersionMark_VersionInfo::*;
     private import SoftwareItemMetadata::*;
 
     part def CaptureSubsystem {

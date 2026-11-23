@@ -1,4 +1,4 @@
-package VersionMark {
+package VersionMark_LintIssue {
     private import SoftwareItemMetadata::*;
     private import ScalarValues::Integer;
     private import ScalarValues::String;
@@ -27,5 +27,5 @@ package VersionMark {
     }
 
     // ReportIssues writes discovered issues to the Cli Context.
-    dependency LintIssue to Context;
+    dependency LintIssue to VersionMark_Context::Context;
 }

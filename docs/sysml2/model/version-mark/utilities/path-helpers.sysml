@@ -1,4 +1,4 @@
-package VersionMark {
+package VersionMark_PathHelpers {
     private import SoftwareItemMetadata::*;
 
     part def PathHelpers {

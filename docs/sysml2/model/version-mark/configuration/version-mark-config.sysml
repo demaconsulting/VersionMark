@@ -1,6 +1,6 @@
-package VersionMark {
+package VersionMark_VersionMarkConfig {
     private import SoftwareItemMetadata::*;
-    import OtsDependencies::*;
+    private import OtsDependencies::*;
 
     part def VersionMarkConfig {
         doc /* Loads, validates, and executes `.versionmark.yaml` tool version capture. */
@@ -21,12 +21,12 @@ package VersionMark {
 
         // Tools is keyed by tool name; the key/value pairing is not representable here,
         // so this is a flat multiplicity of ToolConfig parts.
-        part tools : ToolConfig [0..*];
+        part tools : VersionMark_ToolConfig::ToolConfig [0..*];
     }
 
     // Load validates and produces LintIssue/ToolConfig records; FindVersions returns VersionInfo.
-    dependency VersionMarkConfig to ToolConfig;
-    dependency VersionMarkConfig to LintIssue;
-    dependency VersionMarkConfig to VersionInfo;
-    dependency VersionMarkConfig to YamlDotNet;
+    dependency VersionMarkConfig to VersionMark_ToolConfig::ToolConfig;
+    dependency VersionMarkConfig to VersionMark_LintIssue::LintIssue;
+    dependency VersionMarkConfig to VersionMark_VersionInfo::VersionInfo;
+    dependency VersionMarkConfig to OtsDependencies::YamlDotNet;
 }
