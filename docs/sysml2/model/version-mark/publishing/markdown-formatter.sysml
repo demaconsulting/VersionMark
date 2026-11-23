@@ -1,4 +1,4 @@
-package VersionMark {
+package VersionMark_MarkdownFormatter {
     private import SoftwareItemMetadata::*;
 
     part def MarkdownFormatter {
@@ -14,5 +14,5 @@ package VersionMark {
     }
 
     // Format takes the loaded VersionInfo records as its input data model.
-    dependency MarkdownFormatter to VersionInfo;
+    dependency MarkdownFormatter to VersionMark_VersionInfo::VersionInfo;
 }

@@ -1,4 +1,7 @@
-package VersionMark {
+package VersionMark_ConfigurationSubsystem {
+    public import VersionMark_VersionMarkConfig::*;
+    public import VersionMark_ToolConfig::*;
+    public import VersionMark_LintIssue::*;
     private import SoftwareItemMetadata::*;
 
     part def ConfigurationSubsystem {

@@ -1,4 +1,6 @@
-package VersionMark {
+package VersionMark_UtilitiesSubsystem {
+    public import VersionMark_GlobMatcher::*;
+    public import VersionMark_PathHelpers::*;
     private import SoftwareItemMetadata::*;
 
     part def UtilitiesSubsystem {

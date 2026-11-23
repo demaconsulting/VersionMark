@@ -1,6 +1,6 @@
-package VersionMark {
+package VersionMark_Validation {
     private import SoftwareItemMetadata::*;
-    import OtsDependencies::*;
+    private import OtsDependencies::*;
 
     part def Validation {
         doc /* Exercises capture, publish, and lint modes end-to-end for self-validation. */
@@ -16,9 +16,9 @@ package VersionMark {
 
     // Validation drives each functional test re-entrantly through Program, and records
     // results via TestResults.
-    dependency Validation to Context;
-    dependency Validation to Program;
-    dependency Validation to VersionInfo;
-    dependency Validation to PathHelpers;
-    dependency Validation to TestResults;
+    dependency Validation to VersionMark_Context::Context;
+    dependency Validation to VersionMark_Program::Program;
+    dependency Validation to VersionMark_VersionInfo::VersionInfo;
+    dependency Validation to VersionMark_PathHelpers::PathHelpers;
+    dependency Validation to OtsDependencies::TestResults;
 }

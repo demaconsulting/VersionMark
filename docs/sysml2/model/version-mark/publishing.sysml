@@ -1,4 +1,5 @@
-package VersionMark {
+package VersionMark_PublishingSubsystem {
+    public import VersionMark_MarkdownFormatter::*;
     private import SoftwareItemMetadata::*;
 
     part def PublishingSubsystem {

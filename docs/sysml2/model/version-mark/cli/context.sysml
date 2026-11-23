@@ -1,4 +1,4 @@
-package VersionMark {
+package VersionMark_Context {
     private import SoftwareItemMetadata::*;
 
     part def Context {
