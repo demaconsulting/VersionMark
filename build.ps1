@@ -20,6 +20,10 @@
 #   runs the full build and tests; repository files the tests read at run time (see $RuntimeReads)
 #   select the test project; other changes the build does not read select nothing.
 #
+#   The test platform is detected from global.json: "test": { "runner": "Microsoft.Testing.Platform" } runs
+#   'dotnet test --report-trx', anything else runs VSTest 'dotnet test --logger trx'; results go to
+#   artifacts/tests either way. Do not customize the arguments per repository.
+#
 # EXTENSION POINTS:
 #   Search for "[PROJECT-SPECIFIC]" comments to find the designated locations
 #   for adding project-specific build or test operations.
@@ -58,6 +62,23 @@ Import-Module (Join-Path $PSScriptRoot 'scripts/ProjectScripts.psm1') -Force
 # The integration tests copy .versionmark.yaml from the repository root into a temp directory.
 $RuntimeReads = [ordered]@{
     '^\.versionmark\.yaml$' = 'DemaConsulting.VersionMark.Tests'
+}
+
+# Test platform: global.json selects Microsoft.Testing.Platform with "test": { "runner": "Microsoft.Testing.Platform" };
+# otherwise VSTest is used. The platform decides the 'dotnet test' arguments (see Invoke-DotnetTest).
+$UseTestingPlatform = $false
+if (Test-Path global.json) {
+    try { $UseTestingPlatform = (Get-Content -Raw global.json | ConvertFrom-Json).test.runner -eq 'Microsoft.Testing.Platform' }
+    catch { Write-Host "Warning: global.json could not be read; assuming VSTest." }
+}
+
+function Invoke-DotnetTest {
+    # Runs the tests of the whole solution against the existing build
+    if ($UseTestingPlatform) {
+        dotnet test --no-build --configuration Release --report-trx --results-directory artifacts/tests
+    } else {
+        dotnet test --no-build --configuration Release --logger trx --results-directory artifacts/tests
+    }
 }
 
 # ==============================================================================
@@ -125,22 +146,25 @@ if ($DryRun) { Write-Host "Dry run: would run the full build and all tests."; ex
 $buildError = $false
 
 # Each step runs only if the steps before it succeeded, so tests never run against stale binaries
+$failedStep = $null   # the step that failed first, so the skip message names the real cause
 Write-Host "Restoring dependencies..."
 dotnet restore
-if ($LASTEXITCODE -ne 0) { $buildError = $true }
+if ($LASTEXITCODE -ne 0) { $buildError = $true; $failedStep = 'restore' }
 
 if (-not $buildError) {
     Write-Host "Building..."
     dotnet build --no-restore --configuration Release
-    if ($LASTEXITCODE -ne 0) { $buildError = $true }
+    if ($LASTEXITCODE -ne 0) { $buildError = $true; $failedStep = 'build' }
 }
 
 # [PROJECT-SPECIFIC] Add additional build steps here. Guard steps that depend on the build with: if (-not $buildError) { ... }
 
 if (-not $buildError) {
     Write-Host "Running unit tests..."
-    dotnet test --no-build --configuration Release --report-trx --results-directory artifacts/tests
+    Invoke-DotnetTest
     if ($LASTEXITCODE -ne 0) { $buildError = $true }
+} elseif ($failedStep -eq 'restore') {
+    Write-Host "Skipping build and tests: restore failed."
 } else {
     Write-Host "Skipping tests: the build failed."
 }
