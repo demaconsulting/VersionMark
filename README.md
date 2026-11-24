@@ -80,7 +80,7 @@ versionmark --publish --report versions.md
 ## Building
 
 ```pwsh
-pwsh ./build.ps1
+pwsh ./build.ps1 -All
 ```
 
 ## User Guide
