@@ -91,3 +91,6 @@ Thumbs.db
 
 # VersionMark captures (generated during CI/CD)
 versionmark-*.json
+
+# Capture files that the help-card examples read (test data, not generated)
+!test/DemaConsulting.VersionMark.Tests/TestData/HelpExamples/versionmark-*.json
