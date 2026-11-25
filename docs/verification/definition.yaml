@@ -17,6 +17,7 @@ input-files:
   - docs/verification/version-mark/cli.md
   - docs/verification/version-mark/cli/program.md
   - docs/verification/version-mark/cli/context.md
+  - docs/verification/version-mark/cli/help-command.md
   - docs/verification/version-mark/configuration.md
   - docs/verification/version-mark/configuration/version-mark-config.md
   - docs/verification/version-mark/configuration/tool-config.md
@@ -44,6 +45,7 @@ input-files:
   - docs/verification/ots/yaml-dot-net.md
   - docs/verification/ots/microsoft-extensions-file-system-globbing.md
   - docs/verification/ots/dema-consulting-test-results.md
+  - docs/verification/ots/help-cards.md
 template: template.html
 table-of-contents: true
 number-sections: true

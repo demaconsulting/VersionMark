@@ -63,12 +63,30 @@ internal static class Program
     /// <summary>
     ///     Main entry point for the VersionMark.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The <c>help</c> command is answered first, by <see cref="HelpCommand"/>, before the
+    ///         command-line options are parsed: <c>help</c> is a command and not an option, so
+    ///         <see cref="Context.Create"/> would reject it. Its exit code is returned as is.
+    ///     </para>
+    ///     <para>
+    ///         <see cref="ArgumentException"/> and <see cref="InvalidOperationException"/> are the
+    ///         expected user-facing error types and are converted to exit code 1. All other exception
+    ///         types indicate unexpected conditions and are re-thrown after printing a message.
+    ///     </para>
+    /// </remarks>
     /// <param name="args">Command-line arguments.</param>
     /// <returns>Exit code: 0 for success, non-zero for failure.</returns>
-    private static int Main(string[] args)
+    public static int Main(string[] args)
     {
         try
         {
+            // Answer the help command before the options are parsed
+            if (HelpCommand.Default.TryRun(args, out var helpExitCode))
+            {
+                return helpExitCode;
+            }
+
             // Create context from command-line arguments
             using var context = Context.Create(args);
 
@@ -169,15 +187,16 @@ internal static class Program
     }
 
     /// <summary>
-    ///     Prints usage information.
+    ///     Prints usage information, ending with a pointer to the built-in help topics.
     /// </summary>
     /// <param name="context">The context for output.</param>
     private static void PrintHelp(Context context)
     {
-        context.WriteLine("Usage: versionmark [options]");
-        context.WriteLine("       versionmark --lint [<config-file>]");
-        context.WriteLine("       versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]");
-        context.WriteLine("       versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]");
+        context.WriteLine($"Usage: {HelpCommand.ToolName} [options]");
+        context.WriteLine($"       {HelpCommand.ToolName} --lint [<config-file>]");
+        context.WriteLine($"       {HelpCommand.ToolName} --capture --job-id <id> [options] [-- tool1 tool2 ...]");
+        context.WriteLine($"       {HelpCommand.ToolName} --publish --report <file> [options] [-- pattern1 pattern2 ...]");
+        context.WriteLine($"       {HelpCommand.ToolName} help [topic]");
         context.WriteLine("");
         context.WriteLine("Options:");
         context.WriteLine("  -v, --version              Display version information");
@@ -203,6 +222,8 @@ internal static class Program
         context.WriteLine("  --report <file>            Output markdown file (required)");
         context.WriteLine("  --report-depth <depth>     Heading depth for markdown (default: --depth value, range: 1-6)");
         context.WriteLine("  -- <patterns...>           Glob patterns for JSON files (default: versionmark-*.json)");
+        context.WriteLine("");
+        context.WriteLine(HelpCommand.Default.Footer);
     }
 
     /// <summary>

@@ -22,6 +22,7 @@ includes:
   - docs/reqstream/version-mark/cli.yaml
   - docs/reqstream/version-mark/cli/program.yaml
   - docs/reqstream/version-mark/cli/context.yaml
+  - docs/reqstream/version-mark/cli/help-command.yaml
   - docs/reqstream/version-mark/capture.yaml
   - docs/reqstream/version-mark/capture/version-info.yaml
   - docs/reqstream/version-mark/publishing.yaml
@@ -50,3 +51,4 @@ includes:
   - docs/reqstream/ots/yaml-dot-net.yaml
   - docs/reqstream/ots/microsoft-extensions-file-system-globbing.yaml
   - docs/reqstream/ots/dema-consulting-test-results.yaml
+  - docs/reqstream/ots/help-cards.yaml

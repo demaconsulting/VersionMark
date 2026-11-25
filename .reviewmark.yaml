@@ -14,6 +14,7 @@ needs-review:
   - docs/design/**/*.md
   - docs/verification/**/*.md
   - docs/sysml2/**/*.sysml
+  - src/**/Help/**
   - '!**/obj/**'
   - '!**/bin/**'
   - '!**/generated/**'
@@ -145,6 +146,21 @@ reviews:
       - docs/verification/version-mark/cli/context.md
       - src/**/Cli/Context.cs
       - test/**/Cli/ContextTests.cs
+
+  - id: VersionMark-Cli-HelpCommand
+    title: Review that VersionMark Cli HelpCommand Implementation is Correct
+    context:
+      - docs/design/version-mark.md
+      - docs/reqstream/version-mark.yaml
+      - docs/design/version-mark/cli.md
+      - docs/reqstream/version-mark/cli.yaml
+    paths:
+      - docs/reqstream/version-mark/cli/help-command.yaml
+      - docs/design/version-mark/cli/help-command.md
+      - docs/verification/version-mark/cli/help-command.md
+      - src/**/Cli/HelpCommand.cs
+      - src/**/Help/**
+      - test/**/Cli/HelpCommandTests.cs
 
   # VersionMark - Configuration
   - id: VersionMark-Configuration
@@ -402,3 +418,10 @@ reviews:
       - docs/reqstream/ots/dema-consulting-test-results.yaml
       - docs/design/ots/dema-consulting-test-results.md
       - docs/verification/ots/dema-consulting-test-results.md
+
+  - id: OTS-HelpCards
+    title: Review that HelpCards Provides Required Functionality
+    paths:
+      - docs/reqstream/ots/help-cards.yaml
+      - docs/design/ots/help-cards.md
+      - docs/verification/ots/help-cards.md

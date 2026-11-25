@@ -9,7 +9,7 @@ system-level code — the system is a collection of subsystems and units.
 
 ```mermaid
 graph TD
-    Cli["Cli Subsystem\n(Program, Context)"]
+    Cli["Cli Subsystem\n(Program, Context, HelpCommand)"]
     Configuration["Configuration Subsystem\n(VersionMarkConfig, ToolConfig, LintIssue)"]
     Capture["Capture Subsystem\n(VersionInfo)"]
     Publishing["Publishing Subsystem\n(MarkdownFormatter)"]
@@ -28,7 +28,7 @@ graph TD
 
 | Subsystem | Units | Responsibility |
 | --- | --- | --- |
-| Cli | Program, Context | Argument parsing, mode dispatch, output routing |
+| Cli | Program, Context, HelpCommand | Argument parsing, mode dispatch, output routing, built-in help |
 | Configuration | VersionMarkConfig, ToolConfig, LintIssue | YAML config loading, validation, version capture |
 | Capture | VersionInfo | JSON serialization of captured version data |
 | Publishing | MarkdownFormatter | Markdown report generation from captured data |
@@ -43,6 +43,9 @@ The tool operates in four distinct modes, selected by command-line flags:
 | Publish | `--publish` | Reads JSON files and generates a markdown version report |
 | Lint | `--lint` | Validates the `.versionmark.yaml` configuration file |
 | Validate | `--validate` | Runs built-in self-verification tests |
+
+In addition, the `help` command, given as the first argument, is answered by `HelpCommand`
+(Cli Subsystem) from the built-in help cards before the mode flags are parsed (see *Help Command*).
 
 ### Inter-Subsystem Interactions
 
@@ -99,7 +102,20 @@ The self-validation suite includes the following named tests:
   `--validate`) select the operational mode; `--` separates mode-specific positional
   arguments (tool names for capture, glob patterns for publish).
 - *Constraints*: Unknown flags cause `ArgumentException`. The full flag set is defined in
-  the Cli Subsystem design.
+  the Cli Subsystem design. Argument errors are found before `--silent` and `--log` take
+  effect, so they are always printed and never logged. The `help` command is accepted as the
+  first argument (see *Help Command*).
+
+**Help Command**: Built-in help, answered from help cards embedded in the tool assembly.
+
+- *Type*: CLI
+- *Role*: Provider (the tool answers the `help` command from the shell)
+- *Contract*: `versionmark help` prints the topic index and `versionmark help <topic>` prints a
+  topic card with its examples; HelpCards adds `--example`, `--search`, and `--json`. Returns exit
+  code 0 for success, 2 for a wrong help argument or an unknown topic, and 70 for a defective card
+  catalog.
+- *Constraints*: `help` must be the first argument. It is answered before the options are parsed,
+  so `--silent` and `--log` do not apply and no banner is printed.
 
 **`.versionmark.yaml`**: The tool configuration file.
 
@@ -167,6 +183,8 @@ The self-validation suite includes the following named tests:
 - *Contract*: Error messages always written in red. When source location is known (e.g. a
   lint issue), the message is prefixed as `filename(line,column): error: description`.
 - *Constraints*: Suppressed when '--silent' is set; callers detect failures via the process exit code.
+  Argument errors are the exception: they are found before `--silent` takes effect and are always
+  printed (see *Command-line arguments*).
 
 ## Dependencies
 
@@ -176,6 +194,8 @@ The self-validation suite includes the following named tests:
   see *Microsoft.Extensions.FileSystemGlobbing Integration Design* for details.
 - **DemaConsulting.TestResults** — TRX and JUnit XML serialization of self-validation
   results; see *DemaConsulting.TestResults Integration Design* for details.
+- **DemaConsulting.HelpCards** — loading, validation, and serving of the built-in help cards
+  for the `help` command; see *DemaConsulting.HelpCards Integration Design* for details.
 
 ## Risk Control Measures
 
@@ -184,6 +204,19 @@ financial-transaction, or safety-critical responsibilities. No software item seg
 for risk control purposes is required.
 
 ## Data Flow
+
+**Help** (user invokes `versionmark help [topic]`):
+
+```text
+Command-line args
+      ↓
+  HelpCommand.TryRun (Cli)   first argument is 'help': builds the card catalog
+      ↓
+  topic index or topic card written to the console; exit code returned
+```
+
+When the first argument is not `help`, `HelpCommand.TryRun` returns at once without building
+the catalog, and the flows below apply.
 
 **Capture mode** (user invokes `versionmark --capture --job-id <id>`):
 

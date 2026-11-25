@@ -5,7 +5,8 @@
 #### Purpose
 
 `Program` (`Program.cs`) is the top-level entry point for VersionMark. It owns the `Main`
-method, constructs the `Context` from command-line arguments, dispatches to the appropriate
+method, hands the `help` command to `HelpCommand`, otherwise constructs the `Context` from
+command-line arguments, dispatches to the appropriate
 operational mode, and handles top-level exception translation. It also contains the private
 helpers `RunCapture`, `RunPublish`, and `RunLint` that implement each operational mode.
 
@@ -17,9 +18,11 @@ assembly's `AssemblyInformationalVersionAttribute` at runtime, falling back to
 
 #### Key Methods
 
-**`Main(string[] args)` (static)** — Constructs a `Context` from command-line arguments, calls `Run`, and returns
-`context.ExitCode`. `ArgumentException` and `InvalidOperationException` are caught and written to `Console.Error`,
-returning exit code 1. Unexpected exceptions are re-thrown to generate event-log entries.
+**`Main(string[] args)` (public static)** — First calls `HelpCommand.Default.TryRun(args, out exitCode)`. The `help`
+command is not an option, so `Context.Create` would reject it; when the help command answers, `Main` returns its exit
+code (see *Help Command* in the system design). Otherwise `Main` constructs a `Context` from command-line arguments,
+calls `Run`, and returns `context.ExitCode`. `ArgumentException` and `InvalidOperationException` are caught and
+written to `Console.Error`, returning exit code 1. Unexpected exceptions are re-thrown to generate event-log entries.
 
 **`Run(Context context)` (static)** — Implements the following priority-ordered dispatch:
 
@@ -48,6 +51,10 @@ writes it to the report file.
 (defaulting to `.versionmark.yaml` when `context.LintFile` is null), calls
 `VersionMarkConfig.Load`, and reports all discovered issues via `result.ReportIssues`.
 
+**`PrintHelp(Context context)` (private static)** — Writes the usage synopsis (including
+`versionmark help [topic]`) and the options of every mode to the context output, and ends with
+`HelpCommand.Default.Footer`, the pointer to the help command.
+
 **`PrintBanner(Context context)` (private static)** — Writes the application name, version
 string, and copyright line to the context output. Raises no exceptions; output is suppressed
 automatically by `context.WriteLine` when `--silent` is set.
@@ -68,6 +75,7 @@ parsed.
 | `ArgumentException` or `InvalidOperationException` from any mode | `context.WriteError`; `ExitCode` set to 1 |
 | `ArgumentException` or `InvalidOperationException` from `Context.Create` | Written to `Console.Error`; exit code `1` |
 | Unexpected exception from `Main` | Re-thrown to propagate as unhandled exception |
+| First argument is `help` | `HelpCommand` answers; its exit code is returned without creating a `Context` |
 | `--job-id` missing in capture mode | `context.WriteError`; return |
 | `--report` missing in publish mode | `context.WriteError`; return |
 | No files match glob patterns | `context.WriteError` listing the patterns; return |
@@ -77,6 +85,8 @@ Errors from `Context.Create` are written directly to `Console.Error` because no 
 
 #### Dependencies
 
+- `HelpCommand` (Cli subsystem) — answers the `help` command before the options are parsed, and
+  supplies the footer that ends the usage text.
 - `Context` (Cli subsystem) — command-line state and output routing.
 - `VersionMarkConfig` (Configuration subsystem) — configuration loading and version capture.
 - `VersionInfo` (Capture subsystem) — JSON serialization of captured versions.

@@ -67,4 +67,9 @@
     <ProjectReference Include="..\..\src\DemaConsulting.VersionMark\DemaConsulting.VersionMark.csproj" />
   </ItemGroup>
 
+  <!-- Test Data -->
+  <ItemGroup>
+    <None Update="TestData\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

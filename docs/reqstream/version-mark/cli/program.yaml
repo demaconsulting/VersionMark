@@ -61,3 +61,22 @@ sections:
                   - Program_Run_WithLintFlag_InvalidConfig_ReturnsError
                   - Program_Run_WithLintFlag_NoFile_UsesDefaultConfigFile
                   - Program_Run_WithHelpFlag_IncludesLintInformation
+
+              - id: VersionMark-Program-HelpCommand
+                title: >-
+                  The Program class shall answer the help command before the command-line
+                  options are parsed and return its exit code.
+                justification: |
+                  The help command is not an option, so the option parser would reject it.
+                  Offering the arguments to the help command first lets versionmark help work
+                  while every other run continues to the option parser unchanged.
+                tests:
+                  - Program_Main_HelpVerb_PrintsHelpIndex
+
+              - id: VersionMark-Program-HelpFooter
+                title: The Program class shall end its usage information with a pointer to the help command.
+                justification: |
+                  The short usage text stays short and still tells a reader where the help
+                  topics with worked examples are.
+                tests:
+                  - Program_Run_WithHelpFlag_DisplaysUsageInformation

@@ -25,6 +25,7 @@ Local items:
 
 OTS items:
 
+- **DemaConsulting.HelpCards**: integration and usage design.
 - **DemaConsulting.TestResults**: integration and usage design.
 - **FileSystemGlobbing**: integration and usage design.
 - **SysML2Tools**: integration and usage design.
@@ -63,12 +64,13 @@ JSON and the version report, with Utilities and SelfTest in support](architectur
 
 - **src/** - source files and projects
   - **DemaConsulting.VersionMark/** - VersionMark system source
-    - **Cli/** - Cli subsystem
+    - **Cli/** - Cli subsystem, including the built-in `help` command (`HelpCommand.cs`)
     - **Configuration/** - Configuration subsystem
     - **Capture/** - Capture subsystem
     - **Publishing/** - Publishing subsystem
     - **SelfTest/** - SelfTest subsystem
     - **Utilities/** - Utilities subsystem
+    - **Help/** - built-in help cards (Markdown with front matter), embedded in the assembly
 
 ## Companion Artifact Structure
 

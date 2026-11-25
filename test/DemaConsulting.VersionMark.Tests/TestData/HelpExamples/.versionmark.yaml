@@ -1,0 +1,12 @@
+---
+tools:
+  dotnet:
+    command: dotnet --version
+    regex: '(?<version>\d+\.\d+\.\d+)'
+  git:
+    command: git --version
+    regex: 'git version (?<version>\d+\.\d+\.\d+)'
+  os:
+    command: uname -r
+    command-win: ver
+    regex: '(?<version>\d+\.\d+\.\d+)'

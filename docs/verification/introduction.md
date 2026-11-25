@@ -18,7 +18,8 @@ The purpose of this document is to:
 
 This document covers verification of six in-house subsystems within the VersionMark system:
 
-- The **Cli Subsystem**: argument parsing and program dispatch via `Program` and `Context`
+- The **Cli Subsystem**: argument parsing, program dispatch, and the built-in help via `Program`,
+  `Context`, and `HelpCommand`
 - The **Configuration Subsystem**: YAML configuration loading and validation via
   `VersionMarkConfig`, `ToolConfig`, and `LintIssue`
 - The **Capture Subsystem**: tool version capture and JSON serialization via `VersionInfo`
@@ -30,6 +31,7 @@ This document covers verification of six in-house subsystems within the VersionM
 It also covers verification evidence for the following Off-The-Shelf (OTS) components:
 
 - **BuildMark** - build notes generation tool
+- **DemaConsulting.HelpCards** - built-in help library
 - **DemaConsulting.TestResults** - TRX/JUnit result serialization library
 - **FileAssert** - file content assertion tool
 - **Microsoft.Extensions.FileSystemGlobbing** - glob-pattern file matching library
