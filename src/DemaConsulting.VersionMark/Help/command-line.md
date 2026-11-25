@@ -52,7 +52,8 @@ Options start with `--` (or a single character after `-`) and may be given in an
 
 `--result` is an older name of `--results` and still works.
 
-**Order.** `--version` wins over everything and prints only the version. Otherwise the tool prints a banner (not
+**Order.** `--version`, when all arguments are valid, prints only the version and skips everything else.
+Otherwise the tool prints a banner (not
 for a lint run), then handles the first of `--help`, `--validate`, `--lint`, `--capture`, and `--publish`. Without
 any of them it prints only the banner and a placeholder text.
 The command that [[#silent-log]] prints writes its output to the log file only.
