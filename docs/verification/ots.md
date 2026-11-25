@@ -34,7 +34,8 @@ DemaConsulting.TestResults is verified through the SelfTest subsystem integratio
 that exercise TRX and JUnit serialization. Microsoft.Extensions.FileSystemGlobbing is
 verified through the GlobMatcher unit tests that exercise glob-pattern file matching.
 YamlDotNet is verified through the Configuration subsystem unit and integration tests that
-exercise YAML parsing.
+exercise YAML parsing. DemaConsulting.HelpCards is verified through the HelpCommand unit tests
+and the help integration tests.
 
 ## Qualification Evidence
 
@@ -57,7 +58,10 @@ completed successfully and produced output matching the expected structure and c
 For DemaConsulting.TestResults, evidence is provided by the SelfTest integration tests
 that produce and assert TRX and JUnit XML files. For Microsoft.Extensions.FileSystemGlobbing,
 evidence is provided by the GlobMatcher unit tests. For YamlDotNet, evidence is provided
-by the Configuration subsystem unit and integration tests.
+by the Configuration subsystem unit and integration tests. For DemaConsulting.HelpCards,
+evidence is provided by the HelpCommand unit tests, which validate the shipped cards with
+warnings treated as errors, and by the integration tests that run the compiled tool with
+`help` arguments and run every command example of the cards.
 
 ## Regression Approach
 
@@ -73,9 +77,9 @@ For Pandoc and WeasyPrint, all FileAssert assertions on the seven generated docu
 must pass. A failure in any FileAssert assertion indicates that a conversion step produced
 unexpected output and must be investigated before the upgrade proceeds.
 
-For DemaConsulting.TestResults, Microsoft.Extensions.FileSystemGlobbing, and YamlDotNet,
-the relevant subsystem and unit tests must pass with zero failures across all supported
-platform matrix combinations.
+For DemaConsulting.TestResults, Microsoft.Extensions.FileSystemGlobbing, YamlDotNet, and
+DemaConsulting.HelpCards, the relevant subsystem and unit tests must pass with zero failures
+across all supported platform matrix combinations.
 
 In addition to executing the pipeline, the release notes for the new version are reviewed
 to identify any changes in behavior that may affect the features used by VersionMark or

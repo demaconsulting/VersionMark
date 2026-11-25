@@ -2,14 +2,14 @@
 
 ### Verification Approach
 
-The Cli subsystem is responsible for parsing command-line arguments, routing program flow
-to the appropriate subsystem, and managing all output (console, error, and log file). It
-consists of two units: `Program` (the entry point) and `Context` (the argument and output
-container). Subsystem-level integration tests are in `CliTests.cs` and cover the full CLI
-pipeline with `Context` and `Program` working together. Tests construct a `Context` with
-specific arguments and call `Program.Run`, then assert on console output and exit code.
-`StringWriter` captures console output without external mocks or file system interaction.
-The one test that exercises file I/O uses a temporary file created during test setup.
+The Cli subsystem is responsible for parsing command-line arguments, routing program flow to the appropriate subsystem,
+and managing all output (console, error, and log file). It consists of three units: `Program` (the entry point),
+`Context` (the argument and output container), and `HelpCommand` (the built-in help). Subsystem-level integration tests
+are in `CliTests.cs` and cover the full CLI pipeline with `Context` and `Program` working together. Tests construct a
+`Context` with specific arguments and call `Program.Run`, then assert on console output and exit code. `StringWriter`
+captures console output without external mocks or file system interaction. The one test that exercises file I/O uses a
+temporary file created during test setup. The help command is verified through `HelpCommand.Create`, which writes to
+in-memory writers.
 
 ### Test Environment
 
@@ -22,6 +22,7 @@ captured using `StringWriter`. The one test that exercises file I/O
 
 - All subsystem integration tests pass with zero failures across all supported OS and .NET
   version matrix combinations (Windows, Linux, macOS x .NET 10, .NET 11).
+- The `help` command prints a requested topic from the built-in help cards.
 - Every requirement for the Cli subsystem is covered by at least one named test scenario.
 
 ### Test Scenarios
@@ -57,3 +58,7 @@ scenario is tested by `Cli_Run_ResultsFlag_WritesResultsFile`.
 **Cli_Run_LogFlag_WritesOutputToLogFile**: A `Context` constructed with `--version --log
 <file>` verifies that program output is written to the specified log file. This scenario
 is tested by `Cli_Run_LogFlag_WritesOutputToLogFile`.
+
+**Cli_HelpCommand_TopicRequested_PrintsTopic**: Offer `["help", "command-line"]` to
+`HelpCommand.TryRun`; assert it answers with the command-line topic and exit code 0. This
+scenario is tested by `Cli_HelpCommand_TopicRequested_PrintsTopic`.

@@ -1,10 +1,11 @@
 package VersionMark_CliSubsystem {
     public import VersionMark_Program::*;
     public import VersionMark_Context::*;
+    public import VersionMark_HelpCommand::*;
     private import SoftwareItemMetadata::*;
 
     part def CliSubsystem {
-        doc /* Command-line argument parsing, mode dispatch, and output routing. */
+        doc /* Command-line argument parsing, mode dispatch, output routing, and the built-in help command. */
 
         metadata info : SoftwareInfo {
             testFiles = ("test/DemaConsulting.VersionMark.Tests/Cli/CliTests.cs");
@@ -15,5 +16,6 @@ package VersionMark_CliSubsystem {
 
         part program : Program;
         part context : Context;
+        part helpCommand : HelpCommand;
     }
 }

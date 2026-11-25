@@ -6,8 +6,9 @@
 
 The Cli subsystem is responsible for parsing command-line arguments, routing program flow
 to the appropriate subsystem, and managing all output (console, error, and log file). It
-consists of two units: `Program` (the entry point and mode dispatcher) and `Context` (the
-command-line argument and output container).
+also answers the built-in `help` command. It consists of three units: `Program` (the entry
+point and mode dispatcher), `Context` (the command-line argument and output container), and
+`HelpCommand` (the built-in `help` command, answered from embedded help cards).
 
 ### Interfaces
 
@@ -68,10 +69,28 @@ instance.
 
 - *Type*: .NET process entry point.
 - *Role*: Provider.
-- *Contract*: Creates `Context`, calls `Run`, returns `context.ExitCode`. Catches
-  `ArgumentException` and `InvalidOperationException`; writes to `Console.Error`; returns
-  exit code `1`. Re-throws other exceptions.
+- *Contract*: First offers the arguments to `HelpCommand.TryRun` and, when the help command
+  answers, returns its exit code. Otherwise creates `Context`, calls `Run`, returns
+  `context.ExitCode`. Catches `ArgumentException` and `InvalidOperationException`; writes to
+  `Console.Error`; returns exit code `1`. Re-throws other exceptions.
 - *Constraints*: Called once by the .NET runtime.
+
+**`HelpCommand.TryRun(string[] args, out int exitCode)`**: Answers the `help` command from the
+built-in help cards.
+
+- *Type*: In-process .NET instance method (on the shared `HelpCommand.Default` instance).
+- *Role*: Provider.
+- *Contract*: Returns `false`, writing nothing, when the first argument is not `help`. Otherwise
+  writes the answer to the console, returns `true`, and sets the exit code (see *Help Command* in
+  the system design).
+- *Constraints*: Does not throw for user input; does not use `Context`.
+
+**`HelpCommand.Footer`**: The sentence that points a reader of the usage text to the help command.
+
+- *Type*: In-process .NET instance property.
+- *Role*: Provider.
+- *Contract*: Returns the one-line pointer that HelpCards supplies.
+- *Constraints*: Reading it never builds the help catalog.
 
 The accepted CLI flags recognized by `Context.Create` are:
 
@@ -95,9 +114,10 @@ The accepted CLI flags recognized by `Context.Create` are:
 
 ### Design
 
-The Cli subsystem contains two collaborating units:
+The Cli subsystem contains three units:
 
-1. **`Program`** — the entry point. It constructs `Context` via `Context.Create`, dispatches
+1. **`Program`** — the entry point. It first offers the arguments to `HelpCommand.TryRun`;
+   otherwise it constructs `Context` via `Context.Create`, dispatches
    to the appropriate mode helper (`RunCapture`, `RunPublish`, `RunLint`, or
    `Validation.Run`), catches top-level `ArgumentException` and `InvalidOperationException`,
    and returns `context.ExitCode` to the OS.
@@ -108,5 +128,12 @@ The Cli subsystem contains two collaborating units:
    subsystems receiving a `Context` have a uniform interface for messaging and error
    recording.
 
-The two units are coupled through `Program` constructing `Context` and passing it to all
-mode helpers. `Context` has no dependency on `Program`.
+3. **`HelpCommand`** — the built-in help. It answers the `help` command from the help cards
+   embedded in the assembly and supplies the footer that ends the `--help` usage text.
+
+`Program` and `Context` are coupled through `Program` constructing `Context` and passing it to
+all mode helpers. `Context` has no dependency on `Program`. `Context` and `HelpCommand` do not
+call each other: when the help command answers, the invocation ends with its exit code and no
+`Context` is created. `HelpCommand` writes its answers to the console itself; it is the one
+exception to `Context` owning all output, because the `help` command is answered before a
+`Context` exists.

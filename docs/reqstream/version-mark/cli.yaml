@@ -114,3 +114,17 @@ sections:
               - lint
             tests:
               - Cli_Run_LintFlag_ValidConfig_Succeeds
+
+          - id: VersionMark-CommandLine-HelpTopics
+            title: The tool shall answer the help command from built-in help cards.
+            justification: |
+              Users and AI agents need help topics with worked examples from the installed
+              tool, without requiring external resources.
+            tags:
+              - cli
+            children:
+              - VersionMark-HelpCommand-HelpVerb
+              - VersionMark-HelpCommand-ValidCards
+              - VersionMark-HelpCommand-LineWidth
+            tests:
+              - Cli_HelpCommand_TopicRequested_PrintsTopic

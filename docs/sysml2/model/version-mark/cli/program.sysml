@@ -15,6 +15,7 @@ package VersionMark_Program {
 
     // Program dispatches each operational mode to the unit that implements it.
     dependency Program to VersionMark_Context::Context;
+    dependency Program to VersionMark_HelpCommand::HelpCommand;
     dependency Program to VersionMark_VersionMarkConfig::VersionMarkConfig;
     dependency Program to VersionMark_VersionInfo::VersionInfo;
     dependency Program to VersionMark_MarkdownFormatter::MarkdownFormatter;

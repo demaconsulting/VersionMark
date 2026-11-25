@@ -1,0 +1,19 @@
+package VersionMark_HelpCommand {
+    private import SoftwareItemMetadata::*;
+    private import OtsDependencies::*;
+
+    part def HelpCommand {
+        doc /* Built-in help command: answers the help verb from embedded help cards before option parsing. */
+
+        metadata info : SoftwareInfo {
+            sourceFiles = ("src/DemaConsulting.VersionMark/Cli/HelpCommand.cs");
+            testFiles = ("test/DemaConsulting.VersionMark.Tests/Cli/HelpCommandTests.cs");
+            designFiles = ("docs/design/version-mark/cli/help-command.md");
+            verificationFiles = ("docs/verification/version-mark/cli/help-command.md");
+            requirementFiles = ("docs/reqstream/version-mark/cli/help-command.yaml");
+        }
+    }
+
+    // Serves the help command from the cards embedded in the assembly.
+    dependency HelpCommand to OtsDependencies::HelpCards;
+}

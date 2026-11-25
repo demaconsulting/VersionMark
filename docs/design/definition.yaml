@@ -12,6 +12,7 @@ input-files:
   - docs/design/version-mark/cli.md
   - docs/design/version-mark/cli/program.md
   - docs/design/version-mark/cli/context.md
+  - docs/design/version-mark/cli/help-command.md
   - docs/design/version-mark/configuration.md
   - docs/design/version-mark/configuration/lint-issue.md
   - docs/design/version-mark/configuration/tool-config.md
@@ -29,6 +30,7 @@ input-files:
   - docs/design/ots/yaml-dot-net.md
   - docs/design/ots/microsoft-extensions-file-system-globbing.md
   - docs/design/ots/dema-consulting-test-results.md
+  - docs/design/ots/help-cards.md
   - docs/design/ots/sysml2tools.md
 template: template.html
 table-of-contents: true

@@ -21,6 +21,8 @@ available on `PATH`.
 
 - All unit tests for `Program` pass with zero failures across all supported OS and .NET
   version matrix combinations (Windows, Linux, macOS × .NET 10, .NET 11).
+- `Program.Main` answers the `help` command before the options are parsed, and the usage
+  information ends with the pointer to the help command.
 - Every requirement for the `Program` unit is covered by at least one named test scenario.
 
 #### Test Scenarios
@@ -33,8 +35,14 @@ string. This scenario is tested by `Program_Version_ReturnsNonEmptyString`.
 This scenario is tested by `Program_Run_WithVersionFlag_DisplaysVersionOnly`.
 
 **Program_Run_WithHelpFlag_DisplaysUsageInformation**: A `Context` with `--help` calls
-`Program.Run`, which writes usage information and exits with code 0. This scenario is
+`Program.Run`, which writes usage information, including the `versionmark help [topic]` usage
+line, ends with the pointer to the help command, and exits with code 0. This scenario is
 tested by `Program_Run_WithHelpFlag_DisplaysUsageInformation`.
+
+**Program_Main_HelpVerb_PrintsHelpIndex**: `Program.Main` is invoked with `help`, which is not
+an option; it exits with code 0, the output contains the help topic index, and no banner is
+printed, confirming the help command is answered before the options are parsed. This scenario
+is tested by `Program_Main_HelpVerb_PrintsHelpIndex`.
 
 **Program_Run_WithValidateFlag_RunsValidation**: A `Context` with `--validate` calls
 `Program.Run`, which writes output containing "Total Tests:" and exits with code 0. This
