@@ -24,8 +24,8 @@ methodology, which ensures compliance evidence is generated automatically on eve
 ## Scope
 
 This guide covers installation, configuration, capture and publish workflows,
-command-line options, self-validation, CI/CD integration, troubleshooting, and best
-practices. Prerequisites: .NET 10 or later.
+command-line options, the built-in `versionmark help` command, self-validation, CI/CD
+integration, troubleshooting, and best practices. Prerequisites: .NET 10 or later.
 
 ## References
 
@@ -123,6 +123,34 @@ This generates a Markdown file consolidating versions from all jobs.
 | **Self-Validation** | |
 | `--validate` | Run self-validation tests |
 | `--results <file>` | Write validation results to file (`.trx` or `.xml`) |
+
+The `--help` usage text ends with a pointer to the built-in help.
+
+Argument errors, such as an unknown option or an option without its value, are found before
+`--silent` and `--log` take effect, so they are always printed and never logged.
+
+## Built-in Help
+
+The `help` command prints help topics that explain each task with worked examples, for people and
+for AI agents that have only the installed tool. List the topics, then print one with its examples:
+
+```shell
+versionmark help
+versionmark help getting-started
+```
+
+Add `--search <words>` to find a topic, `--example <name>` to print one example of a topic, and
+`--json` to get any help answer as JSON. `help` is a command, not an option: it must be the first
+argument, and `--silent` and `--log` do not apply to it. An unknown topic or a wrong help argument
+prints a hint and exits with code 2 (see *Exit Codes*).
+
+## Exit Codes
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Success, including a lint run that found only warnings |
+| `1` | Error — invalid arguments, a lint error, a failed capture or publish, or a failed self-test |
+| `2` | Unknown help topic or wrong `help` argument |
 
 ## Lint Mode
 

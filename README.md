@@ -33,6 +33,8 @@ comparing versions across jobs, and pull request reviews][workflow]
 - **Version Consolidation**: Collapses common versions across jobs while highlighting conflicts
 - **OS-Specific Overrides**: Supports platform-specific version capture commands
 - **Self-Validation**: Runs built-in self-verification tests to confirm correct operation
+- **Built-in Help**: `versionmark help` serves help topics with runnable examples, search, and JSON
+  output for AI agents
 - **Continuous Compliance**: Compliance evidence generated automatically on every CI run, following
   the [Continuous Compliance](https://github.com/demaconsulting/ContinuousCompliance) methodology
 
@@ -112,6 +114,7 @@ Usage: versionmark [options]
        versionmark --lint [<config-file>]
        versionmark --capture --job-id <id> [options] [-- tool1 tool2 ...]
        versionmark --publish --report <file> [options] [-- pattern1 pattern2 ...]
+       versionmark help [topic]
 ```
 
 | Option | Description |
@@ -137,6 +140,9 @@ Usage: versionmark [options]
 | **Self-Validation** | |
 | `--validate` | Run self-validation tests |
 | `--results <file>` | Write validation results to file (`.trx` or `.xml`) |
+
+Run `versionmark help` to list the built-in help topics, and `versionmark help getting-started` for a
+walk-through with runnable examples.
 
 ## Configuration File
 
